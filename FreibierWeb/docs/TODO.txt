@@ -1,0 +1,125 @@
+TODO:
+-----
+
+
+nötig:
+- BayenWeb
+  - Aktualisierung statt neuimport
+  - Filter (z.B. nach Aussendienstlern)
+  - Telefonnummern in Liste für Günther
+wünschenswert:
+- BLZ-Feldname in der Datenbank in Grossbuchstaben ändern
+- interne Verbesserungen
+  - HBCICallback multithreading-konform benutzen
+  - evtl. Session-Einstellungen für Theme, Filter, etc.
+  - Guten Platz für Passwörter finden
+  - Connection Pool
+  - System für Formulare, Validierung, etc.
+- Benutzersensitivität
+  - Anzeige des Benutzers
+  - logout, d.h. Formular-Login
+  - Themes abhängig vom Benutzer / der Rolle
+- Benutzerfreundlichkeit
+  - Eurozeichen (DTAUS-Summe) nur angezeigt, wenn Browser umgestellt
+  - Ausgabe von Auszugsdaten in schönerem Zahlenformat
+  - Anker zum Aufruf bestimmter Teile der Seiten
+  - Paging bei der Listenanzeige
+  - Focus wieder automatisch setzen (im Template oder im Controller?!?)
+  - kein Javascript in Günther-Template
+- neue Funktionen
+  - Filter in Liste
+  - Wechsel der Datenbankverbindung
+  - Bilder in der Datenbank
+- weitere Applikationen
+  - Adressbuch
+  - Event-Manager
+nicht wirklich nötig:
+- Versionsnummer nicht in Webadresse benutzen?
+- Codierung des Theme ändern
+- Euro-Zeichen eingeben und ausgeben (und in PHPMyAdmin auch)
+- Beschleunigung
+- Sortieren nach Fremdschlüsseln
+
+erledigt:
+- HBCI-Applikation
+- Importieren der DTAUS-Dateien von Durst
+- Versand von DTAUS (als "Pool")
+- action senddtaus (hier kommt die Magie!)
+- Umstellung des Tests bei Volksbank auf anderes Konto
+Version 1.4
+- Reorganisation der Paketnamen fertig zur Veröffentlichung
+- view für Versand (action: show) mit Eingabe TAN etc.
+- täglicher Restart vom Tomcat (zur Sicherheit)
+- Erzeugung von DTAUS
+- Verwaltung von DTAUS in einer Datenbank
+- Eingabe von Transaktionen
+- verschiedene Datenbanken für versch. Applikationen
+- Überarbeitung der Datentabelle (Ergebniscode, Errorcode, versandt)
+- Fehler in HBCI4Java: Umlaute brechen Strings ab :-(
+- Kontoauszug-Layout mit Meyer abstimmen und optimieren
+- Wenn Records mit BLOBs geändert werden, diese ggf. nicht ändern
+- null als Wert bei Datum ermöglichen
+- Binärdaten von der Weboberfläche unterstützt
+- Binärdaten (BLOBs) in der Datenbank möglich
+Version 1.3
+- mehrere Banken
+- HBCI-Ergebniscodes richtig ausgeben
+- PIN/TAN-Verfahren
+- Abruf und Anzeige von Kontoauszügen
+- Native Library für Chipkarte nur einmal laden
+- Grundlagen für HBCI
+- Logging
+- Dokumentation per Javadoc eingerichtet und überarbeitet
+- Telefonbuch-Applikation
+- Daten aktuell importieren
+- Steuernummer suchen
+- libs umkopieren in WEB-INF
+Version 1.2
+- Action-Klassen auslagern
+- Datenfeld für Lieferstatus
+- Freizeilen am Anfang der Ausgabe erforschen
+- new-Action
+- Zerlegen der edit-Action
+- kompletter Test aller Actions
+- kompletter Test des ganzen Systems
+- nachdenken: Standard-Templates in Hauptverzeichnis?
+- search-Action (z.B. für Link auf Betreuer)
+- Einführen von View bzw. Themes
+- "views", um anderes Template für gleichen Context zu benutzen
+- show-action
+- id nicht im query String kodieren, sondern in der uri
+- urls richtig zusammensetzen
+- createURI() weiterschreiben
+- Klasse ServletDatabase komplett überarbeiten
+- Umsortierung der Template-Dateien
+- Kopie des Modells durch Javabean-Zugriff ersetzen/erleichtern
+- logische Aufteilung der URL
+- Erzeugen der Datenbank
+Version 1.1
+
+
+Peter:
+------
+- Kapselung von last_insert_id()
+- Im NicePrinter den angezeigten Index weglassen (ist nicht nice...)
+- RecordDefinition.getSelectStatement(): angepasst für mehrere Foreign Keys auf die gleiche Tabelle
+gemeldet:
+- NULL in der Datenbank erlaubt
+  - TypedefinitionInteger.format(): ändern: if (i != null && !i.equals(""))
+  -            "          parse(): einfügen: if(s==null  || s.equals("")) return null;
+- Database.getName()
+- readonly dokumentieren und ggf. implementieren
+wünschenswert:
+- Schreiben nur der veränderten Felder
+- Logging
+- Umlaute in sql-Dateien
+gemacht, aber nicht nötig:
+- executeSqlFile nimmt auch InputStream als Parameter
+- Table.makeWhereExpression()
+
+
+
+Sonstige Notizen
+----------------
+Pennewitz (Innenausbauer von Malomo) 02151/398885, 0173/5111014
+Fabian: 0511/7900580

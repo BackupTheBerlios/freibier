@@ -1,0 +1,354 @@
+
+# when connecting to the HBCI-server we have to provide an
+# application name and version. this is sometimes used by
+# the hbci-server to handle certain applications in a special way.
+# you may use the defaults here.
+client.product.name=HBCI4Java
+client.product.version=2.4
+
+# -----------------------------------------------------------------
+
+# these are the parameters for the DDV security mechanism
+# (symmetric keys stored on a chipcard)
+
+# the *prefix* of the filename in which to locally cache
+# all needed user and institure information. the filename will be 
+# built from this value and the card-number (16 digits). so if you
+# really want to specify a *pathname* here, dont forget
+# the trailing "/"
+client.passport.DDV.path=./passports/
+
+# filename of the shared library, that makes the connection between
+# java and the CT-API. this library is shipped with the HBCI4Java-
+# package. 
+client.passport.DDV.libname.ddv=/home/kleiner/projects/hbci2/chipcard/lib/libhbci4java-card-linux.so
+
+# this is the filename of the ctapi-library, that you can get
+# from the vendor of your chipcard-terminal.
+client.passport.DDV.libname.ctapi=/usr/lib/libctapi-cyberjack.so
+
+# the portnumber to be used when accessing the chipcard terminal.
+# for serially connected terminals, /dev/ttyS0 (COM1:) is 
+# accessed by port=1 (some vendors also use port=0), for
+# /dev/ttyS1 (COM2:) use port=2 (sometimes port=1) and so on.
+# the same scheme applies for USB-connected terminals
+client.passport.DDV.port=1
+
+# which internal termina-number to be used when accessing the
+# chipcard-terminal. this is only interesting, when you have
+# more than one terminal accessed by the *same* driver (e.g.
+# two reiner-sct-terminals). each terminal needs an unique number
+# (starting with 0)
+client.passport.DDV.ctnumber=0
+
+# this setting currently only works
+# for reiner-sct-biometric chipcard-terminal. when you set this
+# to 1, then you dont have to enter the chipcard-pin manually, but
+# can use your fingerprint instead, so that the chipcard-terminal
+# automatically "enters" the pin assigned to your finger
+# setting this to "-1" always works and detects if you have a
+# biometric finger unit or not. if yes, it will be used automatically
+client.passport.DDV.usebio=-1
+
+# this setting is for chipcard-terminals that dont have an
+# own keypad (i.e. class-1 chipcard-terminals). if you set
+# this to 1, the pin for accessing the chipcard will be requested
+# by software, i.e. you have to enter it via your computer-
+# keyboard. this is of course less secure, because someone could
+# "sniff" the pin. also, the client-software must support this.
+# by setting this to "0" the keypad of the chipcard terminal
+# will be used to enter the PIN
+# you can set this to "-1" for auto-detection
+client.passport.DDV.softpin=-1
+
+# this parameter is only used, when softpin is 1. this can be set
+# to the chipcard-pin, so that you dont have to enter the pin
+# manually. but beware, if someone finds this config-file (or the
+# software code that sets this option), she knows your pin!
+#client.passport.DDV.pin=
+
+# on some DDV-chipcards there is more than one HBCI account stored.
+# with this parameter you can set the index number of the entry
+# you want to use. the default value is 1. currently there can be
+# no more than five entries, so the max. value for this is 5 
+client.passport.DDV.entryidx=1
+
+# -------------------------------------------------------------------
+
+# the following settings are for security type RDH
+# (asymmetric keys stored in a special rsa-key-file)
+# note, that this hbci-implementation uses an own format
+# for these key-files, so the files you get from your credit-
+# institute will not work!
+# there will be tools in the future to convert these external
+# files to the right format.
+
+# the filename of the passport file to be used. this option will
+# mostly be set by the application, depending on the user who wants
+# to connect to his credit institute (so this file is user-
+# and credit institute -individual)
+client.passport.RDHNew.filename=./passports/institute_X_user_Y.dat
+
+# always set this to 1, all other possible settings are only used
+# internally
+client.passport.RDHNew.init=1
+
+# -------------------------------------------------------------------
+
+# the following settings are for security type SIZRDHFile
+# these files are normally used by other HBCI software (e.g. StarMoney),
+# but can also be used with HBCI4Java.
+# please make a backup copy of the keyfile before you use
+# it with HBCI4Java! 
+
+# the filename of the keyfile
+client.passport.SIZRDHFile.filename=./passports/secret.key
+
+# the filename of the shared library to access siz rdh keyfiles
+# (download from http://hbci4java.kapott.org#download)
+client.passport.SIZRDHFile.libname=/usr/lib/libhbci4java-sizrdh.so
+
+# always set this to 1, all other possible settings are only used
+# internally
+client.passport.SIZRDHFile.init=1
+
+# -------------------------------------------------------------------
+
+# the following parameters have the same meaning as the
+# corresponding paramaters for RDHnew. The RDH-variant of
+# this type of passports is deprecated now, you are highly
+# encouraged to use RDHNew.  
+
+client.passport.RDH.filename=./passports/institute_X_user_Y.dat
+client.passport.RDH.init=1
+
+# -------------------------------------------------------------------
+
+client.passport.PinTan.filename=./passports/institute_X_user_Y_pintan.dat
+client.passport.PinTan.certfile=hbcicerts.bin
+client.passport.PinTan.checkcert=1
+client.passport.PinTan.init=1
+
+# -------------------------------------------------------------------
+
+# the following parameters will be used when initializing an
+# OpenHBCI passport object.
+
+# this is the filename of the OpenHBCI media file, i.e. the
+# encrypted file with the user and institute keys
+client.passport.OpenHBCI.mediafile=./passports/openhbci.dat
+
+# this is the file that contains information about the
+# institutes, users and accounts that are known to OpenHBCI.
+# we need it here to extract the address of the hbci-server,
+# the default customer id and the hbci version to be used
+client.passport.OpenHBCI.datafile=/home/kleiner/.openhbci
+
+# never change this
+client.passport.OpenHBCI.init=1
+
+# -------------------------------------------------------------------
+
+# the following parameters have the same meaning as the
+# corresponding paramaters of RDHnew. Anonymous passports
+# provide an anonymous access to the HBCI server of a credit
+# institute. Only few credit institutes support this feature.
+
+client.passport.Anonymous.filename=./passports/institute_xx_anonymous.dat
+client.passport.Anonymous.init=1
+
+# -------------------------------------------------------------------
+
+# this option specifies which security method to use 
+# (DDV, RDHNew, RDH, PinTan, SIZRDHFile, OpenHBCI, Anonymous)
+# when no parameter is given to HBCIPassport.getInstance()
+client.passport.default=DDV
+
+# -------------------------------------------------------------------
+
+# this setting specifies the numbers of tries you have to
+# enter the correct passphrase to decrypt the passport file
+# (if any). if this number of tries has been reached without
+# success, the kernel will throw an exception
+client.retries.passphrase=2
+
+# this setting is only needed when you (the hbci-kernel, i.e. the
+# listener-part of this implementation) are behind a firewall, which
+# just lets out connections *from* specific tcp-ports. you can
+# set the tcp-port for the local end of the connection with this
+# option. if it is not set, the port will be assigned by the os.
+#client.connection.localPort=62534
+
+# ------------------------------------------------------------------
+
+# this is the path where the kernel searches for the
+# xml-file that contains the syntax-description for the
+# requested hbci-version. when searching for the file, 
+# the kernel uses the ClassLoader.getResourceAsStream()
+# method, giving this option+filename as arguments. 
+# normally you dont have to set this option, but
+# dont forget the trailing "/" if specified
+#kernel.kernel.xmlpath=syntax/
+
+#kernel.kernel.blzpath=blzs/
+
+# this option sets the loglevel for messages generated
+# by the hbci-kernel. the default value is 2.
+# the levels have to following semantics:
+# 0=no logging, 1=errors, 2=warnings, 3=info, 4=debug, 5=chipcard
+# a loglevel of X contains all loglevels less than X
+log.loglevel.default=4
+
+# this option is a list of so called "rewriter"-modules.
+# these modules are used to fix bugs that some credit-
+# institutes make in their hbci-implementation. usually
+# you dont have to set this option manually
+# kernel.rewriter=
+
+# the following kernel parameters set the size of
+# some object pools. object pools are used internally to
+# reduce the need for often allocating and throwing away.
+# the values shown here are the builtin defaults.
+# kernel.objpool.MSG=8
+# kernel.objpool.SF=128
+# kernel.objpool.SEG=128
+# kernel.objpool.DEG=512
+# kernel.objpool.DE=1024
+# kernel.objpool.Sig=8
+# kernel.objpool.Crypt=8
+# kernel.objpool.Syntax=1024
+
+# ------------------------------------------------------------------
+
+# the following parameters can all be set to one of
+# "no", "yes" or "callback". when set to "no", the corresponding
+# error will immediately cause an exception to be thrown.
+# when set to "yes", this error will be ignored, but an error
+# message will be logged. ignoring an error probably will cause
+# an exception to be thrown a little bit later because of another
+# error ;-)
+# setting the parameter to "callback" will cause a callback with
+# reason HAVE_ERROR. the application can decide, whether to ignore
+# the error or to throw the exception.
+#
+# you should never ever change these values, they are for developers
+# only and for very brave people who think they know what they do...
+#
+# the default value for all of these parameters if "no"
+#
+# changing these values is not recommended for daily use. if
+# you encounter an error, that can be fixed by changing one
+# of these parameters, first look if you find a Rewriter module
+# that does the same job. if not, contact the author so that
+# he can analyze the problem and write a rewriter module to 
+# permanently fix the problem.
+#
+# again: these parameters are vor HBCI4Java developers only
+# and not to be used by "normal" users of HBCI4Java
+
+# errors when extracting and storing job results in the 
+# corresponding jobResult object; may be useful when you always
+# loose job results because another job causes errors while storing
+# its results
+client.errors.ignoreJobResultStoreErrors=no
+
+# these errors occur, when some highlevel-job-contraints
+# are violated. you should never change this, because this will
+# prevent job messages to be generated and you will end up with
+# a lot of job objects that contain results from other jobs
+# (because of a hbci4java-bug with assigning results to correct
+# jobs when some jobs that should have been sent have been left out) 
+client.errors.ignoreWrongJobDataErrors=no
+
+# ignore errors caused by setting job parameter data  
+# with length that is not a valid range (e.g. too long account
+# numbers); if you ignore these errors, the institute will probably
+# reject the corresponding message with "syntax error"      
+client.errors.ignoreWrongDataLengthErrors=no
+
+# ignore errors caused by setting job parameter data  
+# with wrong syntax (e.g. invalid DTAUS characters);
+# if you ignore these errors, the institute will probably
+# reject the corresponding message with "syntax error"
+client.errors.ignoreWrongDataSyntaxErrors=no
+
+# this errors mostly occurs because one other error occured 
+# before (job-constraint error) or because there are some
+# job parameters missing. you should never change this, because ignoring
+# these errors will cause ugly bugs with assigning job results to
+# the corresponding jobs   
+client.errors.ignoreAddJobErrors=no
+
+# ignore errors that may occur when creating a new job
+# you should never ignore this, because hbci4java does not
+# know anything about the job you wanted to created if this
+# error occurs, so better check your code 
+client.errors.ignoreCreateJobErrors=no
+
+# ignore errors while extracting institute keys from
+# an hbci response message. may be useful if there are
+# broken key data in the response, but if you ignore this
+# error, you probably will end up without knowing
+# institute keys, so no encryption will be possible 
+client.errors.ignoreExtractKeysErrors=no
+
+# ignore errors that occur in dialog-end-messages. some 
+# institutes work with wrong modes for encryption/signing
+# dialog-end-messages after some special key-management-messages,
+# so you can enable this to ignore the errors that  hbci4java
+# will raise. enabling this is probably causes no other trouble
+client.errors.ignoreDialogEndErrors=no
+
+# ignore errors when checking whether the requested security
+# mechanism is supported by the institute or not. this may
+# be useful for institutes that have broken BPDs 
+client.errors.ignoreSecMechCheckErrors=no
+
+# ignore errors when checking whether the requested hbci
+# version is supported by the institute or not. this may
+# be useful for institutes that have broken BPDs 
+client.errors.ignoreVersionCheckErrors=no
+
+# ignore all errors concerning digital signatures. this may be
+# useful if you always get "invalid signature" errors. but this
+# may also be because of a man-in-the-middle attack, so beware!
+# such errors can also occur if the institute generates broken
+# signature headers 
+client.errors.ignoreSignErrors=no
+
+# ignore errors that will be raised when the generated
+# hbci message is too large (with respect to the BPD).
+# you can enable this if you know that the max message size
+# given in the BPD is wrong or ignored by your institute 
+client.errors.ignoreMsgSizeErrors=no
+
+# ignore all errors that occur while checking consistency
+# of crypt data. you can enable this if your credit institute
+# generates wrong data in the header of crypted data 
+client.errors.ignoreCryptErrors=no
+
+# ignore all errors that occur while checking some 
+# constraints defined by the hbci protocol (e.g. consistent
+# usage of dialogid, msgnum etc.)
+client.errors.ignoreMsgCheckErrors=no
+
+# enabling this you can overwrite predefined value for
+# a dataelement of a message. this is never useful for
+# "normal" users of hbci4java, because the official API
+# does not contain any methods to access the lowlevel
+# dataelements that could be affected by this setting.    
+client.errors.allowOverwrites=no
+
+# ignore errors that will be raised, when a data element
+# if a hbci message contains a value that is not in the list
+# of valid values. this is not for normal users of hbci4java,
+# because there are no methods to access such lowlevel things
+# like data elements.
+client.errors.ignoreValidValueErrors=no
+
+# ignore segment-sequence errors. some institutes generate hbci
+# messages with wrong segment sequence numbers. you can ignore
+# any errors generated by the corresponding check. there is also
+# a rewriter module, that fixes these errors, you should better use
+# the rewriter module for this (Olly). 
+client.errors.ignoreSegSeqErrors=no

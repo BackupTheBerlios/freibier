@@ -1,0 +1,64 @@
+<html>
+<head><!-- Copyright Thomas Bayen --></head>
+<body>
+Ein Framework für Webapplikationen, die mit einer Datenbank arbeiten.
+Die Klasse {@link de.bayen.webframework.ServletDatabase} kann benutzt 
+oder abgeleitet werden, um ein Servlet zu erzeugen, das eine komplette 
+Datenbankapplikation darstellt.
+<h2>Erzeugen eigener Applikationen durch Ableiten</h2>
+<p>	
+Eine komplette Webapplikation sollte immer eine Ableitung dieser Klasse
+sein. Das entsprechende Package muß dann eine Datei
+<code>database.properties</code> enthalten. Es kann auch Properties-Dateien
+enthalten, die einzelne Tabellen der Datenbank näher beschreiben sowie
+ein <code>Templates</code>-Verzeichnis, das FreeMarker-Templates enthält.
+</p>
+<h2>URIParser</h2>
+<p>
+Wird die Webapplikation aufgerufen, so wird durch ein Objekt vom Typ
+{@link de.bayen.webframework.URIParser} die URI auseinandergenommen 
+und die Parameter festgestellt:
+</p>
+<ul>
+	<li>
+		theme - Grundsätzliches Verzeichnis, in dem die Templates gesucht werden
+	</li><li>
+		view - Name des angezeigten Templates
+	</li><li>
+		action - Aktion, die ausgeführt wird (und die das Model füllt),
+		         bevor das view aufgerufen wird.
+	</li><li>
+		table - Datenbanktabelle, die von der Aktion benutzt wird
+	</li><li>
+		id - Primärschlüssel in der Tabelle (nur angegeben, wenn eine Aktion
+		     auf ein bestimmtes Objekt angewendet wird)
+	</li>	
+</ul>
+<h2>ActionDispatcher</h2>
+<p>
+Hat das Servlet festgestellt, welche Action aufgerufen werden muss, ruft es
+einen {@link de.bayen.webframework.ActionDispatcher} auf. Dieser ruft dann 
+die konkrete Methode bzw. Klasse auf, die für diese Action zuständig ist.
+
+</p>
+<h2>Template-Dateien</h2>
+<p>
+Die Templates, die jeweils einem "view" entsprechen, befinden sich im 
+<code>templates</code>-Verzeichnis des Packages der konkret abgeleiteten
+Applikationsklasse. Ihr Dateiname ist der Name des Views mit der Endung 
+".ftl" für ein FreeMarker-Template. Wird das view dort nicht gefunden, 
+wird als "fallback" ein view der Basisklasse gesucht. Hier existieren 
+bereits views für einige Grundfunktionen (list, editform, delete, etc.). 
+Ist ein theme angegeben, so wird zuerst in diesem Unterverzeichnis nach 
+dem Template gesucht.
+</p>
+<p>
+Übrigens spricht nichts dagegen, auch andere view-Engines statt FreeMarker
+zu benutzen. Man könnte dann z.B. die view-Datei suchen und anhand Ihrer
+Endung entscheiden, ob es sich um eine FreeMarker, Velocity, JSP oder
+sonstwas für eine Datei handelt. Allerdings benutzt mein momentaner Code,
+der die Templates lokalisiert, hierfür zum Großteil FreeMarker. Das müsste
+also dann selber implementiert werden.
+</p>
+</body>
+</html>

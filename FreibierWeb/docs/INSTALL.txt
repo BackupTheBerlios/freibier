@@ -1,0 +1,126 @@
+INSTALL.txt
+-----------
+
+Beschreibung der Installation der Webdatenbank.
+
+Das Paket wird mit "ant dist" erzeugt. Es entsteht ein "dist"-Verzeichnis, in dem 
+sich eine *.war-Datei befindet. Diese Datei ist alles, was wir für die Installation
+benötigen.
+
+
+
+MySQL
+-----
+Erstmal Mysql und am besten auch PHPMyAdmin installieren (soll hier nicht erklärt 
+werden). Dann eine Datenbank, z.B. "kontaktdaten" einrichten und danach einen User
+"kontaktdaten" einrichten, der keine allgemeinen Rechte, aber alle Rechte auf
+diese Datenbank erhält. Fertig! Die Datenbankstruktur erzeugt die Applikation
+selber, wenn sie eine leere Datenbank vorfindet.
+
+Für die Telefondatenbank ist noch eine Tabelle tbayen einzurichten, auf die
+derselbe User Zugriff hat; Fuer das Banking eine Tabelle banking.
+
+
+Java
+----
+Ich benutze das Java-SDK 1.4 von Sun. Mit dem Debian-Java, das mit dem Tomcat 
+installiert wird, gabs Probleme (Stand Februar 2005).
+
+
+
+Tomcat
+------
+apt-get install tomcat4 tomcat4-admin tomcat4-webapps
+
+(admin ist nicht unbedingt nötig.)
+
+In "/etc/default/tomcat4" JAVA_HOME und LANG setzen:
+  JAVA_HOME=/opt/java
+  export LANG=de_DE@euro
+
+Datei "/var/lib/tomcat4/conf/tomcat-users.xml":
+Rollen "manager" und "admin", wenn man will (Für den Tomcat Manager), Rolle 
+"webdbuser" für unsere Benutzer und dann alle benötigten Benutzer anlegen.
+
+Da der Tomcat bei mir nach einigen Tagen unerklärlich abstürzt, habe ich
+folgendes Cron-Script geschrieben:
+  --------------------------------------------------------------------------
+  meinserver:~# cat /etc/cron.daily/webdatabase
+  #!/bin/sh
+
+  # Der Tomcat neigt immer dazu, abzustürzen. Das behebe ich hier
+  /etc/init.d/tomcat4 restart
+  --------------------------------------------------------------------------
+
+
+
+SSL einrichten
+--------------
+
+Einfügen in "/etc/tomcat4/server.xml":
+
+  <!-- Define an SSL HTTP/1.1 Connector on port 8443 -->
+  <Connector className="org.apache.catalina.connector.http.HttpConnector"
+          port="8443" minProcessors="5" maxProcessors="75"
+          enableLookups="true"
+          acceptCount="10" debug="0" scheme="https" secure="true">
+      <Factory className="org.apache.catalina.net.SSLServerSocketFactory"
+          clientAuth="false" protocol="TLS"/>
+   </Connector>
+
+Jetzt brauchen wir noch ein Server-Zertifikat:
+
+  /opt/j2sdk_1.4.2_07/bin/keytool -genkey -alias tomcat -keyalg RSA           
+     (Passwort: "changeit")
+  mv /root/.keystore /usr/share/tomcat4/
+  chown tomcat4 /usr/share/tomcat4/.keystore
+  chmod u+r  /usr/share/tomcat4/.keystore
+  chmod go-rw  /usr/share/tomcat4/.keystore
+
+
+
+Webdatenbank
+------------
+Die *.war-Datei wird nach "/var/lib/tomcat4/webapp/" kopiert oder über den 
+Manager installiert.
+
+Zugriffsrechte in "/etc/tomcat4/policy.d/50webdatabase.policy":
+
+  grant {
+     permission java.security.AllPermission;
+  };
+
+Fertig!
+
+
+
+Spezielles für die Anwendung bei Firma Bayen
+--------------------------------------------
+zum Datenimport benötigt der Benutzer noch Leserechte in der Durstimport-Tabelle.
+
+
+
+Konfiguration
+-------------
+Verzeichnis /etc/webdatabase anlegen und dorthinein die Dateien:
+  banking.props
+  hbci4java-passports/   (Verzeichnis, ggf. leer)
+Dann Permissions setzen:
+  chown tomcat4.root /etc/webdatabase -R
+  chmod o-rwx /etc/webdatabase -R
+(oder mit "scp -r ... ..." den Dateibaum kopieren und anpassen)
+
+
+Spezielles für Banking
+----------------------
+Wenn die Applikation einen Chipkartenleser benutzen soll, als root:
+  adduser tomcat4 dialout
+Dann Tomcat neu starten.
+
+Wenn HBCI4Java im Webdatabase-Paket enthalten ist:
+- Tomcat muss nach jedem Neuinstallieren des Paketes neu gestartet werden.
+Alternative (dann die Sourcen der Lib entfernen):
+- Die Bibliothek "hbci4java.jar" muss nach /var/lib/tomcat4/shared/ kopiert 
+  werden (Da Sie eine native-Bibliothek aufruft, darf sie nur ein einziges Mal
+  in einer VM laufen und muss deshalb im Tomcat und nicht in der Applikation
+  installiert sein).
