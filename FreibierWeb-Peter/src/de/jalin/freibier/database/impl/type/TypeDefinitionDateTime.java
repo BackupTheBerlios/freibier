@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionDateTime.java,v 1.5 2005/02/24 13:52:12 phormanns Exp $
+//$Id: TypeDefinitionDateTime.java,v 1.6 2005/02/24 22:18:12 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -6,6 +6,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import com.crossdb.sql.UpdateQuery;
+import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.exception.UserDatabaseException;
@@ -104,10 +106,17 @@ public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 	protected void setShortDateTimeFormat(DateFormat shortFormat) {
 		this.shortDateTimeFormat = shortFormat;
 	}
+
+	public void addColumn(UpdateQuery query, Printable printable) {
+		query.addColumn(printable.getName(), (Date) printable.getValue());
+	}
 }
 
 /*
  * $Log: TypeDefinitionDateTime.java,v $
+ * Revision 1.6  2005/02/24 22:18:12  phormanns
+ * Tests laufen mit HSQL und MySQL
+ *
  * Revision 1.5  2005/02/24 13:52:12  phormanns
  * Mit Tests begonnen
  *

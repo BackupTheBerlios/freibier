@@ -1,10 +1,12 @@
-//$Id: TypeDefinitionForeignKey.java,v 1.7 2005/02/24 13:52:12 phormanns Exp $
+//$Id: TypeDefinitionForeignKey.java,v 1.8 2005/02/24 22:18:12 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.crossdb.sql.UpdateQuery;
+import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.impl.DatabaseImpl;
@@ -118,9 +120,17 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 				list, 0);
 		return list;
 	}
+
+	public void addColumn(UpdateQuery query, Printable printable) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.8  2005/02/24 22:18:12  phormanns
+ * Tests laufen mit HSQL und MySQL
+ *
  * Revision 1.7  2005/02/24 13:52:12  phormanns
  * Mit Tests begonnen
  *

@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionFloat.java,v 1.3 2005/02/18 22:17:42 phormanns Exp $
+//$Id: TypeDefinitionFloat.java,v 1.4 2005/02/24 22:18:12 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -8,6 +8,8 @@ import java.text.ParseException;
 import java.util.Locale;
 import java.util.Map;
 import org.apache.oro.text.perl.Perl5Util;
+import com.crossdb.sql.UpdateQuery;
+import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.exception.UserDatabaseException;
 import de.jalin.freibier.database.impl.ValueObject;
@@ -92,9 +94,16 @@ public class TypeDefinitionFloat extends TypeDefinitionNumber {
 			return false;
 		}
 	}
+
+	public void addColumn(UpdateQuery query, Printable printable) {
+		query.addColumn(printable.getName(),( (Double) printable.getValue()).doubleValue());
+	}
 }
 /*
  * $Log: TypeDefinitionFloat.java,v $
+ * Revision 1.4  2005/02/24 22:18:12  phormanns
+ * Tests laufen mit HSQL und MySQL
+ *
  * Revision 1.3  2005/02/18 22:17:42  phormanns
  * Umstellung auf Freemarker begonnen
  *

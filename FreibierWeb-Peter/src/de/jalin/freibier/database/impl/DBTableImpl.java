@@ -1,4 +1,4 @@
-//$Id: DBTableImpl.java,v 1.4 2005/02/24 13:52:12 phormanns Exp $
+//$Id: DBTableImpl.java,v 1.5 2005/02/24 22:18:12 phormanns Exp $
 package de.jalin.freibier.database.impl;
 
 import java.sql.SQLException;
@@ -152,18 +152,17 @@ public class DBTableImpl implements DBTable {
 	public void setRecord(Record data) throws DatabaseException {
 		UpdateQuery query = db.getSQLFactory().getUpdateQuery();
 		WhereCondition condition = new WhereCondition(this.getPrimaryKey(),
-				WhereCondition.EQUAL_TO, data
-						.getPrintable(this.getPrimaryKey()).getValue());
+				WhereCondition.EQUAL_TO, 
+				data.getPrintable(this.getPrimaryKey()).getValue());
 		query.setTable(this.getName());
 		query.addWhereCondition(condition);
-		Iterator i = tab.getColumns().iterator();
-		Column col = null;
-		while (i.hasNext()) {
-			col = (Column) i.next();
-			if (!col.isPrimaryKey()) {
-				// TODO addColumn in TypeDefinition delegieren
-				query.addColumn(col.getName(), data.printSQL(col.getName()));
-			}
+		Iterator columnsIterator = columnTypeDefinitions.keySet().iterator();
+		TypeDefinition typeDef = null;
+		String colName = null;
+		while (columnsIterator.hasNext()) {
+			colName = (String) columnsIterator.next();
+			typeDef = (TypeDefinition) columnTypeDefinitions.get(colName);
+			typeDef.addColumn(query, data.getPrintable(colName));
 		}
 		db.executeUpdateQuery(query);
 	}
@@ -221,6 +220,9 @@ public class DBTableImpl implements DBTable {
 }
 /*
  * $Log: DBTableImpl.java,v $
+ * Revision 1.5  2005/02/24 22:18:12  phormanns
+ * Tests laufen mit HSQL und MySQL
+ *
  * Revision 1.4  2005/02/24 13:52:12  phormanns
  * Mit Tests begonnen
  *

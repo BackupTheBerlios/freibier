@@ -1,7 +1,9 @@
-// $Id: TypeDefinition.java,v 1.4 2005/02/18 22:17:42 phormanns Exp $
+// $Id: TypeDefinition.java,v 1.5 2005/02/24 22:18:13 phormanns Exp $
 package de.jalin.freibier.database;
 
+import com.crossdb.sql.UpdateQuery;
 import de.jalin.freibier.database.exception.DatabaseException;
+import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.impl.ValueObject;
 
 public interface TypeDefinition {
@@ -113,9 +115,14 @@ public interface TypeDefinition {
 	 * @return
 	 */
 	public abstract boolean validatePart(String s);
+
+	public abstract void addColumn(UpdateQuery query, Printable printable);
 }
 /*
  *  $Log: TypeDefinition.java,v $
+ *  Revision 1.5  2005/02/24 22:18:13  phormanns
+ *  Tests laufen mit HSQL und MySQL
+ *
  *  Revision 1.4  2005/02/18 22:17:42  phormanns
  *  Umstellung auf Freemarker begonnen
  *

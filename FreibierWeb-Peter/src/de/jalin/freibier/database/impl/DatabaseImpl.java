@@ -1,4 +1,4 @@
-//$Id: DatabaseImpl.java,v 1.9 2005/02/24 13:52:12 phormanns Exp $
+//$Id: DatabaseImpl.java,v 1.10 2005/02/24 22:18:12 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -75,13 +75,13 @@ public class DatabaseImpl implements Database {
     
     public void createTestData() throws SystemDatabaseException {
         CreateTableQuery createTableQuery = sqlFactory.getCreateTableQuery();
-        createTableQuery.setName("table1");
-        Column pk = new Column("id", Types.INTEGER);
+        createTableQuery.setName("TABLE1");
+        Column pk = new Column("ID", Types.INTEGER);
         pk.setPrimaryKey(true);
         pk.setAutoIncrement(true);
         createTableQuery.addColumn(pk);
-        createTableQuery.addColumn(new Column("text", Types.VARCHAR));
-        createTableQuery.addColumn(new Column("datum", Types.DATE));
+        createTableQuery.addColumn(new Column("TEXT", Types.VARCHAR));
+        createTableQuery.addColumn(new Column("DATUM", Types.DATE));
         try {
             createTableQuery.execute(conn);
         } catch (SQLException e) {
@@ -89,10 +89,10 @@ public class DatabaseImpl implements Database {
         }
         for (int i = 0; i < 500; i++) {
 	        InsertQuery insertQuery = sqlFactory.getInsertQuery();
-	        insertQuery.setTable("table1");
-	        insertQuery.addAutoIncrementColumn("id");
-	        insertQuery.addColumn("text", "Ein Text mit Nummer " + i);
-	        insertQuery.addColumn("datum", new Date());
+	        insertQuery.setTable("TABLE1");
+	        insertQuery.addAutoIncrementColumn("ID");
+	        insertQuery.addColumn("TEXT", "Ein Text mit Nummer " + i);
+	        insertQuery.addColumn("DATUM", new Date());
 	        try {
                 insertQuery.execute(conn);
             } catch (SQLException e) {
@@ -260,6 +260,9 @@ public class DatabaseImpl implements Database {
 }
 /*
  * $Log: DatabaseImpl.java,v $
+ * Revision 1.10  2005/02/24 22:18:12  phormanns
+ * Tests laufen mit HSQL und MySQL
+ *
  * Revision 1.9  2005/02/24 13:52:12  phormanns
  * Mit Tests begonnen
  *

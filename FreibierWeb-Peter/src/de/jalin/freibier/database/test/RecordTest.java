@@ -1,4 +1,4 @@
-// $Id: RecordTest.java,v 1.1 2005/02/24 13:52:12 phormanns Exp $
+// $Id: RecordTest.java,v 1.2 2005/02/24 22:18:13 phormanns Exp $
 package de.jalin.freibier.database.test;
 
 import java.text.DateFormat;
@@ -22,6 +22,11 @@ public class RecordTest extends TestCase {
 					"org.hsqldb.jdbcDriver",
 					"jdbc:hsqldb:mem:test",
 					"test", "sa", "");
+//			db = DatabaseFactory.getDatabaseInstance(
+//					"com.spaceprogram.sql.mysql.MySQLFactory",
+//					"com.mysql.jdbc.Driver",
+//					"jdbc:mysql://localhost/demo",
+//					"demo", "demo", "demo");
 			db.createTestData();
 			db.close();
 		} catch (DatabaseException e) {
@@ -38,6 +43,11 @@ public class RecordTest extends TestCase {
 				"org.hsqldb.jdbcDriver",
 				"jdbc:hsqldb:mem:test",
 				"test", "sa", "");
+//		db = DatabaseFactory.getDatabaseInstance(
+//				"com.spaceprogram.sql.mysql.MySQLFactory",
+//				"com.mysql.jdbc.Driver",
+//				"jdbc:mysql://localhost/demo",
+//				"demo", "demo", "demo");
 		rec = db.getTable("TABLE1").getRecordByPrimaryKey(new Integer(123));
 	}
 
@@ -111,6 +121,9 @@ public class RecordTest extends TestCase {
 
 /*
  *  $Log: RecordTest.java,v $
+ *  Revision 1.2  2005/02/24 22:18:13  phormanns
+ *  Tests laufen mit HSQL und MySQL
+ *
  *  Revision 1.1  2005/02/24 13:52:12  phormanns
  *  Mit Tests begonnen
  *

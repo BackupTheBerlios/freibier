@@ -1,4 +1,4 @@
-// $Id: DBTableTest.java,v 1.1 2005/02/24 13:52:12 phormanns Exp $
+// $Id: DBTableTest.java,v 1.2 2005/02/24 22:18:13 phormanns Exp $
 package de.jalin.freibier.database.test;
 
 import java.util.List;
@@ -11,7 +11,6 @@ import de.jalin.freibier.database.DatabaseFactory;
 import de.jalin.freibier.database.Record;
 import de.jalin.freibier.database.exception.DatabaseException;
 
-
 public class DBTableTest extends TestCase {
 	
 	static {
@@ -22,6 +21,11 @@ public class DBTableTest extends TestCase {
 					"org.hsqldb.jdbcDriver",
 					"jdbc:hsqldb:mem:test",
 					"test", "sa", "");
+//			db = DatabaseFactory.getDatabaseInstance(
+//					"com.spaceprogram.sql.mysql.MySQLFactory",
+//					"com.mysql.jdbc.Driver",
+//					"jdbc:mysql://localhost/demo",
+//					"demo", "demo", "demo");
 			db.createTestData();
 			db.close();
 		} catch (DatabaseException e) {
@@ -37,6 +41,11 @@ public class DBTableTest extends TestCase {
 				"org.hsqldb.jdbcDriver",
 				"jdbc:hsqldb:mem:test",
 				"test", "sa", "");
+//		db = DatabaseFactory.getDatabaseInstance(
+//				"com.spaceprogram.sql.mysql.MySQLFactory",
+//				"com.mysql.jdbc.Driver",
+//				"jdbc:mysql://localhost/demo",
+//				"demo", "demo", "demo");
 	}
 
 	protected void tearDown() throws Exception {
@@ -124,10 +133,9 @@ public class DBTableTest extends TestCase {
 		try {
 			DBTable tab = db.getTable("TABLE1");
 			Record rec = tab.getRecordByPrimaryKey(new Integer(255));
-			rec.setField("TEXT", "Ein geänderter Text mit Nummer 255");
+			rec.setField("TEXT", "Ein geänderter Text mit Nummer 254");
 			rec.setField("DATUM", "14.02.1964");
 			tab.setRecord(rec);
-			assertEquals("Ein Text mit Nummer 255", (String) rec.get("TEXT"));
 			IWhereClause where = new WhereClause();
 			where.addWhereLikeLeft("TEXT", "Ein geänderter Text");
 			assertEquals(1, tab.getNumberOfRecords(where));
@@ -159,6 +167,9 @@ public class DBTableTest extends TestCase {
 
 /*
  *  $Log: DBTableTest.java,v $
+ *  Revision 1.2  2005/02/24 22:18:13  phormanns
+ *  Tests laufen mit HSQL und MySQL
+ *
  *  Revision 1.1  2005/02/24 13:52:12  phormanns
  *  Mit Tests begonnen
  *

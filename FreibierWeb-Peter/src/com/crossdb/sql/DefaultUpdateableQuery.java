@@ -38,6 +38,7 @@ public class DefaultUpdateableQuery implements UpdateableQuery
 		columns.add(c);
 		//values.add(value);
 	}
+    
 	public void addColumn(String column, float value){
 		ColumnValue c = new ColumnValue(column, new Float(value));
 		columns.add(c);

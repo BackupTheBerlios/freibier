@@ -1,7 +1,9 @@
-//$Id: TypeDefinitionString.java,v 1.4 2005/02/24 13:52:12 phormanns Exp $
+//$Id: TypeDefinitionString.java,v 1.5 2005/02/24 22:18:12 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
+import com.crossdb.sql.UpdateQuery;
+import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.impl.TypeDefinitionImpl;
@@ -61,9 +63,16 @@ public class TypeDefinitionString extends TypeDefinitionImpl {
 	public boolean validate(String s) {
 		return true;
 	}
+
+	public void addColumn(UpdateQuery query, Printable printable) {
+		query.addColumn(printable.getName(), ((String) printable.getValue()));
+	}
 }
 /*
  * $Log: TypeDefinitionString.java,v $
+ * Revision 1.5  2005/02/24 22:18:12  phormanns
+ * Tests laufen mit HSQL und MySQL
+ *
  * Revision 1.4  2005/02/24 13:52:12  phormanns
  * Mit Tests begonnen
  *
