@@ -16,7 +16,7 @@
     </table>
   </#if>
 
-  <#if (error?length > 0)><p><em>$error</em></p></#if>
+  <#if (error?length > 0)><p><em>${error}</em></p></#if>
   <p><a href="?action=scroll&key=up">&lt;--</a>&nbsp;<a href="?action=scroll&key=down">--&gt;</a></p>
 
   <table cellspacing="2" cellpadding="5" width="100%">
@@ -27,36 +27,35 @@
         	<br />
         	<input type="submit" value="Filter" />
         </th>
-	    <#list typedefinitions as typedef>
-        <th bgcolor="#00eeee">
-          <a href="?action=order&orderby=${typedef.name}">${typedef.name}</a><br />
-   <#--       <input name="ft_${typedef.name}" type="text" value="$pattern"/> -->
-        </th>
+	    <#list columnnames as column>
+          <th bgcolor="#00eeee">
+            <a href="?action=order&orderby=${column}">${column}</a><br />
+            <input name="ft_${column}" type="text" value=""/>
+          </th>
     	</#list>
       </form>
     </tr>
     <#list data as row>
       <tr>
-      <#--
-    #set( $key = $row.printText($row.getTable().getPrimaryKey()) )
-    #if( $editkey == $key )
-    	<form action="?" method="post">
+        <#if row[row.table.primaryKey]?string == editkey >
+    	  <form action="?" method="post">
 	        <td bgcolor="#eeeeee">
 	        	<input type="submit" value="Save" />
-	        	<input type="hidden" name="save" value="#primarykey($row)" />
+	        	<input type="hidden" name="row" value="${row[row.table.primaryKey]}" />
+	        	<input type="hidden" name="action" value="save" />
 	        </td>
-	    	#foreach ($type in $types)
-	        <td bgcolor="#eeeeee">
-	        	<input type="text" name="ed_$type.name" value="#format($row $type.name)" />
-	        </td>
-	        #end
-	    </form>
-    #else  -->
-        <td bgcolor="#eeeeee"><a href="?action=edit&row=${row.table.primaryKey}">Edit</a></td>
-    	<#list typedefinitions as typedef>
-    	  <#assign fieldname="${typedef.name}">
-          <td bgcolor="#eeeeee">${row[fieldname]}</td>
-        </#list>
+            <#list columnnames as column>
+              <td bgcolor="#eeeeee">
+	            <input type="text" name="ed_${column}" value="${row[column]}" />
+	          </td>
+            </#list>
+	      </form>
+        <#else>
+          <td bgcolor="#eeeeee"><a href="?action=edit&row=${row[row.table.primaryKey]}">Edit</a></td>
+          <#list columnnames as column>
+	        <td bgcolor="#eeeeee">${row[column]}</td>
+	      </#list>
+	    </#if>
       </tr>
     </#list>  
   </table>

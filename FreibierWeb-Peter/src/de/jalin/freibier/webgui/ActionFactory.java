@@ -1,13 +1,17 @@
-// $Id: ActionFactory.java,v 1.1 2005/02/18 22:17:42 phormanns Exp $
+// $Id: ActionFactory.java,v 1.2 2005/02/25 15:51:29 phormanns Exp $
 package de.jalin.freibier.webgui;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import de.jalin.freibier.database.Database;
 import de.jalin.freibier.database.exception.DatabaseException;
-
+import de.jalin.freibier.database.exception.SystemDatabaseException;
 
 public class ActionFactory {
+	
+	private static final Log log = LogFactory.getLog(ActionFactory.class);
 	
 	private Map actionsMap;
 	
@@ -15,15 +19,25 @@ public class ActionFactory {
 		actionsMap = new HashMap();
 		actionsMap.put("init", new InitAction(db));
 		actionsMap.put("scroll", new ScrollAction(db));
+		actionsMap.put("order", new OrderByAction(db));
+		actionsMap.put("edit", new EditAction(db));
 	}
 	
-	public Action getAction(String name) {
-		return (Action) actionsMap.get(name);
+	public Action getAction(String name) throws DatabaseException {
+		Object mapObject = actionsMap.get(name);
+		if (mapObject instanceof Action) {
+			return (Action) mapObject;
+		} else {
+			throw new SystemDatabaseException("Action " + name + " nicht definiert.", log);
+		}
 	}
 }
 
 /*
  *  $Log: ActionFactory.java,v $
+ *  Revision 1.2  2005/02/25 15:51:29  phormanns
+ *  EditAction, OrderByAction
+ *
  *  Revision 1.1  2005/02/18 22:17:42  phormanns
  *  Umstellung auf Freemarker begonnen
  *

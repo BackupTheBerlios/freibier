@@ -1,4 +1,4 @@
-// $Id: DialogState.java,v 1.1 2005/02/18 22:17:42 phormanns Exp $
+// $Id: DialogState.java,v 1.2 2005/02/25 15:51:29 phormanns Exp $
 package de.jalin.freibier.webgui;
 
 
@@ -109,13 +109,16 @@ public class DialogState {
 		editMode = false;
 	}
 
-	public String getRecordKey() {
+	public String getEditRecordKey() {
 		return editRecordKey;
 	}
 }
 
 /*
  * $Log: DialogState.java,v $
+ * Revision 1.2  2005/02/25 15:51:29  phormanns
+ * EditAction, OrderByAction
+ *
  * Revision 1.1  2005/02/18 22:17:42  phormanns
  * Umstellung auf Freemarker begonnen
  *

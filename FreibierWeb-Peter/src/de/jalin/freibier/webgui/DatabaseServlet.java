@@ -1,4 +1,4 @@
-// $Id: DatabaseServlet.java,v 1.11 2005/02/24 13:52:12 phormanns Exp $
+// $Id: DatabaseServlet.java,v 1.12 2005/02/25 15:51:29 phormanns Exp $
 
 package de.jalin.freibier.webgui;
 
@@ -99,7 +99,7 @@ public class DatabaseServlet extends HttpServlet {
 		try {
 			// Action ausfuehren
 			Action action = actionFactory.getAction(actionName);
-			templateData = action.performAction(dialogState);
+			templateData = action.performAction(request, dialogState);
 			templateData.put("error", error);
 			
 		} catch (DatabaseException e) {
@@ -229,6 +229,9 @@ public class DatabaseServlet extends HttpServlet {
 
 /*
  * $Log: DatabaseServlet.java,v $
+ * Revision 1.12  2005/02/25 15:51:29  phormanns
+ * EditAction, OrderByAction
+ *
  * Revision 1.11  2005/02/24 13:52:12  phormanns
  * Mit Tests begonnen
  *
