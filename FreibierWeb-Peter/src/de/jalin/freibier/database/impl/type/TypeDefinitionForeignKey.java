@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionForeignKey.java,v 1.3 2005/02/11 15:50:35 phormanns Exp $
+//$Id: TypeDefinitionForeignKey.java,v 1.4 2005/02/11 16:46:02 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -9,7 +9,7 @@ import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.impl.DataObject;
-import de.jalin.freibier.database.impl.AbstractDatabaseImpl;
+import de.jalin.freibier.database.impl.DatabaseImpl;
 import de.jalin.freibier.database.impl.ForeignKey;
 import de.jalin.freibier.database.impl.TypeDefinitionImpl;
 
@@ -23,9 +23,9 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 	private TypeDefinition indexType = null;
 	private TypeDefinition referenceType = null; // kann (bei Problemen) auch null sein
 	// Ich muss mir die DatabaseImpl merken, um auf den referenzierten Wert zugreifen zu koennen
-	private AbstractDatabaseImpl db;
+	private DatabaseImpl db;
 
-	public TypeDefinitionForeignKey(TypeDefinition indexType, AbstractDatabaseImpl db)
+	public TypeDefinitionForeignKey(TypeDefinition indexType, DatabaseImpl db)
 			throws SystemDatabaseException {
 		super();
 		log.trace("TypeDefinitionForeignKey Constructor");
@@ -117,6 +117,9 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.4  2005/02/11 16:46:02  phormanns
+ * MySQL geht wieder
+ *
  * Revision 1.3  2005/02/11 15:50:35  phormanns
  * Merge
  *

@@ -1,4 +1,4 @@
-// $Id: DatabaseServlet.java,v 1.4 2005/02/11 15:25:45 phormanns Exp $
+// $Id: DatabaseServlet.java,v 1.5 2005/02/11 16:46:02 phormanns Exp $
 
 package de.jalin.freibier.webgui;
 
@@ -32,8 +32,8 @@ public class DatabaseServlet extends VelocityServlet {
 		super.init();
 		String sqlFactoryClass = getInitParameter("sqlFactoryClass");
 		String jdbcDriverClass = getInitParameter("jdbcDriverClass");
-		String dbUser = getInitParameter("dbUser");
 		String jdbcConnectUrl = getInitParameter("jdbcConnectUrl");
+		String dbUser = getInitParameter("dbUser");
 		String dbPassword = getInitParameter("dbPassword");
 		try {
 			db = DatabaseFactory.getDatabaseInstance(sqlFactoryClass, jdbcDriverClass, jdbcConnectUrl, dbUser, dbPassword);
@@ -156,6 +156,9 @@ public class DatabaseServlet extends VelocityServlet {
 
 /*
  * $Log: DatabaseServlet.java,v $
+ * Revision 1.5  2005/02/11 16:46:02  phormanns
+ * MySQL geht wieder
+ *
  * Revision 1.4  2005/02/11 15:25:45  phormanns
  * Zwischenstand, nicht funktionierend
  *

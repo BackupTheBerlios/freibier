@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionImpl.java,v 1.2 2005/02/11 15:50:35 phormanns Exp $
+//$Id: TypeDefinitionImpl.java,v 1.3 2005/02/11 16:46:02 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -70,7 +70,7 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 	 *  
 	 */
 	public static TypeDefinitionImpl create(String name, int type, int length,
-			ResourceBundle resource, AbstractDatabaseImpl db)
+			ResourceBundle resource, DatabaseImpl db)
 			throws SystemDatabaseException {
 		//log.trace("create: "+name+", "+type);
 		TypeDefinitionImpl typeDef = null;
@@ -262,6 +262,9 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionImpl.java,v $
+ * Revision 1.3  2005/02/11 16:46:02  phormanns
+ * MySQL geht wieder
+ *
  * Revision 1.2  2005/02/11 15:50:35  phormanns
  * Merge
  *

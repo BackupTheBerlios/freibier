@@ -17,20 +17,21 @@
     	<param-name>sqlFactoryClass</param-name>                               
 	    <param-value>com.spaceprogram.sql.mysql.MySQLFactory</param-value>                              
 	</init-param>
+	<init-param>   
     	<param-name>jdbcDriverClass</param-name>                               
 	    <param-value>com.mysql.jdbc.Driver</param-value>                              
 	</init-param>
 	<init-param>                                   
     	<param-name>jdbcConnectUrl</param-name>                               
-	    <param-value>:jdbc:mysql://localhost/blz?autoReconnect=true</param-value>                              
+	    <param-value>jdbc:mysql://localhost/blz?autoReconnect=true</param-value>                              
 	</init-param>
 	<init-param>                                   
-    	<param-name>dbuser</param-name>                               
-	    <param-value>dba</param-value>                              
+    	<param-name>dbUser</param-name>                               
+	    <param-value>blz</param-value>                              
 	</init-param>
 	<init-param>                                   
-    	<param-name>dbpassword</param-name>                               
-	    <param-value>dba</param-value>                              
+    	<param-name>dbPassword</param-name>                               
+	    <param-value>blz</param-value>                              
 	</init-param>
   </servlet>
   

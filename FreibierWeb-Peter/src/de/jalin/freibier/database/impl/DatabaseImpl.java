@@ -1,4 +1,4 @@
-//$Id: DatabaseImpl.java,v 1.4 2005/02/11 15:25:45 phormanns Exp $
+//$Id: DatabaseImpl.java,v 1.5 2005/02/11 16:46:02 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -62,13 +62,13 @@ public class DatabaseImpl implements Database {
 	        String dbUser, 
 	        String dbPassword)
 			throws DatabaseException {
-		super();
 		log.trace("Konstruktor");
 		this.sqlFactoryClass = sqlFactoryClass;
 		this.jdbcDriverClass = jdbcDriverClass;
 		this.jdbcConnectUrl = jdbcConnectUrl;
 		this.dbUser = dbUser;
 		this.dbPassword = dbPassword;
+		this.tablesMap = new HashMap();
 		openConnection();
 	}
 
@@ -322,6 +322,9 @@ public class DatabaseImpl implements Database {
 }
 /*
  * $Log: DatabaseImpl.java,v $
+ * Revision 1.5  2005/02/11 16:46:02  phormanns
+ * MySQL geht wieder
+ *
  * Revision 1.4  2005/02/11 15:25:45  phormanns
  * Zwischenstand, nicht funktionierend
  *
