@@ -1,4 +1,4 @@
-// $Id: DatabaseServlet.java,v 1.1 2004/12/31 17:13:11 phormanns Exp $
+// $Id: DatabaseServlet.java,v 1.2 2004/12/31 19:37:26 phormanns Exp $
 package de.jalin.freibier.webgui;
 
 import java.util.Enumeration;
@@ -11,13 +11,14 @@ import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.servlet.VelocityServlet;
 import de.jalin.freibier.database.Database;
+import de.jalin.freibier.database.DatabaseFactory;
+import de.jalin.freibier.database.QueryCondition;
 import de.jalin.freibier.database.Record;
-import de.jalin.freibier.database.RecordDefinition;
 import de.jalin.freibier.database.Table;
+import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.exception.UserDatabaseException;
-import de.jalin.freibier.database.type.TypeDefinition;
 
 
 public class DatabaseServlet extends VelocityServlet {
@@ -33,7 +34,7 @@ public class DatabaseServlet extends VelocityServlet {
 		String dbUser = getInitParameter("dbuser");
 		String dbPassword = getInitParameter("dbpassword");
 		try {
-			db = new Database(dbInstance, dbServer, dbUser, dbPassword);
+			db = DatabaseFactory.getDatabaseInstance(dbInstance, dbServer, dbUser, dbPassword);
 		} catch (DatabaseException e) {
 			log("Keine Verbindung zur Datenbank", e);
 		}
@@ -77,13 +78,12 @@ public class DatabaseServlet extends VelocityServlet {
 				filter = new Filter();
 				session.setAttribute("filter", filter);
 			}
-			// get Table
+			// get TableImpl
 			Table tab = db.getTable(view.getTableName());
-			RecordDefinition recordDef = tab.getRecordDefinition();
-			String pkName = recordDef.getPrimaryKey();
-			TypeDefinition pkTypeDef = recordDef.getFieldDef(pkName);
-			Table.QueryCondition queryFilter = null;
-			// save changed Record
+			String pkName = tab.getPrimaryKey();
+			TypeDefinition pkTypeDef = tab.getFieldDef(pkName);
+			QueryCondition queryFilter = null;
+			// save changed RecordImpl
 			String saveRequest = request.getParameter("save");
 			if (saveRequest != null) {
 				Record data = tab.getRecordByPrimaryKey(pkTypeDef.parse(saveRequest));
@@ -133,7 +133,7 @@ public class DatabaseServlet extends VelocityServlet {
 			List recordsList = null;
 			recordsList = tab.getRecords(queryFilter, view.getOrderByColumn(), view.isAscending(), 
 				view.getFirstRowNumber(), view.getNumberOfRows());
-			List typeDefinitions = tab.getRecordDefinition().getFieldsList();
+			List typeDefinitions = tab.getFieldsList();
 			context.put("tablenames", tableNamesList);
 			context.put("table", tab.getName());
 			context.put("types", typeDefinitions);
@@ -154,6 +154,9 @@ public class DatabaseServlet extends VelocityServlet {
 
 /*
  * $Log: DatabaseServlet.java,v $
+ * Revision 1.2  2004/12/31 19:37:26  phormanns
+ * Database Schnittstelle herausgearbeitet
+ *
  * Revision 1.1  2004/12/31 17:13:11  phormanns
  * Erste öffentliche Version
  *

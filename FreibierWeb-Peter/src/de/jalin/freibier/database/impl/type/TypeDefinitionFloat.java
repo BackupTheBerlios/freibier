@@ -1,6 +1,6 @@
-//$Id: TypeDefinitionFloat.java,v 1.1 2004/12/31 17:13:03 phormanns Exp $
+//$Id: TypeDefinitionFloat.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
 
-package de.jalin.freibier.database.type;
+package de.jalin.freibier.database.impl.type;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -77,6 +77,9 @@ public class TypeDefinitionFloat extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionFloat.java,v $
+ * Revision 1.1  2004/12/31 19:37:26  phormanns
+ * Database Schnittstelle herausgearbeitet
+ *
  * Revision 1.1  2004/12/31 17:13:03  phormanns
  * Erste öffentliche Version
  *

@@ -1,10 +1,10 @@
-// $Id: Filter.java,v 1.1 2004/12/31 17:13:11 phormanns Exp $
+// $Id: Filter.java,v 1.2 2004/12/31 19:37:26 phormanns Exp $
 package de.jalin.freibier.webgui;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import de.jalin.freibier.database.RecordDefinition;
+import de.jalin.freibier.database.QueryCondition;
 import de.jalin.freibier.database.Table;
 import de.jalin.freibier.database.exception.DatabaseException;
 
@@ -66,22 +66,24 @@ public class Filter {
 		String filterPattern;
 	}
 
-	public Table.QueryCondition createQueryCondition(Table tab) throws DatabaseException {
-		RecordDefinition recordDef = tab.getRecordDefinition();
-		Table.QueryCondition queryFilter = null;
-		Table.QueryCondition partQueryFilter = null;
+	public QueryCondition createQueryCondition(Table tab) throws DatabaseException {
+		QueryCondition queryFilter = null;
 		TableFilter tabFt = (TableFilter) tableFilterMap.get(tab.getName());
 		if (tabFt != null) {
 			Iterator ftIterator = tabFt.columnFilterMap.keySet().iterator();
 			String fieldName = null;
 			ColumnFilter colFt = null;
+			if (ftIterator.hasNext()) {
+				fieldName = (String) ftIterator.next();
+				colFt = (ColumnFilter) tabFt.columnFilterMap.get(fieldName);
+				queryFilter = tab.createQueryCondition(fieldName, QueryCondition.LIKE, 
+						tab.getFieldDef(fieldName).parse(colFt.filterPattern));
+			}
 			while (ftIterator.hasNext()) {
 				fieldName = (String) ftIterator.next();
 				colFt = (ColumnFilter) tabFt.columnFilterMap.get(fieldName);
-				partQueryFilter = tab.new QueryCondition(fieldName, Table.QueryCondition.LIKE, 
-						recordDef.getFieldDef(fieldName).parse(colFt.filterPattern));
-				partQueryFilter.and(queryFilter);
-				queryFilter = partQueryFilter;
+				queryFilter.and(tab.createQueryCondition(fieldName, QueryCondition.LIKE, 
+						tab.getFieldDef(fieldName).parse(colFt.filterPattern)));
 			}
 		}
 		return queryFilter;
@@ -101,6 +103,9 @@ public class Filter {
 
 /*
  *  $Log: Filter.java,v $
+ *  Revision 1.2  2004/12/31 19:37:26  phormanns
+ *  Database Schnittstelle herausgearbeitet
+ *
  *  Revision 1.1  2004/12/31 17:13:11  phormanns
  *  Erste öffentliche Version
  *

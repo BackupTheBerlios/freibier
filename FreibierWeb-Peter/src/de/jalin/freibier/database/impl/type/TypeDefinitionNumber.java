@@ -1,7 +1,9 @@
 /* Erzeugt am 16.10.2004 von tbayen
- * $Id: TypeDefinitionNumber.java,v 1.1 2004/12/31 17:13:03 phormanns Exp $
+ * $Id: TypeDefinitionNumber.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
  */
-package de.jalin.freibier.database.type;
+package de.jalin.freibier.database.impl.type;
+
+import de.jalin.freibier.database.impl.TypeDefinitionImpl;
 
 
 /**
@@ -9,7 +11,7 @@ package de.jalin.freibier.database.type;
  * 
  * @author tbayen
  */
-public abstract class TypeDefinitionNumber extends TypeDefinition {
+public abstract class TypeDefinitionNumber extends TypeDefinitionImpl {
 
 	public TypeDefinitionNumber() {
 		super();
@@ -19,6 +21,9 @@ public abstract class TypeDefinitionNumber extends TypeDefinition {
 
 /*
  * $Log: TypeDefinitionNumber.java,v $
+ * Revision 1.1  2004/12/31 19:37:26  phormanns
+ * Database Schnittstelle herausgearbeitet
+ *
  * Revision 1.1  2004/12/31 17:13:03  phormanns
  * Erste öffentliche Version
  *

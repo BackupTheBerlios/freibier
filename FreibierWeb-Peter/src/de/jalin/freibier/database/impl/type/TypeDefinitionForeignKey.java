@@ -1,28 +1,31 @@
-//$Id: TypeDefinitionForeignKey.java,v 1.1 2004/12/31 17:13:03 phormanns Exp $
+//$Id: TypeDefinitionForeignKey.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
 
-package de.jalin.freibier.database.type;
+package de.jalin.freibier.database.impl.type;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import de.jalin.freibier.database.DataObject;
-import de.jalin.freibier.database.Database;
-import de.jalin.freibier.database.ForeignKey;
+import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
+import de.jalin.freibier.database.impl.DataObject;
+import de.jalin.freibier.database.impl.DatabaseImpl;
+import de.jalin.freibier.database.impl.ForeignKey;
+import de.jalin.freibier.database.impl.TypeDefinitionImpl;
 
 /**
  * Definition für einen Wert, der ein Fremdschlüssel ist, d.h. er referenziert
  * einen bestimmten Wert in einer anderen Tabelle. Was genau referenziert wird,
  * wird durch Properties bestimmt.
  */
-public class TypeDefinitionForeignKey extends TypeDefinition {
+public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
+	
 	private TypeDefinition indexType = null;
 	private TypeDefinition referenceType = null; // kann (bei Problemen) auch null sein
-	// Ich muss mir die Database merken, um auf den referenzierten Wert zugreifen zu können
-	private Database db;
+	// Ich muss mir die DatabaseImpl merken, um auf den referenzierten Wert zugreifen zu können
+	private DatabaseImpl db;
 
-	public TypeDefinitionForeignKey(TypeDefinition indexType, Database db)
+	public TypeDefinitionForeignKey(TypeDefinition indexType, DatabaseImpl db)
 			throws SystemDatabaseException {
 		super();
 		log.trace("TypeDefinitionForeignKey Constructor");
@@ -36,8 +39,7 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 		if (db != null) {
 			referenceType = db.getTable(
 					indexType.getProperty("foreignkey.table"))
-					.getRecordDefinition().getFieldDef(
-							indexType.getProperty("foreignkey.resultcolumn"));
+						.getFieldDef(indexType.getProperty("foreignkey.resultcolumn"));
 		}
 		// Default Value setzen:
 		String defaultProp = getProperty("default");
@@ -115,6 +117,9 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.1  2004/12/31 19:37:26  phormanns
+ * Database Schnittstelle herausgearbeitet
+ *
  * Revision 1.1  2004/12/31 17:13:03  phormanns
  * Erste öffentliche Version
  *

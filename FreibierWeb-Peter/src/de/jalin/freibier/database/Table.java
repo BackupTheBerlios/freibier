@@ -1,38 +1,11 @@
-//$Id: Table.java,v 1.1 2004/12/31 17:12:42 phormanns Exp $
-
+// $Id: Table.java,v 1.2 2004/12/31 19:37:26 phormanns Exp $
 package de.jalin.freibier.database;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
-import de.jalin.freibier.database.exception.UserDatabaseException;
-import de.jalin.freibier.database.type.TypeDefinition;
 
-/**
- * Repräsentiert eine einzelne Tabelle aus einer Datenbank. Zugriffe auf diese
- * Klasse werden sofort an die zugrundeliegende Datenbank weitergereicht, d.h.
- * im Normalfall als SQL-Befehle ausgeführt.
- * 
- * @author tbayen
- */
-public class Table {
-	private static Log log = LogFactory.getLog(Table.class);
-	protected RecordDefinition def;
-	protected String name;
-	protected Database db;
-
-	public Table(Database db, String name, RecordDefinition def) {
-		this.db = db;
-		this.name = name;
-		this.def = def;
-	}
-
+public interface Table {
 	/**
 	 * Anzahl von Datensätzen lesen. Es werden numberOfRecords Datensätze ab (ausschließlich)
 	 * previousRecord zurückgeliefert, aufsteigende oder absteigende Reihenfolge.
@@ -42,84 +15,16 @@ public class Table {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public List getMultipleRecords(int startRecordNr, int numberOfRecords,
-			String orderColumn, boolean ascending) throws DatabaseException {
-		String selectRumpf = def.getSelectStatement(name);
-		List dbResult = db.executeSelectMultipleRows(selectRumpf + " ORDER BY "
-				+ name + "." + orderColumn + (ascending ? " ASC" : " DESC")
-				+ ", " + name + "." + def.getPrimaryKey()
-				+ (ascending ? " ASC" : " DESC") + " LIMIT " + startRecordNr
-				+ ", " + numberOfRecords);
-		//log.debug("dbResult ist: "+dbResult.size());
-		List recordList = new ArrayList();
-		Iterator resIterator = dbResult.iterator();
-		Map recordMap = null;
-		Record newRecord = null;
-		while (resIterator.hasNext()) {
-			recordMap = (Map) resIterator.next();
-			newRecord = new Record(def, recordMap);
-			recordList.add(newRecord);
-		}
-		return recordList;
-	}
-
-	/**
-	 * Diese Hilfsklasse wird benutzt, um WHERE-Konditionen an 
-	 * getRecordsFromQuery() zu übergeben.
-	 */
-	public class QueryCondition {
-		String column;
-		int operator;
-		Object value;
-		QueryCondition next = null;
-		// Konstanten für den Operator:
-		public static final int EQUAL = 0;
-		public static final int GREATER_OR_EQUAL = 1;
-		public static final int GREATER = 2;
-		public static final int LESS = 3;
-		public static final int LESS_OR_EQUAL = 4;
-		public static final int LIKE = 5;
-
-		public QueryCondition(String column, int operator, Object value) {
-			super();
-			this.column = column;
-			this.operator = operator;
-			this.value = value;
-		}
-
-		public void and(QueryCondition cond) {
-			next = cond;
-		}
-
-		public String expression() throws DatabaseException {
-			String erg = column;
-			switch (operator) {
-			case EQUAL:				erg += " = ";	break;
-			case GREATER:			erg += " > ";	break;
-			case GREATER_OR_EQUAL:	erg += " >= ";	break;
-			case LESS:				erg += " < ";	break;
-			case LESS_OR_EQUAL:		erg += " <= ";	break;
-			case LIKE:				erg += " LIKE ";break;
-			default:
-				throw new SystemDatabaseException("falsche QueryCondition: ("
-						+ column + "," + operator + "," + "value" + ")", log);
-			}
-			DataObject val=new DataObject(value,def.getFieldDef(column));
-			erg += SQLPrinter.print(val);
-			if (next != null)
-				erg += " AND " + next.expression();
-			return erg;
-		}
-	}
+	public abstract List getMultipleRecords(int startRecordNr,
+			int numberOfRecords, String orderColumn, boolean ascending)
+			throws DatabaseException;
 
 	/**
 	 * Diese Methode erlaubt, Anfragen mit bestimmten Konditionen anzugeben.
-	 * Diese Konditionen werden in eine QueryCondition-Klasse verpackt.
+	 * Diese Konditionen werden in eine QueryConditionImpl-Klasse verpackt.
 	 */
-	public List getRecordsFromQuery(QueryCondition condition, String orderColumn,
-			boolean ascending) throws DatabaseException {
-		return getRecords(condition,orderColumn,ascending,0,0);
-	}
+	public abstract List getRecordsFromQuery(QueryCondition condition,
+			String orderColumn, boolean ascending) throws DatabaseException;
 
 	/**
 	 * Dies ist die eierlegende Wollmilchsau-Query-Methode.
@@ -133,40 +38,9 @@ public class Table {
 	 * null bzw. 0 sein, insbesondere gilt dies für: 
 	 * condition, orderColumn, numberOfRecords
 	 */
-	public List getRecords(QueryCondition condition,
-			String orderColumn,
-			boolean ascending, int startRecordNr, int numberOfRecords
-	) throws DatabaseException{
-		String selectRumpf = def.getSelectStatement(name);
-		String sql = selectRumpf;
-		// Filtern
-		if(condition!=null)
-			// Das getSelectStatement endet imm er mit einem WHERE, das verlängere ich hier ggf.:
-			sql += " AND "+condition.expression();
-		// Sortieren
-		sql += " ORDER BY ";
-		// Wenn angegeben, nach einer bestimmten Spalte sortieren
-		if (orderColumn != null && !orderColumn.equals(""))
-			sql += name + "." + orderColumn + (ascending ? " ASC" : " DESC")
-					+ ", ";
-		// auf jeden Fall nach der Primärspalte sortieren, um immer eine eindeutige Reihenfolge zu haben
-		sql += name + "." + def.getPrimaryKey()
-				+ (ascending ? " ASC" : " DESC");
-		if (numberOfRecords != 0)
-			sql += " LIMIT " + startRecordNr + ", " + numberOfRecords;
-		List dbResult = db.executeSelectMultipleRows(sql);
-		//log.debug("dbResult ist: "+dbResult.size());
-		List recordList = new ArrayList();
-		Iterator resIterator = dbResult.iterator();
-		Map recordMap = null;
-		Record newRecord = null;
-		while (resIterator.hasNext()) {
-			recordMap = (Map) resIterator.next();
-			newRecord = new Record(def, recordMap);
-			recordList.add(newRecord);
-		}
-		return recordList;
-	}
+	public abstract List getRecords(QueryCondition condition,
+			String orderColumn, boolean ascending, int startRecordNr,
+			int numberOfRecords) throws DatabaseException;
 
 	/**
 	 * Diese Funktion erlaubt, Datensätze über eine fortlaufende Nummer
@@ -179,31 +53,13 @@ public class Table {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Record getRecordByNumber(int recordNr) throws DatabaseException {
-		return getRecordByNumber(recordNr, def.getPrimaryKey(), 1);
-	}
-
-	public Record getRecordByNumber(int recordNr, String orderColumn,
-			int direction) throws DatabaseException {
-		// Ich sortiere nicht nur nach der orderColumn, sondern auch nach der
-		// Primärspalte, damit die Reihenfolge bei gleichen Daten immer 
-		// garantiert gleich ist.
-		if (orderColumn == null) {
-			orderColumn = def.getPrimaryKey();
-		}
-		String selectRumpf = def.getSelectStatement(name);
-		Map hash = db.executeSelectSingleRow(selectRumpf + " ORDER BY `"
-				+ orderColumn + "` " + (direction < 0 ? "DESC" : "ASC") + ", `"
-				+ def.getPrimaryKey() + "` " + (direction < 0 ? "DESC" : "ASC")
-				+ " LIMIT " + recordNr + ",1");
-		return new Record(def, hash);
-	}
-
-	public int getNumberOfRecords() throws DatabaseException {
-		Map hash = db.executeSelectSingleRow("SELECT COUNT(*) AS COUNT FROM "
-				+ name);
-		return ((Integer) hash.get("COUNT")).intValue();
-	}
+//	public abstract RecordImpl getRecordByNumber(int recordNr)
+//			throws DatabaseException;
+//
+//	public abstract RecordImpl getRecordByNumber(int recordNr, String orderColumn,
+//			int direction) throws DatabaseException;
+//
+	public abstract int getNumberOfRecords() throws DatabaseException;
 
 	/**
 	 * Lies einen Datensatz mit dem angegebenen Wert in der angegebenen Spalte.
@@ -212,13 +68,8 @@ public class Table {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Record getRecordByValue(String columnName, String value)
-			throws DatabaseException {
-		String selectRumpf = def.getSelectStatement(name);
-		Map hash = db.executeSelectSingleRow(selectRumpf + " AND "
-				+ makeWhereExpression(def.getFieldDef(columnName), value));
-		return new Record(def, hash);
-	}
+//	public abstract RecordImpl getRecordByValue(String columnName, String value)
+//			throws DatabaseException;
 
 	/**
 	 * Lies den Datensatz mit dem angegebenen Primärschlüssel.
@@ -226,15 +77,8 @@ public class Table {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Record getRecordByPrimaryKey(Object pkValue)
-			throws DatabaseException {
-		String selectRumpf = def.getSelectStatement(name);
-		Map hash = db.executeSelectSingleRow(selectRumpf
-				+ " AND "
-				+ makeWhereExpression(def.getFieldDef(def.getPrimaryKey()),
-						pkValue));
-		return new Record(def, hash);
-	}
+	public abstract Record getRecordByPrimaryKey(Object pkValue)
+			throws DatabaseException;
 
 	/**
 	 * Diese Methode ergibt eine Liste von DataObjects, die alle Werte in
@@ -245,163 +89,38 @@ public class Table {
 	 * 
 	 * Wird als Limit 0 angegeben, werden alle Einträge ausgegeben.
 	 */
-	public List getGivenColumns(List colNames, int limit)
-			throws DatabaseException {
-		List list = new ArrayList();
-		String statement = "";
-		Iterator i = colNames.iterator();
-		while (i.hasNext()) {
-			if (!statement.equals(""))
-				statement += ", ";
-			statement += (String) i.next();
-		}
-		String limitstring = (limit == 0 ? "" : " LIMIT " + limit);
-		List rows = db.executeSelectMultipleRows("SELECT " + statement
-				+ " FROM " + name + " ORDER BY " + def.getPrimaryKey()
-				+ limitstring);
-		i = rows.iterator();
-		while (i.hasNext()) {
-			Map hash = (Map) i.next();
-			Map newhash = new HashMap();
-			Iterator j = hash.keySet().iterator();
-			while (j.hasNext()) {
-				String key = (String) j.next();
-				newhash.put(key, new DataObject(hash.get(key), def
-						.getFieldDef(key)));
-			}
-			list.add(newhash);
-		}
-		return list;
-	}
+	public abstract List getGivenColumns(List colNames, int limit)
+			throws DatabaseException;
 
 	/**
 	 * Speichert den Datensatz. INSERT, falls der Primärschlüssel
 	 * undefiniert ist, sonst UPDATE.
 	 * @param data
 	 */
-	public void setRecord(Record data) throws DatabaseException {
-		try {
-			String sql = "REPLACE INTO `" + name + "` SET ";
-			for (int i = 0; i < def.getFieldsList().size(); i++) {
-				if (i != 0) {
-					sql += ", ";
-				}
-				String feldname = def.getFieldDef(i).getName();
-				sql += "`" + feldname + "` = "
-						+ SQLPrinter.print(data.getField(feldname));
-			}
-			db.executeUpdate(sql);
-		} catch (DatabaseException e) {
-			throw new UserDatabaseException(
-					"Record kann nicht gespeichert werden", e, log);
-		}
-	}
+	public abstract void setRecord(Record data) throws DatabaseException;
 
 	/**
 	 * Löscht den Datensatz.
 	 * @param data
 	 * @throws DatabaseException
 	 */
-	public void deleteRecord(Record data) throws DatabaseException {
-		db.executeUpdate("DELETE FROM "
-				+ name
-				+ " WHERE "
-				+ makeWhereExpression(def.getFieldDef(def.getPrimaryKey()),
-						data.getField(def.getPrimaryKey()).getValue()));
-	}
+	public abstract void deleteRecord(Record data) throws DatabaseException;
 
-	public Record getEmptyRecord() {
-		return def.getEmptyRecord();
-	}
+//	public abstract RecordImpl getEmptyRecord();
 
-	public RecordDefinition getRecordDefinition() {
-		return def;
-	}
+	public abstract String getName();
+	
+	public QueryCondition createQueryCondition(String column, int operator, Object value);
 
-	public String getName() {
-		return name;
-	}
+	public abstract TypeDefinition getFieldDef(String fieldName) throws SystemDatabaseException ;
 
-	private String makeWhereExpression(TypeDefinition def, Object value)
-			throws DatabaseException {
-		return (name + "." + def.getName() + "=" 
-				+ SQLPrinter.print(new DataObject(value, def)));
-	}
+	public abstract String getPrimaryKey();
+
+	public abstract List getFieldsList();
 }
 /*
- * $Log: Table.java,v $
- * Revision 1.1  2004/12/31 17:12:42  phormanns
- * Erste öffentliche Version
- *
- * Revision 1.22  2004/12/19 13:24:06  phormanns
- * Web-Version des Tabellen-Browsers mit Edit, Filter (1x)
- *
- * Revision 1.21  2004/11/01 12:06:46  tbayen
- * Erste Kalenderversion mit Datenbank-Zugriff
- *
- * Revision 1.20  2004/10/28 16:16:45  phormanns
- * Ich wusste nicht genau was "nr" ist
- *
- * Revision 1.19  2004/10/25 20:41:52  tbayen
- * Test für insert-Kommando und Fehler bei insert behoben
- *
- * Revision 1.18  2004/10/24 19:15:07  tbayen
- * ComboBox als Auswahlfeld für Foreign Keys
- *
- * Revision 1.17  2004/10/24 15:46:43  tbayen
- * Typdefinitionen in eigenes Package ausgelagert
- *
- * Revision 1.16  2004/10/24 14:07:43  tbayen
- * In WHERE-Expr. Spaltenbezeichner mit Tabellennamen qualifiziert,
- * weil mehrere Tabellen in einem Select sein können
- *
- * Revision 1.15  2004/10/24 13:10:20  tbayen
- * Merken des Typs des Zielwertes eines Foreign Keys
- * formatierte Ausgabe von Foreign Keys und Test hierzu
- *
- * Revision 1.14  2004/10/23 17:24:20  tbayen
- * ForeignKeys werden bei allen Selects mitgeholt
- *
- * Revision 1.13  2004/10/23 12:13:54  tbayen
- * Debugausgaben etwas bereinigt
- *
- * Revision 1.12  2004/10/21 20:41:16  tbayen
- * Foreign Keys werden aus der Datenbank gelesen (aber noch nicht richtig verarbeitet)
- *
- * Revision 1.11  2004/10/15 16:14:00  phormanns
- * Optimierung TableCache liest 20 Records
- *
- * Revision 1.10  2004/10/14 21:37:36  phormanns
- * Weitere Datentypen
- *
- * Revision 1.9  2004/10/14 21:03:23  tbayen
- * TableGUI kann nun richtig sortieren (d.h. direkt in SQL)
- *
- * Revision 1.8  2004/10/13 19:11:30  tbayen
- * Erstellung von TableGUI und TestWindow,
- * dazu Überarbeitung und Debugging vieler anderer Klassen
- *
- * Revision 1.7  2004/10/11 14:31:11  tbayen
- * Framework für Printer und Editoren
- * sowie SQLPrinter als erste Anwendung desselben
- *
- * Revision 1.6  2004/10/11 14:29:37  tbayen
- * Framework für Printer und Editoren
- * sowie SQLPrinter als erste Anwendung desselben
- *
- * Revision 1.5  2004/10/11 12:55:11  tbayen
- * Table.setRecord implementiert
- *
- * Revision 1.4  2004/10/09 15:09:15  tbayen
- * Einführung von DataObject
- *
- * Revision 1.3  2004/10/09 11:28:24  phormanns
- * Implementierung der Select- und Delete-Operationen
- *
- * Revision 1.2  2004/10/08 12:36:31  phormanns
- * Schnittstelle für Tabelle vollständig (ohne Implementierung)
- *
- * Revision 1.1  2004/10/07 17:15:33  tbayen
- * Datenbankklassen bis auf Table fertig für weitere Tests
+ *  $Log: Table.java,v $
+ *  Revision 1.2  2004/12/31 19:37:26  phormanns
+ *  Database Schnittstelle herausgearbeitet
  *
  */

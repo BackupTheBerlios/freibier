@@ -1,6 +1,6 @@
-//$Id: TypeDefinition.java,v 1.1 2004/12/31 17:13:03 phormanns Exp $
+//$Id: TypeDefinitionImpl.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
 
-package de.jalin.freibier.database.type;
+package de.jalin.freibier.database.impl;
 
 import java.sql.Types;
 import java.util.Enumeration;
@@ -10,9 +10,16 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
-import de.jalin.freibier.database.Database;
+import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
+import de.jalin.freibier.database.impl.type.TypeDefinitionDate;
+import de.jalin.freibier.database.impl.type.TypeDefinitionDateTime;
+import de.jalin.freibier.database.impl.type.TypeDefinitionFloat;
+import de.jalin.freibier.database.impl.type.TypeDefinitionForeignKey;
+import de.jalin.freibier.database.impl.type.TypeDefinitionInteger;
+import de.jalin.freibier.database.impl.type.TypeDefinitionString;
+import de.jalin.freibier.database.impl.type.TypeDefinitionTime;
 
 /**
  * @author tbayen
@@ -27,8 +34,8 @@ import de.jalin.freibier.database.exception.SystemDatabaseException;
  * jedoch normalerweise alle zentral über die Klassenfunktion
  * TypeDefinition.create() erzeugt.
  */
-abstract public class TypeDefinition {
-	protected static Log log = LogFactory.getLog(TypeDefinition.class);
+abstract public class TypeDefinitionImpl implements TypeDefinition {
+	protected static Log log = LogFactory.getLog(TypeDefinitionImpl.class);
 	protected static Map typesMap = null;
 	protected String name;
 	protected int type;
@@ -62,15 +69,15 @@ abstract public class TypeDefinition {
 	 * @throws SystemDatabaseException
 	 *  
 	 */
-	public static TypeDefinition create(String name, int type, int length,
-			ResourceBundle resource, Database db)
+	public static TypeDefinitionImpl create(String name, int type, int length,
+			ResourceBundle resource, DatabaseImpl db)
 			throws SystemDatabaseException {
 		//log.trace("create: "+name+", "+type);
-		TypeDefinition typeDef = null;
+		TypeDefinitionImpl typeDef = null;
 		Map propsMap = null;
 		try {
 			if (resource != null) {
-				propsMap = TypeDefinition.parseProperties(resource, name);
+				propsMap = TypeDefinitionImpl.parseProperties(resource, name);
 			} else {
 				propsMap = new HashMap();
 			}
@@ -78,7 +85,7 @@ abstract public class TypeDefinition {
 				length = Integer.parseInt((String) propsMap.get("length"));
 			}
 			String foreignKeyTable = (String) propsMap.get("foreignkey.table");
-			typeDef = (TypeDefinition) ((Class) typesMap.get(new Integer(type)))
+			typeDef = (TypeDefinitionImpl) ((Class) typesMap.get(new Integer(type)))
 					.newInstance();
 			if (foreignKeyTable != null) {
 				typeDef.setProperties(propsMap);
@@ -104,7 +111,7 @@ abstract public class TypeDefinition {
 		return typeDef;
 	}
 
-	protected TypeDefinition() {}
+	protected TypeDefinitionImpl() {}
 
 	public String getName() {
 		return name;
@@ -249,7 +256,10 @@ abstract public class TypeDefinition {
 	}
 }
 /*
- * $Log: TypeDefinition.java,v $
+ * $Log: TypeDefinitionImpl.java,v $
+ * Revision 1.1  2004/12/31 19:37:26  phormanns
+ * Database Schnittstelle herausgearbeitet
+ *
  * Revision 1.1  2004/12/31 17:13:03  phormanns
  * Erste öffentliche Version
  *
@@ -327,6 +337,6 @@ abstract public class TypeDefinition {
  * dokumentiert und formatiert 
  * 
  * Revision 1.1 2004/10/07 17:15:33 tbayen 
- * Datenbankklassen bis auf Table fertig für weitere Tests
+ * Datenbankklassen bis auf TableImpl fertig für weitere Tests
  * 
  */

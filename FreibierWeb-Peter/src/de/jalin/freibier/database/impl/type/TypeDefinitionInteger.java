@@ -1,6 +1,6 @@
-//$Id: TypeDefinitionInteger.java,v 1.1 2004/12/31 17:13:03 phormanns Exp $
+//$Id: TypeDefinitionInteger.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
 
-package de.jalin.freibier.database.type;
+package de.jalin.freibier.database.impl.type;
 
 import org.apache.oro.text.perl.Perl5Util;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
@@ -52,6 +52,9 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionInteger.java,v $
+ * Revision 1.1  2004/12/31 19:37:26  phormanns
+ * Database Schnittstelle herausgearbeitet
+ *
  * Revision 1.1  2004/12/31 17:13:03  phormanns
  * Erste öffentliche Version
  *

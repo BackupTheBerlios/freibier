@@ -1,6 +1,6 @@
-//$Id: SQLPrinter.java,v 1.1 2004/12/31 17:12:42 phormanns Exp $
+//$Id: SQLPrinter.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
 
-package de.jalin.freibier.database;
+package de.jalin.freibier.database.impl;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -12,14 +12,15 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
+import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
-import de.jalin.freibier.database.type.TypeDefinitionDate;
-import de.jalin.freibier.database.type.TypeDefinitionDateTime;
-import de.jalin.freibier.database.type.TypeDefinitionFloat;
-import de.jalin.freibier.database.type.TypeDefinitionForeignKey;
-import de.jalin.freibier.database.type.TypeDefinitionInteger;
-import de.jalin.freibier.database.type.TypeDefinitionString;
+import de.jalin.freibier.database.impl.type.TypeDefinitionDate;
+import de.jalin.freibier.database.impl.type.TypeDefinitionDateTime;
+import de.jalin.freibier.database.impl.type.TypeDefinitionFloat;
+import de.jalin.freibier.database.impl.type.TypeDefinitionForeignKey;
+import de.jalin.freibier.database.impl.type.TypeDefinitionInteger;
+import de.jalin.freibier.database.impl.type.TypeDefinitionString;
 
 /**
  * Diese Klasse gibt Printable-Objekte in SQL-Syntax aus.
@@ -69,6 +70,9 @@ public class SQLPrinter {
 }
 /*
  * $Log: SQLPrinter.java,v $
+ * Revision 1.1  2004/12/31 19:37:26  phormanns
+ * Database Schnittstelle herausgearbeitet
+ *
  * Revision 1.1  2004/12/31 17:12:42  phormanns
  * Erste öffentliche Version
  *

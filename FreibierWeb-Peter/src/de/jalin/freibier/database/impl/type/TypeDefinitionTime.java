@@ -1,7 +1,7 @@
 /* Erzeugt am 24.10.2004 von tbayen
- * $Id: TypeDefinitionTime.java,v 1.1 2004/12/31 17:13:03 phormanns Exp $
+ * $Id: TypeDefinitionTime.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
  */
-package de.jalin.freibier.database.type;
+package de.jalin.freibier.database.impl.type;
 
 import java.text.DateFormat;
 
@@ -21,6 +21,9 @@ public class TypeDefinitionTime extends TypeDefinitionDateTime {
 
 /*
  * $Log: TypeDefinitionTime.java,v $
+ * Revision 1.1  2004/12/31 19:37:26  phormanns
+ * Database Schnittstelle herausgearbeitet
+ *
  * Revision 1.1  2004/12/31 17:13:03  phormanns
  * Erste öffentliche Version
  *

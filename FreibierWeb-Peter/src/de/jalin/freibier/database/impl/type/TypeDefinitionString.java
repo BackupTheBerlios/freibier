@@ -1,9 +1,10 @@
-//$Id: TypeDefinitionString.java,v 1.1 2004/12/31 17:13:03 phormanns Exp $
+//$Id: TypeDefinitionString.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
 
-package de.jalin.freibier.database.type;
+package de.jalin.freibier.database.impl.type;
 
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
+import de.jalin.freibier.database.impl.TypeDefinitionImpl;
 
 
 /**
@@ -11,7 +12,7 @@ import de.jalin.freibier.database.exception.SystemDatabaseException;
  * 
  * Datentyp z.B. für SQL-Daten vom Typ char
  */
-public class TypeDefinitionString extends TypeDefinition {
+public class TypeDefinitionString extends TypeDefinitionImpl {
 		
 	public TypeDefinitionString() {
 		super();
@@ -48,6 +49,9 @@ public class TypeDefinitionString extends TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionString.java,v $
+ * Revision 1.1  2004/12/31 19:37:26  phormanns
+ * Database Schnittstelle herausgearbeitet
+ *
  * Revision 1.1  2004/12/31 17:13:03  phormanns
  * Erste öffentliche Version
  *

@@ -1,13 +1,14 @@
-//$Id: DataObject.java,v 1.1 2004/12/31 17:12:42 phormanns Exp $
+//$Id: DataObject.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
 
-package de.jalin.freibier.database;
+package de.jalin.freibier.database.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import de.jalin.freibier.database.Printable;
+import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.exception.UserDatabaseException;
-import de.jalin.freibier.database.type.TypeDefinition;
 
 /**
  * @author tbayen
@@ -17,6 +18,7 @@ import de.jalin.freibier.database.type.TypeDefinition;
  * typspezifisch richtig formatiert werden.
  */
 public class DataObject implements Printable {
+	
 	private static Log log = LogFactory.getLog(DataObject.class);
 	private Object value;
 	private TypeDefinition def = null;
@@ -80,6 +82,9 @@ public class DataObject implements Printable {
 }
 /*
  * $Log: DataObject.java,v $
+ * Revision 1.1  2004/12/31 19:37:26  phormanns
+ * Database Schnittstelle herausgearbeitet
+ *
  * Revision 1.1  2004/12/31 17:12:42  phormanns
  * Erste öffentliche Version
  *

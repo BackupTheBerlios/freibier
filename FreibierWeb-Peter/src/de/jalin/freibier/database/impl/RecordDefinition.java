@@ -1,6 +1,6 @@
-//$Id: RecordDefinition.java,v 1.1 2004/12/31 17:12:42 phormanns Exp $
+//$Id: RecordDefinition.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
 
-package de.jalin.freibier.database;
+package de.jalin.freibier.database.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
-import de.jalin.freibier.database.type.TypeDefinition;
-import de.jalin.freibier.database.type.TypeDefinitionForeignKey;
+import de.jalin.freibier.database.impl.type.TypeDefinitionForeignKey;
 
 /**
  * @author tbayen
@@ -20,7 +20,9 @@ import de.jalin.freibier.database.type.TypeDefinitionForeignKey;
  * (die ja aus Datensätzen besteht)
  */
 public class RecordDefinition {
-	protected static Log log = LogFactory.getLog(RecordDefinition.class);
+	
+	private static Log log = LogFactory.getLog(RecordDefinition.class);
+	
 	private Map columnshash = null;
 	private List columnslist = null;
 	private String primaryKey = null;
@@ -30,7 +32,7 @@ public class RecordDefinition {
 		columnslist = new ArrayList();
 	}
 
-	public void addColumn(TypeDefinition typ) {
+	public void addColumn(TypeDefinitionImpl typ) {
 		columnshash.put(typ.getName(), typ);
 		columnslist.add(typ);
 	}
@@ -57,13 +59,13 @@ public class RecordDefinition {
 	}
 
 	public TypeDefinition getFieldDef(int column) {
-		return (TypeDefinition) columnslist.get(column);
+		return (TypeDefinitionImpl) columnslist.get(column);
 	}
 
 	public int fieldName2Int(String name) throws SystemDatabaseException {
 		String erg = "";
 		for (int i = 0; i < columnslist.size(); i++) {
-			if (((TypeDefinition) (columnslist.get(i))).getName().equals(name)) {
+			if (((TypeDefinitionImpl) (columnslist.get(i))).getName().equals(name)) {
 				return i;
 			}
 		}
@@ -71,20 +73,20 @@ public class RecordDefinition {
 				+ "' nicht vorhanden.", log);
 	}
 
-	public Record getEmptyRecord() {
+	public RecordImpl getEmptyRecord() {
 		Map mrbean = new HashMap();
 		Iterator i = columnslist.iterator();
-		TypeDefinition typdef = null;
+		TypeDefinitionImpl typdef = null;
 		while (i.hasNext()) {
-			typdef = (TypeDefinition) i.next();
+			typdef = (TypeDefinitionImpl) i.next();
 			mrbean.put(typdef.getName(), typdef.getDefaultValue());
 		}
-		return new Record(this, mrbean);
+		return new RecordImpl(this, mrbean);
 	}
 
 	/**
 	 * Ergibt ein SQL-Select-Statement, das geeignet ist, alle Daten für diesen
-	 * Record einzulesen. Dabei werden auch durch Fremdschlüssel referenzierte
+	 * RecordImpl einzulesen. Dabei werden auch durch Fremdschlüssel referenzierte
 	 * Werte miteingelesen. 
 	 * 
 	 * Das Statement enthält immer eine WHERE-Klausel am Ende, so daß mit 
@@ -95,9 +97,9 @@ public class RecordDefinition {
 		String tabellen = "`" + myTable + "`";
 		String where = null;
 		Iterator i = columnslist.iterator();
-		TypeDefinition feldtyp;
+		TypeDefinitionImpl feldtyp;
 		while (i.hasNext()) {
-			feldtyp = (TypeDefinition) i.next();
+			feldtyp = (TypeDefinitionImpl) i.next();
 			if (!felder.equals("")) {
 				felder += ", ";
 			}
@@ -126,6 +128,9 @@ public class RecordDefinition {
 }
 /*
  * $Log: RecordDefinition.java,v $
+ * Revision 1.1  2004/12/31 19:37:26  phormanns
+ * Database Schnittstelle herausgearbeitet
+ *
  * Revision 1.1  2004/12/31 17:12:42  phormanns
  * Erste öffentliche Version
  *
@@ -159,6 +164,6 @@ public class RecordDefinition {
  * Schnittstelle für Tabelle vollständig (ohne Implementierung)
  *
  * Revision 1.1  2004/10/07 17:15:33  tbayen
- * Datenbankklassen bis auf Table fertig für weitere Tests
+ * Datenbankklassen bis auf TableImpl fertig für weitere Tests
  *
  */

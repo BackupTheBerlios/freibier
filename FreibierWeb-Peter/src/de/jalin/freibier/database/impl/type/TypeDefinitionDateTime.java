@@ -1,6 +1,6 @@
-//$Id: TypeDefinitionDateTime.java,v 1.1 2004/12/31 17:13:03 phormanns Exp $
+//$Id: TypeDefinitionDateTime.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
 
-package de.jalin.freibier.database.type;
+package de.jalin.freibier.database.impl.type;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -8,13 +8,14 @@ import java.util.Date;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.exception.UserDatabaseException;
+import de.jalin.freibier.database.impl.TypeDefinitionImpl;
 
 /**
  * Datentyp z.B. für SQL-Daten vom Typ DATETIME
  * 
  * Dient als Oberklasse für alle Zeit- und Datumstypen
  */
-public class TypeDefinitionDateTime extends TypeDefinition {
+public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 	protected DateFormat shortFormat;
 
 	protected TypeDefinitionDateTime() {
@@ -74,6 +75,9 @@ public class TypeDefinitionDateTime extends TypeDefinition {
 
 /*
  * $Log: TypeDefinitionDateTime.java,v $
+ * Revision 1.1  2004/12/31 19:37:26  phormanns
+ * Database Schnittstelle herausgearbeitet
+ *
  * Revision 1.1  2004/12/31 17:13:03  phormanns
  * Erste öffentliche Version
  *
