@@ -15,7 +15,7 @@
 
 package com.spaceprogram.sql.mysql;
 
-import com.crossdb.sql.*;
+import com.crossdb.sql.Column;
 
 public class MySQLDataTypes {
 

@@ -17,8 +17,9 @@ Rest is pretty self explanatory.
  * @version 0.1
  */
 
-import java.util.List;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public interface InsertQuery extends UpdateableQuery {
 	

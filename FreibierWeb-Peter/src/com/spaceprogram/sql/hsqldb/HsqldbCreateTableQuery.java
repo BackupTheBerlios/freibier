@@ -14,8 +14,13 @@ package com.spaceprogram.sql.hsqldb;
 @version 0.2
 */
 
-import com.crossdb.sql.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import com.crossdb.sql.Column;
+import com.crossdb.sql.CreateTableQuery;
+import com.crossdb.sql.DefaultCreateTableQuery;
 
 
 public class HsqldbCreateTableQuery extends DefaultCreateTableQuery implements CreateTableQuery {

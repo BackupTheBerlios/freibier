@@ -9,11 +9,8 @@
  */
 package com.spaceprogram.sql.hsqldb;
 
-import com.crossdb.sql.Formatter;
-import com.crossdb.sql.SQLDateTimeFormat;
 import com.crossdb.sql.DefaultFormatter;
-
-import java.util.Date;
+import com.crossdb.sql.Formatter;
 
 public class HsqldbFormatter extends DefaultFormatter implements Formatter {
 

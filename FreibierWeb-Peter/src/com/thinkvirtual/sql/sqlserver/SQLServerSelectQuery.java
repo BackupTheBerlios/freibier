@@ -2,10 +2,16 @@ package com.thinkvirtual.sql.sqlserver;
 
 /** This is an initial beta of a class that will represent a query string */
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
-import java.util.ArrayList;
-import java.sql.*;
-import com.crossdb.sql.*;
+
+import com.crossdb.sql.CrossdbResultSet;
+import com.crossdb.sql.DefaultSelectQuery;
+import com.crossdb.sql.Join;
+import com.crossdb.sql.WhereClause;
+import com.crossdb.sql.WhereCondition;
 
 
 public class SQLServerSelectQuery extends DefaultSelectQuery implements com.crossdb.sql.SelectQuery {

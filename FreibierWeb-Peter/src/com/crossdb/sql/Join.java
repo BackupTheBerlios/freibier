@@ -16,7 +16,7 @@ be passed into select queries in the addTable function.
  * @version 0.1
  */
 
-import java.util.*;
+import java.util.List;
 //import java.sql.*;
 
 public class Join {

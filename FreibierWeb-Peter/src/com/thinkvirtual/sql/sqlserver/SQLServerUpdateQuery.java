@@ -2,11 +2,18 @@ package com.thinkvirtual.sql.sqlserver;
 
 /** This is an initial beta of a class that will represent a query string */
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.sql.*;
+import java.util.List;
 
-import com.crossdb.sql.*;
+import com.crossdb.sql.Column;
+import com.crossdb.sql.DefaultUpdateQuery;
+import com.crossdb.sql.SQLDateTimeFormat;
+import com.crossdb.sql.SQLFormat;
+import com.crossdb.sql.WhereClause;
+import com.crossdb.sql.WhereCondition;
 
 public class SQLServerUpdateQuery  extends DefaultUpdateQuery implements com.crossdb.sql.UpdateQuery {
 

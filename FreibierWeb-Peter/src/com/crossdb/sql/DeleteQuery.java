@@ -13,8 +13,6 @@ package com.crossdb.sql;
  * @version 0.1
  */
 
-import java.util.List;
-import java.sql.*;
 
 public interface DeleteQuery extends ExecuteUpdate {
 	

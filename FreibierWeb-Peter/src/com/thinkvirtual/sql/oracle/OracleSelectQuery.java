@@ -6,9 +6,17 @@
 
 package com.thinkvirtual.sql.oracle;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
-import java.sql.*;
-import com.crossdb.sql.*;
+
+import com.crossdb.sql.CrossdbResultSet;
+import com.crossdb.sql.DefaultSelectQuery;
+import com.crossdb.sql.Join;
+import com.crossdb.sql.SQLDateTimeFormat;
+import com.crossdb.sql.SelectQuery;
+import com.crossdb.sql.WhereClause;
+import com.crossdb.sql.WhereCondition;
 
 
 public class OracleSelectQuery extends DefaultSelectQuery implements SelectQuery {

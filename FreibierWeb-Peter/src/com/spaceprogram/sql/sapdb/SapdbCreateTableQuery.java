@@ -6,13 +6,12 @@ package com.spaceprogram.sql.sapdb;
  * @version 0.1
  */
 
-import com.crossdb.sql.Column;
-import com.crossdb.sql.DefaultCreateTableQuery;
-import com.crossdb.sql.CreateTableQuery;
-
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import com.crossdb.sql.Column;
+import com.crossdb.sql.CreateTableQuery;
+import com.crossdb.sql.DefaultCreateTableQuery;
 
 public class SapdbCreateTableQuery extends DefaultCreateTableQuery implements CreateTableQuery {
 

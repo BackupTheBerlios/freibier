@@ -8,7 +8,7 @@
 
 package com.spaceprogram.sql.hsqldb;
 
-import com.crossdb.sql.*;
+import com.crossdb.sql.Column;
 
 public class HsqldbDataTypes {
 

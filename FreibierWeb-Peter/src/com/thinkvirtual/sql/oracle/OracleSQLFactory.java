@@ -1,6 +1,13 @@
 package com.thinkvirtual.sql.oracle;
 
-import com.crossdb.sql.*;
+import com.crossdb.sql.AlterTableQuery;
+import com.crossdb.sql.CreateTableQuery;
+import com.crossdb.sql.DeleteQuery;
+import com.crossdb.sql.IWhereClause;
+import com.crossdb.sql.InsertQuery;
+import com.crossdb.sql.SQLFactory;
+import com.crossdb.sql.SelectQuery;
+import com.crossdb.sql.UpdateQuery;
 
 /** This is an initial beta of a class that will represent a query string */
 

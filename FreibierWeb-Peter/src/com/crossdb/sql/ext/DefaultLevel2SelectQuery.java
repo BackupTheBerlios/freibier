@@ -6,7 +6,6 @@
  */
 package com.crossdb.sql.ext;
 
-import com.crossdb.sql.DefaultSelectQuery;
 import com.crossdb.sql.SelectQuery;
 
 public abstract class DefaultLevel2SelectQuery extends DefaultLevel1SelectQuery implements Level2SelectQuery {

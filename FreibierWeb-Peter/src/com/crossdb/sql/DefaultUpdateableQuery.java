@@ -11,12 +11,12 @@
  */
 package com.crossdb.sql;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.sql.Statement;
-import java.sql.SQLException;
-import java.sql.Connection;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultUpdateableQuery implements UpdateableQuery
 {

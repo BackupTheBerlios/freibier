@@ -12,10 +12,12 @@ package com.thinkvirtual.sql.sybase;
  * @author  prophecy
  * @version
  */
-import java.util.*;
-import com.crossdb.sql.Column;
-import java.sql.SQLException;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.crossdb.sql.Column;
 
 public class SybaseCreateTableQuery implements com.crossdb.sql.CreateTableQuery {
 	

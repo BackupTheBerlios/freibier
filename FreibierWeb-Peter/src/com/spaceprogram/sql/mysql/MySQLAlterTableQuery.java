@@ -11,10 +11,9 @@ package com.spaceprogram.sql.mysql;
 
 
 
-import java.util.List;
-import java.util.ArrayList;
-import java.sql.*;
-import com.crossdb.sql.*;
+import com.crossdb.sql.AlterTableQuery;
+import com.crossdb.sql.Column;
+import com.crossdb.sql.DefaultAlterTableQuery;
 
 public class MySQLAlterTableQuery extends DefaultAlterTableQuery implements AlterTableQuery{
 

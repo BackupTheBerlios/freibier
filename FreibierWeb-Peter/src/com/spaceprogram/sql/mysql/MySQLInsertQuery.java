@@ -2,10 +2,14 @@ package com.spaceprogram.sql.mysql;
 
 /** This is an initial beta of a class that will represent a query string */
 
-import java.util.List;
-import java.util.ArrayList;
-import java.sql.*;
-import com.crossdb.sql.*;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import com.crossdb.sql.ColumnValue;
+import com.crossdb.sql.DefaultInsertQuery;
+import com.crossdb.sql.InsertQuery;
+import com.crossdb.sql.SQLDateTimeFormat;
+import com.crossdb.sql.SQLFormat;
 
 public class MySQLInsertQuery extends DefaultInsertQuery implements InsertQuery {
 

@@ -6,12 +6,10 @@
  */
 package com.crossdb.sql;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.sql.Statement;
-import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public abstract class DefaultInsertQuery extends DefaultUpdateableQuery implements InsertQuery {
 

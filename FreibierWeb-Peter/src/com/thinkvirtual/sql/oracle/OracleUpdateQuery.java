@@ -6,11 +6,12 @@
 
 package com.thinkvirtual.sql.oracle;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.sql.*;
-
-import com.crossdb.sql.*;
+import com.crossdb.sql.ColumnValue;
+import com.crossdb.sql.DefaultUpdateQuery;
+import com.crossdb.sql.SQLDateTimeFormat;
+import com.crossdb.sql.SQLFormat;
+import com.crossdb.sql.UpdateQuery;
+import com.crossdb.sql.WhereCondition;
 
 
 public class OracleUpdateQuery extends DefaultUpdateQuery implements UpdateQuery {

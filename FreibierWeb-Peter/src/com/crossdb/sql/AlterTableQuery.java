@@ -9,8 +9,8 @@ package com.crossdb.sql;
  * @version 0.1
  */
 
-import java.util.List;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public interface AlterTableQuery {
 	

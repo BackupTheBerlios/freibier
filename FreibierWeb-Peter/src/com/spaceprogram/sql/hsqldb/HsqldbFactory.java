@@ -1,6 +1,14 @@
 package com.spaceprogram.sql.hsqldb;
 
-import com.crossdb.sql.*;
+import com.crossdb.sql.AlterTableQuery;
+import com.crossdb.sql.CreateTableQuery;
+import com.crossdb.sql.DeleteQuery;
+import com.crossdb.sql.IWhereClause;
+import com.crossdb.sql.InsertQuery;
+import com.crossdb.sql.SQLFactory;
+import com.crossdb.sql.SelectQuery;
+import com.crossdb.sql.UpdateQuery;
+import com.crossdb.sql.WhereClause;
 
 
 public class HsqldbFactory implements SQLFactory {

@@ -6,9 +6,9 @@
  */
 package com.crossdb.sql;
 
-import java.sql.Statement;
-import java.sql.SQLException;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public abstract class DefaultDeleteQuery implements DeleteQuery {
 

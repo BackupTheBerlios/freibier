@@ -5,11 +5,9 @@
  */
 package com.spaceprogram.sql.mysql;
 
-import java.util.*;
-import java.sql.SQLException;
-import java.sql.Connection;
-
-import com.crossdb.sql.*;
+import com.crossdb.sql.Column;
+import com.crossdb.sql.CreateTableQuery;
+import com.crossdb.sql.DefaultCreateTableQuery;
 
 public class MySQLCreateTableQuery extends DefaultCreateTableQuery implements CreateTableQuery {
 

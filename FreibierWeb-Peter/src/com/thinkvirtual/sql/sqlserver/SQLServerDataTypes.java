@@ -8,7 +8,7 @@
 
 package com.thinkvirtual.sql.sqlserver;
 
-import com.crossdb.sql.*;
+import com.crossdb.sql.Column;
 public class SQLServerDataTypes{
 	
 	/**

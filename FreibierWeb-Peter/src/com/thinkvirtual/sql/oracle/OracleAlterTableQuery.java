@@ -2,10 +2,9 @@ package com.thinkvirtual.sql.oracle;
 
 /** This is an initial beta of a class that will represent a query string */
 
-import java.util.List;
-import java.util.ArrayList;
-import java.sql.*;
-import com.crossdb.sql.*;
+import com.crossdb.sql.AlterTableQuery;
+import com.crossdb.sql.Column;
+import com.crossdb.sql.DefaultAlterTableQuery;
 
 public class OracleAlterTableQuery extends DefaultAlterTableQuery implements AlterTableQuery {
 

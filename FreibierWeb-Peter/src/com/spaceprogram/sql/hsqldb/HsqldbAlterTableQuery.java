@@ -2,16 +2,16 @@ package com.spaceprogram.sql.hsqldb;
 
 /** This is an initial beta of a class that will represent a query string */
 
-import com.crossdb.sql.AlterTableQuery;
-import com.crossdb.sql.Column;
-import com.crossdb.sql.WhereClause;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.crossdb.sql.AlterTableQuery;
+import com.crossdb.sql.Column;
+import com.crossdb.sql.WhereClause;
 
 public class HsqldbAlterTableQuery implements AlterTableQuery{
 	//Query q;

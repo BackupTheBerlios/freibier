@@ -2,10 +2,18 @@ package com.thinkvirtual.sql.sybase;
 
 /** This is an initial beta of a class that will represent a query string */
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.sql.*;
-import com.crossdb.sql.*;
+import java.util.List;
+
+import com.crossdb.sql.Column;
+import com.crossdb.sql.DefaultInsertQuery;
+import com.crossdb.sql.InsertQuery;
+import com.crossdb.sql.SQLDateTimeFormat;
+import com.crossdb.sql.SQLFormat;
 
 public class SybaseInsertQuery  extends DefaultInsertQuery implements InsertQuery {
 	//Query q;

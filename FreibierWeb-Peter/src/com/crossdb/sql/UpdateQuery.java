@@ -13,12 +13,7 @@ package com.crossdb.sql;
  * @version 0.1
  */
 
-import java.util.List;
-
 import java.util.Date;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Connection;
 
 public interface UpdateQuery extends UpdateableQuery {
 	

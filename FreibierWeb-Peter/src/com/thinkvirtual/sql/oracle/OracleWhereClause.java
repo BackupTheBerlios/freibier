@@ -1,8 +1,8 @@
 package com.thinkvirtual.sql.oracle;
 
+import com.crossdb.sql.SQLFormat;
 import com.crossdb.sql.WhereClause;
 import com.crossdb.sql.WhereCondition;
-import com.crossdb.sql.SQLFormat;
 
 /**
  *

@@ -11,10 +11,11 @@ package com.spaceprogram.sql.sapdb;
 
 
 
-import java.util.List;
-import java.util.ArrayList;
-import java.sql.*;
-import com.crossdb.sql.*;
+import java.sql.Types;
+
+import com.crossdb.sql.AlterTableQuery;
+import com.crossdb.sql.Column;
+import com.crossdb.sql.DefaultAlterTableQuery;
 import com.spaceprogram.sql.mysql.MySQLDataTypes;
 
 public class SapdbAlterTableQuery extends DefaultAlterTableQuery implements AlterTableQuery{

@@ -15,9 +15,9 @@ This represents a Select query.
  * @version 0.1
  */
 
-import java.util.Date;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Date;
 
 /*
 Should have a predefined WhereClause in which the user can add conditions to it.

@@ -2,10 +2,15 @@ package com.thinkvirtual.sql.sqlserver;
 
 /** This is an initial beta of a class that will represent a query string */
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.sql.*;
-import com.crossdb.sql.*;
+import java.util.List;
+
+import com.crossdb.sql.AlterTableQuery;
+import com.crossdb.sql.Column;
+import com.crossdb.sql.WhereClause;
 
 public class SQLServerAlterTableQuery implements AlterTableQuery {
 	//Query q;

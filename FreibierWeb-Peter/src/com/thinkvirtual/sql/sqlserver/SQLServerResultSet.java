@@ -8,12 +8,12 @@
  */
 package com.thinkvirtual.sql.sqlserver;
 
-import com.crossdb.sql.DefaultResultSet;
-
 import java.sql.Date;
-import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Calendar;
+
+import com.crossdb.sql.DefaultResultSet;
 
 public class SQLServerResultSet extends DefaultResultSet {
 	public SQLServerResultSet(ResultSet rs) {

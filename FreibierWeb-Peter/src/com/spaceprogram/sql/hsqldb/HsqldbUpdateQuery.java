@@ -2,11 +2,14 @@ package com.spaceprogram.sql.hsqldb;
 
 /** This is an initial beta of a class that will represent a query string */
 
-import java.util.List;
-import java.util.ArrayList;
-import java.sql.*;
+import java.sql.SQLException;
+import java.sql.Statement;
 
-import com.crossdb.sql.*;
+import com.crossdb.sql.ColumnValue;
+import com.crossdb.sql.DefaultUpdateQuery;
+import com.crossdb.sql.SQLDateTimeFormat;
+import com.crossdb.sql.SQLFormat;
+import com.crossdb.sql.UpdateQuery;
 
 public class HsqldbUpdateQuery extends DefaultUpdateQuery implements UpdateQuery {
 

@@ -1,9 +1,9 @@
 package com.spaceprogram.sql.mysql;
 
 
-import com.crossdb.sql.DefaultResultSet;
+import java.sql.ResultSet;
 
-import java.sql.*;
+import com.crossdb.sql.DefaultResultSet;
 
 public class MySQLResultSet extends DefaultResultSet implements ResultSet {
 

@@ -6,11 +6,14 @@
 
 package com.thinkvirtual.sql.oracle;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import com.crossdb.sql.*;
+import com.crossdb.sql.ColumnValue;
+import com.crossdb.sql.DefaultInsertQuery;
+import com.crossdb.sql.InsertQuery;
+import com.crossdb.sql.SQLDateTimeFormat;
+import com.crossdb.sql.SQLFormat;
 
 public class OracleInsertQuery extends DefaultInsertQuery implements InsertQuery {
     private String sequenceSuffix = "_seq";

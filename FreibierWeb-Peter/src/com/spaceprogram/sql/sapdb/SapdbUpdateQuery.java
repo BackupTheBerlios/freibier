@@ -8,11 +8,11 @@ package com.spaceprogram.sql.sapdb;
 
 
 
-import java.util.List;
-import java.util.ArrayList;
-import java.sql.*;
-
-import com.crossdb.sql.*;
+import com.crossdb.sql.ColumnValue;
+import com.crossdb.sql.DefaultUpdateQuery;
+import com.crossdb.sql.SQLDateTimeFormat;
+import com.crossdb.sql.SQLFormat;
+import com.crossdb.sql.UpdateQuery;
 
 public class SapdbUpdateQuery extends DefaultUpdateQuery implements UpdateQuery {
 

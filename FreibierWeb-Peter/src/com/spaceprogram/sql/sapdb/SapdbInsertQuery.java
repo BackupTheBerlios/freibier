@@ -2,10 +2,14 @@ package com.spaceprogram.sql.sapdb;
 
 /** This is an initial beta of a class that will represent a query string */
 
-import java.util.List;
-import java.util.ArrayList;
-import java.sql.*;
-import com.crossdb.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.crossdb.sql.ColumnValue;
+import com.crossdb.sql.DefaultInsertQuery;
+import com.crossdb.sql.InsertQuery;
+import com.crossdb.sql.SQLDateTimeFormat;
+import com.crossdb.sql.SQLFormat;
 
 public class SapdbInsertQuery extends DefaultInsertQuery implements InsertQuery {
     private String sequenceSuffix = "_seq";

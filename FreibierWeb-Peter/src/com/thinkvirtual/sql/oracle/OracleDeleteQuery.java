@@ -8,11 +8,8 @@
  */
 
 package com.thinkvirtual.sql.oracle;
-import java.util.List;
-import java.util.ArrayList;
-import java.sql.*;
-
-import com.crossdb.sql.*;
+import com.crossdb.sql.DefaultDeleteQuery;
+import com.crossdb.sql.DeleteQuery;
 
 
 public class OracleDeleteQuery extends DefaultDeleteQuery implements DeleteQuery {

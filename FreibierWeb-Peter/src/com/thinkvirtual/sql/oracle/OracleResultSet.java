@@ -6,10 +6,10 @@
  */
 package com.thinkvirtual.sql.oracle;
 
-import com.crossdb.sql.DefaultResultSet;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import com.crossdb.sql.DefaultResultSet;
 
 public class OracleResultSet extends DefaultResultSet {
 	public OracleResultSet(ResultSet rs) {

@@ -3,9 +3,11 @@ package com.spaceprogram.sql.hsqldb;
 /** This is an initial beta of a class that will represent a query string */
 
 import java.util.List;
-import java.util.ArrayList;
 
-import com.crossdb.sql.*;
+import com.crossdb.sql.DefaultSelectQuery;
+import com.crossdb.sql.Join;
+import com.crossdb.sql.WhereClause;
+import com.crossdb.sql.WhereCondition;
 
 public class HsqldbSelectQuery extends DefaultSelectQuery {
 

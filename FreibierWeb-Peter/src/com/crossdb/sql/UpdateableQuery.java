@@ -13,8 +13,8 @@
  */
 package com.crossdb.sql;
 
-import java.util.List;
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface UpdateableQuery extends ExecuteUpdate
  {

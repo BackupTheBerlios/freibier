@@ -1,9 +1,9 @@
 package com.spaceprogram.sql.sapdb;
 
 
-import com.crossdb.sql.DefaultResultSet;
+import java.sql.ResultSet;
 
-import java.sql.*;
+import com.crossdb.sql.DefaultResultSet;
 
 public class SapdbResultSet extends DefaultResultSet implements ResultSet {
 

@@ -7,11 +7,11 @@
  */
 package com.thinkvirtual.sql.oracle;
 
-import com.crossdb.sql.WhereCondition;
+import java.util.List;
+
 import com.crossdb.sql.SQLDateTimeFormat;
 import com.crossdb.sql.WhereClause;
-
-import java.util.List;
+import com.crossdb.sql.WhereCondition;
 
 public class OracleWhereFormat {
 
