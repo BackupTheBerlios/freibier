@@ -1,4 +1,4 @@
-// $Id: DatabaseFactory.java,v 1.2 2005/01/28 17:13:25 phormanns Exp $
+// $Id: DatabaseFactory.java,v 1.3 2005/02/11 15:25:45 phormanns Exp $
 package de.jalin.freibier.database;
 
 import de.jalin.freibier.database.exception.DatabaseException;
@@ -19,14 +19,21 @@ public class DatabaseFactory {
      * @return Database
      * @throws DatabaseException
      */
-	public static Database getDatabaseInstance(String dbName, String dbServer,
-			String dbUser, String dbPassword) throws DatabaseException {
-		Database db = new DatabaseImpl(dbName, dbServer, dbUser, dbPassword);
+	public static Database getDatabaseInstance(
+	        String sqlFactoryClass,
+	        String jdbcDriverClass,
+	        String jdbcConnectUrl,
+			String dbUser, 
+			String dbPassword) throws DatabaseException {
+		Database db = new DatabaseImpl(sqlFactoryClass, jdbcDriverClass , jdbcConnectUrl, dbUser, dbPassword);
 		return db;
 	}
 }
 /*
  *  $Log: DatabaseFactory.java,v $
+ *  Revision 1.3  2005/02/11 15:25:45  phormanns
+ *  Zwischenstand, nicht funktionierend
+ *
  *  Revision 1.2  2005/01/28 17:13:25  phormanns
  *  Schnittstelle dokumentiert.
  *

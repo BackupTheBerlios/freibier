@@ -1,4 +1,4 @@
-//$Id: TableImpl.java,v 1.4 2005/01/31 21:05:38 phormanns Exp $
+//$Id: TableImpl.java,v 1.5 2005/02/11 15:25:45 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -16,6 +16,7 @@ import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.exception.UserDatabaseException;
+import de.jalin.freibier.database.impl.type.TypeDefinitionForeignKey;
 
 /**
  * Repraesentiert eine einzelne Tabelle aus einer Datenbank. Zugriffe auf diese
@@ -24,7 +25,7 @@ import de.jalin.freibier.database.exception.UserDatabaseException;
  * 
  * @author tbayen
  */
-public abstract class TableImpl implements Table {
+public class TableImpl implements Table {
 	
 	private static Log log = LogFactory.getLog(TableImpl.class);
 	
@@ -35,32 +36,18 @@ public abstract class TableImpl implements Table {
 	private List columnslist = null;
 	private String primaryKey = null;
 
-	public TableImpl(DatabaseImpl db, String name) {
+	protected TableImpl(DatabaseImpl db, String name) {
 		this.db = db;
 		this.name = name;
 		columnshash = new HashMap();
 		columnslist = new ArrayList();
 	}
 
-	protected abstract String makeSelectStatement();
-	
-	protected abstract String makeWhereExpression(String columnName, Object value) throws DatabaseException;
-	
-	protected abstract String makeOrderByExpression(String columnName, boolean ascending) throws DatabaseException;
-	
-	protected abstract String makeDeleteStatement(String value) throws DatabaseException;
-
-	protected abstract String makeReplaceStatement(Record data) throws DatabaseException;
-
-	protected abstract String makeCountStatement() throws DatabaseException;
-
-	protected abstract String makeSelectGivenColumns(List colNames);
-	
 	public String getPrimaryKey() {
 		return primaryKey;
 	}
 
-	public void setPrimaryKey(String primaryKey) {
+	protected void setPrimaryKey(String primaryKey) {
 		this.primaryKey = primaryKey;
 	}
 
@@ -86,7 +73,7 @@ public abstract class TableImpl implements Table {
 		return (TypeDefinitionImpl) columnslist.get(column);
 	}
 
-	public int fieldName2Int(String name) throws SystemDatabaseException {
+	private int fieldName2Int(String name) throws SystemDatabaseException {
 		String erg = "";
 		for (int i = 0; i < columnslist.size(); i++) {
 			if (((TypeDefinitionImpl) (columnslist.get(i))).getName().equals(name)) {
@@ -97,7 +84,7 @@ public abstract class TableImpl implements Table {
 				+ "' nicht vorhanden.", log);
 	}
 
-	public RecordImpl getEmptyRecord() {
+	private RecordImpl getEmptyRecord() {
 		Map mrbean = new HashMap();
 		Iterator i = columnslist.iterator();
 		TypeDefinitionImpl typdef = null;
@@ -194,11 +181,11 @@ public abstract class TableImpl implements Table {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public RecordImpl getRecordByNumber(int recordNr) throws DatabaseException {
+	private RecordImpl getRecordByNumber(int recordNr) throws DatabaseException {
 		return getRecordByNumber(recordNr, this.getPrimaryKey(), true);
 	}
 
-	public RecordImpl getRecordByNumber(int recordNr, String orderColumn,
+	private RecordImpl getRecordByNumber(int recordNr, String orderColumn,
 			boolean ascending) throws DatabaseException {
 		// Ich sortiere nicht nur nach der orderColumn, sondern auch nach der
 		// Primärspalte, damit die Reihenfolge bei gleichen Daten immer 
@@ -310,9 +297,110 @@ public abstract class TableImpl implements Table {
 	protected List getColumnsList() {
 		return columnslist;
 	}
+
+    /**
+     * Ergibt ein SQL-Select-Statement, das geeignet ist, alle Daten für diese
+     * Tabelle einzulesen. Dabei werden auch durch Fremdschlüssel referenzierte
+     * Werte miteingelesen. 
+     * 
+     * Das Statement enthaelt immer eine WHERE-Klausel am Ende, so dass mit 
+     * "AND ..." weitere WHERE-Bedingungen angehaengt werden koennen.
+     */
+    protected String makeSelectStatement() {
+    	String felder = "";
+    	String tabellen = "`" + getName() + "`";
+    	String where = null;
+    	Iterator i = getColumnsList().iterator();
+    	TypeDefinitionImpl feldtyp;
+    	while (i.hasNext()) {
+    		feldtyp = (TypeDefinitionImpl) i.next();
+    		if (!felder.equals("")) {
+    			felder += ", ";
+    		}
+    		felder += getName() + "." + feldtyp.getName();
+    		if (feldtyp instanceof TypeDefinitionForeignKey) {
+    			String tabelle = feldtyp.getProperty("foreignkey.table");
+    			String spalte = feldtyp.getProperty("foreignkey.resultcolumn");
+    			felder += ", " + tabelle + "." + spalte + " AS " + feldtyp.getName() +"_foreign";
+    			tabellen += ", `" + tabelle + "`";
+    			if (where == null) {
+    				where = " WHERE ";
+    			} else {
+    				where += " AND ";
+    			}
+    			where += getName() + "." + feldtyp.getName() + "=" + tabelle
+    					+ "." + feldtyp.getProperty("foreignkey.indexcolumn");
+    		}
+    	}
+    	if (where == null)
+    		where = " WHERE 1";
+    	return "SELECT " + felder + " FROM " + tabellen + where;
+    	// Beispiel:
+    	// SELECT adressen.vorname, adressen.nachname, adressen.lebensalter, adressen.sprache, programmiersprachen.name, 
+    	// adressen.id FROM `adressen`,Programmiersprachen where programmiersprachen.id=adressen.sprache
+    }
+
+    protected String makeWhereExpression(String columnName, Object value) throws DatabaseException {
+    	TypeDefinition def = this.getFieldDef(columnName);
+    	return (getName() + "." + def.getName() + "=" 
+    			+ SQLPrinter.print(new DataObject(value, def)));
+    }
+
+    protected String makeDeleteStatement(String value) throws DatabaseException {
+    	String stmt = "DELETE FROM "
+    			+ getName()
+    			+ " WHERE "
+    			+ makeWhereExpression(this.getPrimaryKey(), value);
+    	return null;
+    }
+
+    protected String makeReplaceStatement(Record data) throws DatabaseException {
+    	String sql = "REPLACE INTO `" + getName() + "` SET ";
+    	for (int i = 0; i < this.getFieldsList().size(); i++) {
+    		if (i != 0) {
+    			sql += ", ";
+    		}
+    		String feldname = this.getFieldDef(i).getName();
+    		sql += "`" + feldname + "` = "
+    				+ SQLPrinter.print(data.getField(feldname));
+    	}
+    	return sql;
+    }
+
+    protected String makeOrderByExpression(String columnName, boolean ascending) throws DatabaseException {
+    	String orderBy = "";
+    	if (columnName != null && columnName.length() > 0) {
+    		orderBy = "ORDER BY "
+    				+ getName() + "." + columnName + (ascending ? " ASC" : " DESC")
+    				+ ", " + getName() + "." + getPrimaryKey()
+    				+ (ascending ? " ASC" : " DESC");
+    	}
+    	return orderBy;
+    }
+
+    protected String makeCountStatement() throws DatabaseException {
+        return "SELECT COUNT(*) AS RECORDCNT FROM " + getName();
+    }
+
+    protected String makeSelectGivenColumns(List colNames) {
+        String statement = "";
+        Iterator i = colNames.iterator();
+        while (i.hasNext()) {
+            if (!statement.equals("")) {
+                statement += ", ";
+            }
+            statement += (String) i.next();
+        }
+        String select = "SELECT " + statement + " FROM " + this.getName()
+                + " ORDER BY " + this.getPrimaryKey();
+        return select;
+    }
 }
 /*
  * $Log: TableImpl.java,v $
+ * Revision 1.5  2005/02/11 15:25:45  phormanns
+ * Zwischenstand, nicht funktionierend
+ *
  * Revision 1.4  2005/01/31 21:05:38  phormanns
  * PgSqlTableImpl angelegt
  *

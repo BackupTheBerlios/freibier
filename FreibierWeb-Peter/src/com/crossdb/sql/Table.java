@@ -1,8 +1,7 @@
 /*
-
 Represents a table in a database.
-
-So holds a list of columns.
+So holds a list of columns. 
+*/
 /**
  * <p>Title: crossdb</p>
  * <p>Description: </p>
@@ -14,7 +13,7 @@ So holds a list of columns.
 package com.crossdb.sql;
 import java.util.List;
 
-public class Table extends Object {
+public class Table {
 
 	String name;
 //	String display_name;

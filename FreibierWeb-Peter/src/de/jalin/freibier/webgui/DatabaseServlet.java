@@ -1,4 +1,4 @@
-// $Id: DatabaseServlet.java,v 1.3 2005/01/29 20:21:59 phormanns Exp $
+// $Id: DatabaseServlet.java,v 1.4 2005/02/11 15:25:45 phormanns Exp $
 
 package de.jalin.freibier.webgui;
 
@@ -30,12 +30,13 @@ public class DatabaseServlet extends VelocityServlet {
 
 	public void init() throws ServletException {
 		super.init();
-		String dbServer = getInitParameter("dbserver");
-		String dbInstance = getInitParameter("dbinstance");
-		String dbUser = getInitParameter("dbuser");
-		String dbPassword = getInitParameter("dbpassword");
+		String sqlFactoryClass = getInitParameter("sqlFactoryClass");
+		String jdbcDriverClass = getInitParameter("jdbcDriverClass");
+		String dbUser = getInitParameter("dbUser");
+		String jdbcConnectUrl = getInitParameter("jdbcConnectUrl");
+		String dbPassword = getInitParameter("dbPassword");
 		try {
-			db = DatabaseFactory.getDatabaseInstance(dbInstance, dbServer, dbUser, dbPassword);
+			db = DatabaseFactory.getDatabaseInstance(sqlFactoryClass, jdbcDriverClass, jdbcConnectUrl, dbUser, dbPassword);
 		} catch (DatabaseException e) {
 			log("Keine Verbindung zur Datenbank", e);
 		}
@@ -155,6 +156,9 @@ public class DatabaseServlet extends VelocityServlet {
 
 /*
  * $Log: DatabaseServlet.java,v $
+ * Revision 1.4  2005/02/11 15:25:45  phormanns
+ * Zwischenstand, nicht funktionierend
+ *
  * Revision 1.3  2005/01/29 20:21:59  phormanns
  * RecordDefinition in TableImpl integriert
  *

@@ -1,4 +1,4 @@
-//$Id: DatabaseImpl.java,v 1.3 2005/01/29 22:10:02 phormanns Exp $
+//$Id: DatabaseImpl.java,v 1.4 2005/02/11 15:25:45 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -21,6 +21,9 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
+
+import com.crossdb.sql.SQLFactory;
+
 import de.jalin.freibier.database.Database;
 import de.jalin.freibier.database.Table;
 import de.jalin.freibier.database.exception.DatabaseException;
@@ -30,8 +33,8 @@ import de.jalin.freibier.database.exception.UserDatabaseException;
 /**
  * @author tbayen
  * 
- * Ein Objekt dieser Klasse ist die Basis für alle Datenzugriffe. Es
- * repräsentiert z.B. eine MySQL-Datenbank. Aus diesem Objekt können dann
+ * Ein Objekt dieser Klasse ist die Basis fuer alle Datenzugriffe. Es
+ * repraesentiert z.B. eine MySQL-Datenbank. Aus diesem Objekt koennen dann
  * Tabellen (class TableImpl) extrahiert werden, in denen die eigentlichen Daten
  * stehen.
  */
@@ -39,124 +42,161 @@ public class DatabaseImpl implements Database {
 	
 	private static Log log = LogFactory.getLog(DatabaseImpl.class);
 	
-	private Connection conn;
-	private String name, server, user, password;
-	private String propertyPath="";
-	
+	private SQLFactory sqlFactory = null;
+	private Connection conn = null;
+	private String propertyPath = "";
+	private String sqlFactoryClass = null;
+	private String jdbcDriverClass = null;
+	private String dbUser = null;
+	private String jdbcConnectUrl = null;
+	private String dbPassword = null;
+	private List tableNamesList = null;
+	private Map tablesMap = null;
+                                
 	/**
 	 * Konstruktor
 	 */
-	public DatabaseImpl(String name, String server, String user, String password)
+	public DatabaseImpl(String sqlFactoryClass, 
+	        String jdbcDriverClass, 
+	        String jdbcConnectUrl, 
+	        String dbUser, 
+	        String dbPassword)
 			throws DatabaseException {
 		super();
 		log.trace("Konstruktor");
-		this.name = name;
-		this.server = server;
-		this.user = user;
-		this.password = password;
+		this.sqlFactoryClass = sqlFactoryClass;
+		this.jdbcDriverClass = jdbcDriverClass;
+		this.jdbcConnectUrl = jdbcConnectUrl;
+		this.dbUser = dbUser;
+		this.dbPassword = dbPassword;
 		openConnection();
 	}
 
-	public void setPropertyPath(String path){
-		this.propertyPath=path;
-		if(propertyPath.charAt(propertyPath.length()-1)!='.'){
-			this.propertyPath+=".";
-		}
-	}
-	
-	private void openConnection() throws DatabaseException {
-		log.trace("openConnection");
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			/*
-			 * Ist der JDBC-Treiber nicht, installiert, kann man dies z.B. durch
-			 * das Debian-Paket "libmysql-java" nachholen. Dann muss die
-			 * Mysql-JDBC-Bibliothek in den Pfad für Bibliotheken eingebunden
-			 * werden. Dies geht bei Eclipse z.B. unter dem Menüpunkt
-			 * Project/Properties auf der Karte Java Build Path/Libraries.
-			 */
-			throw new SystemDatabaseException(
-					"JDBC-Treiber für MySQL kann nicht geladen werden", e, log);
-		};
-		try {
-			conn = DriverManager.getConnection("jdbc:mysql://" + server + "/"
-					+ name + "?autoReconnect=true", user, password);
-		} catch (SQLException e2) {
-			throw new UserDatabaseException("Verbindung zur SQL-Datenbank '"
-					+ name + "' kann nicht geöffnet werden", e2);
-		}
-	}
+	/**
+     * Ergibt eine Liste von Strings, die die Namen der Tabellen enthaelt, die
+     * in der Datenbank angelegt sind.
+     * 
+     * @return
+     * @throws SystemDatabaseException
+     */
+    public List getTableNamesList() throws SystemDatabaseException {
+        if (tableNamesList == null) {
+            tableNamesList = new ArrayList();
+            try {
+                ResultSet rs 
+                		= conn.getMetaData().getTables(null, null, "%", null);
+                while (rs.next()) {
+                    tableNamesList.add(rs.getString("TABLE_NAME"));
+                }
+                rs.close();
+            } catch (SQLException e) {
+                throw new SystemDatabaseException(
+                        "Kann Tabellenliste nicht lesen", e, log);
+            }
+        }
+        return tableNamesList;
+    }
 
-	public boolean ok() {
+    public Table getTable(String name) throws SystemDatabaseException {
+        TableImpl tab = (TableImpl) tablesMap.get(name);
+        if (tab == null) {
+		    	try {
+		    		ResultSet columns 
+		    			= conn.getMetaData().getColumns(null, null, name, "%");
+		    		tab = new TableImpl(this, name);
+		    		ResourceBundle resource = null;
+		    		try {
+		    			log.debug("Suche Property File: " + propertyPath + name);
+		    			resource = ResourceBundle.getBundle(propertyPath + name);
+		    			log.debug("Resource: " + resource);
+		    		} catch (MissingResourceException e) {
+		    			log.debug("Missing Resource: " + propertyPath + name);
+		    		}
+		    		while (columns.next()) {
+		    			TypeDefinitionImpl typ = TypeDefinitionImpl.create(
+		    					columns.getString("COLUMN_NAME"), 
+		    					columns.getInt("DATA_TYPE"),
+		    					columns.getInt("COLUMN_SIZE"),
+		    					resource,this);
+		    			tab.addColumn(typ);
+		    		}
+		    		columns.close();
+		    		ResultSet primarykeys 
+		    			= conn.getMetaData().getPrimaryKeys(null, null, name);
+		    		if (primarykeys.next()) {
+		    			tab.setPrimaryKey(primarykeys.getString("COLUMN_NAME"));
+		    			if (primarykeys.next()) {
+		    				throw new SystemDatabaseException(
+		    						"Mehrere Primaerschluesselspalten sind nicht erlaubt",
+		    						log);
+		    			}
+		    		} else {
+		    			throw new SystemDatabaseException(
+		    					"Keine Primaerschluesselspalte definiert", log);
+		    		}
+		    		primarykeys.close();
+		    	} catch (SQLException e) {
+		    	    throw new SystemDatabaseException("", e, log);
+		    	}
+        }
+        return tab;
+    }
+	
+	public void close() throws SystemDatabaseException {
+    	log.trace("close");
+    	try {
+    		if (conn != null) {
+    			conn.close();
+    		}
+    	} catch (SQLException e) {
+    		throw new SystemDatabaseException(
+    				"Fehler beim schliessen der Datenbank", e, log);
+    	}
+    }
+
+    private void openConnection() throws DatabaseException {
+    	log.trace("openConnection");
+    	Class sqlFactoryClassClass = null;
+    	try {
+            sqlFactoryClassClass = Class.forName(sqlFactoryClass);
+            sqlFactory = (SQLFactory) sqlFactoryClassClass.newInstance();
+        } catch (ClassNotFoundException e) {
+    		throw new SystemDatabaseException(
+    				"SQL-Factory fuer die Datenbank kann nicht geladen werden", e, log);
+        } catch (InstantiationException e) {
+    		throw new SystemDatabaseException(
+    				"SQL-Factory fuer die Datenbank kann nicht erzeugt werden", e, log);
+        } catch (IllegalAccessException e) {
+    		throw new SystemDatabaseException(
+    				"SQL-Factory fuer die Datenbank kann nicht erzeugt werden", e, log);
+        }
+    	try {
+    		Class.forName(jdbcDriverClass);
+    	} catch (ClassNotFoundException e) {
+    		throw new SystemDatabaseException(
+    				"JDBC-Treiber fuer die Datenbank kann nicht geladen werden", e, log);
+    	};
+    	try {
+    		conn = DriverManager.getConnection(jdbcConnectUrl, dbUser, dbPassword);
+    	} catch (SQLException e) {
+    		throw new UserDatabaseException(
+    		        "Verbindung zur SQL-Datenbank kann nicht geoeffnet werden", e, log);
+    	}
+    }
+
+    protected void setPropertyPath(String path){
+    	this.propertyPath=path;
+    	if(propertyPath.charAt(propertyPath.length() - 1) != '.') {
+    		this.propertyPath += ".";
+    	}
+    }
+
+	protected boolean ok() {
 		log.trace("ok");
 		return (conn != null);
 	}
 
-	/**
-	 * Ergibt eine Liste von Strings, die die Namen der Tabellen enthält, die
-	 * in der Datenbank angelegt sind.
-	 * 
-	 * @return
-	 * @throws SystemDatabaseException
-	 */
-	public List getTableNamesList() throws SystemDatabaseException {
-		List liste = new ArrayList();
-		try {
-			ResultSet rs = conn.getMetaData().getTables(null, null, "%", null);
-			while (rs.next()) {
-				liste.add(rs.getString("TABLE_NAME"));
-			}
-			rs.close();
-		} catch (SQLException e) {
-			throw new SystemDatabaseException("Kann Tabellenliste nicht lesen",
-					e, log);
-		}
-		return liste;
-	}
-
-	public Table getTable(String name) throws SystemDatabaseException {
-		try {
-			ResultSet columns 
-				= conn.getMetaData().getColumns(null, null, name, "%");
-			TableImpl tab = new MysqlTableImpl(this, name);
-			ResourceBundle resource = null;
-			try {
-				log.debug("Suche Property File: "+propertyPath+name);
-				resource = ResourceBundle.getBundle(propertyPath+name);
-				//log.debug("Resource: "+resource);
-			} catch (MissingResourceException e) {
-			}
-			while (columns.next()) {
-				TypeDefinitionImpl typ = TypeDefinitionImpl.create(
-						columns.getString("COLUMN_NAME"), 
-						columns.getInt("DATA_TYPE"),
-						columns.getInt("COLUMN_SIZE"),
-						resource,this);
-				tab.addColumn(typ);
-			}
-			columns.close();
-			ResultSet primarykeys = conn.getMetaData().getPrimaryKeys(null,
-					null, name);
-			if (primarykeys.next()) {
-				tab.setPrimaryKey(primarykeys.getString("COLUMN_NAME"));
-				if (primarykeys.next()) {
-					throw new SystemDatabaseException(
-							"Mehrere Primärschlüsselspalten sind nicht erlaubt",
-							log);
-				}
-			} else {
-				throw new SystemDatabaseException(
-						"Keine Primärschlüsselspalte definiert", log);
-			}
-			primarykeys.close();
-			return tab;
-		} catch (SQLException e) {
-			throw new SystemDatabaseException("", e, log);
-		}
-	}
-
-	public void executeSqlFile(String filename) throws SystemDatabaseException {
+	protected void executeSqlFile(String filename) throws SystemDatabaseException {
 		log.trace("executeSqlFile");
 		String sql = "";
 		try {
@@ -197,7 +237,7 @@ public class DatabaseImpl implements Database {
 		}
 	}
 
-	public Map executeSelectSingleRow(String sql, int recordNr) throws DatabaseException {
+	protected Map executeSelectSingleRow(String sql, int recordNr) throws DatabaseException {
 		log.trace("executeSelectSingleRow");
 		Map hash = new HashMap();
 		try {
@@ -223,7 +263,7 @@ public class DatabaseImpl implements Database {
 		return hash;
 	}
 
-	public List executeSelectMultipleRows(String sql, int startRecordNum, int numberOfRecords) throws DatabaseException {
+	protected List executeSelectMultipleRows(String sql, int startRecordNum, int numberOfRecords) throws DatabaseException {
 		log.trace("executeSelectMultipleRows");
 		List resultList = new ArrayList();
 		Map hash = null;
@@ -263,7 +303,7 @@ public class DatabaseImpl implements Database {
 		return resultList;
 	}
 
-	public void executeUpdate(String sql) throws DatabaseException {
+	protected void executeUpdate(String sql) throws DatabaseException {
 		log.trace("executeUpdate");
 		try {
 			Statement st = conn.createStatement();
@@ -279,21 +319,12 @@ public class DatabaseImpl implements Database {
 					"SQL-Update kann die Datenbank nicht erreichen", e, log);
 		}
 	}
-
-	public void close() throws SystemDatabaseException {
-		log.trace("close");
-		try {
-			if (conn != null) {
-				conn.close();
-			}
-		} catch (SQLException e) {
-			throw new SystemDatabaseException(
-					"Fehler beim schliessen der Datenbank", e, log);
-		}
-	}
 }
 /*
  * $Log: DatabaseImpl.java,v $
+ * Revision 1.4  2005/02/11 15:25:45  phormanns
+ * Zwischenstand, nicht funktionierend
+ *
  * Revision 1.3  2005/01/29 22:10:02  phormanns
  * SQL zum Teil nach MysqlTableImpl verschoben
  * MySQL LIMIT-Statement durch JDBC 3.0 ersetzt
