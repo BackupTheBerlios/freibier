@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionInteger.java,v 1.6 2005/03/01 21:56:32 phormanns Exp $
+//$Id: TypeDefinitionInteger.java,v 1.7 2005/03/03 22:32:45 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -42,18 +42,6 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 		}
 	}
 
-	public String printSQL(Object i) throws SystemDatabaseException {
-		if (i != null) {
-			if (i instanceof Number) {
-				return i.toString();
-			} else {
-				throw new SystemDatabaseException("Number-Objekt erwartet", log);
-			}
-		} else {
-			return "0";
-		}
-	}
-
 	public ValueObject parse(String s) throws UserDatabaseException {
 		ValueObject longValue = null;
 		try {
@@ -80,6 +68,9 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionInteger.java,v $
+ * Revision 1.7  2005/03/03 22:32:45  phormanns
+ * Arbeit an ForeignKeys
+ *
  * Revision 1.6  2005/03/01 21:56:32  phormanns
  * Long immer als Value-Objekt zu Number-Typen
  * setRecord macht Insert, wenn PK = Default-Value

@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionImpl.java,v 1.8 2005/02/24 13:52:12 phormanns Exp $
+//$Id: TypeDefinitionImpl.java,v 1.9 2005/03/03 22:32:45 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -11,12 +11,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
 import com.crossdb.sql.Column;
+import de.jalin.freibier.database.Database;
 import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.impl.type.TypeDefinitionDate;
 import de.jalin.freibier.database.impl.type.TypeDefinitionDateTime;
 import de.jalin.freibier.database.impl.type.TypeDefinitionFloat;
+import de.jalin.freibier.database.impl.type.TypeDefinitionForeignKey;
 import de.jalin.freibier.database.impl.type.TypeDefinitionInteger;
 import de.jalin.freibier.database.impl.type.TypeDefinitionString;
 import de.jalin.freibier.database.impl.type.TypeDefinitionTime;
@@ -67,13 +69,12 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 	/**
 	 * virtueller Konstruktor / Factory-Methode
 	 * @param db
-	 * 
-	 * @throws SystemDatabaseException
+	 * @throws DatabaseException
 	 *  
 	 */
 	public static TypeDefinitionImpl create(Column col, 
-			ResourceBundle resource, DatabaseImpl db)
-			throws SystemDatabaseException {
+			ResourceBundle resource, Database db)
+			throws DatabaseException {
 		TypeDefinitionImpl typeDef = null;
 		Map propsMap = null;
 		try {
@@ -83,23 +84,22 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 				propsMap = new HashMap();
 			}
 			if (propsMap.containsKey("length")) {
+				// TODO hier koennte man noch Props ueber Foreignkeys lesen
 				col.setSize(Integer.parseInt((String) propsMap.get("length")));
 			}
-			String foreignKeyTable = (String) propsMap.get("foreignkey.table");
 			typeDef = (TypeDefinitionImpl) 
 				((Class) typesMap.get(new Integer(col.getType()))).newInstance();
-			// TODO neue Foreign Key Implementierung 
-//			if (foreignKeyTable != null) {
-//				typeDef.setProperties(propsMap);
-//				typeDef.setSQLType(type);
-//				typeDef.setName(name);
-//				typeDef.setLength(length);
-//				typeDef = new TypeDefinitionForeignKey(typeDef, db);
-//			}
 			typeDef.setProperties(propsMap);
 			typeDef.setSQLType(col.getType());
 			typeDef.setName(col.getName());
 			typeDef.setLength(col.getSize());
+			if (col.isForeignKey()) {
+				typeDef = new TypeDefinitionForeignKey(typeDef, col, db);
+				typeDef.setProperties(propsMap);
+				typeDef.setSQLType(col.getType());
+				typeDef.setName(col.getName());
+				typeDef.setLength(col.getSize());
+			}
 		} catch (InstantiationException e) {
 			throw new SystemDatabaseException(
 					"Spezialisierung von TypeDefinition fehlt (1)", e, log);
@@ -251,6 +251,9 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionImpl.java,v $
+ * Revision 1.9  2005/03/03 22:32:45  phormanns
+ * Arbeit an ForeignKeys
+ *
  * Revision 1.8  2005/02/24 13:52:12  phormanns
  * Mit Tests begonnen
  *

@@ -1,4 +1,4 @@
-// $Id: TypeDefinition.java,v 1.6 2005/03/01 21:56:32 phormanns Exp $
+// $Id: TypeDefinition.java,v 1.7 2005/03/03 22:32:45 phormanns Exp $
 package de.jalin.freibier.database;
 
 import com.crossdb.sql.InsertQuery;
@@ -80,15 +80,6 @@ public interface TypeDefinition {
 	public abstract String printText(Object s) throws DatabaseException;
 
 	/**
-	 * Diese Methode ergibt eine SQL-String-Version des Wertes. 
-	 * Er wird fuer den Aufbau von SQL benutzt.
-	 * @param s
-	 * @return
-	 * @throws SystemDatabaseException
-	 */
-	public abstract String printSQL(Object s) throws DatabaseException;
-
-	/**
 	 * Diese Methode parst den angegebenen String, der z.B. aus einem 
 	 * Texteingabefeld stammen kann und wandelt ihn in die interne Repraesentation
 	 * des Datentyps.
@@ -123,6 +114,9 @@ public interface TypeDefinition {
 }
 /*
  *  $Log: TypeDefinition.java,v $
+ *  Revision 1.7  2005/03/03 22:32:45  phormanns
+ *  Arbeit an ForeignKeys
+ *
  *  Revision 1.6  2005/03/01 21:56:32  phormanns
  *  Long immer als Value-Objekt zu Number-Typen
  *  setRecord macht Insert, wenn PK = Default-Value

@@ -9,7 +9,7 @@
       <tr>
         <#list tablenames as tabname>
           <td bgcolor="#ee00ee">
-        	    <a href="?table=${tabname}">${tabname}</a>
+        	    <a href="?action=table&table=${tabname}">${tabname}</a>
           </td>
         </#list>
       </tr>

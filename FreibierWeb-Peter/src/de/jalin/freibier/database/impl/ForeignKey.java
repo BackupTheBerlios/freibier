@@ -1,4 +1,4 @@
-//$Id: ForeignKey.java,v 1.2 2005/02/18 22:17:42 phormanns Exp $
+//$Id: ForeignKey.java,v 1.3 2005/03/03 22:32:45 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 public class ForeignKey {
 	
 	protected static Log log = LogFactory.getLog(ForeignKey.class);
+	
 	private Object key;
 	private Object content;
 
@@ -41,6 +42,9 @@ public class ForeignKey {
 }
 /*
  * $Log: ForeignKey.java,v $
+ * Revision 1.3  2005/03/03 22:32:45  phormanns
+ * Arbeit an ForeignKeys
+ *
  * Revision 1.2  2005/02/18 22:17:42  phormanns
  * Umstellung auf Freemarker begonnen
  *

@@ -1,16 +1,17 @@
-//$Id: TypeDefinitionForeignKey.java,v 1.9 2005/03/01 21:56:32 phormanns Exp $
+//$Id: TypeDefinitionForeignKey.java,v 1.10 2005/03/03 22:32:45 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import com.crossdb.sql.Column;
 import com.crossdb.sql.InsertQuery;
 import com.crossdb.sql.UpdateQuery;
+import de.jalin.freibier.database.DBTable;
+import de.jalin.freibier.database.Database;
 import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
-import de.jalin.freibier.database.impl.DatabaseImpl;
 import de.jalin.freibier.database.impl.ForeignKey;
 import de.jalin.freibier.database.impl.TypeDefinitionImpl;
 import de.jalin.freibier.database.impl.ValueObject;
@@ -22,60 +23,21 @@ import de.jalin.freibier.database.impl.ValueObject;
  */
 public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 	
-	private TypeDefinition indexType = null;
-	private TypeDefinition referenceType = null; // kann (bei Problemen) auch null sein
 	// Ich muss mir die DatabaseImpl merken, um auf den referenzierten Wert zugreifen zu koennen
-	private DatabaseImpl db;
+	private Database db;
+	private String foreignPrimaryKey;
+	private String foreignTable;
+	private TypeDefinition indexType = null;
+	private TypeDefinition referenceType = null; 
 
-	public TypeDefinitionForeignKey(TypeDefinition indexType, DatabaseImpl db)
-			throws DatabaseException {
-		super();
-		log.trace("TypeDefinitionForeignKey Constructor");
-		// Die Datenbank merke ich mir, weil man die ggf. braucht, um auf die
-		// referenzierte Tabelle zugreifen zu koennen.
+	public TypeDefinitionForeignKey(TypeDefinition typeDef, Column col, Database db) throws DatabaseException {
 		this.db = db;
-		// So, wie ich mir in ForeignKey den Index und den Content merke, merke
-		// ich mir hier die Typen von beiden, um diese z.B. im NicePrinter beide 
-		// formatieren zu koennen.
-		this.indexType = indexType;
-		if (db != null) {
-			referenceType = db.getTable(
-					indexType.getProperty("foreignkey.table"))
-						.getFieldDef(indexType.getProperty("foreignkey.resultcolumn"));
-		}
-		// Default Value setzen:
-		String defaultProp = getProperty("default");
-		if (defaultProp != null) {
-			try {
-				defaultValue = new ForeignKey(indexType.parse(defaultProp),
-						null);
-			} catch (DatabaseException e1) {
-				log.error("Default Foreign Key kann nicht gelesen werden", e1);
-				defaultValue = null;
-			}
-		} else {
-			List list = new ArrayList();
-			String indexColumn = indexType
-					.getProperty("foreignkey.indexcolumn");
-			String resultColumn = indexType
-					.getProperty("foreignkey.resultcolumn");
-			list.add(indexColumn);
-			list.add(resultColumn);
-			try {
-				Map hash = ((Map) db.getTable(
-						indexType.getProperty("foreignkey.table"))
-									.getGivenColumns(list, 1).get(0));
-				log.debug("Wert: " + hash.get(indexColumn));
-				Object keyVal=((ValueObject) hash
-						.get(indexColumn)).getValue();
-				Object contentVal=((ValueObject) hash
-						.get(resultColumn)).getValue();
-				defaultValue = new ForeignKey(keyVal, contentVal);
-			} catch (DatabaseException e) {
-				log.error("Kann keinen default Foreign Key festlegen");
-				defaultValue = null;
-			}
-		}
+		this.foreignTable = col.getForeignTable();
+		this.foreignPrimaryKey = col.getForeignPrimaryKey();
+		this.indexType = typeDef;
+		this.indexType.setName(col.getForeignPrimaryKey());
+		DBTable tab = db.getTable(this.foreignTable);
+		this.referenceType = tab.getFieldDef((String) tab.getFieldsList().get(1));
 	}
 
 	public Class getJavaType() {
@@ -86,11 +48,6 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 		return indexType.printText(((ForeignKey) s).getKey());
 	}
 
-
-	public String printSQL(Object s) throws DatabaseException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	public ValueObject parse(String s) throws DatabaseException {
 		return new ValueObject(new ForeignKey(indexType.parse(s), null), this);
 	}
@@ -108,32 +65,29 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 	}
 
 	/**
-	 * Diese Methode ergibt eine Liste von Hashes. In jedem Hash sind zwei
-	 * Eintraege unter dem Namen der Indexspalte und der Resultspalte. Diese
-	 * enthalten die Werte aus der fremden Tabelle. So ergibt sich eine Liste
-	 * aller moeglichen Werte fuer den Fremdschluessel.
+	 * Diese Methode ergibt eine Liste von Records mit nur zwei Spalten.  
+	 * So ergibt sich eine Liste aller moeglichen Werte fuer den Fremdschluessel.
 	 */
 	public List getPossibleValues() throws DatabaseException {
 		List list = new ArrayList();
-		list.add(getProperty("foreignkey.indexcolumn"));
-		list.add(getProperty("foreignkey.resultcolumn"));
-		list = db.getTable(getProperty("foreignkey.table")).getGivenColumns(
-				list, 0);
-		return list;
-	}
-
-	public void addColumn(UpdateQuery query, Printable printable) {
-		// TODO Auto-generated method stub
-		
+		list.add(foreignPrimaryKey);
+		list.add(referenceType.getName());
+		return db.getTable(foreignTable).getGivenColumns(list, 10);
 	}
 
 	public void addColumn(InsertQuery query, Printable printable) {
-		// TODO Auto-generated method stub
-		
+		query.addColumn(printable.getName(), ((Long) printable.getValue()).intValue());
+	}
+
+	public void addColumn(UpdateQuery query, Printable printable) {
+		query.addColumn(printable.getName(), ((Long) printable.getValue()).intValue());
 	}
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.10  2005/03/03 22:32:45  phormanns
+ * Arbeit an ForeignKeys
+ *
  * Revision 1.9  2005/03/01 21:56:32  phormanns
  * Long immer als Value-Objekt zu Number-Typen
  * setRecord macht Insert, wenn PK = Default-Value

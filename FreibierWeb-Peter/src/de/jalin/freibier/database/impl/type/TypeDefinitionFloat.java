@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionFloat.java,v 1.5 2005/03/01 21:56:32 phormanns Exp $
+//$Id: TypeDefinitionFloat.java,v 1.6 2005/03/03 22:32:45 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -57,18 +57,6 @@ public class TypeDefinitionFloat extends TypeDefinitionNumber {
 		}
 	}
 
-	public String printSQL(Object d) throws SystemDatabaseException {
-		if (d != null) {
-			if (d instanceof Number) {
-				return sqlNumFormat.format(d);
-			} else {
-				throw new SystemDatabaseException("Number-Objekt erwartet", log);
-			}
-		} else {
-			return sqlNumFormat.format(0.0d);
-		}
-	}
-
 	public ValueObject parse(String s) throws UserDatabaseException {
 		Double d = null;
 		ValueObject doubleValue = null;
@@ -106,6 +94,9 @@ public class TypeDefinitionFloat extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionFloat.java,v $
+ * Revision 1.6  2005/03/03 22:32:45  phormanns
+ * Arbeit an ForeignKeys
+ *
  * Revision 1.5  2005/03/01 21:56:32  phormanns
  * Long immer als Value-Objekt zu Number-Typen
  * setRecord macht Insert, wenn PK = Default-Value

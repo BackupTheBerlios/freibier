@@ -1,8 +1,9 @@
-//$Id: DatabaseImpl.java,v 1.12 2005/03/03 11:53:46 phormanns Exp $
+//$Id: DatabaseImpl.java,v 1.13 2005/03/03 22:32:45 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -75,27 +76,60 @@ public class DatabaseImpl implements Database {
     }
     
     public void createTestData() throws SystemDatabaseException {
-        CreateTableQuery createTableQuery = sqlFactory.getCreateTableQuery();
-        createTableQuery.setName("TABLE1");
-        Column pk = new Column("ID", Types.INTEGER);
-        pk.setPrimaryKey(true);
-        pk.setAutoIncrement(true);
-        createTableQuery.addColumn(pk);
-        createTableQuery.addColumn(new Column("TEXT", Types.VARCHAR));
-        createTableQuery.addColumn(new Column("DATUM", Types.DATE));
-        createTableQuery.addColumn(new Column("ZAHL", Types.INTEGER));
+    	CreateTableQuery createColorTableQuery = sqlFactory.getCreateTableQuery();
+    	createColorTableQuery.setName("COLOR");
+    	Column pkColor = new Column("ID", Types.INTEGER);
+    	pkColor.setPrimaryKey(true);
+    	pkColor.setAutoIncrement(true);
+    	createColorTableQuery.addColumn(pkColor);
+    	createColorTableQuery.addColumn(new Column("NAME", Types.VARCHAR));
+    	try {
+			createColorTableQuery.execute(conn);
+		} catch (SQLException e) {
+            throw new SystemDatabaseException("Konnte Testtabelle nicht anlegen.", e, log);
+		}
+		String[] colors = new String[] { "rot", "gelb", "blau" };
+		InsertQuery insertColor = null;
+		int len = colors.length;
+		for (int i = 0; i<len; i++) {
+			insertColor = sqlFactory.getInsertQuery();
+			insertColor.setTable("COLOR");
+			insertColor.addAutoIncrementColumn("ID");
+			insertColor.addColumn("NAME", colors[i]);
+			try {
+				insertColor.execute(conn);
+			} catch (SQLException e) {
+                throw new SystemDatabaseException("Konnte Testtabelle nicht fuellen.", e, log);
+			}
+		}
+        CreateTableQuery createMainTableQuery = sqlFactory.getCreateTableQuery();
+        createMainTableQuery.setName("TABLE1");
+        Column pkMain = new Column("ID", Types.INTEGER);
+        pkMain.setPrimaryKey(true);
+        pkMain.setAutoIncrement(true);
+        createMainTableQuery.addColumn(pkMain);
+        createMainTableQuery.addColumn(new Column("TEXT", Types.VARCHAR));
+        createMainTableQuery.addColumn(new Column("DATUM", Types.DATE));
+        createMainTableQuery.addColumn(new Column("ZAHL", Types.INTEGER));
+        Column fkColor = new Column("ID_COLOR", Types.INTEGER);
+        fkColor.setForeignKey(true);
+        fkColor.setForeignTable("COLOR");
+        fkColor.setForeignPrimaryKey("ID");
+        createMainTableQuery.addColumn(fkColor);
         try {
-            createTableQuery.execute(conn);
+            createMainTableQuery.execute(conn);
         } catch (SQLException e) {
             throw new SystemDatabaseException("Konnte Testtabelle nicht anlegen.", e, log);
         }
+        InsertQuery insertQuery = null;
         for (int i = 0; i < 500; i++) {
-	        InsertQuery insertQuery = sqlFactory.getInsertQuery();
+        	insertQuery = sqlFactory.getInsertQuery();
 	        insertQuery.setTable("TABLE1");
 	        insertQuery.addAutoIncrementColumn("ID");
 	        insertQuery.addColumn("TEXT", "Ein Text mit Nummer " + i);
 	        insertQuery.addColumn("DATUM", new Date());
 	        insertQuery.addColumn("ZAHL", 1700 - i);
+	        insertQuery.addColumn("ID_COLOR", i % 3);
 	        try {
                 insertQuery.execute(conn);
             } catch (SQLException e) {
@@ -209,9 +243,9 @@ public class DatabaseImpl implements Database {
             throws DatabaseException {
         DBTableImpl dbtab = new DBTableImpl(this, name);
         try {
+        	DatabaseMetaData metaData = conn.getMetaData();
             Table tab = new Table(name);
-            ResultSet columns 
-            		= conn.getMetaData().getColumns(null, null, name, "%");
+            ResultSet columns = metaData.getColumns(null, null, name, "%");
             Column col = null;
             if (columns.next()) {
 	            do {
@@ -240,6 +274,22 @@ public class DatabaseImpl implements Database {
                         "Keine Primaerschluesselspalte definiert", log);
             }
             primarykeys.close();
+            ResultSet foreignKeys = metaData.getImportedKeys(null, null, name);
+            String pkTableName = null;
+            String pkColumnName = null;
+            String fkTableName = null;
+            String fkColumnName = null;
+            Column fkCol = null;
+            while (foreignKeys.next()) {
+            	pkTableName = foreignKeys.getString("PKTABLE_NAME"); 
+            	pkColumnName = foreignKeys.getString("PKCOLUMN_NAME");
+            	fkTableName = foreignKeys.getString("FKTABLE_NAME"); 
+            	fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
+            	fkCol = tab.getColumn(fkColumnName);
+            	fkCol.setForeignKey(true);
+            	fkCol.setForeignTable(pkTableName);
+            	fkCol.setForeignPrimaryKey(pkColumnName);
+            }
             dbtab.setTable(tab);
         } catch (SQLException e) {
             throw new SystemDatabaseException("", e, log);
@@ -287,6 +337,9 @@ public class DatabaseImpl implements Database {
 }
 /*
  * $Log: DatabaseImpl.java,v $
+ * Revision 1.13  2005/03/03 22:32:45  phormanns
+ * Arbeit an ForeignKeys
+ *
  * Revision 1.12  2005/03/03 11:53:46  phormanns
  * deleteRecord implementiert
  *

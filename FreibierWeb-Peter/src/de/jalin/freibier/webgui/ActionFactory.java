@@ -1,4 +1,4 @@
-// $Id: ActionFactory.java,v 1.3 2005/02/28 21:52:38 phormanns Exp $
+// $Id: ActionFactory.java,v 1.4 2005/03/03 22:32:45 phormanns Exp $
 package de.jalin.freibier.webgui;
 
 import java.util.HashMap;
@@ -18,6 +18,7 @@ public class ActionFactory {
 	public ActionFactory(Database db) throws DatabaseException {
 		actionsMap = new HashMap();
 		actionsMap.put("init", new InitAction(db));
+		actionsMap.put("table", new TableAction(db));
 		actionsMap.put("scroll", new ScrollAction(db));
 		actionsMap.put("order", new OrderByAction(db));
 		actionsMap.put("edit", new EditAction(db));
@@ -36,6 +37,9 @@ public class ActionFactory {
 
 /*
  *  $Log: ActionFactory.java,v $
+ *  Revision 1.4  2005/03/03 22:32:45  phormanns
+ *  Arbeit an ForeignKeys
+ *
  *  Revision 1.3  2005/02/28 21:52:38  phormanns
  *  SaveAction begonnen
  *

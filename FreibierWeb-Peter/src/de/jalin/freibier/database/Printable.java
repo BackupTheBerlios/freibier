@@ -1,4 +1,4 @@
-//$Id: Printable.java,v 1.4 2005/02/18 22:17:42 phormanns Exp $
+//$Id: Printable.java,v 1.5 2005/03/03 22:32:45 phormanns Exp $
 
 package de.jalin.freibier.database;
 
@@ -32,8 +32,6 @@ public interface Printable {
 	 */
 	public abstract String getText() throws DatabaseException;
 
-	public abstract String getSql() throws DatabaseException;
-
 	/**
 	 * Diese Funktion gibt den Typ des Objektes zurueck (z.B. 
 	 * TypeDefinitionInteger.class). Normalerweise ist das die Klasse des 
@@ -54,6 +52,9 @@ public interface Printable {
 }
 /*
  * $Log: Printable.java,v $
+ * Revision 1.5  2005/03/03 22:32:45  phormanns
+ * Arbeit an ForeignKeys
+ *
  * Revision 1.4  2005/02/18 22:17:42  phormanns
  * Umstellung auf Freemarker begonnen
  *

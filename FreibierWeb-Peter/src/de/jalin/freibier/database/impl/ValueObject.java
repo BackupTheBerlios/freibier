@@ -1,4 +1,4 @@
-//$Id: ValueObject.java,v 1.1 2005/02/18 22:17:42 phormanns Exp $
+//$Id: ValueObject.java,v 1.2 2005/03/03 22:32:45 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -32,10 +32,6 @@ public class ValueObject implements Printable {
 
 	public String getText() throws DatabaseException {
 		return def.printText(value);
-	}
-
-	public String getSql() throws DatabaseException {
-		return def.printSQL(value);
 	}
 
 	public void parse(String value) throws DatabaseException {
@@ -86,6 +82,9 @@ public class ValueObject implements Printable {
 }
 /*
  * $Log: ValueObject.java,v $
+ * Revision 1.2  2005/03/03 22:32:45  phormanns
+ * Arbeit an ForeignKeys
+ *
  * Revision 1.1  2005/02/18 22:17:42  phormanns
  * Umstellung auf Freemarker begonnen
  *

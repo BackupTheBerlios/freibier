@@ -1,4 +1,4 @@
-//$Id: RecordImpl.java,v 1.6 2005/02/24 13:52:12 phormanns Exp $
+//$Id: RecordImpl.java,v 1.7 2005/03/03 22:32:45 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -57,10 +57,6 @@ public class RecordImpl implements Record {
 		return getPrintable(name).getText();
 	}
 
-	public String printSQL(String name) throws DatabaseException {
-		return getPrintable(name).getSql();
-	}
-
 //	public Printable getField(int col) throws DatabaseException {
 //		TypeDefinition typdef = tab.getFieldDef(col);
 //		return new DataObject(daten.get(typdef.getName()), typdef);
@@ -105,6 +101,9 @@ public class RecordImpl implements Record {
 }
 /*
  * $Log: RecordImpl.java,v $
+ * Revision 1.7  2005/03/03 22:32:45  phormanns
+ * Arbeit an ForeignKeys
+ *
  * Revision 1.6  2005/02/24 13:52:12  phormanns
  * Mit Tests begonnen
  *

@@ -1,15 +1,14 @@
-// $Id: RecordTest.java,v 1.2 2005/02/24 22:18:13 phormanns Exp $
+// $Id: RecordTest.java,v 1.3 2005/03/03 22:32:45 phormanns Exp $
 package de.jalin.freibier.database.test;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import junit.framework.TestCase;
 import de.jalin.freibier.database.Database;
 import de.jalin.freibier.database.DatabaseFactory;
 import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.Record;
 import de.jalin.freibier.database.exception.DatabaseException;
-import junit.framework.TestCase;
 
 
 public class RecordTest extends TestCase {
@@ -79,17 +78,6 @@ public class RecordTest extends TestCase {
 		}
 	}
 
-	public void testPrintSQL() {
-		try {
-			assertEquals("123", rec.printSQL("ID"));
-			assertEquals("'Ein Text mit Nummer 123'", rec.printSQL("TEXT"));
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			assertEquals("'" + df.format(new Date()).substring(0, 10), rec.printSQL("DATUM").substring(0, 11));
-		} catch (DatabaseException e) {
-			fail(e.getMessage());
-		}
-	}
-
 	public void testSetField() {
 		try {
 			rec.setField("ID", "4711");
@@ -121,6 +109,9 @@ public class RecordTest extends TestCase {
 
 /*
  *  $Log: RecordTest.java,v $
+ *  Revision 1.3  2005/03/03 22:32:45  phormanns
+ *  Arbeit an ForeignKeys
+ *
  *  Revision 1.2  2005/02/24 22:18:13  phormanns
  *  Tests laufen mit HSQL und MySQL
  *

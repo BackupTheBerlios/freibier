@@ -1,4 +1,4 @@
-// $Id: DBTableTest.java,v 1.6 2005/03/03 12:31:39 phormanns Exp $
+// $Id: DBTableTest.java,v 1.7 2005/03/03 22:32:45 phormanns Exp $
 package de.jalin.freibier.database.test;
 
 import java.sql.Types;
@@ -13,6 +13,7 @@ import de.jalin.freibier.database.DatabaseFactory;
 import de.jalin.freibier.database.Record;
 import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
+import de.jalin.freibier.database.impl.type.TypeDefinitionForeignKey;
 
 public class DBTableTest extends TestCase {
 	
@@ -171,6 +172,16 @@ public class DBTableTest extends TestCase {
 			rec.setField("TEXT", "Ein neuer Text mit Nummer 254");
 			rec.setField("DATUM", "14.02.1964");
 			rec.setField("ZAHL", "9999");
+			TypeDefinition fieldDef = rec.getTable().getFieldDef("ID_COLOR");
+			if (fieldDef instanceof TypeDefinitionForeignKey) {
+				TypeDefinitionForeignKey foreignKeyDef = (TypeDefinitionForeignKey) fieldDef;
+				List possibleValues = foreignKeyDef.getPossibleValues();
+				Record value0 = (Record) possibleValues.get(0);
+				assertEquals("rot", value0.printText(foreignKeyDef.getReferenceType().getName()));
+				rec.setField("ID_COLOR", value0.printText(foreignKeyDef.getIndexType().getName()));
+			} else {
+				fail("Spalte ist Foreign Key!");
+			}
 			tab.setRecord(rec);
 			numberOfRecords = tab.getNumberOfRecords(null);
 			assertEquals(501, numberOfRecords);
@@ -234,7 +245,7 @@ public class DBTableTest extends TestCase {
 		try {
 			DBTable tab = db.getTable("TABLE1");
 			List fieldsList = tab.getFieldsList();
-			assertEquals(4, fieldsList.size());
+			assertEquals(5, fieldsList.size());
 		} catch (DatabaseException e) {
 			fail(e.getMessage());
 		}
@@ -243,6 +254,9 @@ public class DBTableTest extends TestCase {
 
 /*
  *  $Log: DBTableTest.java,v $
+ *  Revision 1.7  2005/03/03 22:32:45  phormanns
+ *  Arbeit an ForeignKeys
+ *
  *  Revision 1.6  2005/03/03 12:31:39  phormanns
  *  getGivenColumns implementiert
  *

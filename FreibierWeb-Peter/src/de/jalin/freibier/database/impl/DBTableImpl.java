@@ -1,4 +1,4 @@
-//$Id: DBTableImpl.java,v 1.8 2005/03/03 12:31:39 phormanns Exp $
+//$Id: DBTableImpl.java,v 1.9 2005/03/03 22:32:45 phormanns Exp $
 package de.jalin.freibier.database.impl;
 
 import java.sql.SQLException;
@@ -33,7 +33,9 @@ import de.jalin.freibier.database.exception.SystemDatabaseException;
  * @author tbayen
  */
 public class DBTableImpl implements DBTable {
+	
 	private static Log log = LogFactory.getLog(DBTableImpl.class);
+	
 	private String name;
 	private DatabaseImpl db;
 	private Table tab;
@@ -184,7 +186,7 @@ public class DBTableImpl implements DBTable {
 			query.addColumn(queryCol);
 		}
 		return executeSelectQuery(true, 1, 
-				limit, query, colNames);
+			limit, query, colNames);
 	}
 
 	public void setRecord(Record data) throws DatabaseException {
@@ -271,20 +273,25 @@ public class DBTableImpl implements DBTable {
 		return l;
 	}
 
-	public void setTable(Table tab) throws SystemDatabaseException {
+	public void setTable(Table tab) throws DatabaseException {
 		this.tab = tab;
 		columnTypeDefinitions = new HashMap();
 		Iterator colIterator = tab.getColumns().iterator();
 		Column col = null;
 		while (colIterator.hasNext()) {
 			col = (Column) colIterator.next();
-			columnTypeDefinitions.put(col.getName(), TypeDefinitionImpl.create(
-					col, null, db));
+			columnTypeDefinitions.put(
+				col.getName(), 
+				TypeDefinitionImpl.create(col, null, db));
+			
 		}
 	}
 }
 /*
  * $Log: DBTableImpl.java,v $
+ * Revision 1.9  2005/03/03 22:32:45  phormanns
+ * Arbeit an ForeignKeys
+ *
  * Revision 1.8  2005/03/03 12:31:39  phormanns
  * getGivenColumns implementiert
  *

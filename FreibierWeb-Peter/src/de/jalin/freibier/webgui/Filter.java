@@ -1,4 +1,4 @@
-// $Id: Filter.java,v 1.4 2005/02/16 17:24:52 phormanns Exp $
+// $Id: Filter.java,v 1.5 2005/03/03 22:32:45 phormanns Exp $
 package de.jalin.freibier.webgui;
 
 import java.util.HashMap;
@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.crossdb.sql.IWhereClause;
 import com.crossdb.sql.WhereClause;
-import com.crossdb.sql.WhereCondition;
 import de.jalin.freibier.database.DBTable;
 import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
@@ -83,8 +82,8 @@ public class Filter {
 				fieldName = (String) ftIterator.next();
 				colFt = (ColumnFilter) tabFt.columnFilterMap.get(fieldName);
 				fieldDef = tab.getFieldDef(fieldName);
-				queryFilter.addCondition(new WhereCondition(fieldName, WhereCondition.LIKE, 
-						fieldDef.printSQL(fieldDef.parse(colFt.filterPattern))));
+//				queryFilter.addCondition(new WhereCondition(fieldName, WhereCondition.LIKE, 
+//						fieldDef.printSQL(fieldDef.parse(colFt.filterPattern))));
 			}
 		}
 		return queryFilter;
@@ -104,6 +103,9 @@ public class Filter {
 
 /*
  *  $Log: Filter.java,v $
+ *  Revision 1.5  2005/03/03 22:32:45  phormanns
+ *  Arbeit an ForeignKeys
+ *
  *  Revision 1.4  2005/02/16 17:24:52  phormanns
  *  OrderBy und Filter funktionieren jetzt
  *

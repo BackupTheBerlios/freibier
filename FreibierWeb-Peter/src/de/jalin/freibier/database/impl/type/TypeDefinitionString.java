@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionString.java,v 1.6 2005/03/01 21:56:32 phormanns Exp $
+//$Id: TypeDefinitionString.java,v 1.7 2005/03/03 22:32:45 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -39,18 +39,6 @@ public class TypeDefinitionString extends TypeDefinitionImpl {
 		}
 	}
 
-	public String printSQL(Object s) throws SystemDatabaseException {
-		if (s != null) {
-			if (s instanceof String) {
-				return "'" + ((String) s).trim().replaceAll("'", "''") + "'";
-			} else {
-				throw new SystemDatabaseException("String-Objekt erwartet", log);
-			}
-		} else {
-			return "''";
-		}
-	}
-
 	public ValueObject parse(String s) throws DatabaseException {
 		s = s.trim();
 		ValueObject stringValue = null;
@@ -75,6 +63,9 @@ public class TypeDefinitionString extends TypeDefinitionImpl {
 }
 /*
  * $Log: TypeDefinitionString.java,v $
+ * Revision 1.7  2005/03/03 22:32:45  phormanns
+ * Arbeit an ForeignKeys
+ *
  * Revision 1.6  2005/03/01 21:56:32  phormanns
  * Long immer als Value-Objekt zu Number-Typen
  * setRecord macht Insert, wenn PK = Default-Value

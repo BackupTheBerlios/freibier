@@ -1,4 +1,4 @@
-// $Id: Record.java,v 1.7 2005/02/18 22:17:42 phormanns Exp $
+// $Id: Record.java,v 1.8 2005/03/03 22:32:45 phormanns Exp $
 package de.jalin.freibier.database;
 
 import de.jalin.freibier.database.exception.DatabaseException;
@@ -24,8 +24,6 @@ public interface Record {
 	 */
 	public abstract String printText(String name) throws DatabaseException;
 
-	public abstract String printSQL(String name) throws DatabaseException;
-
 	/**
 	 * Setzt den Wert eines Datenfelds. 
 	 * Der angegebene Value-String wird geparst. 
@@ -48,6 +46,9 @@ public interface Record {
 
 /*
  *  $Log: Record.java,v $
+ *  Revision 1.8  2005/03/03 22:32:45  phormanns
+ *  Arbeit an ForeignKeys
+ *
  *  Revision 1.7  2005/02/18 22:17:42  phormanns
  *  Umstellung auf Freemarker begonnen
  *
