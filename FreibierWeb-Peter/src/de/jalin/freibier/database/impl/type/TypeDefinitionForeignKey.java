@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionForeignKey.java,v 1.5 2005/02/16 17:24:52 phormanns Exp $
+//$Id: TypeDefinitionForeignKey.java,v 1.6 2005/02/18 22:17:42 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -8,7 +8,7 @@ import java.util.Map;
 import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
-import de.jalin.freibier.database.impl.DataObject;
+import de.jalin.freibier.database.impl.ValueObject;
 import de.jalin.freibier.database.impl.DatabaseImpl;
 import de.jalin.freibier.database.impl.ForeignKey;
 import de.jalin.freibier.database.impl.TypeDefinitionImpl;
@@ -64,9 +64,9 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 						indexType.getProperty("foreignkey.table"))
 									.getGivenColumns(list, 1).get(0));
 				log.debug("Wert: " + hash.get(indexColumn));
-				Object keyVal=((DataObject) hash
+				Object keyVal=((ValueObject) hash
 						.get(indexColumn)).getValue();
-				Object contentVal=((DataObject) hash
+				Object contentVal=((ValueObject) hash
 						.get(resultColumn)).getValue();
 				defaultValue = new ForeignKey(keyVal, contentVal);
 			} catch (DatabaseException e) {
@@ -89,8 +89,8 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	public Object parse(String s) throws DatabaseException {
-		return new ForeignKey(indexType.parse(s), null);
+	public ValueObject parse(String s) throws DatabaseException {
+		return new ValueObject(new ForeignKey(indexType.parse(s), null), this);
 	}
 
 	public boolean validate(String s) {
@@ -122,6 +122,9 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.6  2005/02/18 22:17:42  phormanns
+ * Umstellung auf Freemarker begonnen
+ *
  * Revision 1.5  2005/02/16 17:24:52  phormanns
  * OrderBy und Filter funktionieren jetzt
  *

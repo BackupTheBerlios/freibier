@@ -1,4 +1,4 @@
-//$Id: DBTableImpl.java,v 1.2 2005/02/16 17:24:52 phormanns Exp $
+//$Id: DBTableImpl.java,v 1.3 2005/02/18 22:17:42 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -38,11 +38,20 @@ public class DBTableImpl implements DBTable {
 	private String name;
 	private DatabaseImpl db;
 	private Table tab;
+	private Map columnTypeDefinitions;
 
-	protected DBTableImpl(DatabaseImpl db, String name) {
+	protected DBTableImpl(DatabaseImpl db, String name) throws SystemDatabaseException {
 		this.db = db;
 		this.name = name;
 		this.tab = new Table(name);
+		columnTypeDefinitions = new HashMap();
+		Iterator colIterator = tab.getColumns().iterator();
+		Column col = null;
+		while (colIterator.hasNext()) {
+			col = (Column) colIterator.next();
+			// TODO Ressourcebundle uebergeben.
+			columnTypeDefinitions.put(col.getName(), TypeDefinitionImpl.create(col, null, db));
+		}
 	}
 
 	public List getMultipleRecords(int startRecordNr, int numberOfRecords, String orderColumn, boolean ascending) throws DatabaseException {
@@ -80,9 +89,13 @@ public class DBTableImpl implements DBTable {
 					recHash = new HashMap();
 					Iterator i2 = tab.getColumns().iterator();
 					Column col2 = null;
+					ValueObject valueObject = null;
+					String colName = null;
 					while (i2.hasNext()) {
 						col2 = (Column) i2.next();
-						recHash.put(col2.getName(), res.getObject(col2.getName()));
+						colName = col2.getName();
+						valueObject = new ValueObject(res.getObject(colName), (TypeDefinition) columnTypeDefinitions.get(colName));
+						recHash.put(col2.getName(), valueObject);
 					}
 					rec = new RecordImpl(this, recHash);
 					resList.add(rec);
@@ -139,7 +152,7 @@ public class DBTableImpl implements DBTable {
 		// TODO Auto-generated method stub
 		UpdateQuery query = db.getSQLFactory().getUpdateQuery();
 		WhereCondition condition = new WhereCondition(this.getPrimaryKey(), 
-				WhereCondition.EQUAL_TO, data.getField(this.getPrimaryKey()).getValue());
+				WhereCondition.EQUAL_TO, data.getPrintable(this.getPrimaryKey()).getValue());
 		query.setTable(this.getName());
 		query.addWhereCondition(condition);
 		Iterator i = tab.getColumns().iterator();
@@ -199,6 +212,9 @@ public class DBTableImpl implements DBTable {
 }
 /*
  * $Log: DBTableImpl.java,v $
+ * Revision 1.3  2005/02/18 22:17:42  phormanns
+ * Umstellung auf Freemarker begonnen
+ *
  * Revision 1.2  2005/02/16 17:24:52  phormanns
  * OrderBy und Filter funktionieren jetzt
  *

@@ -1,13 +1,13 @@
-//$Id: RecordImpl.java,v 1.4 2005/02/16 17:24:52 phormanns Exp $
+//$Id: RecordImpl.java,v 1.5 2005/02/18 22:17:42 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
-import java.util.Iterator;
 import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
-import com.crossdb.sql.Column;
+
 import de.jalin.freibier.database.DBTable;
 import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.Record;
@@ -34,25 +34,25 @@ public class RecordImpl implements Record {
 		log.trace("RecordImpl Constructor(" + bean.keySet() + ")");
 		this.tab = tab;
 		this.daten = bean;
-		Iterator i = tab.getFieldsList().iterator();
-		while (i.hasNext()) {
-			Column col = (Column) i.next();
-			if (col.isForeignKey()) {
-				// TODO Foreign Key Referenz
-			}
-		}
+		// TODO Foreign Key Referenz
+		//		Iterator i = tab.getFieldsList().iterator();
+		//		while (i.hasNext()) {
+		//			Column col = (Column) i.next();
+		//			if (col.isForeignKey()) {
+		//			}
+		//		}
 	}
 
-	public Printable getField(String name) throws DatabaseException {
-		return new DataObject(daten.get(name), tab.getFieldDef(name));
+	public Printable getPrintable(String name) {
+		return (Printable) daten.get(name);
 	}
 	
 	public String printText(String name) throws DatabaseException {
-		return getField(name).printText();
+		return getPrintable(name).getText();
 	}
 
 	public String printSQL(String name) throws DatabaseException {
-		return getField(name).printSQL();
+		return getPrintable(name).getSql();
 	}
 
 //	public Printable getField(int col) throws DatabaseException {
@@ -60,9 +60,9 @@ public class RecordImpl implements Record {
 //		return new DataObject(daten.get(typdef.getName()), typdef);
 //	}
 
-	public void setField(String name, DataObject value)
+	public void setField(String name, ValueObject value)
 			throws DatabaseException {
-		daten.put(name, value.getValue());
+		daten.put(name, value);
 	}
 
 //	public void setField(int col, DataObject value) throws DatabaseException {
@@ -82,22 +82,27 @@ public class RecordImpl implements Record {
 		daten.put(name, tab.getFieldDef(name).parse(value));
 	}
 
-//	public void setField(int col, String value) throws DatabaseException {
-//		TypeDefinition typdef = tab.getFieldDef(col);
-//		daten.put(typdef.getName(), typdef.parse(value));
-//	}
-	
 	public DBTable getTable() {
 		return tab;
 	}
 
-	public Object getValue(String name) {
-		// TODO Auto-generated method stub
-		return daten.get(name);
+	/**
+	 * Liefert den eigentlichen Wert des Datenbank-Feldes, also ein
+	 * String-, Integer-, Double- oder Date-Objekt
+	 */
+	public Object get(String name) {
+		Object value = ((ValueObject) daten.get(name)).getValue();
+		if (value == null) {
+			return "";
+		}
+		return value;
 	}
 }
 /*
  * $Log: RecordImpl.java,v $
+ * Revision 1.5  2005/02/18 22:17:42  phormanns
+ * Umstellung auf Freemarker begonnen
+ *
  * Revision 1.4  2005/02/16 17:24:52  phormanns
  * OrderBy und Filter funktionieren jetzt
  *

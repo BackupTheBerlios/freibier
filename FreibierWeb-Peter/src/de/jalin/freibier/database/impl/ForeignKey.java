@@ -1,4 +1,4 @@
-//$Id: ForeignKey.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
+//$Id: ForeignKey.java,v 1.2 2005/02/18 22:17:42 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -6,13 +6,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Ein Foreign Key ist ein Fremdschlüssel, der auf einen Wert in einer anderen
+ * Ein Foreign Key ist ein Fremdschluessel, der auf einen Wert in einer anderen
  * Tabelle verweist. Damit nicht bei jedem Zugriff auf einen solchen Foreign Key
  * eine Datenbankabfrage auf diese andere Tabelle geschehen muss, wird der
  * Wert, auf den verwiesen wird, bei der Datenbankabfrage mitgelesen und in
  * diesem Objekt mit abgespeichert.
  */
 public class ForeignKey {
+	
 	protected static Log log = LogFactory.getLog(ForeignKey.class);
 	private Object key;
 	private Object content;
@@ -25,7 +26,7 @@ public class ForeignKey {
 
 	public void setKey(Object key) {
 		this.key = key;
-		// eigentlich müsste ich den referenzierten Wert hier neu lesen,
+		// eigentlich muesste ich den referenzierten Wert hier neu lesen,
 		// aber bisher wird der Datensatz eh neu gelesen.
 		this.content=null;  // Der Content wird jetzt ungültig
 	}
@@ -40,6 +41,9 @@ public class ForeignKey {
 }
 /*
  * $Log: ForeignKey.java,v $
+ * Revision 1.2  2005/02/18 22:17:42  phormanns
+ * Umstellung auf Freemarker begonnen
+ *
  * Revision 1.1  2004/12/31 19:37:26  phormanns
  * Database Schnittstelle herausgearbeitet
  *

@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionDateTime.java,v 1.3 2005/02/16 17:24:52 phormanns Exp $
+//$Id: TypeDefinitionDateTime.java,v 1.4 2005/02/18 22:17:42 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -9,6 +9,7 @@ import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.exception.UserDatabaseException;
 import de.jalin.freibier.database.impl.TypeDefinitionImpl;
+import de.jalin.freibier.database.impl.ValueObject;
 
 /**
  * Datentyp z.B. für SQL-Daten vom Typ DATETIME
@@ -61,15 +62,18 @@ public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 		}
 	}
 
-	public Object parse(String s) throws DatabaseException {
+	public ValueObject parse(String s) throws DatabaseException {
 		Date date = null;
+		ValueObject dateValue = null;
 		try {
-			if(s != null && s.trim().length() > 0)
+			if(s != null && s.trim().length() > 0) {
 				date = shortFormat.parse(s.trim());
+				dateValue = new ValueObject(date, this);
+			}
 		} catch (ParseException e) {
 			throw new UserDatabaseException("Fehler im Datumsformat", log);
 		}
-		return date;
+		return dateValue;
 	}
 
 	public boolean validate(String s) {
@@ -92,6 +96,9 @@ public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 
 /*
  * $Log: TypeDefinitionDateTime.java,v $
+ * Revision 1.4  2005/02/18 22:17:42  phormanns
+ * Umstellung auf Freemarker begonnen
+ *
  * Revision 1.3  2005/02/16 17:24:52  phormanns
  * OrderBy und Filter funktionieren jetzt
  *

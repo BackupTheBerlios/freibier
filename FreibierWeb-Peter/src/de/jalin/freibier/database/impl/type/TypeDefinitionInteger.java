@@ -1,10 +1,11 @@
-//$Id: TypeDefinitionInteger.java,v 1.2 2005/02/16 17:24:52 phormanns Exp $
+//$Id: TypeDefinitionInteger.java,v 1.3 2005/02/18 22:17:42 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
 import org.apache.oro.text.perl.Perl5Util;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.exception.UserDatabaseException;
+import de.jalin.freibier.database.impl.ValueObject;
 
 /**
  * Datentyp z.B. für SQL-Daten vom Typ int
@@ -46,14 +47,16 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 		}
 	}
 
-	public Object parse(String s) throws UserDatabaseException {
+	public ValueObject parse(String s) throws UserDatabaseException {
 		Long l = null;
+		ValueObject longValue = null;
 		try {
 			l = Long.valueOf(s);
+			longValue = new ValueObject(l, this);
 		} catch (NumberFormatException e) {
 			throw new UserDatabaseException("Fehler im Zahlenformat: " + s, log);
 		}
-		return l;
+		return longValue;
 	}
 
 	public boolean validate(String s) {
@@ -64,6 +67,9 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionInteger.java,v $
+ * Revision 1.3  2005/02/18 22:17:42  phormanns
+ * Umstellung auf Freemarker begonnen
+ *
  * Revision 1.2  2005/02/16 17:24:52  phormanns
  * OrderBy und Filter funktionieren jetzt
  *

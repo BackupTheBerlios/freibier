@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionImpl.java,v 1.6 2005/02/16 17:24:52 phormanns Exp $
+//$Id: TypeDefinitionImpl.java,v 1.7 2005/02/18 22:17:42 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -225,7 +225,7 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public abstract Object parse(String s) throws DatabaseException;
+	public abstract ValueObject parse(String s) throws DatabaseException;
 
 	/**
 	 * Diese Methode ueberprueft, ob der angegebene String ein gueltiger Wert ist,
@@ -252,6 +252,9 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionImpl.java,v $
+ * Revision 1.7  2005/02/18 22:17:42  phormanns
+ * Umstellung auf Freemarker begonnen
+ *
  * Revision 1.6  2005/02/16 17:24:52  phormanns
  * OrderBy und Filter funktionieren jetzt
  *

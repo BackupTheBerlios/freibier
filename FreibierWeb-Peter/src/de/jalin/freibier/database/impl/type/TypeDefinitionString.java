@@ -1,10 +1,11 @@
-//$Id: TypeDefinitionString.java,v 1.2 2005/02/16 17:24:52 phormanns Exp $
+//$Id: TypeDefinitionString.java,v 1.3 2005/02/18 22:17:42 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.impl.TypeDefinitionImpl;
+import de.jalin.freibier.database.impl.ValueObject;
 
 
 /**
@@ -47,12 +48,14 @@ public class TypeDefinitionString extends TypeDefinitionImpl {
 		}
 	}
 
-	public Object parse(String s) throws DatabaseException {
+	public ValueObject parse(String s) throws DatabaseException {
 		s = s.trim();
+		ValueObject stringValue = null;
 		if (s.length() > length) {
 			s = s.substring(0, length);
+			stringValue = new ValueObject(s, this);
 		}
-		return s;
+		return stringValue;
 	}
 
 	public boolean validate(String s) {
@@ -61,6 +64,9 @@ public class TypeDefinitionString extends TypeDefinitionImpl {
 }
 /*
  * $Log: TypeDefinitionString.java,v $
+ * Revision 1.3  2005/02/18 22:17:42  phormanns
+ * Umstellung auf Freemarker begonnen
+ *
  * Revision 1.2  2005/02/16 17:24:52  phormanns
  * OrderBy und Filter funktionieren jetzt
  *

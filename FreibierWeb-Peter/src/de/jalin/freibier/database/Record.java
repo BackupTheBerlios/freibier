@@ -1,4 +1,4 @@
-// $Id: Record.java,v 1.6 2005/02/16 17:24:52 phormanns Exp $
+// $Id: Record.java,v 1.7 2005/02/18 22:17:42 phormanns Exp $
 package de.jalin.freibier.database;
 
 import de.jalin.freibier.database.exception.DatabaseException;
@@ -14,7 +14,7 @@ public interface Record {
      * @return
      * @throws DatabaseException
      */
-	public abstract Printable getField(String name) throws DatabaseException;
+	public abstract Printable getPrintable(String name) throws DatabaseException;
 
 	/**
 	 * Liefert ein einzelnes Datenfeld aufbereitet als formatierten String.
@@ -42,12 +42,15 @@ public interface Record {
 	 * @param name
 	 * @return
 	 */
-	public abstract Object getValue(String name);
+	public abstract Object get(String name);
 
 }
 
 /*
  *  $Log: Record.java,v $
+ *  Revision 1.7  2005/02/18 22:17:42  phormanns
+ *  Umstellung auf Freemarker begonnen
+ *
  *  Revision 1.6  2005/02/16 17:24:52  phormanns
  *  OrderBy und Filter funktionieren jetzt
  *

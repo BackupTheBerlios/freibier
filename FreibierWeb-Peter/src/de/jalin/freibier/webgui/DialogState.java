@@ -1,8 +1,8 @@
-// $Id: ViewParameter.java,v 1.3 2005/02/16 17:24:52 phormanns Exp $
+// $Id: DialogState.java,v 1.1 2005/02/18 22:17:42 phormanns Exp $
 package de.jalin.freibier.webgui;
 
 
-public class ViewParameter {
+public class DialogState {
 
 	private String tableName;
 	private int firstRowNumber;
@@ -115,7 +115,10 @@ public class ViewParameter {
 }
 
 /*
- * $Log: ViewParameter.java,v $
+ * $Log: DialogState.java,v $
+ * Revision 1.1  2005/02/18 22:17:42  phormanns
+ * Umstellung auf Freemarker begonnen
+ *
  * Revision 1.3  2005/02/16 17:24:52  phormanns
  * OrderBy und Filter funktionieren jetzt
  *

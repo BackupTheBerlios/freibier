@@ -37,7 +37,7 @@
   
   <servlet-mapping>
     <servlet-name>DbServlet</servlet-name>
-	<url-pattern>/*</url-pattern>  
+	<url-pattern>/table/*</url-pattern>  
   </servlet-mapping>
   
 </web-app>

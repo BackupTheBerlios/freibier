@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- ====================================================================== 
-     $Id: build.xml,v 1.3 2005/02/11 15:50:36 phormanns Exp $
+     $Id: build.xml,v 1.4 2005/02/18 22:17:42 phormanns Exp $
 
      project      Freibier2004
      description  Buildskript fuer Webapplikation
@@ -16,14 +16,14 @@
 		<pathelement location="lib/commons-logging-1.0.4.jar"/>
 		<pathelement location="lib/commons-beanutils-1.6.1.jar"/>
 		<pathelement location="lib/oro-2.0.8.jar"/>
-		<pathelement location="lib/velocity-1.3.1.jar"/>
+		<pathelement location="lib/freemarker.jar"/>
 	</path>
 	
 	<target name="default" depends="compile" description="Create WAR File">
       	<mkdir dir="dist"/>  
-		<war warfile="dist/dba.war" basedir="conf" includes="*.html" webxml="conf/web.xml">
+		<war warfile="dist/dba.war" basedir="conf" includes="*.png" webxml="conf/web.xml">
 			<webinf dir="conf">
-				<include name="velocity.properties"/>
+				<exclude name="web.xml"/>
 			</webinf>
 			<classes dir="build"/>
 			<classes dir="templates"/>
@@ -35,7 +35,7 @@
 				<include name="commons-logging-1.0.4.jar"/>
 				<include name="commons-beanutils-1.6.1.jar"/>
 				<include name="oro-2.0.8.jar"/>
-				<include name="velocity-1.3.1.jar"/>
+				<include name="freemarker.jar"/>
 			</lib>
 		</war>
     </target>

@@ -1,4 +1,4 @@
-// $Id: DBTable.java,v 1.2 2005/02/16 17:24:52 phormanns Exp $
+// $Id: DBTable.java,v 1.3 2005/02/18 22:17:42 phormanns Exp $
 package de.jalin.freibier.database;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import de.jalin.freibier.database.exception.SystemDatabaseException;
  */
 public interface DBTable {
     
-	int MAX_FETCH_SIZE = 2000;
+	public static final int MAX_FETCH_SIZE = 2000;
 
 	/**
 	 * Anzahl von Datensaetzen lesen. Es werden numberOfRecords Datensätze ab (ausschliesslich)
@@ -98,6 +98,9 @@ public interface DBTable {
 }
 /*
  *  $Log: DBTable.java,v $
+ *  Revision 1.3  2005/02/18 22:17:42  phormanns
+ *  Umstellung auf Freemarker begonnen
+ *
  *  Revision 1.2  2005/02/16 17:24:52  phormanns
  *  OrderBy und Filter funktionieren jetzt
  *

@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionFloat.java,v 1.2 2005/02/16 17:24:52 phormanns Exp $
+//$Id: TypeDefinitionFloat.java,v 1.3 2005/02/18 22:17:42 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.oro.text.perl.Perl5Util;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.exception.UserDatabaseException;
+import de.jalin.freibier.database.impl.ValueObject;
 
 /**
  * @author tbayen
@@ -65,20 +66,22 @@ public class TypeDefinitionFloat extends TypeDefinitionNumber {
 		}
 	}
 
-	public Object parse(String s) throws UserDatabaseException {
+	public ValueObject parse(String s) throws UserDatabaseException {
 		Double d = null;
+		ValueObject doubleValue = null;
 		if (s != null && regex.match("/^(\\d+)\\.(\\d+)$/", s)) {
 			s = regex.group(1) + "," + regex.group(2);
 		}
 		try {
 			Number number = numFormat.parse(s);
 			d = new Double(number.doubleValue());
+			doubleValue = new ValueObject(d, this);
 		} catch (NumberFormatException e) {
 			throw new UserDatabaseException("Fehler im Zahlenformat: " + s, log);
 		} catch (ParseException e) {
 			throw new UserDatabaseException("Fehler im Zahlenformat: " + s, log);
 		}
-		return d;
+		return doubleValue;
 	}
 
 	public boolean validate(String s) {
@@ -92,6 +95,9 @@ public class TypeDefinitionFloat extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionFloat.java,v $
+ * Revision 1.3  2005/02/18 22:17:42  phormanns
+ * Umstellung auf Freemarker begonnen
+ *
  * Revision 1.2  2005/02/16 17:24:52  phormanns
  * OrderBy und Filter funktionieren jetzt
  *

@@ -1,4 +1,4 @@
-//$Id: DataObject.java,v 1.4 2005/02/16 17:24:52 phormanns Exp $
+//$Id: ValueObject.java,v 1.1 2005/02/18 22:17:42 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -17,24 +17,24 @@ import de.jalin.freibier.database.exception.UserDatabaseException;
  * dar. Der Wert kennt seinen genauen Datentyp, kann also z.B. auch
  * typspezifisch richtig formatiert werden.
  */
-public class DataObject implements Printable {
+public class ValueObject implements Printable {
 	
-	private static Log log = LogFactory.getLog(DataObject.class);
+	private static Log log = LogFactory.getLog(ValueObject.class);
 	
 	private Object value = null;
 	private TypeDefinition def = null;
 
-	public DataObject(Object value, TypeDefinition def)
+	public ValueObject(Object value, TypeDefinition def)
 			throws UserDatabaseException {
 		this.value = value;
 		this.def = def;
 	}
 
-	public String printText() throws DatabaseException {
+	public String getText() throws DatabaseException {
 		return def.printText(value);
 	}
 
-	public String printSQL() throws DatabaseException {
+	public String getSql() throws DatabaseException {
 		return def.printSQL(value);
 	}
 
@@ -85,7 +85,10 @@ public class DataObject implements Printable {
 	}
 }
 /*
- * $Log: DataObject.java,v $
+ * $Log: ValueObject.java,v $
+ * Revision 1.1  2005/02/18 22:17:42  phormanns
+ * Umstellung auf Freemarker begonnen
+ *
  * Revision 1.4  2005/02/16 17:24:52  phormanns
  * OrderBy und Filter funktionieren jetzt
  *
