@@ -1,4 +1,4 @@
-//$Id: DatabaseImpl.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
+//$Id: DatabaseImpl.java,v 1.2 2005/01/29 20:21:59 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -36,7 +36,9 @@ import de.jalin.freibier.database.exception.UserDatabaseException;
  * stehen.
  */
 public class DatabaseImpl implements Database {
+	
 	private static Log log = LogFactory.getLog(DatabaseImpl.class);
+	
 	private Connection conn;
 	private String name, server, user, password;
 	private String propertyPath="";
@@ -79,7 +81,7 @@ public class DatabaseImpl implements Database {
 		};
 		try {
 			conn = DriverManager.getConnection("jdbc:mysql://" + server + "/"
-					+ name, user, password);
+					+ name + "?autoReconnect=true", user, password);
 		} catch (SQLException e2) {
 			throw new UserDatabaseException("Verbindung zur SQL-Datenbank '"
 					+ name + "' kann nicht geöffnet werden", e2);
@@ -117,7 +119,7 @@ public class DatabaseImpl implements Database {
 		try {
 			ResultSet columns 
 				= conn.getMetaData().getColumns(null, null, name, "%");
-			RecordDefinition def = new RecordDefinition();
+			TableImpl tab = new TableImpl(this, name);
 			ResourceBundle resource = null;
 			try {
 				log.debug("Suche Property File: "+propertyPath+name);
@@ -131,13 +133,13 @@ public class DatabaseImpl implements Database {
 						columns.getInt("DATA_TYPE"),
 						columns.getInt("COLUMN_SIZE"),
 						resource,this);
-				def.addColumn(typ);
+				tab.addColumn(typ);
 			}
 			columns.close();
 			ResultSet primarykeys = conn.getMetaData().getPrimaryKeys(null,
 					null, name);
 			if (primarykeys.next()) {
-				def.setPrimaryKey(primarykeys.getString("COLUMN_NAME"));
+				tab.setPrimaryKey(primarykeys.getString("COLUMN_NAME"));
 				if (primarykeys.next()) {
 					throw new SystemDatabaseException(
 							"Mehrere Primärschlüsselspalten sind nicht erlaubt",
@@ -148,7 +150,7 @@ public class DatabaseImpl implements Database {
 						"Keine Primärschlüsselspalte definiert", log);
 			}
 			primarykeys.close();
-			return new TableImpl(this, name, def);
+			return tab;
 		} catch (SQLException e) {
 			throw new SystemDatabaseException("", e, log);
 		}
@@ -278,6 +280,9 @@ public class DatabaseImpl implements Database {
 }
 /*
  * $Log: DatabaseImpl.java,v $
+ * Revision 1.2  2005/01/29 20:21:59  phormanns
+ * RecordDefinition in TableImpl integriert
+ *
  * Revision 1.1  2004/12/31 19:37:26  phormanns
  * Database Schnittstelle herausgearbeitet
  *

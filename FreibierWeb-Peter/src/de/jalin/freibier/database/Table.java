@@ -1,4 +1,4 @@
-// $Id: Table.java,v 1.3 2005/01/28 17:13:25 phormanns Exp $
+// $Id: Table.java,v 1.4 2005/01/29 20:21:59 phormanns Exp $
 package de.jalin.freibier.database;
 
 import java.util.List;
@@ -87,7 +87,7 @@ public interface Table {
 
 	public abstract String getName();
 	
-	public QueryCondition createQueryCondition(String column, int operator, Object value);
+	public abstract QueryCondition createQueryCondition(String column, int operator, Object value);
 
 	public abstract TypeDefinition getFieldDef(String fieldName) throws SystemDatabaseException ;
 
@@ -97,6 +97,9 @@ public interface Table {
 }
 /*
  *  $Log: Table.java,v $
+ *  Revision 1.4  2005/01/29 20:21:59  phormanns
+ *  RecordDefinition in TableImpl integriert
+ *
  *  Revision 1.3  2005/01/28 17:13:25  phormanns
  *  Schnittstelle dokumentiert.
  *

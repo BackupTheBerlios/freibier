@@ -1,4 +1,4 @@
-//$Id: RecordImpl.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
+//$Id: RecordImpl.java,v 1.2 2005/01/29 20:21:59 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
 import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.Record;
+import de.jalin.freibier.database.Table;
 import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
@@ -23,20 +24,22 @@ import de.jalin.freibier.database.impl.type.TypeDefinitionForeignKey;
  * wieder in diese zurückgeschrieben werden.
  */
 public class RecordImpl implements Record {
+	
 	private static Log log = LogFactory.getLog(RecordImpl.class);
 	private static Perl5Util regex = new Perl5Util();
-	protected RecordDefinition def;
-	protected Map daten;
+	
+	private TableImpl tab;
+	private Map daten;
 
-	public RecordImpl(RecordDefinition def, Map bean) {
+	public RecordImpl(TableImpl tab, Map bean) {
 		log.trace("RecordImpl Constructor(" + bean.keySet() + ")");
-		this.def = def;
+		this.tab = tab;
 		this.daten = bean;
 		// Ein Foreign Key z.B. im Feld "kdnr" bedeutet, daß ein Schlüssel 
 		// "kdnr_foreign" angelegt ist, in dem der Wert aus der anderen Tabelle
 		// enthalten ist. Diese beiden müssen zusammengefasst werden in ein 
 		// Objekt:
-		Iterator i = def.getFieldsList().iterator();
+		Iterator i = tab.getFieldsList().iterator();
 		while (i.hasNext()) {
 			TypeDefinitionImpl typ = (TypeDefinitionImpl) i.next();
 			if (typ instanceof TypeDefinitionForeignKey) {
@@ -55,7 +58,7 @@ public class RecordImpl implements Record {
 	}
 
 	public Printable getField(String name) throws DatabaseException {
-		return new DataObject(daten.get(name), def.getFieldDef(name));
+		return new DataObject(daten.get(name), tab.getFieldDef(name));
 	}
 	
 	public String getFormatted(String name) throws DatabaseException {
@@ -63,7 +66,7 @@ public class RecordImpl implements Record {
 	}
 
 	public Printable getField(int col) throws DatabaseException {
-		TypeDefinition typdef = def.getFieldDef(col);
+		TypeDefinition typdef = tab.getFieldDef(col);
 		return new DataObject(daten.get(typdef.getName()), typdef);
 	}
 
@@ -73,7 +76,7 @@ public class RecordImpl implements Record {
 	}
 
 	public void setField(int col, DataObject value) throws DatabaseException {
-		TypeDefinition typdef = def.getFieldDef(col);
+		TypeDefinition typdef = tab.getFieldDef(col);
 		daten.put(typdef.getName(), value.getValue());
 	}
 
@@ -86,20 +89,23 @@ public class RecordImpl implements Record {
 	 * @throws SystemDatabaseException
 	 */
 	public void setField(String name, String value) throws DatabaseException {
-		daten.put(name, def.getFieldDef(name).parse(value));
+		daten.put(name, tab.getFieldDef(name).parse(value));
 	}
 
 	public void setField(int col, String value) throws DatabaseException {
-		TypeDefinition typdef = def.getFieldDef(col);
+		TypeDefinition typdef = tab.getFieldDef(col);
 		daten.put(typdef.getName(), typdef.parse(value));
 	}
-
-	public RecordDefinition getRecordDefinition() {
-		return def;
+	
+	public Table getTable() {
+		return tab;
 	}
 }
 /*
  * $Log: RecordImpl.java,v $
+ * Revision 1.2  2005/01/29 20:21:59  phormanns
+ * RecordDefinition in TableImpl integriert
+ *
  * Revision 1.1  2004/12/31 19:37:26  phormanns
  * Database Schnittstelle herausgearbeitet
  *

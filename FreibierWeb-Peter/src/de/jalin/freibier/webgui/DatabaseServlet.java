@@ -1,4 +1,5 @@
-// $Id: DatabaseServlet.java,v 1.2 2004/12/31 19:37:26 phormanns Exp $
+// $Id: DatabaseServlet.java,v 1.3 2005/01/29 20:21:59 phormanns Exp $
+
 package de.jalin.freibier.webgui;
 
 import java.util.Enumeration;
@@ -154,6 +155,9 @@ public class DatabaseServlet extends VelocityServlet {
 
 /*
  * $Log: DatabaseServlet.java,v $
+ * Revision 1.3  2005/01/29 20:21:59  phormanns
+ * RecordDefinition in TableImpl integriert
+ *
  * Revision 1.2  2004/12/31 19:37:26  phormanns
  * Database Schnittstelle herausgearbeitet
  *

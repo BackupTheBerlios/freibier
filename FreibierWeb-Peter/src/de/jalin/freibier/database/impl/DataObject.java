@@ -1,4 +1,4 @@
-//$Id: DataObject.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
+//$Id: DataObject.java,v 1.2 2005/01/29 20:21:59 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -25,7 +25,6 @@ public class DataObject implements Printable {
 
 	public DataObject(Object value, TypeDefinition def)
 			throws UserDatabaseException {
-		super();
 		this.value = value;
 		this.def = def;
 	}
@@ -82,6 +81,9 @@ public class DataObject implements Printable {
 }
 /*
  * $Log: DataObject.java,v $
+ * Revision 1.2  2005/01/29 20:21:59  phormanns
+ * RecordDefinition in TableImpl integriert
+ *
  * Revision 1.1  2004/12/31 19:37:26  phormanns
  * Database Schnittstelle herausgearbeitet
  *

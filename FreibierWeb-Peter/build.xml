@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <!-- ====================================================================== 
-     17.12.2004 16:59:18                                                        
+     $Id: build.xml,v 1.2 2005/01/29 20:21:59 phormanns Exp $
 
      project      Freibier2004
      description  Buildskript fuer Webapplikation
-                   
-     peter                                                                
+
+     Peter Hormanns
      ====================================================================== -->
 <project name="Freibier 2004" default="default">
 

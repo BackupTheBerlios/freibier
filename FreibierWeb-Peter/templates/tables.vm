@@ -2,7 +2,7 @@
 <head><title>Sample velocity page</title></head>
 <body bgcolor="#ffffff">
 #macro(format $row $column)$row.getFormatted($column)#end
-#macro(primarykey $row)#format($row $row.getRecordDefinition().getPrimaryKey())#end
+#macro(primarykey $row)#format($row $row.getTable().getPrimaryKey())#end
 <table cellspacing="0" cellpadding="5" width="100%">
     <tr>
     #foreach ($name in $tablenames)
@@ -36,7 +36,7 @@
     </tr>
     #foreach ($row in $data)
     <tr>
-    #set( $key = $row.getFormatted($row.getRecordDefinition().getPrimaryKey()) )
+    #set( $key = $row.getFormatted($row.getTable().getPrimaryKey()) )
     #if( $editkey == $key )
     	<form action="?" method="post">
 	        <td bgcolor="#eeeeee">
