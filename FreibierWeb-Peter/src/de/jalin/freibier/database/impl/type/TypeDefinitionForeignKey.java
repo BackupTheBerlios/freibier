@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionForeignKey.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
+//$Id: TypeDefinitionForeignKey.java,v 1.2 2005/01/31 21:05:38 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -14,7 +14,7 @@ import de.jalin.freibier.database.impl.ForeignKey;
 import de.jalin.freibier.database.impl.TypeDefinitionImpl;
 
 /**
- * Definition für einen Wert, der ein Fremdschlüssel ist, d.h. er referenziert
+ * Definition fuer einen Wert, der ein Fremdschluessel ist, d.h. er referenziert
  * einen bestimmten Wert in einer anderen Tabelle. Was genau referenziert wird,
  * wird durch Properties bestimmt.
  */
@@ -22,7 +22,7 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 	
 	private TypeDefinition indexType = null;
 	private TypeDefinition referenceType = null; // kann (bei Problemen) auch null sein
-	// Ich muss mir die DatabaseImpl merken, um auf den referenzierten Wert zugreifen zu können
+	// Ich muss mir die DatabaseImpl merken, um auf den referenzierten Wert zugreifen zu koennen
 	private DatabaseImpl db;
 
 	public TypeDefinitionForeignKey(TypeDefinition indexType, DatabaseImpl db)
@@ -30,11 +30,11 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 		super();
 		log.trace("TypeDefinitionForeignKey Constructor");
 		// Die Datenbank merke ich mir, weil man die ggf. braucht, um auf die
-		// referenzierte Tabelle zugreifen zu können.
+		// referenzierte Tabelle zugreifen zu koennen.
 		this.db = db;
 		// So, wie ich mir in ForeignKey den Index und den Content merke, merke
 		// ich mir hier die Typen von beiden, um diese z.B. im NicePrinter beide 
-		// formatieren zu können.
+		// formatieren zu koennen.
 		this.indexType = indexType;
 		if (db != null) {
 			referenceType = db.getTable(
@@ -62,7 +62,7 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 			try {
 				Map hash = ((Map) db.getTable(
 						indexType.getProperty("foreignkey.table"))
-						.getGivenColumns(list, 1).get(0));
+									.getGivenColumns(list, 1).get(0));
 				log.debug("Wert: " + hash.get(indexColumn));
 				Object keyVal=((DataObject) hash
 						.get(indexColumn)).getValue();
@@ -102,9 +102,9 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 
 	/**
 	 * Diese Methode ergibt eine Liste von Hashes. In jedem Hash sind zwei
-	 * Einträge unter dem Namen der Indexspalte und der Resultspalte. Diese
+	 * Eintraege unter dem Namen der Indexspalte und der Resultspalte. Diese
 	 * enthalten die Werte aus der fremden Tabelle. So ergibt sich eine Liste
-	 * aller möglichen Werte für den Fremdschlüssel.
+	 * aller moeglichen Werte fuer den Fremdschluessel.
 	 */
 	public List getPossibleValues() throws DatabaseException {
 		List list = new ArrayList();
@@ -117,23 +117,26 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.2  2005/01/31 21:05:38  phormanns
+ * PgSqlTableImpl angelegt
+ *
  * Revision 1.1  2004/12/31 19:37:26  phormanns
  * Database Schnittstelle herausgearbeitet
  *
  * Revision 1.1  2004/12/31 17:13:03  phormanns
- * Erste öffentliche Version
+ * Erste oeffentliche Version
  *
  * Revision 1.3  2004/10/25 20:41:52  tbayen
- * Test für insert-Kommando und Fehler bei insert behoben
+ * Test fuer insert-Kommando und Fehler bei insert behoben
  *
  * Revision 1.2  2004/10/24 19:15:07  tbayen
- * ComboBox als Auswahlfeld für Foreign Keys
+ * ComboBox als Auswahlfeld fuer Foreign Keys
  *
  * Revision 1.1  2004/10/24 15:46:42  tbayen
  * Typdefinitionen in eigenes Package ausgelagert
  *
  * Revision 1.6  2004/10/24 15:42:27  tbayen
- * DataObjectTextEditor als selbstständige Klasse implementiert
+ * DataObjectTextEditor als selbststaendige Klasse implementiert
  *
  * Revision 1.5  2004/10/24 13:10:20  tbayen
  * Merken des Typs des Zielwertes eines Foreign Keys

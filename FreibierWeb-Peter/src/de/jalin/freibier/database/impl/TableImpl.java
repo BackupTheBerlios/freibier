@@ -1,4 +1,4 @@
-//$Id: TableImpl.java,v 1.3 2005/01/29 22:10:02 phormanns Exp $
+//$Id: TableImpl.java,v 1.4 2005/01/31 21:05:38 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -18,9 +18,9 @@ import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.exception.UserDatabaseException;
 
 /**
- * Repräsentiert eine einzelne Tabelle aus einer Datenbank. Zugriffe auf diese
+ * Repraesentiert eine einzelne Tabelle aus einer Datenbank. Zugriffe auf diese
  * Klasse werden sofort an die zugrundeliegende Datenbank weitergereicht, d.h.
- * im Normalfall als SQL-Befehle ausgeführt.
+ * im Normalfall als SQL-Befehle ausgefuehrt.
  * 
  * @author tbayen
  */
@@ -52,6 +52,10 @@ public abstract class TableImpl implements Table {
 
 	protected abstract String makeReplaceStatement(Record data) throws DatabaseException;
 
+	protected abstract String makeCountStatement() throws DatabaseException;
+
+	protected abstract String makeSelectGivenColumns(List colNames);
+	
 	public String getPrimaryKey() {
 		return primaryKey;
 	}
@@ -105,8 +109,8 @@ public abstract class TableImpl implements Table {
 	}
 
 	/**
-	 * Anzahl von Datensätzen lesen. Es werden numberOfRecords Datensätze ab (ausschließlich)
-	 * previousRecord zurückgeliefert, aufsteigende oder absteigende Reihenfolge.
+	 * Anzahl von Datensaetzen lesen. Es werden numberOfRecords Datensaetze ab (ausschliesslich)
+	 * previousRecord zurueckgeliefert, aufsteigende oder absteigende Reihenfolge.
 	 * @param numberOfRecords
 	 * @param ascending
 	 * @param previousRecord
@@ -150,7 +154,7 @@ public abstract class TableImpl implements Table {
 	 * performanter).
 	 * 
 	 * Wenn bestimmte Parameter nicht angegeben werden sollen, koennen diese
-	 * null bzw. 0 sein, insbesondere gilt dies für: 
+	 * null bzw. 0 sein, insbesondere gilt dies fuer: 
 	 * condition, orderColumn, numberOfRecords
 	 */
 	public List getRecords(QueryCondition condition,
@@ -180,10 +184,10 @@ public abstract class TableImpl implements Table {
 	}
 
 	/**
-	 * Diese Funktion erlaubt, Datensätze über eine fortlaufende Nummer
+	 * Diese Funktion erlaubt, Datensaetze ueber eine fortlaufende Nummer
 	 * anzusprechen. Der erste Datensatz hat die Nummer 1, der letzte die
 	 * Nummer getNumberOfRecords(). die Sortierung kann angegeben werden,
-	 * ansonsten wird nach dem Primärschlüssel sortiert.
+	 * ansonsten wird nach dem Primaerschluessel sortiert.
 	 * 
 	 * @param recordNr
 	 * @param orderColumn
@@ -209,9 +213,8 @@ public abstract class TableImpl implements Table {
 	}
 
 	public int getNumberOfRecords() throws DatabaseException {
-		Map hash = db.executeSelectSingleRow("SELECT COUNT(*) AS COUNT FROM "
-				+ name, 0);
-		return ((Integer) hash.get("COUNT")).intValue();
+		Map hash = db.executeSelectSingleRow(makeCountStatement(), 0);
+		return ((Integer) hash.get("RECORDCNT")).intValue();
 	}
 
 	/**
@@ -246,7 +249,7 @@ public abstract class TableImpl implements Table {
 
 	/**
 	 * Diese Methode ergibt eine Liste von DataObjects, die alle Werte in
-	 * den angegebenen Spalten enthält.
+	 * den angegebenen Spalten enthaelt.
 	 * Die Werte sind nach dem Wert der Primaerspalte sortiert, so dass eine
 	 * eindeutige und wiederholbare Reihenfolge vorliegt.
 	 * Wird als Limit 0 angegeben, werden alle Eintraege ausgegeben.
@@ -254,17 +257,9 @@ public abstract class TableImpl implements Table {
 	public List getGivenColumns(List colNames, int limit)
 			throws DatabaseException {
 		List list = new ArrayList();
-		String statement = "";
-		Iterator i = colNames.iterator();
-		while (i.hasNext()) {
-			if (!statement.equals(""))
-				statement += ", ";
-			statement += (String) i.next();
-		}
-		List rows = db.executeSelectMultipleRows("SELECT " + statement
-				+ " FROM " + name + " ORDER BY " + this.getPrimaryKey(),
-				1, limit);
-		i = rows.iterator();
+		String select = makeSelectGivenColumns(colNames);
+		List rows = db.executeSelectMultipleRows(select, 1, limit);
+		Iterator i = rows.iterator();
 		while (i.hasNext()) {
 			Map hash = (Map) i.next();
 			Map newhash = new HashMap();
@@ -280,7 +275,7 @@ public abstract class TableImpl implements Table {
 	}
 
 	/**
-	 * Speichert den Datensatz. INSERT, falls der Primärschlüssel
+	 * Speichert den Datensatz. INSERT, falls der Primaerschluessel
 	 * undefiniert ist, sonst UPDATE.
 	 * @param data
 	 */
@@ -295,7 +290,7 @@ public abstract class TableImpl implements Table {
 	}
 
 	/**
-	 * Löscht den Datensatz.
+	 * Loescht den Datensatz.
 	 * @param data
 	 * @throws DatabaseException
 	 */
@@ -318,6 +313,9 @@ public abstract class TableImpl implements Table {
 }
 /*
  * $Log: TableImpl.java,v $
+ * Revision 1.4  2005/01/31 21:05:38  phormanns
+ * PgSqlTableImpl angelegt
+ *
  * Revision 1.3  2005/01/29 22:10:02  phormanns
  * SQL zum Teil nach MysqlTableImpl verschoben
  * MySQL LIMIT-Statement durch JDBC 3.0 ersetzt

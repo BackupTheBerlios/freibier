@@ -1,4 +1,4 @@
-// $Id: MysqlTableImpl.java,v 1.2 2005/01/31 21:05:38 phormanns Exp $
+// $Id: PgSqlTableImpl.java,v 1.1 2005/01/31 21:05:38 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -10,15 +10,15 @@ import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.impl.type.TypeDefinitionForeignKey;
 
-public class MysqlTableImpl extends TableImpl {
+public class PgSqlTableImpl extends TableImpl {
 	
-	public MysqlTableImpl(DatabaseImpl db, String name) {
+	public PgSqlTableImpl(DatabaseImpl db, String name) {
 		super(db, name);
 	}
 
 	/**
-	 * Ergibt ein SQL-Select-Statement, das geeignet ist, alle Daten für diese
-	 * Tabelle einzulesen. Dabei werden auch durch Fremdschlüssel referenzierte
+	 * Ergibt ein SQL-Select-Statement, das geeignet ist, alle Daten fuer diese
+	 * Tabelle einzulesen. Dabei werden auch durch Fremdschluessel referenzierte
 	 * Werte miteingelesen. 
 	 * 
 	 * Das Statement enthaelt immer eine WHERE-Klausel am Ende, so dass mit 
@@ -117,8 +117,8 @@ public class MysqlTableImpl extends TableImpl {
 }
 
 /*
- *  $Log: MysqlTableImpl.java,v $
- *  Revision 1.2  2005/01/31 21:05:38  phormanns
+ *  $Log: PgSqlTableImpl.java,v $
+ *  Revision 1.1  2005/01/31 21:05:38  phormanns
  *  PgSqlTableImpl angelegt
  *
  *  Revision 1.1  2005/01/29 22:10:02  phormanns
