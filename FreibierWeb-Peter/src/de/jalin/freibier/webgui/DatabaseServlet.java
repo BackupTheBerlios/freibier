@@ -1,4 +1,4 @@
-// $Id: DatabaseServlet.java,v 1.9 2005/02/18 22:17:42 phormanns Exp $
+// $Id: DatabaseServlet.java,v 1.10 2005/02/21 22:55:25 phormanns Exp $
 
 package de.jalin.freibier.webgui;
 
@@ -39,6 +39,7 @@ public class DatabaseServlet extends HttpServlet {
         try {
             db = DatabaseFactory.getDatabaseInstance(sqlFactoryClass,
                     jdbcDriverClass, jdbcConnectUrl, dbUser, dbPassword);
+            db.createTestData();
         } catch (DatabaseException e) {
             log("Keine Verbindung zur Datenbank", e);
         }
@@ -227,6 +228,9 @@ public class DatabaseServlet extends HttpServlet {
 
 /*
  * $Log: DatabaseServlet.java,v $
+ * Revision 1.10  2005/02/21 22:55:25  phormanns
+ * Hsqldb zugefuegt
+ *
  * Revision 1.9  2005/02/18 22:17:42  phormanns
  * Umstellung auf Freemarker begonnen
  *

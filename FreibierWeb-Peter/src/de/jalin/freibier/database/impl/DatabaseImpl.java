@@ -1,4 +1,4 @@
-//$Id: DatabaseImpl.java,v 1.7 2005/02/14 21:24:43 phormanns Exp $
+//$Id: DatabaseImpl.java,v 1.8 2005/02/21 22:55:25 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -6,14 +6,18 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.crossdb.sql.Column;
+import com.crossdb.sql.CreateTableQuery;
 import com.crossdb.sql.CrossdbResultSet;
+import com.crossdb.sql.InsertQuery;
 import com.crossdb.sql.SQLFactory;
 import com.crossdb.sql.SelectQuery;
 import com.crossdb.sql.Table;
@@ -58,6 +62,36 @@ public class DatabaseImpl implements Database {
         this.dbPassword = dbPassword;
         this.tablesMap = new HashMap();
         openConnection();
+        tableNamesList = new ArrayList();
+        readTablesFromCatalog();
+    }
+    
+    public void createTestData() throws SystemDatabaseException {
+        CreateTableQuery createTableQuery = sqlFactory.getCreateTableQuery();
+        createTableQuery.setName("table1");
+        Column pk = new Column("id", Types.INTEGER);
+        pk.setPrimaryKey(true);
+        pk.setAutoIncrement(true);
+        createTableQuery.addColumn(pk);
+        createTableQuery.addColumn(new Column("text", Types.VARCHAR));
+        createTableQuery.addColumn(new Column("datum", Types.DATE));
+        try {
+            createTableQuery.execute(conn);
+        } catch (SQLException e) {
+            throw new SystemDatabaseException("Konnte Testtabelle nicht anlegen.", e, log);
+        }
+        for (int i = 0; i < 500; i++) {
+	        InsertQuery insertQuery = sqlFactory.getInsertQuery();
+	        insertQuery.setTable("table1");
+	        insertQuery.addAutoIncrementColumn("id");
+	        insertQuery.addColumn("text", "Ein Text mit Nummer " + i);
+	        insertQuery.addColumn("datum", new Date());
+	        try {
+                insertQuery.execute(conn);
+            } catch (SQLException e) {
+                throw new SystemDatabaseException("Konnte Testtabelle nicht fuellen.", e, log);
+            }
+        }
         tableNamesList = new ArrayList();
         readTablesFromCatalog();
     }
@@ -126,7 +160,7 @@ public class DatabaseImpl implements Database {
 
     private void readTablesFromCatalog() throws SystemDatabaseException {
         try {
-            ResultSet rs = conn.getMetaData().getTables(null, null, "%", null);
+            ResultSet rs = conn.getMetaData().getTables(null, null, "%", new String[] {"TABLE"});
             while (rs.next()) {
                 tableNamesList.add(rs.getString("TABLE_NAME"));
             }
@@ -215,6 +249,9 @@ public class DatabaseImpl implements Database {
 }
 /*
  * $Log: DatabaseImpl.java,v $
+ * Revision 1.8  2005/02/21 22:55:25  phormanns
+ * Hsqldb zugefuegt
+ *
  * Revision 1.7  2005/02/14 21:24:43  phormanns
  * Kleinigkeiten
  * Revision 1.6 2005/02/13 20:27:14 phormanns

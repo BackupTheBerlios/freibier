@@ -15,23 +15,23 @@
     </init-param>
 	<init-param>   
     	<param-name>sqlFactoryClass</param-name>                               
-	    <param-value>com.spaceprogram.sql.mysql.MySQLFactory</param-value>                              
+	    <param-value>com.spaceprogram.sql.hsqldb.HsqldbFactory</param-value>                              
 	</init-param>
 	<init-param>   
     	<param-name>jdbcDriverClass</param-name>                               
-	    <param-value>com.mysql.jdbc.Driver</param-value>                              
+	    <param-value>org.hsqldb.jdbcDriver</param-value>                              
 	</init-param>
 	<init-param>                                   
     	<param-name>jdbcConnectUrl</param-name>                               
-	    <param-value>jdbc:mysql://localhost/demo?autoReconnect=true</param-value>                              
+	    <param-value>jdbc:hsqldb:mem:test</param-value>                              
 	</init-param>
 	<init-param>                                   
     	<param-name>dbUser</param-name>                               
-	    <param-value>demo</param-value>                              
+	    <param-value>sa</param-value>                              
 	</init-param>
 	<init-param>                                   
     	<param-name>dbPassword</param-name>                               
-	    <param-value>demo</param-value>                              
+	    <param-value></param-value>                              
 	</init-param>
   </servlet>
   

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- ====================================================================== 
-     $Id: build.xml,v 1.4 2005/02/18 22:17:42 phormanns Exp $
+     $Id: build.xml,v 1.5 2005/02/21 22:55:25 phormanns Exp $
 
      project      Freibier2004
      description  Buildskript fuer Webapplikation
@@ -10,7 +10,6 @@
 <project name="Freibier 2004" default="default">
 
 	<path id="path-jars">
-		<pathelement location="lib/mysql-3.0.9.jar"/>
 		<pathelement location="lib/junit-3.8.1.jar"/>
 		<pathelement location="lib/log4j-1.2.jar"/>
 		<pathelement location="lib/commons-logging-1.0.4.jar"/>
@@ -29,6 +28,7 @@
 			<classes dir="templates"/>
 			<lib dir="lib">
 				<include name="mysql-3.0.9.jar"/>
+				<include name="hsqldb.jar"/>
 				<include name="postgresql-jdbc3-7.4.2.jar"/>
 				<include name="junit-3.8.1.jar"/>
 				<include name="log4j-1.2.jar"/>
