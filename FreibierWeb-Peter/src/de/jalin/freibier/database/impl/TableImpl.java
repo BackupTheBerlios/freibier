@@ -1,4 +1,4 @@
-//$Id: TableImpl.java,v 1.2 2005/01/29 20:21:59 phormanns Exp $
+//$Id: TableImpl.java,v 1.3 2005/01/29 22:10:02 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -16,7 +16,6 @@ import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.exception.UserDatabaseException;
-import de.jalin.freibier.database.impl.type.TypeDefinitionForeignKey;
 
 /**
  * Repräsentiert eine einzelne Tabelle aus einer Datenbank. Zugriffe auf diese
@@ -25,7 +24,7 @@ import de.jalin.freibier.database.impl.type.TypeDefinitionForeignKey;
  * 
  * @author tbayen
  */
-public class TableImpl implements Table {
+public abstract class TableImpl implements Table {
 	
 	private static Log log = LogFactory.getLog(TableImpl.class);
 	
@@ -42,6 +41,16 @@ public class TableImpl implements Table {
 		columnshash = new HashMap();
 		columnslist = new ArrayList();
 	}
+
+	protected abstract String makeSelectStatement();
+	
+	protected abstract String makeWhereExpression(String columnName, Object value) throws DatabaseException;
+	
+	protected abstract String makeOrderByExpression(String columnName, boolean ascending) throws DatabaseException;
+	
+	protected abstract String makeDeleteStatement(String value) throws DatabaseException;
+
+	protected abstract String makeReplaceStatement(Record data) throws DatabaseException;
 
 	public String getPrimaryKey() {
 		return primaryKey;
@@ -96,48 +105,6 @@ public class TableImpl implements Table {
 	}
 
 	/**
-	 * Ergibt ein SQL-Select-Statement, das geeignet ist, alle Daten für diesen
-	 * RecordImpl einzulesen. Dabei werden auch durch Fremdschlüssel referenzierte
-	 * Werte miteingelesen. 
-	 * 
-	 * Das Statement enthält immer eine WHERE-Klausel am Ende, so daß mit 
-	 * "AND ..." weitere WHERE-Bedingungen angehängt werden können.
-	 */
-	public String getSelectStatement(String myTable) {
-		String felder = "";
-		String tabellen = "`" + myTable + "`";
-		String where = null;
-		Iterator i = columnslist.iterator();
-		TypeDefinitionImpl feldtyp;
-		while (i.hasNext()) {
-			feldtyp = (TypeDefinitionImpl) i.next();
-			if (!felder.equals("")) {
-				felder += ", ";
-			}
-			felder += myTable + "." + feldtyp.getName();
-			if (feldtyp instanceof TypeDefinitionForeignKey) {
-				String tabelle = feldtyp.getProperty("foreignkey.table");
-				String spalte = feldtyp.getProperty("foreignkey.resultcolumn");
-				felder += ", " + tabelle + "." + spalte + " AS " + feldtyp.getName() +"_foreign";
-				tabellen += ", `" + tabelle + "`";
-				if (where == null) {
-					where = " WHERE ";
-				} else {
-					where += " AND ";
-				}
-				where += myTable + "." + feldtyp.getName() + "=" + tabelle
-						+ "." + feldtyp.getProperty("foreignkey.indexcolumn");
-			}
-		}
-		if (where == null)
-			where = " WHERE 1";
-		return "SELECT " + felder + " FROM " + tabellen + where;
-		// Beispiel:
-		// SELECT adressen.vorname, adressen.nachname, adressen.lebensalter, adressen.sprache, programmiersprachen.name, 
-		// adressen.id FROM `adressen`,Programmiersprachen where programmiersprachen.id=adressen.sprache
-	}
-
-	/**
 	 * Anzahl von Datensätzen lesen. Es werden numberOfRecords Datensätze ab (ausschließlich)
 	 * previousRecord zurückgeliefert, aufsteigende oder absteigende Reihenfolge.
 	 * @param numberOfRecords
@@ -148,12 +115,10 @@ public class TableImpl implements Table {
 	 */
 	public List getMultipleRecords(int startRecordNr, int numberOfRecords,
 			String orderColumn, boolean ascending) throws DatabaseException {
-		String selectRumpf = this.getSelectStatement(name);
-		List dbResult = db.executeSelectMultipleRows(selectRumpf + " ORDER BY "
-				+ name + "." + orderColumn + (ascending ? " ASC" : " DESC")
-				+ ", " + name + "." + this.getPrimaryKey()
-				+ (ascending ? " ASC" : " DESC") + " LIMIT " + startRecordNr
-				+ ", " + numberOfRecords);
+		String selectRumpf = this.makeSelectStatement();
+		String orderBy = this.makeOrderByExpression(orderColumn, ascending); 
+		List dbResult = db.executeSelectMultipleRows(selectRumpf + " "
+				+ orderBy, startRecordNr, numberOfRecords);
 		//log.debug("dbResult ist: "+dbResult.size());
 		List recordList = new ArrayList();
 		Iterator resIterator = dbResult.iterator();
@@ -192,24 +157,15 @@ public class TableImpl implements Table {
 			String orderColumn,
 			boolean ascending, int startRecordNr, int numberOfRecords
 	) throws DatabaseException{
-		String selectRumpf = this.getSelectStatement(name);
+		String selectRumpf = this.makeSelectStatement();
 		String sql = selectRumpf;
 		// Filtern
 		if(condition!=null)
-			// Das getSelectStatement endet imm er mit einem WHERE, das verlängere ich hier ggf.:
-			sql += " AND "+condition.expression();
+			// Das getSelectStatement endet immer mit einem WHERE, das verlaengere ich hier ggf.:
+			sql += condition.expression();
 		// Sortieren
-		sql += " ORDER BY ";
-		// Wenn angegeben, nach einer bestimmten Spalte sortieren
-		if (orderColumn != null && !orderColumn.equals(""))
-			sql += name + "." + orderColumn + (ascending ? " ASC" : " DESC")
-					+ ", ";
-		// auf jeden Fall nach der Primärspalte sortieren, um immer eine eindeutige Reihenfolge zu haben
-		sql += name + "." + this.getPrimaryKey()
-				+ (ascending ? " ASC" : " DESC");
-		if (numberOfRecords != 0)
-			sql += " LIMIT " + startRecordNr + ", " + numberOfRecords;
-		List dbResult = db.executeSelectMultipleRows(sql);
+		sql += " " + this.makeOrderByExpression(orderColumn, ascending);
+		List dbResult = db.executeSelectMultipleRows(sql, startRecordNr, numberOfRecords);
 		//log.debug("dbResult ist: "+dbResult.size());
 		List recordList = new ArrayList();
 		Iterator resIterator = dbResult.iterator();
@@ -235,28 +191,26 @@ public class TableImpl implements Table {
 	 * @throws DatabaseException
 	 */
 	public RecordImpl getRecordByNumber(int recordNr) throws DatabaseException {
-		return getRecordByNumber(recordNr, this.getPrimaryKey(), 1);
+		return getRecordByNumber(recordNr, this.getPrimaryKey(), true);
 	}
 
 	public RecordImpl getRecordByNumber(int recordNr, String orderColumn,
-			int direction) throws DatabaseException {
+			boolean ascending) throws DatabaseException {
 		// Ich sortiere nicht nur nach der orderColumn, sondern auch nach der
 		// Primärspalte, damit die Reihenfolge bei gleichen Daten immer 
 		// garantiert gleich ist.
 		if (orderColumn == null) {
 			orderColumn = this.getPrimaryKey();
 		}
-		String selectRumpf = this.getSelectStatement(name);
-		Map hash = db.executeSelectSingleRow(selectRumpf + " ORDER BY `"
-				+ orderColumn + "` " + (direction < 0 ? "DESC" : "ASC") + ", `"
-				+ this.getPrimaryKey() + "` " + (direction < 0 ? "DESC" : "ASC")
-				+ " LIMIT " + recordNr + ",1");
+		String selectRumpf = this.makeSelectStatement();
+		String orderBy = this.makeOrderByExpression(orderColumn, ascending);
+		Map hash = db.executeSelectSingleRow(selectRumpf + " " + orderBy, recordNr);
 		return new RecordImpl(this, hash);
 	}
 
 	public int getNumberOfRecords() throws DatabaseException {
 		Map hash = db.executeSelectSingleRow("SELECT COUNT(*) AS COUNT FROM "
-				+ name);
+				+ name, 0);
 		return ((Integer) hash.get("COUNT")).intValue();
 	}
 
@@ -269,9 +223,9 @@ public class TableImpl implements Table {
 	 */
 	public RecordImpl getRecordByValue(String columnName, String value)
 			throws DatabaseException {
-		String selectRumpf = this.getSelectStatement(name);
+		String selectRumpf = this.makeSelectStatement();
 		Map hash = db.executeSelectSingleRow(selectRumpf + " AND "
-				+ makeWhereExpression(this.getFieldDef(columnName), value));
+				+ makeWhereExpression(columnName, value), 0);
 		return new RecordImpl(this, hash);
 	}
 
@@ -283,22 +237,19 @@ public class TableImpl implements Table {
 	 */
 	public Record getRecordByPrimaryKey(Object pkValue)
 			throws DatabaseException {
-		String selectRumpf = this.getSelectStatement(name);
+		String selectRumpf = this.makeSelectStatement();
 		Map hash = db.executeSelectSingleRow(selectRumpf
 				+ " AND "
-				+ makeWhereExpression(this.getFieldDef(this.getPrimaryKey()),
-						pkValue));
+				+ makeWhereExpression(this.getPrimaryKey(), pkValue), 0);
 		return new RecordImpl(this, hash);
 	}
 
 	/**
 	 * Diese Methode ergibt eine Liste von DataObjects, die alle Werte in
 	 * den angegebenen Spalten enthält.
-	 * 
-	 * Die Werte sind nach dem Wert der Primärspalte sortiert, so daß eine
+	 * Die Werte sind nach dem Wert der Primaerspalte sortiert, so dass eine
 	 * eindeutige und wiederholbare Reihenfolge vorliegt.
-	 * 
-	 * Wird als Limit 0 angegeben, werden alle Einträge ausgegeben.
+	 * Wird als Limit 0 angegeben, werden alle Eintraege ausgegeben.
 	 */
 	public List getGivenColumns(List colNames, int limit)
 			throws DatabaseException {
@@ -310,10 +261,9 @@ public class TableImpl implements Table {
 				statement += ", ";
 			statement += (String) i.next();
 		}
-		String limitstring = (limit == 0 ? "" : " LIMIT " + limit);
 		List rows = db.executeSelectMultipleRows("SELECT " + statement
-				+ " FROM " + name + " ORDER BY " + this.getPrimaryKey()
-				+ limitstring);
+				+ " FROM " + name + " ORDER BY " + this.getPrimaryKey(),
+				1, limit);
 		i = rows.iterator();
 		while (i.hasNext()) {
 			Map hash = (Map) i.next();
@@ -336,15 +286,7 @@ public class TableImpl implements Table {
 	 */
 	public void setRecord(Record data) throws DatabaseException {
 		try {
-			String sql = "REPLACE INTO `" + name + "` SET ";
-			for (int i = 0; i < this.getFieldsList().size(); i++) {
-				if (i != 0) {
-					sql += ", ";
-				}
-				String feldname = this.getFieldDef(i).getName();
-				sql += "`" + feldname + "` = "
-						+ SQLPrinter.print(data.getField(feldname));
-			}
+			String sql = makeReplaceStatement(data);
 			db.executeUpdate(sql);
 		} catch (DatabaseException e) {
 			throw new UserDatabaseException(
@@ -358,30 +300,28 @@ public class TableImpl implements Table {
 	 * @throws DatabaseException
 	 */
 	public void deleteRecord(Record data) throws DatabaseException {
-		db.executeUpdate("DELETE FROM "
-				+ name
-				+ " WHERE "
-				+ makeWhereExpression(this.getFieldDef(this.getPrimaryKey()),
-						data.getField(this.getPrimaryKey()).getValue()));
+		db.executeUpdate(this.makeDeleteStatement(data.getFormatted(this.getPrimaryKey())));
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	private String makeWhereExpression(TypeDefinition def, Object value)
-			throws DatabaseException {
-		return (name + "." + def.getName() + "=" 
-				+ SQLPrinter.print(new DataObject(value, def)));
-	}
-
 	public QueryCondition createQueryCondition(String column, int operator, Object value) {
 		QueryCondition cond = new QueryConditionImpl(this, column, operator, value);
 		return cond;
 	}
+
+	protected List getColumnsList() {
+		return columnslist;
+	}
 }
 /*
  * $Log: TableImpl.java,v $
+ * Revision 1.3  2005/01/29 22:10:02  phormanns
+ * SQL zum Teil nach MysqlTableImpl verschoben
+ * MySQL LIMIT-Statement durch JDBC 3.0 ersetzt
+ *
  * Revision 1.2  2005/01/29 20:21:59  phormanns
  * RecordDefinition in TableImpl integriert
  *

@@ -1,4 +1,4 @@
-// $Id: QueryConditionImpl.java,v 1.2 2005/01/29 20:21:59 phormanns Exp $
+// $Id: QueryConditionImpl.java,v 1.3 2005/01/29 22:10:02 phormanns Exp $
 package de.jalin.freibier.database.impl;
 
 import org.apache.commons.logging.Log;
@@ -40,7 +40,7 @@ public class QueryConditionImpl implements QueryCondition {
 	}
 
 	public String expression() throws DatabaseException {
-		String erg = column;
+		String erg = " AND " + column;
 		switch (operator) {
 		case EQUAL:				erg += " = ";	break;
 		case GREATER:			erg += " > ";	break;
@@ -55,12 +55,16 @@ public class QueryConditionImpl implements QueryCondition {
 		DataObject val=new DataObject(value,tab.getFieldDef(column));
 		erg += SQLPrinter.print(val);
 		if (next != null)
-			erg += " AND " + next.expression();
+			erg += next.expression();
 		return erg;
 	}
 }
 /*
  *  $Log: QueryConditionImpl.java,v $
+ *  Revision 1.3  2005/01/29 22:10:02  phormanns
+ *  SQL zum Teil nach MysqlTableImpl verschoben
+ *  MySQL LIMIT-Statement durch JDBC 3.0 ersetzt
+ *
  *  Revision 1.2  2005/01/29 20:21:59  phormanns
  *  RecordDefinition in TableImpl integriert
  *

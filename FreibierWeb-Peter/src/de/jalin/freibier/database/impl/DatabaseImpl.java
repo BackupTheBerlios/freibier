@@ -1,4 +1,4 @@
-//$Id: DatabaseImpl.java,v 1.2 2005/01/29 20:21:59 phormanns Exp $
+//$Id: DatabaseImpl.java,v 1.3 2005/01/29 22:10:02 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -119,7 +119,7 @@ public class DatabaseImpl implements Database {
 		try {
 			ResultSet columns 
 				= conn.getMetaData().getColumns(null, null, name, "%");
-			TableImpl tab = new TableImpl(this, name);
+			TableImpl tab = new MysqlTableImpl(this, name);
 			ResourceBundle resource = null;
 			try {
 				log.debug("Suche Property File: "+propertyPath+name);
@@ -197,7 +197,7 @@ public class DatabaseImpl implements Database {
 		}
 	}
 
-	public Map executeSelectSingleRow(String sql) throws DatabaseException {
+	public Map executeSelectSingleRow(String sql, int recordNr) throws DatabaseException {
 		log.trace("executeSelectSingleRow");
 		Map hash = new HashMap();
 		try {
@@ -205,7 +205,7 @@ public class DatabaseImpl implements Database {
 			log.debug("SQL SELECT: " + sql);
 			ResultSet rs = st.executeQuery(sql);
 			ResultSetMetaData metadata = rs.getMetaData();
-			if (rs.next()) {
+			if (rs.absolute(recordNr + 1)) {
 				for (int i = 0; i < metadata.getColumnCount(); i++) {
 					hash.put(metadata.getColumnName(i + 1), 
 								rs.getObject(i + 1));
@@ -223,22 +223,36 @@ public class DatabaseImpl implements Database {
 		return hash;
 	}
 
-	public List executeSelectMultipleRows(String sql) throws DatabaseException {
+	public List executeSelectMultipleRows(String sql, int startRecordNum, int numberOfRecords) throws DatabaseException {
 		log.trace("executeSelectMultipleRows");
 		List resultList = new ArrayList();
 		Map hash = null;
+		if (numberOfRecords <= 0) {
+			numberOfRecords = 10000;
+		}
 		try {
 			Statement st = conn.createStatement();
 			log.debug("SQL SELECT: " + sql);
 			ResultSet rs = st.executeQuery(sql);
-			ResultSetMetaData metadata = rs.getMetaData();
-			while (rs.next()) {
-				hash = new HashMap();
-				for (int i = 0; i < metadata.getColumnCount(); i++) {
-					hash.put(metadata.getColumnName(i + 1), 
-								rs.getObject(i + 1));
+			ResultSetMetaData metadata = rs.getMetaData();  
+			int count = 0;
+			if (rs.absolute(startRecordNum + 1)) {
+				while (count < numberOfRecords) {
+					hash = new HashMap();
+					for (int i = 0; i < metadata.getColumnCount(); i++) {
+						hash.put(metadata.getColumnName(i + 1), 
+									rs.getObject(i + 1));
+					}
+					resultList.add(hash);
+					if (rs.next()) {
+						count++;
+					} else {
+						count = numberOfRecords;
+					}
 				}
-				resultList.add(hash);
+			} else {
+				throw new UserDatabaseException(
+						"angegebener Datensatz existiert nicht", log);
 			}
 			rs.close();
 			st.close();
@@ -280,6 +294,10 @@ public class DatabaseImpl implements Database {
 }
 /*
  * $Log: DatabaseImpl.java,v $
+ * Revision 1.3  2005/01/29 22:10:02  phormanns
+ * SQL zum Teil nach MysqlTableImpl verschoben
+ * MySQL LIMIT-Statement durch JDBC 3.0 ersetzt
+ *
  * Revision 1.2  2005/01/29 20:21:59  phormanns
  * RecordDefinition in TableImpl integriert
  *
