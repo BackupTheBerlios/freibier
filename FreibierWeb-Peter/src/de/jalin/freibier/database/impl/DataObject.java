@@ -1,4 +1,4 @@
-//$Id: DataObject.java,v 1.3 2005/02/14 21:24:43 phormanns Exp $
+//$Id: DataObject.java,v 1.4 2005/02/16 17:24:52 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -30,8 +30,12 @@ public class DataObject implements Printable {
 		this.def = def;
 	}
 
-	public String format() throws DatabaseException {
-		return def.format(value);
+	public String printText() throws DatabaseException {
+		return def.printText(value);
+	}
+
+	public String printSQL() throws DatabaseException {
+		return def.printSQL(value);
 	}
 
 	public void parse(String value) throws DatabaseException {
@@ -82,6 +86,9 @@ public class DataObject implements Printable {
 }
 /*
  * $Log: DataObject.java,v $
+ * Revision 1.4  2005/02/16 17:24:52  phormanns
+ * OrderBy und Filter funktionieren jetzt
+ *
  * Revision 1.3  2005/02/14 21:24:43  phormanns
  * Kleinigkeiten
  *

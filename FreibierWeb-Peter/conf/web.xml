@@ -23,15 +23,15 @@
 	</init-param>
 	<init-param>                                   
     	<param-name>jdbcConnectUrl</param-name>                               
-	    <param-value>jdbc:mysql://localhost/blz?autoReconnect=true</param-value>                              
+	    <param-value>jdbc:mysql://localhost/demo?autoReconnect=true</param-value>                              
 	</init-param>
 	<init-param>                                   
     	<param-name>dbUser</param-name>                               
-	    <param-value>blz</param-value>                              
+	    <param-value>demo</param-value>                              
 	</init-param>
 	<init-param>                                   
     	<param-name>dbPassword</param-name>                               
-	    <param-value>blz</param-value>                              
+	    <param-value>demo</param-value>                              
 	</init-param>
   </servlet>
   

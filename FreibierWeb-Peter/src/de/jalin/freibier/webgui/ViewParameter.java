@@ -1,4 +1,4 @@
-// $Id: ViewParameter.java,v 1.2 2005/02/13 20:27:14 phormanns Exp $
+// $Id: ViewParameter.java,v 1.3 2005/02/16 17:24:52 phormanns Exp $
 package de.jalin.freibier.webgui;
 
 
@@ -6,6 +6,7 @@ public class ViewParameter {
 
 	private String tableName;
 	private int firstRowNumber;
+	private int maxRowNumber;
 	private int rowsPerPage;
 	private String editRecordKey;
 	private String orderByColumn;
@@ -23,8 +24,19 @@ public class ViewParameter {
 	public void setFirstRowNumber(int firstRowNumber) {
 		this.firstRowNumber = firstRowNumber;
 		if (this.firstRowNumber < 1) this.firstRowNumber = 1;
+		if (this.maxRowNumber < this.firstRowNumber) this.firstRowNumber = this.maxRowNumber;
 	}
 
+	public int getMaxRowNumber() {
+		return maxRowNumber;
+	}
+	
+	public void setMaxRowNumber(int maxRowNumber) {
+		this.maxRowNumber = maxRowNumber;
+		if (this.firstRowNumber > this.maxRowNumber) {
+			this.setFirstRowNumber(this.maxRowNumber - rowsPerPage);
+		}
+	}
 	public int getRowsPerPage() {
 		return rowsPerPage;
 	}
@@ -40,8 +52,14 @@ public class ViewParameter {
 	public void setOrderByColumn(String orderBy) {
 		if (orderBy != null && orderBy.equals(orderByColumn)) {
 			ascending = !ascending;
+			if (ascending) {
+				this.setFirstRowNumber(1);
+			} else {
+				this.setFirstRowNumber(this.getMaxRowNumber());
+			}
 		} else {
 			ascending = true;
+			this.setFirstRowNumber(1);
 		}
 		this.orderByColumn = orderBy;
 	}
@@ -98,6 +116,9 @@ public class ViewParameter {
 
 /*
  * $Log: ViewParameter.java,v $
+ * Revision 1.3  2005/02/16 17:24:52  phormanns
+ * OrderBy und Filter funktionieren jetzt
+ *
  * Revision 1.2  2005/02/13 20:27:14  phormanns
  * Funktioniert bis auf Filter
  *

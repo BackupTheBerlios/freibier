@@ -1,8 +1,8 @@
-// $Id: DBTable.java,v 1.1 2005/02/13 20:27:14 phormanns Exp $
+// $Id: DBTable.java,v 1.2 2005/02/16 17:24:52 phormanns Exp $
 package de.jalin.freibier.database;
 
 import java.util.List;
-import com.crossdb.sql.WhereClause;
+import com.crossdb.sql.IWhereClause;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 
@@ -31,7 +31,7 @@ public interface DBTable {
 	 * Diese Methode erlaubt, Anfragen mit bestimmten Konditionen anzugeben.
 	 * Diese Konditionen werden in eine QueryConditionImpl-Klasse verpackt.
 	 */
-	public abstract List getRecordsFromQuery(WhereClause condition,
+	public abstract List getRecordsFromQuery(IWhereClause condition,
 			String orderColumn, boolean ascending) throws DatabaseException;
 
 	/**
@@ -44,7 +44,7 @@ public interface DBTable {
 	 * null bzw. 0 sein, insbesondere gilt dies fuer: 
 	 * condition, orderColumn, numberOfRecords
 	 */
-	public abstract List getRecords(WhereClause condition,
+	public abstract List getRecords(IWhereClause condition,
 			String orderColumn, boolean ascending, int startRecordNr,
 			int numberOfRecords) throws DatabaseException;
 
@@ -53,7 +53,7 @@ public interface DBTable {
 	 * @return Anzahl
 	 * @throws DatabaseException
 	 */
-	public abstract int getNumberOfRecords() throws DatabaseException;
+	public abstract int getNumberOfRecords(IWhereClause clause) throws DatabaseException;
 
 	/**
 	 * Lies den Datensatz mit dem angegebenen Primaerschluessel.
@@ -98,6 +98,9 @@ public interface DBTable {
 }
 /*
  *  $Log: DBTable.java,v $
+ *  Revision 1.2  2005/02/16 17:24:52  phormanns
+ *  OrderBy und Filter funktionieren jetzt
+ *
  *  Revision 1.1  2005/02/13 20:27:14  phormanns
  *  Funktioniert bis auf Filter
  *

@@ -1,12 +1,15 @@
-// $Id: Filter.java,v 1.3 2005/02/13 20:27:14 phormanns Exp $
+// $Id: Filter.java,v 1.4 2005/02/16 17:24:52 phormanns Exp $
 package de.jalin.freibier.webgui;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import com.crossdb.sql.IWhereClause;
 import com.crossdb.sql.WhereClause;
 import com.crossdb.sql.WhereCondition;
 import de.jalin.freibier.database.DBTable;
+import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 
 public class Filter {
@@ -67,18 +70,21 @@ public class Filter {
 		String filterPattern;
 	}
 
-	public WhereClause createQueryCondition(DBTable tab) throws DatabaseException {
-		WhereClause queryFilter = new WhereClause();
+	public IWhereClause createQueryCondition(DBTable tab) throws DatabaseException {
+		IWhereClause queryFilter = null; 
 		TableFilter tabFt = (TableFilter) tableFilterMap.get(tab.getName());
 		if (tabFt != null) {
+			queryFilter = new WhereClause();
 			Iterator ftIterator = tabFt.columnFilterMap.keySet().iterator();
 			String fieldName = null;
 			ColumnFilter colFt = null;
+			TypeDefinition fieldDef = null;
 			while (ftIterator.hasNext()) {
 				fieldName = (String) ftIterator.next();
 				colFt = (ColumnFilter) tabFt.columnFilterMap.get(fieldName);
+				fieldDef = tab.getFieldDef(fieldName);
 				queryFilter.addCondition(new WhereCondition(fieldName, WhereCondition.LIKE, 
-						tab.getFieldDef(fieldName).parse(colFt.filterPattern)));
+						fieldDef.printSQL(fieldDef.parse(colFt.filterPattern))));
 			}
 		}
 		return queryFilter;
@@ -98,6 +104,9 @@ public class Filter {
 
 /*
  *  $Log: Filter.java,v $
+ *  Revision 1.4  2005/02/16 17:24:52  phormanns
+ *  OrderBy und Filter funktionieren jetzt
+ *
  *  Revision 1.3  2005/02/13 20:27:14  phormanns
  *  Funktioniert bis auf Filter
  *

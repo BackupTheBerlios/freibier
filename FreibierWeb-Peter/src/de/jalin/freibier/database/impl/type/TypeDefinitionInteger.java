@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionInteger.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
+//$Id: TypeDefinitionInteger.java,v 1.2 2005/02/16 17:24:52 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -22,7 +22,7 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 		return Long.class;
 	}
 
-	public String format(Object i) throws SystemDatabaseException {
+	public String printText(Object i) throws SystemDatabaseException {
 		if (i != null) {
 			if (i instanceof Number) {
 				return i.toString();
@@ -31,6 +31,18 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 			}
 		} else {
 			return "";
+		}
+	}
+
+	public String printSQL(Object i) throws SystemDatabaseException {
+		if (i != null) {
+			if (i instanceof Number) {
+				return i.toString();
+			} else {
+				throw new SystemDatabaseException("Number-Objekt erwartet", log);
+			}
+		} else {
+			return "0";
 		}
 	}
 
@@ -52,6 +64,9 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionInteger.java,v $
+ * Revision 1.2  2005/02/16 17:24:52  phormanns
+ * OrderBy und Filter funktionieren jetzt
+ *
  * Revision 1.1  2004/12/31 19:37:26  phormanns
  * Database Schnittstelle herausgearbeitet
  *

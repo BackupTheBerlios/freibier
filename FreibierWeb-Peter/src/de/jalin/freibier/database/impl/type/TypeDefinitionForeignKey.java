@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionForeignKey.java,v 1.4 2005/02/11 16:46:02 phormanns Exp $
+//$Id: TypeDefinitionForeignKey.java,v 1.5 2005/02/16 17:24:52 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -80,10 +80,15 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 		return ForeignKey.class;
 	}
 
-	public String format(Object s) throws DatabaseException {
-		return indexType.format(((ForeignKey) s).getKey());
+	public String printText(Object s) throws DatabaseException {
+		return indexType.printText(((ForeignKey) s).getKey());
 	}
 
+
+	public String printSQL(Object s) throws DatabaseException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	public Object parse(String s) throws DatabaseException {
 		return new ForeignKey(indexType.parse(s), null);
 	}
@@ -117,6 +122,9 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.5  2005/02/16 17:24:52  phormanns
+ * OrderBy und Filter funktionieren jetzt
+ *
  * Revision 1.4  2005/02/11 16:46:02  phormanns
  * MySQL geht wieder
  *

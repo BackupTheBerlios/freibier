@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionDateTime.java,v 1.2 2005/02/11 15:50:35 phormanns Exp $
+//$Id: TypeDefinitionDateTime.java,v 1.3 2005/02/16 17:24:52 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -17,18 +17,14 @@ import de.jalin.freibier.database.impl.TypeDefinitionImpl;
  */
 public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 	
-	private DateFormat shortFormat;
+	private DateFormat shortFormat
+		= DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 
 	public TypeDefinitionDateTime() {
 		super();
 		defaultValue = null;
-		setDefaultShortFormat();
 	}
 	
-	private void setDefaultShortFormat(){
-		shortFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
-	}
-
 	public Class getJavaType(){
 		return Date.class;
 	}
@@ -41,7 +37,7 @@ public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 			return value;
 	}
 
-	public String format(Object date) throws SystemDatabaseException {
+	public String printText(Object date) throws SystemDatabaseException {
 		if (date != null) {
 			if (date instanceof Date) {
 				return shortFormat.format((Date) date);
@@ -50,6 +46,18 @@ public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 			}
 		} else {
 			return "";
+		}
+	}
+
+	public String printSQL(Object date) throws SystemDatabaseException {
+		if (date != null) {
+			if (date instanceof Date) {
+				return "'" + shortFormat.format((Date) date) + "'";
+			} else {
+				throw new SystemDatabaseException("Objekt vom Type Date erwartet.", log);
+			}
+		} else {
+			return "'0000-00-00'";
 		}
 	}
 
@@ -84,6 +92,9 @@ public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 
 /*
  * $Log: TypeDefinitionDateTime.java,v $
+ * Revision 1.3  2005/02/16 17:24:52  phormanns
+ * OrderBy und Filter funktionieren jetzt
+ *
  * Revision 1.2  2005/02/11 15:50:35  phormanns
  * Merge
  *

@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionString.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
+//$Id: TypeDefinitionString.java,v 1.2 2005/02/16 17:24:52 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -23,7 +23,7 @@ public class TypeDefinitionString extends TypeDefinitionImpl {
 		return String.class;
 	}
 
-	public String format(Object s) throws SystemDatabaseException {
+	public String printText(Object s) throws SystemDatabaseException {
 		if (s != null) {
 			if (s instanceof String) {
 				return ((String) s).trim();
@@ -32,6 +32,18 @@ public class TypeDefinitionString extends TypeDefinitionImpl {
 			}
 		} else {
 			return "";
+		}
+	}
+
+	public String printSQL(Object s) throws SystemDatabaseException {
+		if (s != null) {
+			if (s instanceof String) {
+				return "'" + ((String) s).trim().replaceAll("'", "''") + "'";
+			} else {
+				throw new SystemDatabaseException("String-Objekt erwartet", log);
+			}
+		} else {
+			return "''";
 		}
 	}
 
@@ -49,6 +61,9 @@ public class TypeDefinitionString extends TypeDefinitionImpl {
 }
 /*
  * $Log: TypeDefinitionString.java,v $
+ * Revision 1.2  2005/02/16 17:24:52  phormanns
+ * OrderBy und Filter funktionieren jetzt
+ *
  * Revision 1.1  2004/12/31 19:37:26  phormanns
  * Database Schnittstelle herausgearbeitet
  *

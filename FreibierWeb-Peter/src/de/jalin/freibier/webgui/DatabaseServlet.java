@@ -1,4 +1,4 @@
-// $Id: DatabaseServlet.java,v 1.7 2005/02/14 21:24:43 phormanns Exp $
+// $Id: DatabaseServlet.java,v 1.8 2005/02/16 17:24:52 phormanns Exp $
 
 package de.jalin.freibier.webgui;
 
@@ -11,7 +11,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.servlet.VelocityServlet;
-import com.crossdb.sql.WhereClause;
+
+import com.crossdb.sql.IWhereClause;
 import de.jalin.freibier.database.DBTable;
 import de.jalin.freibier.database.Database;
 import de.jalin.freibier.database.DatabaseFactory;
@@ -63,12 +64,14 @@ public class DatabaseServlet extends VelocityServlet {
                 view = new ViewParameter();
                 view.setTableName((String) tableNamesList.get(0));
                 view.setFirstRowNumber(1);
+                view.setMaxRowNumber(FETCH_SIZE);
                 view.setRowsPerPage(FETCH_SIZE);
                 view.setOrderByColumn(null);
                 session.setAttribute("view", view);
             }
-            view.updateFromRequest(request.getParameter("tab"), request
-                    .getParameter("order"), request.getParameter("page"),
+            view.updateFromRequest(request.getParameter("tab"), 
+            		request.getParameter("order"), 
+					request.getParameter("page"),
                     request.getParameter("edit"));
             Filter filter = (Filter) session.getAttribute("filter");
             if (filter == null) {
@@ -79,12 +82,12 @@ public class DatabaseServlet extends VelocityServlet {
             DBTable tab = db.getTable(view.getTableName());
             String pkName = tab.getPrimaryKey();
             TypeDefinition pkTypeDef = tab.getFieldDef(pkName);
-            WhereClause queryFilter = null;
+            IWhereClause queryFilter = null;
             // save changed RecordImpl
             String saveRequest = request.getParameter("save");
             if (saveRequest != null) {
-                Record data = tab.getRecordByPrimaryKey(pkTypeDef
-                        .parse(saveRequest));
+                Record data 
+					= tab.getRecordByPrimaryKey(pkTypeDef.parse(saveRequest));
                 Enumeration requestParameterNames = request.getParameterNames();
                 String paramName = null;
                 String paramValue = null;
@@ -130,10 +133,13 @@ public class DatabaseServlet extends VelocityServlet {
                 }
             }
             // get Records
+            view.setMaxRowNumber(tab.getNumberOfRecords(queryFilter));
             List recordsList = null;
-            recordsList = tab.getRecords(queryFilter, view.getOrderByColumn(),
-                    view.isAscending(), view.getFirstRowNumber(), view
-                            .getRowsPerPage());
+            recordsList = tab.getRecords(queryFilter, 
+				view.getOrderByColumn(),
+				view.isAscending(), 
+				view.getFirstRowNumber(), 
+				view.getRowsPerPage());
             List typeDefinitions = tab.getFieldsList();
             context.put("tablenames", tableNamesList);
             context.put("table", tab.getName());
@@ -156,6 +162,9 @@ public class DatabaseServlet extends VelocityServlet {
 
 /*
  * $Log: DatabaseServlet.java,v $
+ * Revision 1.8  2005/02/16 17:24:52  phormanns
+ * OrderBy und Filter funktionieren jetzt
+ *
  * Revision 1.7  2005/02/14 21:24:43  phormanns
  * Kleinigkeiten
  * Revision 1.6 2005/02/13 20:27:14 phormanns

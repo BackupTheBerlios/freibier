@@ -1,4 +1,4 @@
-// $Id: TypeDefinition.java,v 1.2 2005/01/28 17:13:25 phormanns Exp $
+// $Id: TypeDefinition.java,v 1.3 2005/02/16 17:24:52 phormanns Exp $
 package de.jalin.freibier.database;
 
 import de.jalin.freibier.database.exception.DatabaseException;
@@ -73,7 +73,16 @@ public interface TypeDefinition {
 	 * @return
 	 * @throws SystemDatabaseException
 	 */
-	public abstract String format(Object s) throws DatabaseException;
+	public abstract String printText(Object s) throws DatabaseException;
+
+	/**
+	 * Diese Methode ergibt eine SQL-String-Version des Wertes. 
+	 * Er wird fuer den Aufbau von SQL benutzt.
+	 * @param s
+	 * @return
+	 * @throws SystemDatabaseException
+	 */
+	public abstract String printSQL(Object s) throws DatabaseException;
 
 	/**
 	 * Diese Methode parst den angegebenen String, der z.B. aus einem 
@@ -106,6 +115,9 @@ public interface TypeDefinition {
 }
 /*
  *  $Log: TypeDefinition.java,v $
+ *  Revision 1.3  2005/02/16 17:24:52  phormanns
+ *  OrderBy und Filter funktionieren jetzt
+ *
  *  Revision 1.2  2005/01/28 17:13:25  phormanns
  *  Schnittstelle dokumentiert.
  *

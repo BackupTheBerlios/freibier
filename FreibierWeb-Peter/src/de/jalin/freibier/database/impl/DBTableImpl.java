@@ -1,4 +1,4 @@
-//$Id: DBTableImpl.java,v 1.1 2005/02/13 20:27:14 phormanns Exp $
+//$Id: DBTableImpl.java,v 1.2 2005/02/16 17:24:52 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.crossdb.sql.Column;
 import com.crossdb.sql.CrossdbResultSet;
+import com.crossdb.sql.IWhereClause;
 import com.crossdb.sql.SelectQuery;
 import com.crossdb.sql.Table;
 import com.crossdb.sql.UpdateQuery;
@@ -48,14 +49,14 @@ public class DBTableImpl implements DBTable {
 		return this.getRecords(null, orderColumn, ascending, startRecordNr, numberOfRecords);
 	}
 
-	public List getRecordsFromQuery(WhereClause clause, String orderColumn, boolean ascending) throws DatabaseException {
+	public List getRecordsFromQuery(IWhereClause clause, String orderColumn, boolean ascending) throws DatabaseException {
 		return this.getRecords(clause, orderColumn, ascending, 1, DBTable.MAX_FETCH_SIZE);
 	}
 
-	public List getRecords(WhereClause clause, String orderColumn, boolean ascending, int startRecordNr, int numberOfRecords) throws DatabaseException {
+	public List getRecords(IWhereClause clause, String orderColumn, boolean ascending, int startRecordNr, int numberOfRecords) throws DatabaseException {
 		List resList = new ArrayList();
 		SelectQuery query = db.getSQLFactory().getSelectQuery();
-		query.addTable(tab.getName());
+ 		query.addTable(tab.getName());
 		Iterator i = tab.getColumns().iterator();
 		Column col = null;
 		while (i.hasNext()) {
@@ -70,9 +71,8 @@ public class DBTableImpl implements DBTable {
 		}
 		CrossdbResultSet res = db.executeSelectQuery(query);
 		try {
-			res.absolute(startRecordNr);
+			boolean hasMore = res.absolute(startRecordNr);
 			int count = 0;
-			boolean hasMore = true;
 			Record rec = null;
 			Map recHash = null;
 			while (count < numberOfRecords) {
@@ -103,16 +103,19 @@ public class DBTableImpl implements DBTable {
 		return resList;
 	}
 
-	public int getNumberOfRecords() throws DatabaseException {
+	public int getNumberOfRecords(IWhereClause clause) throws DatabaseException {
 		int numOfRecords = 0;
 		SelectQuery query = db.getSQLFactory().getSelectQuery();
 		query.addTable(tab.getName());
 		query.addFunctionColumn("COUNT", this.getPrimaryKey());
+		if (clause != null) {
+			query.addWhereClause(clause);
+		}
 		CrossdbResultSet res = db.executeSelectQuery(query);
 		try {
-				if (res.next()) {
-					numOfRecords = res.getInt(1);
-				}
+			if (res.next()) {
+				numOfRecords = res.getInt(1);
+			}
 		} catch (SQLException e) {
     		throw new SystemDatabaseException(
     				"Datensatz nicht vorhanden", e, log);
@@ -121,7 +124,7 @@ public class DBTableImpl implements DBTable {
 	}
 
 	public Record getRecordByPrimaryKey(Object pkValue) throws DatabaseException {
-		WhereClause clause = new WhereClause();
+		IWhereClause clause = new WhereClause();
 		clause.addCondition(new WhereCondition(this.getPrimaryKey(), WhereCondition.EQUAL_TO, pkValue));
 		List l = this.getRecords(clause, null, true, 1, 1);
 		return (Record) l.get(0);
@@ -144,7 +147,8 @@ public class DBTableImpl implements DBTable {
 		while (i.hasNext()) {
 			col = (Column) i.next();
 			if (!col.isPrimaryKey()) {
-				query.addColumn(col.getName(), data.getFormatted(col.getName()));
+				// TODO addColumn in TypeDefinition delegieren
+				query.addColumn(col.getName(), data.printSQL(col.getName()));
 			}
 		}
 		db.executeUpdateQuery(query);
@@ -195,6 +199,9 @@ public class DBTableImpl implements DBTable {
 }
 /*
  * $Log: DBTableImpl.java,v $
+ * Revision 1.2  2005/02/16 17:24:52  phormanns
+ * OrderBy und Filter funktionieren jetzt
+ *
  * Revision 1.1  2005/02/13 20:27:14  phormanns
  * Funktioniert bis auf Filter
  *

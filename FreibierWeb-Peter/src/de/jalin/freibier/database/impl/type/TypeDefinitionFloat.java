@@ -1,10 +1,11 @@
-//$Id: TypeDefinitionFloat.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
+//$Id: TypeDefinitionFloat.java,v 1.2 2005/02/16 17:24:52 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Locale;
 import java.util.Map;
 import org.apache.oro.text.perl.Perl5Util;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
@@ -16,7 +17,11 @@ import de.jalin.freibier.database.exception.UserDatabaseException;
  * Datentyp z.B. für SQL-Daten vom Typ int
  */
 public class TypeDefinitionFloat extends TypeDefinitionNumber {
+	
+	static final Perl5Util regex = new Perl5Util();
+
 	private NumberFormat numFormat = new DecimalFormat("0.00");
+	private NumberFormat sqlNumFormat = NumberFormat.getNumberInstance(Locale.US);
 
 	public TypeDefinitionFloat() {
 		super();
@@ -36,7 +41,7 @@ public class TypeDefinitionFloat extends TypeDefinitionNumber {
 		}
 	}
 
-	public String format(Object d) throws SystemDatabaseException {
+	public String printText(Object d) throws SystemDatabaseException {
 		if (d != null) {
 			if (d instanceof Number) {
 				return numFormat.format(d);
@@ -48,7 +53,17 @@ public class TypeDefinitionFloat extends TypeDefinitionNumber {
 		}
 	}
 
-	static final Perl5Util regex = new Perl5Util();
+	public String printSQL(Object d) throws SystemDatabaseException {
+		if (d != null) {
+			if (d instanceof Number) {
+				return sqlNumFormat.format(d);
+			} else {
+				throw new SystemDatabaseException("Number-Objekt erwartet", log);
+			}
+		} else {
+			return sqlNumFormat.format(0.0d);
+		}
+	}
 
 	public Object parse(String s) throws UserDatabaseException {
 		Double d = null;
@@ -77,6 +92,9 @@ public class TypeDefinitionFloat extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionFloat.java,v $
+ * Revision 1.2  2005/02/16 17:24:52  phormanns
+ * OrderBy und Filter funktionieren jetzt
+ *
  * Revision 1.1  2004/12/31 19:37:26  phormanns
  * Database Schnittstelle herausgearbeitet
  *

@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionImpl.java,v 1.5 2005/02/14 21:24:43 phormanns Exp $
+//$Id: TypeDefinitionImpl.java,v 1.6 2005/02/16 17:24:52 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -214,7 +214,7 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 	 * @return
 	 * @throws SystemDatabaseException
 	 */
-	public abstract String format(Object s) throws DatabaseException;
+	public abstract String printText(Object s) throws DatabaseException;
 
 	/**
 	 * Diese Methode parst den angegebenen String,der z.B. aus einem 
@@ -252,6 +252,9 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionImpl.java,v $
+ * Revision 1.6  2005/02/16 17:24:52  phormanns
+ * OrderBy und Filter funktionieren jetzt
+ *
  * Revision 1.5  2005/02/14 21:24:43  phormanns
  * Kleinigkeiten
  *

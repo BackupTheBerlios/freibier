@@ -1,4 +1,4 @@
-// $Id: Record.java,v 1.5 2005/02/13 20:27:14 phormanns Exp $
+// $Id: Record.java,v 1.6 2005/02/16 17:24:52 phormanns Exp $
 package de.jalin.freibier.database;
 
 import de.jalin.freibier.database.exception.DatabaseException;
@@ -22,7 +22,9 @@ public interface Record {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public abstract String getFormatted(String name) throws DatabaseException;
+	public abstract String printText(String name) throws DatabaseException;
+
+	public abstract String printSQL(String name) throws DatabaseException;
 
 	/**
 	 * Setzt den Wert eines Datenfelds. 
@@ -36,10 +38,19 @@ public interface Record {
 
 	public abstract DBTable getTable();
 
+	/**
+	 * @param name
+	 * @return
+	 */
+	public abstract Object getValue(String name);
+
 }
 
 /*
  *  $Log: Record.java,v $
+ *  Revision 1.6  2005/02/16 17:24:52  phormanns
+ *  OrderBy und Filter funktionieren jetzt
+ *
  *  Revision 1.5  2005/02/13 20:27:14  phormanns
  *  Funktioniert bis auf Filter
  *

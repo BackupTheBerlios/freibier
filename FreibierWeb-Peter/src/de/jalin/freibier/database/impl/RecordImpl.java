@@ -1,4 +1,4 @@
-//$Id: RecordImpl.java,v 1.3 2005/02/13 20:27:14 phormanns Exp $
+//$Id: RecordImpl.java,v 1.4 2005/02/16 17:24:52 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -47,8 +47,12 @@ public class RecordImpl implements Record {
 		return new DataObject(daten.get(name), tab.getFieldDef(name));
 	}
 	
-	public String getFormatted(String name) throws DatabaseException {
-		return getField(name).format();
+	public String printText(String name) throws DatabaseException {
+		return getField(name).printText();
+	}
+
+	public String printSQL(String name) throws DatabaseException {
+		return getField(name).printSQL();
 	}
 
 //	public Printable getField(int col) throws DatabaseException {
@@ -86,9 +90,17 @@ public class RecordImpl implements Record {
 	public DBTable getTable() {
 		return tab;
 	}
+
+	public Object getValue(String name) {
+		// TODO Auto-generated method stub
+		return daten.get(name);
+	}
 }
 /*
  * $Log: RecordImpl.java,v $
+ * Revision 1.4  2005/02/16 17:24:52  phormanns
+ * OrderBy und Filter funktionieren jetzt
+ *
  * Revision 1.3  2005/02/13 20:27:14  phormanns
  * Funktioniert bis auf Filter
  *
