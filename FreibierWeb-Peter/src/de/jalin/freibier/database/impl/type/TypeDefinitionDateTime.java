@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionDateTime.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
+//$Id: TypeDefinitionDateTime.java,v 1.2 2005/02/11 15:50:35 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -16,15 +16,16 @@ import de.jalin.freibier.database.impl.TypeDefinitionImpl;
  * Dient als Oberklasse für alle Zeit- und Datumstypen
  */
 public class TypeDefinitionDateTime extends TypeDefinitionImpl {
-	protected DateFormat shortFormat;
+	
+	private DateFormat shortFormat;
 
-	protected TypeDefinitionDateTime() {
+	public TypeDefinitionDateTime() {
 		super();
 		defaultValue = null;
 		setDefaultShortFormat();
 	}
 	
-	protected void setDefaultShortFormat(){
+	private void setDefaultShortFormat(){
 		shortFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 	}
 
@@ -71,10 +72,21 @@ public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 			return false;
 		}
 	}
+	
+	protected DateFormat getShortFormat() {
+		return shortFormat;
+	}
+	
+	protected void setShortFormat(DateFormat shortFormat) {
+		this.shortFormat = shortFormat;
+	}
 }
 
 /*
  * $Log: TypeDefinitionDateTime.java,v $
+ * Revision 1.2  2005/02/11 15:50:35  phormanns
+ * Merge
+ *
  * Revision 1.1  2004/12/31 19:37:26  phormanns
  * Database Schnittstelle herausgearbeitet
  *

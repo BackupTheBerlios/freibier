@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionImpl.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
+//$Id: TypeDefinitionImpl.java,v 1.2 2005/02/11 15:50:35 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -70,7 +70,7 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 	 *  
 	 */
 	public static TypeDefinitionImpl create(String name, int type, int length,
-			ResourceBundle resource, DatabaseImpl db)
+			ResourceBundle resource, AbstractDatabaseImpl db)
 			throws SystemDatabaseException {
 		//log.trace("create: "+name+", "+type);
 		TypeDefinitionImpl typeDef = null;
@@ -105,8 +105,13 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 			throw new SystemDatabaseException(
 					"Spezialisierung von TypeDefinition fehlt (2)", e, log);
 		} catch (NullPointerException e) {
-			throw new SystemDatabaseException("unbekannter Datentyp " + type,
-					log);
+			typeDef = new TypeDefinitionString();
+			typeDef.setProperties(propsMap);
+			typeDef.setSQLType(type);
+			typeDef.setName(name);
+			typeDef.setLength(length);
+//			throw new SystemDatabaseException("unbekannter Datentyp " + type,
+//					log);
 		}
 		return typeDef;
 	}
@@ -143,7 +148,7 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 	}
 
 	/**
-	 * Diese Klasse ergibt die Java-Klasse, die den eigentlichen Wert intern
+	 * Diese Operation liefert die Java-Klasse, die den eigentlichen Wert intern
 	 * verwaltet. Dies ist z.B. der Datentyp, der sich bei DataObject.getValue()
 	 * ergibt.
 	 */
@@ -257,6 +262,9 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionImpl.java,v $
+ * Revision 1.2  2005/02/11 15:50:35  phormanns
+ * Merge
+ *
  * Revision 1.1  2004/12/31 19:37:26  phormanns
  * Database Schnittstelle herausgearbeitet
  *

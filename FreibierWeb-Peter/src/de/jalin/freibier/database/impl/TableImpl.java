@@ -1,4 +1,4 @@
-//$Id: TableImpl.java,v 1.5 2005/02/11 15:25:45 phormanns Exp $
+//$Id: TableImpl.java,v 1.6 2005/02/11 15:50:35 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -30,7 +30,7 @@ public class TableImpl implements Table {
 	private static Log log = LogFactory.getLog(TableImpl.class);
 	
 	private String name;
-	private DatabaseImpl db;
+	private AbstractDatabaseImpl db;
 
 	private Map columnshash = null;
 	private List columnslist = null;
@@ -398,6 +398,9 @@ public class TableImpl implements Table {
 }
 /*
  * $Log: TableImpl.java,v $
+ * Revision 1.6  2005/02/11 15:50:35  phormanns
+ * Merge
+ *
  * Revision 1.5  2005/02/11 15:25:45  phormanns
  * Zwischenstand, nicht funktionierend
  *

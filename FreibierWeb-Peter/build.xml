@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- ====================================================================== 
-     $Id: build.xml,v 1.2 2005/01/29 20:21:59 phormanns Exp $
+     $Id: build.xml,v 1.3 2005/02/11 15:50:36 phormanns Exp $
 
      project      Freibier2004
      description  Buildskript fuer Webapplikation
@@ -29,6 +29,7 @@
 			<classes dir="templates"/>
 			<lib dir="lib">
 				<include name="mysql-3.0.9.jar"/>
+				<include name="postgresql-jdbc3-7.4.2.jar"/>
 				<include name="junit-3.8.1.jar"/>
 				<include name="log4j-1.2.jar"/>
 				<include name="commons-logging-1.0.4.jar"/>

@@ -26,11 +26,11 @@
 	</init-param>
 	<init-param>                                   
     	<param-name>dbuser</param-name>                               
-	    <param-value>blz</param-value>                              
+	    <param-value>dba</param-value>                              
 	</init-param>
 	<init-param>                                   
     	<param-name>dbpassword</param-name>                               
-	    <param-value>blz</param-value>                              
+	    <param-value>dba</param-value>                              
 	</init-param>
   </servlet>
   

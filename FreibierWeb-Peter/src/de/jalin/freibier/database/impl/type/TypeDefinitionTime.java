@@ -1,5 +1,5 @@
 /* Erzeugt am 24.10.2004 von tbayen
- * $Id: TypeDefinitionTime.java,v 1.1 2004/12/31 19:37:26 phormanns Exp $
+ * $Id: TypeDefinitionTime.java,v 1.2 2005/02/11 15:50:35 phormanns Exp $
  */
 package de.jalin.freibier.database.impl.type;
 
@@ -15,12 +15,15 @@ public class TypeDefinitionTime extends TypeDefinitionDateTime {
 	}
 
 	protected void setDefaultShortFormat(){
-		shortFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM);
+		setShortFormat(DateFormat.getTimeInstance(DateFormat.MEDIUM));
 	}	
 }
 
 /*
  * $Log: TypeDefinitionTime.java,v $
+ * Revision 1.2  2005/02/11 15:50:35  phormanns
+ * Merge
+ *
  * Revision 1.1  2004/12/31 19:37:26  phormanns
  * Database Schnittstelle herausgearbeitet
  *
