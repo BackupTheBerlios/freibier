@@ -1,7 +1,8 @@
-// $Id: DBTableTest.java,v 1.5 2005/03/03 11:53:46 phormanns Exp $
+// $Id: DBTableTest.java,v 1.6 2005/03/03 12:31:39 phormanns Exp $
 package de.jalin.freibier.database.test;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 import com.crossdb.sql.IWhereClause;
 import com.crossdb.sql.WhereClause;
@@ -128,7 +129,21 @@ public class DBTableTest extends TestCase {
 	}
 
 	public void testGetGivenColumns() {
-	//TODO Implement getGivenColumns().
+		try {
+			DBTable tab = db.getTable("TABLE1");
+			List colNames = new ArrayList();
+			colNames.add("ID");
+			colNames.add("TEXT");
+			List multipleRecords = tab.getGivenColumns(colNames, 10);
+			assertEquals(10, multipleRecords.size());
+			Record firstRec = (Record) multipleRecords.get(0);
+			assertEquals("Ein Text mit Nummer 0", (String) firstRec.get("TEXT"));
+			Record lastRec = (Record) multipleRecords.get(9);
+			assertEquals("Ein Text mit Nummer 9", (String) lastRec.get("TEXT"));
+			assertEquals("", lastRec.get("DATUM"));
+		} catch (DatabaseException e) {
+			fail(e.getMessage());
+		}
 	}
 
 	public void testSetRecordUpdate() {
@@ -228,6 +243,9 @@ public class DBTableTest extends TestCase {
 
 /*
  *  $Log: DBTableTest.java,v $
+ *  Revision 1.6  2005/03/03 12:31:39  phormanns
+ *  getGivenColumns implementiert
+ *
  *  Revision 1.5  2005/03/03 11:53:46  phormanns
  *  deleteRecord implementiert
  *

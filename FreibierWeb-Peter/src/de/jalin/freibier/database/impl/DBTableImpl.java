@@ -1,4 +1,4 @@
-//$Id: DBTableImpl.java,v 1.7 2005/03/03 11:53:46 phormanns Exp $
+//$Id: DBTableImpl.java,v 1.8 2005/03/03 12:31:39 phormanns Exp $
 package de.jalin.freibier.database.impl;
 
 import java.sql.SQLException;
@@ -33,9 +33,7 @@ import de.jalin.freibier.database.exception.SystemDatabaseException;
  * @author tbayen
  */
 public class DBTableImpl implements DBTable {
-	
 	private static Log log = LogFactory.getLog(DBTableImpl.class);
-	
 	private String name;
 	private DatabaseImpl db;
 	private Table tab;
@@ -63,14 +61,17 @@ public class DBTableImpl implements DBTable {
 	public List getRecords(IWhereClause clause, String orderColumn,
 			boolean ascending, int startRecordNr, int numberOfRecords)
 			throws DatabaseException {
-		List resList = new ArrayList();
 		SelectQuery query = db.getSQLFactory().getSelectQuery();
 		query.addTable(tab.getName());
 		Iterator queryColumnsIterator = tab.getColumns().iterator();
 		Column queryCol = null;
+		List columnNames = new ArrayList();
+		String colName = null;
 		while (queryColumnsIterator.hasNext()) {
 			queryCol = (Column) queryColumnsIterator.next();
-			query.addColumn(queryCol.getName());
+			colName = queryCol.getName();
+			query.addColumn(colName);
+			columnNames.add(colName);
 		}
 		if (clause != null) {
 			query.addWhereClause(clause);
@@ -78,6 +79,13 @@ public class DBTableImpl implements DBTable {
 		if (orderColumn != null) {
 			query.addOrderBy(orderColumn);
 		}
+		return executeSelectQuery(ascending, startRecordNr, 
+				numberOfRecords, query, columnNames);
+	}
+
+	private List executeSelectQuery(boolean ascending, int startRecordNr,
+			int numberOfRecords, SelectQuery query, List columnNames) throws DatabaseException {
+		List resList = new ArrayList();
 		CrossdbResultSet res = db.executeSelectQuery(query);
 		try {
 			boolean hasMore = res.absolute(startRecordNr);
@@ -87,20 +95,18 @@ public class DBTableImpl implements DBTable {
 			while (count < numberOfRecords) {
 				if (hasMore) {
 					recHash = new HashMap();
-					Iterator readColumnsIterator = tab.getColumns().iterator();
-					Column readCol = null;
+					Iterator readColumnsIterator = columnNames.iterator();
 					Object obj = null;
 					ValueObject valueObject = null;
 					String readColName = null;
 					while (readColumnsIterator.hasNext()) {
-						readCol = (Column) readColumnsIterator.next();
-						readColName = readCol.getName();
+						readColName = (String) readColumnsIterator.next();
 						obj = res.getObject(readColName);
 						if (obj instanceof Number) {
 							obj = new Long(((Number) obj).longValue());
 						}
-						recHash.put(readCol.getName(), obj);
-					} 
+						recHash.put(readColName, obj);
+					}
 					rec = new RecordImpl(this, recHash);
 					resList.add(rec);
 					count++;
@@ -114,7 +120,8 @@ public class DBTableImpl implements DBTable {
 				}
 			}
 		} catch (SQLException e) {
-			throw new SystemDatabaseException("Datensatz nicht vorhanden", e, log);
+			throw new SystemDatabaseException("Datensatz nicht vorhanden", e,
+					log);
 		}
 		return resList;
 	}
@@ -148,10 +155,11 @@ public class DBTableImpl implements DBTable {
 		try {
 			return (Record) l.get(0);
 		} catch (IndexOutOfBoundsException e) {
-		    throw new SystemDatabaseException("Datensatz fuer Delete nicht vorhanden", e, log);
+			throw new SystemDatabaseException(
+					"Datensatz fuer Delete nicht vorhanden", e, log);
 		}
 	}
-	
+
 	public Record getEmptyRecord() throws DatabaseException {
 		Map recHash = new HashMap();
 		Iterator colIterator = tab.getColumns().iterator();
@@ -167,22 +175,33 @@ public class DBTableImpl implements DBTable {
 
 	public List getGivenColumns(List colNames, int limit)
 			throws DatabaseException {
-		// TODO Auto-generated method stub
-		return null;
+		SelectQuery query = db.getSQLFactory().getSelectQuery();
+		query.addTable(tab.getName());
+		Iterator queryColumnsIterator = colNames.iterator();
+		String queryCol = null;
+		while (queryColumnsIterator.hasNext()) {
+			queryCol = (String) queryColumnsIterator.next();
+			query.addColumn(queryCol);
+		}
+		return executeSelectQuery(true, 1, 
+				limit, query, colNames);
 	}
 
 	public void setRecord(Record data) throws DatabaseException {
 		String pkName = this.getPrimaryKey();
-		if (data.getPrintable(pkName).getValue().equals(this.getEmptyRecord().getPrintable(pkName).getValue())) {
+		if (data.getPrintable(pkName).getValue().equals(
+				this.getEmptyRecord().getPrintable(pkName).getValue())) {
 			InsertQuery query = db.getSQLFactory().getInsertQuery();
 			query.setTable(this.getName());
-			Iterator columnsIterator = columnTypeDefinitions.keySet().iterator();
+			Iterator columnsIterator = columnTypeDefinitions.keySet()
+					.iterator();
 			TypeDefinition typeDef = null;
 			String colName = null;
 			while (columnsIterator.hasNext()) {
 				colName = (String) columnsIterator.next();
 				if (!colName.equals(pkName)) {
-					typeDef = (TypeDefinition) columnTypeDefinitions.get(colName);
+					typeDef = (TypeDefinition) columnTypeDefinitions
+							.get(colName);
 					typeDef.addColumn(query, data.getPrintable(colName));
 				}
 			}
@@ -190,11 +209,12 @@ public class DBTableImpl implements DBTable {
 		} else {
 			UpdateQuery query = db.getSQLFactory().getUpdateQuery();
 			WhereCondition condition = new WhereCondition(this.getPrimaryKey(),
-					WhereCondition.EQUAL_TO, 
-					data.getPrintable(this.getPrimaryKey()).getValue());
+					WhereCondition.EQUAL_TO, data.getPrintable(
+							this.getPrimaryKey()).getValue());
 			query.setTable(this.getName());
 			query.addWhereCondition(condition);
-			Iterator columnsIterator = columnTypeDefinitions.keySet().iterator();
+			Iterator columnsIterator = columnTypeDefinitions.keySet()
+					.iterator();
 			TypeDefinition typeDef = null;
 			String colName = null;
 			while (columnsIterator.hasNext()) {
@@ -208,10 +228,9 @@ public class DBTableImpl implements DBTable {
 
 	public void deleteRecord(Record data) throws DatabaseException {
 		DeleteQuery deleteQuery = db.getSQLFactory().getDeleteQuery();
-		WhereCondition cond = new WhereCondition(
-				this.getPrimaryKey(),
-				WhereCondition.EQUAL_TO,
-				data.getPrintable(this.getPrimaryKey()).getValue());
+		WhereCondition cond = new WhereCondition(this.getPrimaryKey(),
+				WhereCondition.EQUAL_TO, data
+						.getPrintable(this.getPrimaryKey()).getValue());
 		deleteQuery.setTable(this.getName());
 		deleteQuery.addWhereCondition(cond);
 		db.executeDeleteQuery(deleteQuery);
@@ -259,13 +278,16 @@ public class DBTableImpl implements DBTable {
 		Column col = null;
 		while (colIterator.hasNext()) {
 			col = (Column) colIterator.next();
-			columnTypeDefinitions.put(col.getName(), 
-					TypeDefinitionImpl.create(col, null, db));
+			columnTypeDefinitions.put(col.getName(), TypeDefinitionImpl.create(
+					col, null, db));
 		}
 	}
 }
 /*
  * $Log: DBTableImpl.java,v $
+ * Revision 1.8  2005/03/03 12:31:39  phormanns
+ * getGivenColumns implementiert
+ *
  * Revision 1.7  2005/03/03 11:53:46  phormanns
  * deleteRecord implementiert
  *
