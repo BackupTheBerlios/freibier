@@ -1,4 +1,4 @@
-// $Id: DatabaseTest.java,v 1.2 2005/03/03 11:53:46 phormanns Exp $
+// $Id: DatabaseTest.java,v 1.3 2005/03/18 19:01:00 phormanns Exp $
 package de.jalin.freibier.database.test;
 
 import java.util.List;
@@ -48,8 +48,8 @@ public class DatabaseTest extends TestCase {
 	public void testGetTableNamesList() {
 		try {
 			List tableNames = db.getTableNamesList();
-			assertEquals(1, tableNames.size());
-			assertEquals("table1".toUpperCase(), ((String) tableNames.get(0)).toUpperCase());
+			assertEquals(2, tableNames.size());
+			assertEquals("table1".toUpperCase(), ((String) tableNames.get(1)).toUpperCase());
 		} catch (SystemDatabaseException e) {
 			fail(e.getMessage());
 		}
@@ -66,6 +66,9 @@ public class DatabaseTest extends TestCase {
 }
 /*
  *  $Log: DatabaseTest.java,v $
+ *  Revision 1.3  2005/03/18 19:01:00  phormanns
+ *  DatabaseTest an mehrere Tests angepasst
+ *
  *  Revision 1.2  2005/03/03 11:53:46  phormanns
  *  deleteRecord implementiert
  *
