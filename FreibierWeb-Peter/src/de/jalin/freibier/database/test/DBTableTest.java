@@ -1,4 +1,4 @@
-// $Id: DBTableTest.java,v 1.3 2005/02/28 21:52:38 phormanns Exp $
+// $Id: DBTableTest.java,v 1.4 2005/03/01 21:56:32 phormanns Exp $
 package de.jalin.freibier.database.test;
 
 import java.util.List;
@@ -129,15 +129,36 @@ public class DBTableTest extends TestCase {
 	//TODO Implement getGivenColumns().
 	}
 
-	public void testSetRecord() {
+	public void testSetRecordUpdate() {
 		try {
 			DBTable tab = db.getTable("TABLE1");
 			Record rec = tab.getRecordByPrimaryKey(new Integer(255));
 			rec.setField("TEXT", "Ein geaenderter Text mit Nummer 254");
 			rec.setField("DATUM", "14.02.1964");
+			rec.setField("ZAHL", "9999");
 			tab.setRecord(rec);
 			IWhereClause where = new WhereClause();
 			where.addWhereLikeLeft("TEXT", "Ein geaenderter Text");
+			assertEquals(1, tab.getNumberOfRecords(where));
+		} catch (DatabaseException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	public void testSetRecordInsert() {
+		try {
+			DBTable tab = db.getTable("TABLE1");
+			int numberOfRecords = tab.getNumberOfRecords(null);
+			assertEquals(500, numberOfRecords);
+			Record rec = tab.getEmptyRecord();
+			rec.setField("TEXT", "Ein neuer Text mit Nummer 254");
+			rec.setField("DATUM", "14.02.1964");
+			rec.setField("ZAHL", "9999");
+			tab.setRecord(rec);
+			numberOfRecords = tab.getNumberOfRecords(null);
+			assertEquals(501, numberOfRecords);
+			IWhereClause where = new WhereClause();
+			where.addWhereLikeLeft("TEXT", "Ein neuer Text");
 			assertEquals(1, tab.getNumberOfRecords(where));
 		} catch (DatabaseException e) {
 			fail(e.getMessage());
@@ -167,6 +188,10 @@ public class DBTableTest extends TestCase {
 
 /*
  *  $Log: DBTableTest.java,v $
+ *  Revision 1.4  2005/03/01 21:56:32  phormanns
+ *  Long immer als Value-Objekt zu Number-Typen
+ *  setRecord macht Insert, wenn PK = Default-Value
+ *
  *  Revision 1.3  2005/02/28 21:52:38  phormanns
  *  SaveAction begonnen
  *

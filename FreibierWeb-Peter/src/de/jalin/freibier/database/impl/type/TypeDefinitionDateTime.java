@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionDateTime.java,v 1.6 2005/02/24 22:18:12 phormanns Exp $
+//$Id: TypeDefinitionDateTime.java,v 1.7 2005/03/01 21:56:32 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import com.crossdb.sql.InsertQuery;
 import com.crossdb.sql.UpdateQuery;
 import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.exception.DatabaseException;
@@ -30,7 +31,7 @@ public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 
 	public TypeDefinitionDateTime() {
 		super();
-		defaultValue = null;
+		defaultValue = new Date();
 	}
 	
 	public Class getJavaType(){
@@ -110,10 +111,18 @@ public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 	public void addColumn(UpdateQuery query, Printable printable) {
 		query.addColumn(printable.getName(), (Date) printable.getValue());
 	}
+
+	public void addColumn(InsertQuery query, Printable printable) {
+		query.addColumn(printable.getName(), (Date) printable.getValue());
+	}
 }
 
 /*
  * $Log: TypeDefinitionDateTime.java,v $
+ * Revision 1.7  2005/03/01 21:56:32  phormanns
+ * Long immer als Value-Objekt zu Number-Typen
+ * setRecord macht Insert, wenn PK = Default-Value
+ *
  * Revision 1.6  2005/02/24 22:18:12  phormanns
  * Tests laufen mit HSQL und MySQL
  *

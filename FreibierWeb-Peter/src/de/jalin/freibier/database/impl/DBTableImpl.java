@@ -1,4 +1,4 @@
-//$Id: DBTableImpl.java,v 1.5 2005/02/24 22:18:12 phormanns Exp $
+//$Id: DBTableImpl.java,v 1.6 2005/03/01 21:56:32 phormanns Exp $
 package de.jalin.freibier.database.impl;
 
 import java.sql.SQLException;
@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import com.crossdb.sql.Column;
 import com.crossdb.sql.CrossdbResultSet;
 import com.crossdb.sql.IWhereClause;
+import com.crossdb.sql.InsertQuery;
 import com.crossdb.sql.SelectQuery;
 import com.crossdb.sql.Table;
 import com.crossdb.sql.UpdateQuery;
@@ -87,15 +88,18 @@ public class DBTableImpl implements DBTable {
 					recHash = new HashMap();
 					Iterator readColumnsIterator = tab.getColumns().iterator();
 					Column readCol = null;
+					Object obj = null;
 					ValueObject valueObject = null;
 					String readColName = null;
 					while (readColumnsIterator.hasNext()) {
 						readCol = (Column) readColumnsIterator.next();
 						readColName = readCol.getName();
-//						valueObject = new ValueObject(res.getObject(readColName),
-//								(TypeDefinition) columnTypeDefinitions.get(readColName));
-						recHash.put(readCol.getName(), res.getObject(readColName));
-					}
+						obj = res.getObject(readColName);
+						if (obj instanceof Number) {
+							obj = new Long(((Number) obj).longValue());
+						}
+						recHash.put(readCol.getName(), obj);
+					} 
 					rec = new RecordImpl(this, recHash);
 					resList.add(rec);
 					count++;
@@ -142,6 +146,19 @@ public class DBTableImpl implements DBTable {
 		List l = this.getRecords(clause, null, true, 1, 1);
 		return (Record) l.get(0);
 	}
+	
+	public Record getEmptyRecord() throws DatabaseException {
+		Map recHash = new HashMap();
+		Iterator colIterator = tab.getColumns().iterator();
+		Column col = null;
+		String name = null;
+		while (colIterator.hasNext()) {
+			col = (Column) colIterator.next();
+			name = col.getName();
+			recHash.put(name, this.getFieldDef(name).getDefaultValue());
+		}
+		return new RecordImpl(this, recHash);
+	}
 
 	public List getGivenColumns(List colNames, int limit)
 			throws DatabaseException {
@@ -150,21 +167,38 @@ public class DBTableImpl implements DBTable {
 	}
 
 	public void setRecord(Record data) throws DatabaseException {
-		UpdateQuery query = db.getSQLFactory().getUpdateQuery();
-		WhereCondition condition = new WhereCondition(this.getPrimaryKey(),
-				WhereCondition.EQUAL_TO, 
-				data.getPrintable(this.getPrimaryKey()).getValue());
-		query.setTable(this.getName());
-		query.addWhereCondition(condition);
-		Iterator columnsIterator = columnTypeDefinitions.keySet().iterator();
-		TypeDefinition typeDef = null;
-		String colName = null;
-		while (columnsIterator.hasNext()) {
-			colName = (String) columnsIterator.next();
-			typeDef = (TypeDefinition) columnTypeDefinitions.get(colName);
-			typeDef.addColumn(query, data.getPrintable(colName));
+		String pkName = this.getPrimaryKey();
+		if (data.getPrintable(pkName).getValue().equals(this.getEmptyRecord().getPrintable(pkName).getValue())) {
+			InsertQuery query = db.getSQLFactory().getInsertQuery();
+			query.setTable(this.getName());
+			Iterator columnsIterator = columnTypeDefinitions.keySet().iterator();
+			TypeDefinition typeDef = null;
+			String colName = null;
+			while (columnsIterator.hasNext()) {
+				colName = (String) columnsIterator.next();
+				if (!colName.equals(pkName)) {
+					typeDef = (TypeDefinition) columnTypeDefinitions.get(colName);
+					typeDef.addColumn(query, data.getPrintable(colName));
+				}
+			}
+			db.executeInsertQuery(query);
+		} else {
+			UpdateQuery query = db.getSQLFactory().getUpdateQuery();
+			WhereCondition condition = new WhereCondition(this.getPrimaryKey(),
+					WhereCondition.EQUAL_TO, 
+					data.getPrintable(this.getPrimaryKey()).getValue());
+			query.setTable(this.getName());
+			query.addWhereCondition(condition);
+			Iterator columnsIterator = columnTypeDefinitions.keySet().iterator();
+			TypeDefinition typeDef = null;
+			String colName = null;
+			while (columnsIterator.hasNext()) {
+				colName = (String) columnsIterator.next();
+				typeDef = (TypeDefinition) columnTypeDefinitions.get(colName);
+				typeDef.addColumn(query, data.getPrintable(colName));
+			}
+			db.executeUpdateQuery(query);
 		}
-		db.executeUpdateQuery(query);
 	}
 
 	public void deleteRecord(Record data) throws DatabaseException {
@@ -220,6 +254,10 @@ public class DBTableImpl implements DBTable {
 }
 /*
  * $Log: DBTableImpl.java,v $
+ * Revision 1.6  2005/03/01 21:56:32  phormanns
+ * Long immer als Value-Objekt zu Number-Typen
+ * setRecord macht Insert, wenn PK = Default-Value
+ *
  * Revision 1.5  2005/02/24 22:18:12  phormanns
  * Tests laufen mit HSQL und MySQL
  *

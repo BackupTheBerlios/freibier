@@ -1,10 +1,11 @@
-//$Id: TypeDefinitionForeignKey.java,v 1.8 2005/02/24 22:18:12 phormanns Exp $
+//$Id: TypeDefinitionForeignKey.java,v 1.9 2005/03/01 21:56:32 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.crossdb.sql.InsertQuery;
 import com.crossdb.sql.UpdateQuery;
 import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.TypeDefinition;
@@ -125,9 +126,18 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void addColumn(InsertQuery query, Printable printable) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.9  2005/03/01 21:56:32  phormanns
+ * Long immer als Value-Objekt zu Number-Typen
+ * setRecord macht Insert, wenn PK = Default-Value
+ *
  * Revision 1.8  2005/02/24 22:18:12  phormanns
  * Tests laufen mit HSQL und MySQL
  *

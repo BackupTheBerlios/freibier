@@ -1,6 +1,7 @@
-// $Id: TypeDefinition.java,v 1.5 2005/02/24 22:18:13 phormanns Exp $
+// $Id: TypeDefinition.java,v 1.6 2005/03/01 21:56:32 phormanns Exp $
 package de.jalin.freibier.database;
 
+import com.crossdb.sql.InsertQuery;
 import com.crossdb.sql.UpdateQuery;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
@@ -116,10 +117,16 @@ public interface TypeDefinition {
 	 */
 	public abstract boolean validatePart(String s);
 
+	public abstract void addColumn(InsertQuery query, Printable printable);
+
 	public abstract void addColumn(UpdateQuery query, Printable printable);
 }
 /*
  *  $Log: TypeDefinition.java,v $
+ *  Revision 1.6  2005/03/01 21:56:32  phormanns
+ *  Long immer als Value-Objekt zu Number-Typen
+ *  setRecord macht Insert, wenn PK = Default-Value
+ *
  *  Revision 1.5  2005/02/24 22:18:13  phormanns
  *  Tests laufen mit HSQL und MySQL
  *

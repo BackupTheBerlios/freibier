@@ -1,4 +1,4 @@
-// $Id: DBTable.java,v 1.3 2005/02/18 22:17:42 phormanns Exp $
+// $Id: DBTable.java,v 1.4 2005/03/01 21:56:32 phormanns Exp $
 package de.jalin.freibier.database;
 
 import java.util.List;
@@ -64,6 +64,8 @@ public interface DBTable {
 	public abstract Record getRecordByPrimaryKey(Object pkValue)
 			throws DatabaseException;
 
+	public Record getEmptyRecord() throws DatabaseException;
+	
 	/**
 	 * Diese Methode ergibt eine Liste von DataObjects, die alle Werte in
 	 * den angegebenen Spalten enthaelt.
@@ -98,6 +100,10 @@ public interface DBTable {
 }
 /*
  *  $Log: DBTable.java,v $
+ *  Revision 1.4  2005/03/01 21:56:32  phormanns
+ *  Long immer als Value-Objekt zu Number-Typen
+ *  setRecord macht Insert, wenn PK = Default-Value
+ *
  *  Revision 1.3  2005/02/18 22:17:42  phormanns
  *  Umstellung auf Freemarker begonnen
  *

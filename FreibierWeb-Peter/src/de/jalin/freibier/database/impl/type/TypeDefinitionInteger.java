@@ -1,8 +1,11 @@
-//$Id: TypeDefinitionInteger.java,v 1.5 2005/02/28 21:52:38 phormanns Exp $
+//$Id: TypeDefinitionInteger.java,v 1.6 2005/03/01 21:56:32 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import org.apache.oro.text.perl.Perl5Util;
+import com.crossdb.sql.InsertQuery;
 import com.crossdb.sql.UpdateQuery;
 import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
@@ -16,9 +19,11 @@ import de.jalin.freibier.database.impl.ValueObject;
  */
 public class TypeDefinitionInteger extends TypeDefinitionNumber {
 
+	private static final NumberFormat numFo = NumberFormat.getNumberInstance();
+	
 	public TypeDefinitionInteger() {
 		super();
-		defaultValue = new Long(0l);
+		defaultValue = new Long(-1L);
 	}
 
 	public Class getJavaType(){
@@ -50,12 +55,10 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 	}
 
 	public ValueObject parse(String s) throws UserDatabaseException {
-		Long l = null;
 		ValueObject longValue = null;
 		try {
-			l = Long.valueOf(s);
-			longValue = new ValueObject(l, this);
-		} catch (NumberFormatException e) {
+			longValue = new ValueObject(new Long(numFo.parse(s).longValue()), this);
+		} catch (ParseException e) {
 			throw new UserDatabaseException("Fehler im Zahlenformat: " + s, log);
 		}
 		return longValue;
@@ -67,12 +70,20 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 		return regex.match("/^-?\\d+$/", s);
 	}
 
+	public void addColumn(InsertQuery query, Printable printable) {
+		query.addColumn(printable.getName(), ((Long) printable.getValue()).intValue());
+	}
+
 	public void addColumn(UpdateQuery query, Printable printable) {
-		query.addColumn(printable.getName(), ((Integer) printable.getValue()).intValue());
+		query.addColumn(printable.getName(), ((Long) printable.getValue()).intValue());
 	}
 }
 /*
  * $Log: TypeDefinitionInteger.java,v $
+ * Revision 1.6  2005/03/01 21:56:32  phormanns
+ * Long immer als Value-Objekt zu Number-Typen
+ * setRecord macht Insert, wenn PK = Default-Value
+ *
  * Revision 1.5  2005/02/28 21:52:38  phormanns
  * SaveAction begonnen
  *

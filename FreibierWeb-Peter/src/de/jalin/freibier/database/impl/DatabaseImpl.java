@@ -1,4 +1,4 @@
-//$Id: DatabaseImpl.java,v 1.10 2005/02/24 22:18:12 phormanns Exp $
+//$Id: DatabaseImpl.java,v 1.11 2005/03/01 21:56:32 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -82,6 +82,7 @@ public class DatabaseImpl implements Database {
         createTableQuery.addColumn(pk);
         createTableQuery.addColumn(new Column("TEXT", Types.VARCHAR));
         createTableQuery.addColumn(new Column("DATUM", Types.DATE));
+        createTableQuery.addColumn(new Column("ZAHL", Types.INTEGER));
         try {
             createTableQuery.execute(conn);
         } catch (SQLException e) {
@@ -93,6 +94,7 @@ public class DatabaseImpl implements Database {
 	        insertQuery.addAutoIncrementColumn("ID");
 	        insertQuery.addColumn("TEXT", "Ein Text mit Nummer " + i);
 	        insertQuery.addColumn("DATUM", new Date());
+	        insertQuery.addColumn("ZAHL", 1700 - i);
 	        try {
                 insertQuery.execute(conn);
             } catch (SQLException e) {
@@ -163,6 +165,16 @@ public class DatabaseImpl implements Database {
         } catch (SQLException e) {
             throw new SystemDatabaseException("SQL Fehler", e, log);
         }
+    }
+
+    public void executeInsertQuery(InsertQuery query)
+    throws SystemDatabaseException {
+		int retValue = 0;
+		try {
+		    retValue = query.execute(conn);
+		} catch (SQLException e) {
+		    throw new SystemDatabaseException("SQL Fehler", e, log);
+		}
     }
 
     private void readTablesFromCatalog() throws SystemDatabaseException {
@@ -260,6 +272,10 @@ public class DatabaseImpl implements Database {
 }
 /*
  * $Log: DatabaseImpl.java,v $
+ * Revision 1.11  2005/03/01 21:56:32  phormanns
+ * Long immer als Value-Objekt zu Number-Typen
+ * setRecord macht Insert, wenn PK = Default-Value
+ *
  * Revision 1.10  2005/02/24 22:18:12  phormanns
  * Tests laufen mit HSQL und MySQL
  *
