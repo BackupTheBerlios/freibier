@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionInteger.java,v 1.4 2005/02/24 22:18:12 phormanns Exp $
+//$Id: TypeDefinitionInteger.java,v 1.5 2005/02/28 21:52:38 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -10,7 +10,7 @@ import de.jalin.freibier.database.exception.UserDatabaseException;
 import de.jalin.freibier.database.impl.ValueObject;
 
 /**
- * Datentyp z.B. für SQL-Daten vom Typ int
+ * Datentyp z.B. fuer SQL-Daten vom Typ int
  *
  * @author tbayen
  */
@@ -73,6 +73,9 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionInteger.java,v $
+ * Revision 1.5  2005/02/28 21:52:38  phormanns
+ * SaveAction begonnen
+ *
  * Revision 1.4  2005/02/24 22:18:12  phormanns
  * Tests laufen mit HSQL und MySQL
  *

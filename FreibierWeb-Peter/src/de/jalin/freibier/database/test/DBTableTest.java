@@ -1,4 +1,4 @@
-// $Id: DBTableTest.java,v 1.2 2005/02/24 22:18:13 phormanns Exp $
+// $Id: DBTableTest.java,v 1.3 2005/02/28 21:52:38 phormanns Exp $
 package de.jalin.freibier.database.test;
 
 import java.util.List;
@@ -133,11 +133,11 @@ public class DBTableTest extends TestCase {
 		try {
 			DBTable tab = db.getTable("TABLE1");
 			Record rec = tab.getRecordByPrimaryKey(new Integer(255));
-			rec.setField("TEXT", "Ein geänderter Text mit Nummer 254");
+			rec.setField("TEXT", "Ein geaenderter Text mit Nummer 254");
 			rec.setField("DATUM", "14.02.1964");
 			tab.setRecord(rec);
 			IWhereClause where = new WhereClause();
-			where.addWhereLikeLeft("TEXT", "Ein geänderter Text");
+			where.addWhereLikeLeft("TEXT", "Ein geaenderter Text");
 			assertEquals(1, tab.getNumberOfRecords(where));
 		} catch (DatabaseException e) {
 			fail(e.getMessage());
@@ -167,6 +167,9 @@ public class DBTableTest extends TestCase {
 
 /*
  *  $Log: DBTableTest.java,v $
+ *  Revision 1.3  2005/02/28 21:52:38  phormanns
+ *  SaveAction begonnen
+ *
  *  Revision 1.2  2005/02/24 22:18:13  phormanns
  *  Tests laufen mit HSQL und MySQL
  *

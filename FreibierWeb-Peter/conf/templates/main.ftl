@@ -9,7 +9,7 @@
       <tr>
         <#list tablenames as tabname>
           <td bgcolor="#ee00ee">
-        	<a href="?table=${tabname}">${tabname}</a>
+        	    <a href="?table=${tabname}">${tabname}</a>
           </td>
         </#list>
       </tr>
@@ -32,7 +32,7 @@
             <a href="?action=order&orderby=${column}">${column}</a><br />
             <input name="ft_${column}" type="text" value=""/>
           </th>
-    	</#list>
+    	    </#list>
       </form>
     </tr>
     <#list data as row>

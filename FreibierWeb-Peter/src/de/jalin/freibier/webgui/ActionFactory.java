@@ -1,4 +1,4 @@
-// $Id: ActionFactory.java,v 1.2 2005/02/25 15:51:29 phormanns Exp $
+// $Id: ActionFactory.java,v 1.3 2005/02/28 21:52:38 phormanns Exp $
 package de.jalin.freibier.webgui;
 
 import java.util.HashMap;
@@ -21,6 +21,7 @@ public class ActionFactory {
 		actionsMap.put("scroll", new ScrollAction(db));
 		actionsMap.put("order", new OrderByAction(db));
 		actionsMap.put("edit", new EditAction(db));
+		actionsMap.put("save", new SaveAction(db));
 	}
 	
 	public Action getAction(String name) throws DatabaseException {
@@ -35,6 +36,9 @@ public class ActionFactory {
 
 /*
  *  $Log: ActionFactory.java,v $
+ *  Revision 1.3  2005/02/28 21:52:38  phormanns
+ *  SaveAction begonnen
+ *
  *  Revision 1.2  2005/02/25 15:51:29  phormanns
  *  EditAction, OrderByAction
  *
