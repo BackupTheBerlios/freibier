@@ -1,5 +1,5 @@
 <#-- Erzeugt am 21.02.2005 von tbayen
-     $Id: tables.ftl,v 1.1 2005/04/05 21:34:48 tbayen Exp $ -->
+     $Id: tables.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ -->
 <#assign title="Banking-Programm"/>
 <#include "include/macros.ftl"/>
 <@page>
@@ -8,10 +8,12 @@
   <ul>
     <li>
       <@link action="list" table="Ausgangskoerbe" id="-">
+        <@icon name="mail_get" title="Ausgangskorb auswählen"/>
         Ausgangskorb auswählen</@link>
       (um Überweisungen und Lastschriften zu bearbeiten)
     </li><li>
       <@link action="list" table="Pool" id="-">
+        <@icon name="mail_generic" title="Auftrags-Pool ansehen"/>
         Auftrags-Pool ansehen</@link>
       (um Aufträge zur Bank zu versenden)
     </li>
@@ -19,19 +21,30 @@
   <h2>Kontoauszüge und Sonderfunktionen</h2>
   <ul>
     <li>
-      <@link action="auszugform">Kontoauszug anzeigen</@link>
+      <@link action="auszugform">
+        <@icon name="mail_generic" title="Kontoauszug anzeigen"/>
+        Kontoauszug abholen und anzeigen</@link>
     </li><li>
-      <@link action="dtausimport" view="tables">
+      <#assign redir><@call action="list" view="list" table="Pool"/></#assign>
+      <@link action="dtausimport"
+             view="redirect-"+redir>
+        <@icon name="revert" title="DTAUS-Datei importieren"/>
         DTAUS-Datei importieren</@link>
       (Auftragsdateien aus fremdem Programm in den Pool holen)
     </li><li>
       <@link theme="standard" action="tables">
+        <@icon name="fileimport" title="Datenbank-Administration"/>
         Datenbank-Administrationsmodus</@link>
     </li>
   </ul>
 </@page>
 <#--
 * $Log: tables.ftl,v $
+* Revision 1.2  2005/04/06 21:14:10  tbayen
+* Anwenderprobleme behoben,
+* redirect-view implementiert
+* allgemeine Verbesserungen der Oberfläche
+*
 * Revision 1.1  2005/04/05 21:34:48  tbayen
 * WebDatabase 1.4 - freigegeben auf Berlios
 *

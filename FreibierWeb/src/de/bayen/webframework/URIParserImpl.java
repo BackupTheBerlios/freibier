@@ -1,5 +1,5 @@
 /* Erzeugt am 19.03.2005 von tbayen
- * $Id: URIParserImpl.java,v 1.1 2005/04/05 21:34:46 tbayen Exp $
+ * $Id: URIParserImpl.java,v 1.2 2005/04/06 21:14:10 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.oro.text.perl.Perl5Util;
 import freemarker.template.TemplateHashModelEx;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateModelIterator;
@@ -22,16 +23,23 @@ import freemarker.template.TemplateModelIterator;
  * 
  *     /context/servlet/[theme-[view-]]action[/table[/id]]
  * 
- * Es wird ein root-Objekt erzeugt, dass Werte enthalten kann. Dann
- * wird die sich aus der URL ergebende Action aufgerufen, die ggf. 
- * Aktionen ausführt und weitere Daten in das root-Objekt schreibt.
- * Dann wird das entsprechende Template aufgerufen.
  */
 public class URIParserImpl implements URIParser, URIParserForFreeMarker {
 	public Map parseURI(HttpServletRequest req) {
 		Map map = new HashMap();
 		map.put("parser", this); // hiermit können Templates createURI() aufrufen
+		// Methoden von HttpServletRequest:
+		// Beispiel: http://jupiter:8180/WebDatabase/db/edit?table=kontakte&id=1
+		// getContextPath()				/WebDatabase
+		// getPathInfo()           		/edit
+		// getPathTranslated() 			/home/tbayen/Projekte/Java/workspace/WebKunden/build/edit
+		// getRequestURI()				/WebDatabase/db/edit
+		// getRequestURL().toString() 	http://jupiter:8180/WebDatabase/db/edit
+		// getServletPath()				/db
 		map.put("baseurl", req.getContextPath());
+		String querystring = req.getQueryString() == null ? "" : "?"
+				+ req.getQueryString();
+		map.put("original", req.getRequestURI()+querystring);
 		String url[] = req.getRequestURI().split("/");
 		map.put("context", url[1]);
 		map.put("servlet", url[2]);
@@ -60,6 +68,14 @@ public class URIParserImpl implements URIParser, URIParserForFreeMarker {
 				break;
 			}
 		}
+		// Ein view kann ein redirect enthalten, das '/' enthält. Diese
+		// werden als '\' kodiert
+		String view=(String)map.get("view");
+		Perl5Util regex = new Perl5Util();
+		view=regex.substitute("s#!1#/#g",view);
+		view=regex.substitute("s#!2#-#g",view);
+		view=regex.substitute("s#!!#!#g",view);
+		map.put("view",view);
 		if (url.length > 4) {
 			map.put("table", url[4]);
 		}
@@ -120,13 +136,19 @@ public class URIParserImpl implements URIParser, URIParserForFreeMarker {
 		String servlet = (String) map.get("servlet");
 		String theme = (String) map.get("theme");
 		String view = (String) map.get("view");
+		Perl5Util regex = new Perl5Util();
+		view=regex.substitute("s#!#!!#g",view);
+		view=regex.substitute("s#/#!1#g",view);
+		view=regex.substitute("s#-#!2#g",view);
 		String action = (String) map.get("action");
 		String table = (String) map.get("table");
 		String id = (String) map.get("id");
 		String uri = baseurl + "/" + servlet + "/";
-		if (theme != null && theme.length() > 0 && !theme.equals("standard")
-				|| ((view != null) && !(view.length() == 0)
-				&& !view.equals(action))) {
+		if (theme != null
+				&& theme.length() > 0
+				&& !theme.equals("standard")
+				|| ((view != null) && !(view.length() == 0) && !view
+						.equals(action))) {
 			uri += theme + "-";
 		}
 		if ((view != null) && !(view.length() == 0) && !view.equals(action)) {
@@ -161,6 +183,11 @@ public class URIParserImpl implements URIParser, URIParserForFreeMarker {
 }
 /*
  * $Log: URIParserImpl.java,v $
+ * Revision 1.2  2005/04/06 21:14:10  tbayen
+ * Anwenderprobleme behoben,
+ * redirect-view implementiert
+ * allgemeine Verbesserungen der Oberfläche
+ *
  * Revision 1.1  2005/04/05 21:34:46  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

@@ -8,7 +8,8 @@ nötig:
   - Filter (z.B. nach Aussendienstlern)
   - Telefonnummern in Liste für Günther
 wünschenswert:
-- BLZ-Feldname in der Datenbank in Grossbuchstaben ändern
+- BLZ-Feldname in der Datenbank in Grossbuchstaben ändern 
+    (dann Spezial-Templates für Transaktionen zurücksetzen)
 - interne Verbesserungen
   - HBCICallback multithreading-konform benutzen
   - evtl. Session-Einstellungen für Theme, Filter, etc.
@@ -41,7 +42,16 @@ nicht wirklich nötig:
 - Sortieren nach Fremdschlüsseln
 
 erledigt:
-- HBCI-Applikation
+- Daten aus alter (Maypole-)Applikation übernehmen
+- bei neuer Transaktion Korb vorbelegen
+- blz gross schreiben
+- nach löschen von Transaktionen zurück zum Ausgangskorb
+- "Eing. bestätigen" ändern
+- "editieren" -> "ändern"
+- "Ausgangspool" korrigieren
+- "Gutschrift" -> "Überweisung"
+- Installation auf Laptop, dabei Doku prüfen
+HBCI-Applikation
 - Importieren der DTAUS-Dateien von Durst
 - Versand von DTAUS (als "Pool")
 - action senddtaus (hier kommt die Magie!)

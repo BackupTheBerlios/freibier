@@ -124,7 +124,7 @@ td.haben{
 /**********/
 
 img.inline {height: 1em; }   /* Grafik in Textzeilen soll so gross sein wie die Schrift */
-td.icon {width: 1em; white-space: nowrap;}  /* Tabellenfeld enthält nur Icon(s) */
+td.icon {height: 1em; white-space: nowrap;}  /* Tabellenfeld enthält nur Icon(s) */
 /* Bilder in Links sollen keinen blauen Hintergrund bekommen. 
    Scheint nur bei den Apache-Icons zu passieren */
 /*

@@ -1,5 +1,5 @@
 <#-- Erzeugt am 02.04.2005 von tbayen
-     $Id: show.ftl,v 1.1 2005/04/05 21:34:48 tbayen Exp $ -->
+     $Id: show.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ -->
 <#assign title="Ausgangskorb '${record.getField(fields[0]).format()}'"/>
 <#include "include/editmacros.ftl"/>
 <#assign menu1_name="Ausgangskörbe">
@@ -10,9 +10,9 @@
   <table><tr><td class="layout">
     <table class="fill">
       <#list fields as feld>
-      <tr>
-        <@datenfeld feld=feld record=record/>
-      </tr>
+        <tr>
+          <@datenfeld feld=feld record=record/>
+        </tr>
       </#list>
     </table>
   </td></tr><tr><td colspan="2">
@@ -38,6 +38,7 @@
         <td class="layout icon">
           <@icon name="bomb" alt="löschen" title="löschen" 
                  action="delete" table=sublist.tablename 
+                 view="redirect-"+uri.original
                  id=record.getFormatted(record.getRecordDefinition().getPrimaryKey())
           />
         </td>
@@ -57,7 +58,7 @@
       <ul>
         <li>
           <@link action="copy2pool" view="show">
-            Ausgangskorb leeren und in den Ausgangspool geben</@link>
+            Ausgangskorb leeren und in den Auftrags-Pool geben</@link>
           (vorher drucken!)
         </li><li>
           <@link action="list" view="list" table="Pool" id="-">
@@ -71,6 +72,11 @@
 
 <#--
 * $Log: show.ftl,v $
+* Revision 1.2  2005/04/06 21:14:10  tbayen
+* Anwenderprobleme behoben,
+* redirect-view implementiert
+* allgemeine Verbesserungen der Oberfläche
+*
 * Revision 1.1  2005/04/05 21:34:48  tbayen
 * WebDatabase 1.4 - freigegeben auf Berlios
 *

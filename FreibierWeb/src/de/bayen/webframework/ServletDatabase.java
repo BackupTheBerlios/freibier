@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.1 2005/04/05 21:34:46 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.2 2005/04/06 21:14:10 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -72,6 +72,23 @@ public class ServletDatabase extends HttpServlet {
 	 * Dies ist die eigentliche Hauptfunktion, die vom Tomcat aufgerufen
 	 * wird, wenn die zugehörige URL aufgerufen wird. (Was zugehörig ist,
 	 * wird in web/WEB-INF/web.xml festgelegt.
+	 * <p>
+	 * Es wird ein root-Objekt erzeugt, dass Werte enthalten kann. Dann
+	 * wird die sich aus der URL ergebende Action aufgerufen, die ggf. 
+	 * Aktionen ausführt und weitere Daten in das root-Objekt schreibt.
+	 * Dann wird das entsprechende Template aufgerufen.
+	 * <p>
+	 * Es gibt zwie besondere views:
+	 * <ul><li>
+	 *   binarydata - es werden Binärdaten direkt ausgegeben, nicht
+	 *   per Template und nicht als MIME-Type HTML
+	 * </li><li>
+	 *   redirect- - hinter dem Minus-Zeichen steht eine URL, auf die
+	 *   ein redirect durchgeführt wird (nachdem die Action ausgeführt 
+	 *   wurde). Dadurch können natürlich auch mehrere Actions 
+	 *   hintereinander durch eine URL ausgeführt werden.
+	 * </li></ul>
+	 * 
 	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -92,8 +109,11 @@ public class ServletDatabase extends HttpServlet {
 			actionDispatcher.executeAction(action, req, root, db);
 			String view = (String) uri.get("view");
 			String theme = (String) uri.get("theme");
-			if (view.equals("binarydata")) {
-				// Das ist ein besonders View, für das keine 
+			if(view.startsWith("redirect-")){
+				// redirect
+				resp.sendRedirect(view.substring(9));
+			}else if (view.equals("binarydata")) {
+				// Das ist ein besonderes View, für das keine 
 				// Template-Engine gestartet wird
 				executeBinaryData(root, view, theme, (String) uri.get("table"), resp);
 			} else {
@@ -227,16 +247,13 @@ public class ServletDatabase extends HttpServlet {
 		}
 	}
 }
-// Methoden von HttpServletRequest:
-// Beispiel: http://jupiter:8180/WebDatabase/db/edit?table=kontakte&id=1
-// getContextPath()				/WebDatabase
-// getPathInfo()           		/edit
-// getPathTranslated() 			/home/tbayen/Projekte/Java/workspace/WebKunden/build/edit
-// getRequestURI()				/WebDatabase/db/edit
-// getRequestURL().toString() 	http://jupiter:8180/WebDatabase/db/edit
-// getServletPath()				/db
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.2  2005/04/06 21:14:10  tbayen
+ * Anwenderprobleme behoben,
+ * redirect-view implementiert
+ * allgemeine Verbesserungen der Oberfläche
+ *
  * Revision 1.1  2005/04/05 21:34:46  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

@@ -1,5 +1,5 @@
 <#-- Erzeugt am 26.02.2005 von tbayen
-     $Id: editmacros.ftl,v 1.1 2005/04/05 21:34:48 tbayen Exp $ 
+     $Id: editmacros.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ 
      
      Diese Datei enthält verschiedene Makros, die die Arbeit von "editform.ftl"
      einfacher und übersichtlicher machen 
@@ -36,7 +36,7 @@
       </select>
       <a class="imagelink" href="<@call action="search" view="editform" table=foreigntable id="-" params={"_${indexcolumn}":objekt.format()}/>">
         <#if selected?exists>
-          <@icon name="link" alt=">" title="anzeigen von '${selected}'"/>
+          <@icon name="fileopen" alt=">" title="anzeigen von '${selected}'"/>
         </#if>
       </a>
     <#else/>
@@ -92,6 +92,11 @@
 
 <#--
 * $Log: editmacros.ftl,v $
+* Revision 1.2  2005/04/06 21:14:10  tbayen
+* Anwenderprobleme behoben,
+* redirect-view implementiert
+* allgemeine Verbesserungen der Oberfläche
+*
 * Revision 1.1  2005/04/05 21:34:48  tbayen
 * WebDatabase 1.4 - freigegeben auf Berlios
 *

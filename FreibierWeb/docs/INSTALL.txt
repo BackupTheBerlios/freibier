@@ -102,13 +102,11 @@ zum Datenimport benötigt der Benutzer noch Leserechte in der Durstimport-Tabelle
 
 Konfiguration
 -------------
-Verzeichnis /etc/webdatabase anlegen und dorthinein die Dateien:
-  banking.props
-  hbci4java-passports/   (Verzeichnis, ggf. leer)
-Dann Permissions setzen:
+Verzeichnis /etc/webdatabase anlegen und Inhalt des etc-Verzeichnisses
+dorthin kopieren. Dann Permissions setzen:
   chown tomcat4.root /etc/webdatabase -R
   chmod o-rwx /etc/webdatabase -R
-(oder mit "scp -r ... ..." den Dateibaum kopieren und anpassen)
+
 
 
 Spezielles für Banking

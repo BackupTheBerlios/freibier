@@ -1,6 +1,6 @@
 <#-- Erzeugt am 05.04.2005 von tbayen
-     $Id: editform.ftl,v 1.1 2005/04/05 21:34:46 tbayen Exp $ -->
-<#assign title="Last-/Gutschrift eingeben bzw. ändern"/>
+     $Id: editform.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ -->
+<#assign title="Lastschrift/Überweisung eingeben bzw. ändern"/>
 <#include "include/editmacros.ftl"/>
 <@page>
   <h1>${title}</h1>
@@ -11,16 +11,23 @@
     <input type="hidden" name="${primarykey}" value="${record.getField(primarykey).format()}"/>
     <table class="fill">
       <#list fields as feld>
-      <tr>
-        <@dateneingabefeld feld=feld record=record/>
-      </tr>
+        <tr>
+          <#if feld=="blz"> <#-- Das finde ich nicht schön -->
+            <th>BLZ</th>
+            <td class="maxwidth nowrap">
+              <@feldeingabefeld feld=feld record=record/>
+            </td>
+          <#else/>
+            <@dateneingabefeld feld=feld record=record/>
+          </#if>
+        </tr>
       </#list>
     </table>
   </td></tr><tr><td class="layout">
     <table class="fill maxwidth">
       <tr>
         <td class="leftbutton oneofthree">
-          <button name="submit" type="submit" value="ok">Eing. bestätigen</button>
+          <button name="submit" type="submit" value="ok">Eingabe bestät.</button>
           </form>
         </td><td class="middlebutton oneofthree">
           <form name="newbutton" action="<@call action="new" view="editform" id="-"/>" method="post">
@@ -51,6 +58,11 @@
 
 <#--
 * $Log: editform.ftl,v $
+* Revision 1.2  2005/04/06 21:14:10  tbayen
+* Anwenderprobleme behoben,
+* redirect-view implementiert
+* allgemeine Verbesserungen der Oberfläche
+*
 * Revision 1.1  2005/04/05 21:34:46  tbayen
 * WebDatabase 1.4 - freigegeben auf Berlios
 *

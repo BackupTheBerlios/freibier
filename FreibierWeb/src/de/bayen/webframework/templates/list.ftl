@@ -1,5 +1,5 @@
 <#-- Erzeugt am 21.02.2005 von tbayen
-     $Id: list.ftl,v 1.1 2005/04/05 21:34:48 tbayen Exp $ -->
+     $Id: list.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ -->
 <#assign title="Tabelle '${uri.table}'"/>
 <#include "include/listmacros.ftl"/>
 <@page>
@@ -12,10 +12,10 @@
         <#if order=feld>
           <#if orderdir="ASC">
           <@link params={"order":feld, "orderdir":"DESC"}>${feld}</@link>
-            <@icon name="down" alt="/\\"/>
+            <@icon name="1downarrow" alt="/\\"/>
           <#else/>
           <@link params={"order":feld, "orderdir":"ASC"}>${feld}</@link>
-            <@icon name="up" alt="/\\"/>
+            <@icon name="1uparrow" alt="/\\"/>
           </#if>
         <#else/>
           <@link params={"order":feld, "orderdir":"ASC"}>${feld}</@link>
@@ -35,6 +35,11 @@
 </@page>
 <#--
 * $Log: list.ftl,v $
+* Revision 1.2  2005/04/06 21:14:10  tbayen
+* Anwenderprobleme behoben,
+* redirect-view implementiert
+* allgemeine Verbesserungen der Oberfläche
+*
 * Revision 1.1  2005/04/05 21:34:48  tbayen
 * WebDatabase 1.4 - freigegeben auf Berlios
 *

@@ -1,5 +1,5 @@
 <#-- Erzeugt am 21.02.2005 von tbayen
-     $Id: editform.ftl,v 1.1 2005/04/05 21:34:48 tbayen Exp $ -->
+     $Id: editform.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ -->
 <#assign title="Datensatz '${record.getField(fields[0]).format()}' aus Tabelle '${uri.table}'"/>
 <#include "include/editmacros.ftl"/>
 <#assign menu1_name=uri.table>
@@ -23,7 +23,7 @@
     <table class="fill maxwidth">
       <tr>
         <td class="leftbutton oneofthree">
-          <button name="submit" type="submit" value="ok">Eing. bestätigen</button>
+          <button name="submit" type="submit" value="ok">Eingabe bestät.</button>
           </form>
         </td><td class="middlebutton oneofthree">
           <form name="newbutton" action="<@call action="new" view="editform" id="-"/>" method="post">
@@ -54,6 +54,11 @@
 
 <#--
 * $Log: editform.ftl,v $
+* Revision 1.2  2005/04/06 21:14:10  tbayen
+* Anwenderprobleme behoben,
+* redirect-view implementiert
+* allgemeine Verbesserungen der Oberfläche
+*
 * Revision 1.1  2005/04/05 21:34:48  tbayen
 * WebDatabase 1.4 - freigegeben auf Berlios
 *

@@ -1,5 +1,5 @@
 <#-- Erzeugt am 02.04.2005 von tbayen
-     $Id: show.ftl,v 1.1 2005/04/05 21:34:48 tbayen Exp $ -->
+     $Id: show.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ -->
 <#assign title="Datensatz '${record.getField(fields[0]).format()}' aus Tabelle '${uri.table}'"/>
 <#include "include/editmacros.ftl"/>
 <#assign menu1_name=uri.table>
@@ -16,7 +16,9 @@
       </#list>
     </table>
   </td></tr><tr><td colspan="2">
-    <a href="<@call view="editform"/>">Diese Daten ändern</a>
+    <div class="forscreen">
+      <a href="<@call view="editform"/>">Diese Daten ändern</a>
+    </div>
   </td></tr><tr><td class="layout">
 
   <#if (lists?size>0) >
@@ -35,6 +37,11 @@
 
 <#--
 * $Log: show.ftl,v $
+* Revision 1.2  2005/04/06 21:14:10  tbayen
+* Anwenderprobleme behoben,
+* redirect-view implementiert
+* allgemeine Verbesserungen der Oberfläche
+*
 * Revision 1.1  2005/04/05 21:34:48  tbayen
 * WebDatabase 1.4 - freigegeben auf Berlios
 *

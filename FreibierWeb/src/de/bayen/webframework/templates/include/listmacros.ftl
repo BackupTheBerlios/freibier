@@ -1,5 +1,5 @@
 <#-- Erzeugt am 26.02.2005 von tbayen
-     $Id: listmacros.ftl,v 1.1 2005/04/05 21:34:48 tbayen Exp $ 
+     $Id: listmacros.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ 
      
      Diese Datei enthält verschiedene Makros, die die Arbeit von "list.ftl"
      einfacher und übersichtlicher machen 
@@ -15,6 +15,7 @@
     <td class="layout icon">
       <@icon name="bomb" alt="löschen" title="löschen" 
              action="delete" table=tablename 
+             view="redirect-"+uri.original
              id=record.getFormatted(record.getRecordDefinition().getPrimaryKey())
       />
     </td>
@@ -31,7 +32,7 @@
            action="show" view="editform" table=tablename
            id=record.getFormatted(record.getRecordDefinition().getPrimaryKey())
     />
-    <@icon name="forward" alt=">" title="anzeigen von ${record.getField(0).format()}" 
+    <@icon name="fileopen" alt=">" title="anzeigen von ${record.getField(0).format()}" 
            action="show" view="show" table=tablename
            id=record.getFormatted(record.getRecordDefinition().getPrimaryKey())
     />
@@ -64,7 +65,7 @@
       </@link>
     <#else/>
       <#if objekt.getTypeDefinition().getStringType() = "blob">
-        <@icon name="binary" 
+        <@icon name="filesave" 
                action="download" view="binarydata" table=tablename 
                id="${record.getField(record.getRecordDefinition().getPrimaryKey()).getValue()}/${feld}"
                params={"field":feld} 
@@ -92,6 +93,11 @@
 
 <#--
 * $Log: listmacros.ftl,v $
+* Revision 1.2  2005/04/06 21:14:10  tbayen
+* Anwenderprobleme behoben,
+* redirect-view implementiert
+* allgemeine Verbesserungen der Oberfläche
+*
 * Revision 1.1  2005/04/05 21:34:48  tbayen
 * WebDatabase 1.4 - freigegeben auf Berlios
 *

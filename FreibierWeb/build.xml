@@ -18,7 +18,7 @@
                              image files), including the WEB-INF subdirectory
                              and its configuration file contents.
 
-     $Id: build.xml,v 1.1 2005/04/05 21:34:48 tbayen Exp $
+     $Id: build.xml,v 1.2 2005/04/06 21:14:10 tbayen Exp $
 -->
 
 
@@ -339,6 +339,11 @@
          basedir="${build.home}"/>
 
     <!-- Copy additional files to ${dist.home} as necessary -->
+  	<!-- TB -->
+    <mkdir   dir="${dist.home}/etc"/>
+    <copy    todir="${dist.home}/etc">
+      <fileset dir="${basedir}/etc"/>
+    </copy>
 
   </target>
 

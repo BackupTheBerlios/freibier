@@ -15,6 +15,9 @@ aus der Weboberfläche kopiert
 bomb, forward, link
 -------------------------------
 KDE
-aus /usr/share/icons/crystalsvg/22x22/actions/button_ok.png
+aus /usr/share/icons/crystalsvg/
 button_ok, button_cancel
+aus /usr/share/icons/kdeclassic/
+editdelete, filesave, 1downarrow, 1uparrow, fileopen, fileimport,
+mail_get, mail_generic
 -------------------------------

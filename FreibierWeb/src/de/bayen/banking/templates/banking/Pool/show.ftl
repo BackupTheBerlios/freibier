@@ -1,5 +1,5 @@
 <#-- Erzeugt am 03.04.2005 von tbayen
-     $Id: show.ftl,v 1.1 2005/04/05 21:34:48 tbayen Exp $ -->
+     $Id: show.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ -->
 <#assign title="Auftrag '${record.getField(fields[0]).format()}' aus dem Pool"/>
 <#include "include/editmacros.ftl"/>
 <#assign menu1_name=uri.table>
@@ -16,20 +16,20 @@
       </#list>
     </table>
   </td></tr><tr><td colspan="2">
-    <a href="<@call view="editform"/>">Diese Daten editieren</a>
+    <a href="<@call view="editform"/>">Diese Daten ändern</a>
   </td></tr><tr><td colspan="2">
   </td></tr></table>
   <h2>Informationen aus der DTAUS-Datei</h2>
   <#if dtauslg=="L">
     <#assign dtaustyp="Lastschriften"/>
   <#else/>
-    <#assign dtaustyp="Gutschriften"/>
+    <#assign dtaustyp="Überweisungen"/>
   </#if>
   <ul>
     <li>BLZ: ${dtausblz}</li> 
     <li>Kontonummer: ${dtauskontonummer}</li>
     <li>Summe: ${dtaussumme} &euro;</li>
-    <li>Last- oder Gutschrift: ${dtaustyp}</li>
+    <li>Lastschrift oder Überweisung: ${dtaustyp}</li>
   </ul>
   <h2>Versenden der ${dtaustyp}</h2>
   <form name="form" action="<@call action="senddtaus" view="show"/>" method="post">
@@ -40,6 +40,11 @@
 
 <#--
 * $Log: show.ftl,v $
+* Revision 1.2  2005/04/06 21:14:10  tbayen
+* Anwenderprobleme behoben,
+* redirect-view implementiert
+* allgemeine Verbesserungen der Oberfläche
+*
 * Revision 1.1  2005/04/05 21:34:48  tbayen
 * WebDatabase 1.4 - freigegeben auf Berlios
 *
