@@ -1,11 +1,12 @@
-// $Id: Filter.java,v 1.2 2004/12/31 19:37:26 phormanns Exp $
+// $Id: Filter.java,v 1.3 2005/02/13 20:27:14 phormanns Exp $
 package de.jalin.freibier.webgui;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import de.jalin.freibier.database.QueryCondition;
-import de.jalin.freibier.database.Table;
+import com.crossdb.sql.WhereClause;
+import com.crossdb.sql.WhereCondition;
+import de.jalin.freibier.database.DBTable;
 import de.jalin.freibier.database.exception.DatabaseException;
 
 public class Filter {
@@ -66,23 +67,17 @@ public class Filter {
 		String filterPattern;
 	}
 
-	public QueryCondition createQueryCondition(Table tab) throws DatabaseException {
-		QueryCondition queryFilter = null;
+	public WhereClause createQueryCondition(DBTable tab) throws DatabaseException {
+		WhereClause queryFilter = new WhereClause();
 		TableFilter tabFt = (TableFilter) tableFilterMap.get(tab.getName());
 		if (tabFt != null) {
 			Iterator ftIterator = tabFt.columnFilterMap.keySet().iterator();
 			String fieldName = null;
 			ColumnFilter colFt = null;
-			if (ftIterator.hasNext()) {
-				fieldName = (String) ftIterator.next();
-				colFt = (ColumnFilter) tabFt.columnFilterMap.get(fieldName);
-				queryFilter = tab.createQueryCondition(fieldName, QueryCondition.LIKE, 
-						tab.getFieldDef(fieldName).parse(colFt.filterPattern));
-			}
 			while (ftIterator.hasNext()) {
 				fieldName = (String) ftIterator.next();
 				colFt = (ColumnFilter) tabFt.columnFilterMap.get(fieldName);
-				queryFilter.and(tab.createQueryCondition(fieldName, QueryCondition.LIKE, 
+				queryFilter.addCondition(new WhereCondition(fieldName, WhereCondition.LIKE, 
 						tab.getFieldDef(fieldName).parse(colFt.filterPattern)));
 			}
 		}
@@ -103,6 +98,9 @@ public class Filter {
 
 /*
  *  $Log: Filter.java,v $
+ *  Revision 1.3  2005/02/13 20:27:14  phormanns
+ *  Funktioniert bis auf Filter
+ *
  *  Revision 1.2  2004/12/31 19:37:26  phormanns
  *  Database Schnittstelle herausgearbeitet
  *

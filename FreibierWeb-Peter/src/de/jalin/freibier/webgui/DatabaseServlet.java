@@ -1,4 +1,4 @@
-// $Id: DatabaseServlet.java,v 1.5 2005/02/11 16:46:02 phormanns Exp $
+// $Id: DatabaseServlet.java,v 1.6 2005/02/13 20:27:14 phormanns Exp $
 
 package de.jalin.freibier.webgui;
 
@@ -11,11 +11,11 @@ import javax.servlet.http.HttpSession;
 import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.servlet.VelocityServlet;
+import com.crossdb.sql.WhereClause;
+import de.jalin.freibier.database.DBTable;
 import de.jalin.freibier.database.Database;
 import de.jalin.freibier.database.DatabaseFactory;
-import de.jalin.freibier.database.QueryCondition;
 import de.jalin.freibier.database.Record;
-import de.jalin.freibier.database.Table;
 import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
@@ -24,7 +24,7 @@ import de.jalin.freibier.database.exception.UserDatabaseException;
 
 public class DatabaseServlet extends VelocityServlet {
 
-	private static final int FETCH_SIZE = 20;
+	private static final int FETCH_SIZE = 15;
 	
 	private Database db;
 
@@ -64,8 +64,8 @@ public class DatabaseServlet extends VelocityServlet {
 			if (view == null) {
 				view = new ViewParameter();
 				view.setTableName((String) tableNamesList.get(0));
-				view.setFirstRowNumber(0);
-				view.setNumberOfRows(FETCH_SIZE);
+				view.setFirstRowNumber(1);
+				view.setRowsPerPage(FETCH_SIZE);
 				view.setOrderByColumn(null);
 				session.setAttribute("view", view);
 			}
@@ -81,10 +81,10 @@ public class DatabaseServlet extends VelocityServlet {
 				session.setAttribute("filter", filter);
 			}
 			// get TableImpl
-			Table tab = db.getTable(view.getTableName());
+			DBTable tab = db.getTable(view.getTableName());
 			String pkName = tab.getPrimaryKey();
 			TypeDefinition pkTypeDef = tab.getFieldDef(pkName);
-			QueryCondition queryFilter = null;
+			WhereClause queryFilter = null;
 			// save changed RecordImpl
 			String saveRequest = request.getParameter("save");
 			if (saveRequest != null) {
@@ -134,7 +134,7 @@ public class DatabaseServlet extends VelocityServlet {
 			// get Records
 			List recordsList = null;
 			recordsList = tab.getRecords(queryFilter, view.getOrderByColumn(), view.isAscending(), 
-				view.getFirstRowNumber(), view.getNumberOfRows());
+				view.getFirstRowNumber(), view.getRowsPerPage());
 			List typeDefinitions = tab.getFieldsList();
 			context.put("tablenames", tableNamesList);
 			context.put("table", tab.getName());
@@ -156,6 +156,9 @@ public class DatabaseServlet extends VelocityServlet {
 
 /*
  * $Log: DatabaseServlet.java,v $
+ * Revision 1.6  2005/02/13 20:27:14  phormanns
+ * Funktioniert bis auf Filter
+ *
  * Revision 1.5  2005/02/11 16:46:02  phormanns
  * MySQL geht wieder
  *

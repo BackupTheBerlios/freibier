@@ -1,4 +1,4 @@
-// $Id: Database.java,v 1.3 2005/01/28 17:13:25 phormanns Exp $
+// $Id: Database.java,v 1.4 2005/02/13 20:27:14 phormanns Exp $
 package de.jalin.freibier.database;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public interface Database {
 	 * @return Table
 	 * @throws SystemDatabaseException
 	 */
-	public abstract Table getTable(String name) throws SystemDatabaseException;
+	public abstract DBTable getTable(String name) throws SystemDatabaseException;
 
 	/**
 	 * Schliessen der Datenbank-Ressourcen.
@@ -31,6 +31,9 @@ public interface Database {
 }
 /* 
  *  $Log: Database.java,v $
+ *  Revision 1.4  2005/02/13 20:27:14  phormanns
+ *  Funktioniert bis auf Filter
+ *
  *  Revision 1.3  2005/01/28 17:13:25  phormanns
  *  Schnittstelle dokumentiert.
  *

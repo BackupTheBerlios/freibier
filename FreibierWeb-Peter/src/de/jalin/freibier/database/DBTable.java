@@ -1,7 +1,8 @@
-// $Id: Table.java,v 1.4 2005/01/29 20:21:59 phormanns Exp $
+// $Id: DBTable.java,v 1.1 2005/02/13 20:27:14 phormanns Exp $
 package de.jalin.freibier.database;
 
 import java.util.List;
+import com.crossdb.sql.WhereClause;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 
@@ -9,8 +10,10 @@ import de.jalin.freibier.database.exception.SystemDatabaseException;
  * Schnittstelle zu einer Datenbank-Tabelle.
  * @author peter
  */
-public interface Table {
+public interface DBTable {
     
+	int MAX_FETCH_SIZE = 2000;
+
 	/**
 	 * Anzahl von Datensaetzen lesen. Es werden numberOfRecords Datensätze ab (ausschliesslich)
 	 * previousRecord zurueckgeliefert, aufsteigende oder absteigende Reihenfolge.
@@ -28,7 +31,7 @@ public interface Table {
 	 * Diese Methode erlaubt, Anfragen mit bestimmten Konditionen anzugeben.
 	 * Diese Konditionen werden in eine QueryConditionImpl-Klasse verpackt.
 	 */
-	public abstract List getRecordsFromQuery(QueryCondition condition,
+	public abstract List getRecordsFromQuery(WhereClause condition,
 			String orderColumn, boolean ascending) throws DatabaseException;
 
 	/**
@@ -41,7 +44,7 @@ public interface Table {
 	 * null bzw. 0 sein, insbesondere gilt dies fuer: 
 	 * condition, orderColumn, numberOfRecords
 	 */
-	public abstract List getRecords(QueryCondition condition,
+	public abstract List getRecords(WhereClause condition,
 			String orderColumn, boolean ascending, int startRecordNr,
 			int numberOfRecords) throws DatabaseException;
 
@@ -87,8 +90,6 @@ public interface Table {
 
 	public abstract String getName();
 	
-	public abstract QueryCondition createQueryCondition(String column, int operator, Object value);
-
 	public abstract TypeDefinition getFieldDef(String fieldName) throws SystemDatabaseException ;
 
 	public abstract String getPrimaryKey();
@@ -96,7 +97,10 @@ public interface Table {
 	public abstract List getFieldsList();
 }
 /*
- *  $Log: Table.java,v $
+ *  $Log: DBTable.java,v $
+ *  Revision 1.1  2005/02/13 20:27:14  phormanns
+ *  Funktioniert bis auf Filter
+ *
  *  Revision 1.4  2005/01/29 20:21:59  phormanns
  *  RecordDefinition in TableImpl integriert
  *

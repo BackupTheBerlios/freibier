@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionImpl.java,v 1.3 2005/02/11 16:46:02 phormanns Exp $
+//$Id: TypeDefinitionImpl.java,v 1.4 2005/02/13 20:27:14 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -10,13 +10,13 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
+import com.crossdb.sql.Column;
 import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.impl.type.TypeDefinitionDate;
 import de.jalin.freibier.database.impl.type.TypeDefinitionDateTime;
 import de.jalin.freibier.database.impl.type.TypeDefinitionFloat;
-import de.jalin.freibier.database.impl.type.TypeDefinitionForeignKey;
 import de.jalin.freibier.database.impl.type.TypeDefinitionInteger;
 import de.jalin.freibier.database.impl.type.TypeDefinitionString;
 import de.jalin.freibier.database.impl.type.TypeDefinitionTime;
@@ -35,13 +35,16 @@ import de.jalin.freibier.database.impl.type.TypeDefinitionTime;
  * TypeDefinition.create() erzeugt.
  */
 abstract public class TypeDefinitionImpl implements TypeDefinition {
+	
 	protected static Log log = LogFactory.getLog(TypeDefinitionImpl.class);
 	protected static Map typesMap = null;
-	protected String name;
-	protected int type;
-	protected int length;
 	protected Object defaultValue = null;
+	protected String name = null;
+	protected int type = 0;
+	protected int length = 0;
+	
 	public Map properties = new HashMap();
+	
 	static {
 		typesMap = new HashMap();
 		typesMap.put(new Integer(Types.BIGINT), TypeDefinitionInteger.class);
@@ -69,35 +72,35 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 	 * @throws SystemDatabaseException
 	 *  
 	 */
-	public static TypeDefinitionImpl create(String name, int type, int length,
+	public static TypeDefinitionImpl create(Column col, 
 			ResourceBundle resource, DatabaseImpl db)
 			throws SystemDatabaseException {
-		//log.trace("create: "+name+", "+type);
 		TypeDefinitionImpl typeDef = null;
 		Map propsMap = null;
 		try {
 			if (resource != null) {
-				propsMap = TypeDefinitionImpl.parseProperties(resource, name);
+				propsMap = TypeDefinitionImpl.parseProperties(resource, col.getName());
 			} else {
 				propsMap = new HashMap();
 			}
 			if (propsMap.containsKey("length")) {
-				length = Integer.parseInt((String) propsMap.get("length"));
+				col.setSize(Integer.parseInt((String) propsMap.get("length")));
 			}
 			String foreignKeyTable = (String) propsMap.get("foreignkey.table");
-			typeDef = (TypeDefinitionImpl) ((Class) typesMap.get(new Integer(type)))
-					.newInstance();
-			if (foreignKeyTable != null) {
-				typeDef.setProperties(propsMap);
-				typeDef.setSQLType(type);
-				typeDef.setName(name);
-				typeDef.setLength(length);
-				typeDef = new TypeDefinitionForeignKey(typeDef, db);
-			}
+			typeDef = (TypeDefinitionImpl) 
+				((Class) typesMap.get(new Integer(col.getType()))).newInstance();
+			// TODO neue Foreign Key Implementierung 
+//			if (foreignKeyTable != null) {
+//				typeDef.setProperties(propsMap);
+//				typeDef.setSQLType(type);
+//				typeDef.setName(name);
+//				typeDef.setLength(length);
+//				typeDef = new TypeDefinitionForeignKey(typeDef, db);
+//			}
 			typeDef.setProperties(propsMap);
-			typeDef.setSQLType(type);
-			typeDef.setName(name);
-			typeDef.setLength(length);
+			typeDef.setSQLType(col.getType());
+			typeDef.setName(col.getName());
+			typeDef.setLength(col.getSize());
 		} catch (InstantiationException e) {
 			throw new SystemDatabaseException(
 					"Spezialisierung von TypeDefinition fehlt (1)", e, log);
@@ -105,18 +108,11 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 			throw new SystemDatabaseException(
 					"Spezialisierung von TypeDefinition fehlt (2)", e, log);
 		} catch (NullPointerException e) {
-			typeDef = new TypeDefinitionString();
-			typeDef.setProperties(propsMap);
-			typeDef.setSQLType(type);
-			typeDef.setName(name);
-			typeDef.setLength(length);
-//			throw new SystemDatabaseException("unbekannter Datentyp " + type,
-//					log);
+			throw new SystemDatabaseException("unbekannter Datentyp " + col.getType(),
+					log);
 		}
 		return typeDef;
 	}
-
-	protected TypeDefinitionImpl() {}
 
 	public String getName() {
 		return name;
@@ -125,28 +121,22 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 	public void setName(String name) {
 		this.name = name;
 	}
-
 	public int getLength() {
 		return length;
 	}
-
-	public void setLength(int length) {
-		this.length = length;
+	
+	public void setLength(int len)  {
+		this.length = len;
 	}
 
-	/**
-	 * gibt einen SQL-Typ zurück, wie er in java.sql.Types beschrieben ist. Dies
-	 * ist der Typ, mit dem der Wert in der eigentlichen Datenbank abgespeichert
-	 * ist.
-	 */
 	public int getSQLType() {
 		return type;
 	}
-
+	
 	public void setSQLType(int type) {
 		this.type = type;
 	}
-
+	
 	/**
 	 * Diese Operation liefert die Java-Klasse, die den eigentlichen Wert intern
 	 * verwaltet. Dies ist z.B. der Datentyp, der sich bei DataObject.getValue()
@@ -262,6 +252,9 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionImpl.java,v $
+ * Revision 1.4  2005/02/13 20:27:14  phormanns
+ * Funktioniert bis auf Filter
+ *
  * Revision 1.3  2005/02/11 16:46:02  phormanns
  * MySQL geht wieder
  *

@@ -1,4 +1,4 @@
-// $Id: Record.java,v 1.4 2005/01/29 20:21:59 phormanns Exp $
+// $Id: Record.java,v 1.5 2005/02/13 20:27:14 phormanns Exp $
 package de.jalin.freibier.database;
 
 import de.jalin.freibier.database.exception.DatabaseException;
@@ -34,12 +34,15 @@ public interface Record {
 	public abstract void setField(String name, String value)
 			throws DatabaseException;
 
-	public abstract Table getTable();
+	public abstract DBTable getTable();
 
 }
 
 /*
  *  $Log: Record.java,v $
+ *  Revision 1.5  2005/02/13 20:27:14  phormanns
+ *  Funktioniert bis auf Filter
+ *
  *  Revision 1.4  2005/01/29 20:21:59  phormanns
  *  RecordDefinition in TableImpl integriert
  *

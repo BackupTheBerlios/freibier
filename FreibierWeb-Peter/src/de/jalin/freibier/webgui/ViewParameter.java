@@ -1,4 +1,4 @@
-// $Id: ViewParameter.java,v 1.1 2004/12/31 17:13:11 phormanns Exp $
+// $Id: ViewParameter.java,v 1.2 2005/02/13 20:27:14 phormanns Exp $
 package de.jalin.freibier.webgui;
 
 
@@ -6,7 +6,7 @@ public class ViewParameter {
 
 	private String tableName;
 	private int firstRowNumber;
-	private int numberOfRows;
+	private int rowsPerPage;
 	private String editRecordKey;
 	private String orderByColumn;
 	private boolean ascending = true;
@@ -22,15 +22,15 @@ public class ViewParameter {
 
 	public void setFirstRowNumber(int firstRowNumber) {
 		this.firstRowNumber = firstRowNumber;
-		if (this.firstRowNumber < 0) this.firstRowNumber = 0;
+		if (this.firstRowNumber < 1) this.firstRowNumber = 1;
 	}
 
-	public int getNumberOfRows() {
-		return numberOfRows;
+	public int getRowsPerPage() {
+		return rowsPerPage;
 	}
 
-	public void setNumberOfRows(int numberOfRows) {
-		this.numberOfRows = numberOfRows;
+	public void setRowsPerPage(int rowPerPage) {
+		this.rowsPerPage = rowPerPage;
 	}
 
 	public String getOrderByColumn() {
@@ -57,17 +57,26 @@ public class ViewParameter {
 	public void updateFromRequest(String tableName, String orderByColumn, String page, String edit) {
 		if (tableName != null) {
 			setTableName(tableName);
-			setFirstRowNumber(0);
+			setFirstRowNumber(1);
 			setOrderByColumn(null);
 		}
 		if (orderByColumn != null) {
 			setOrderByColumn(orderByColumn);
 		}
-		if (page != null && page.equals("up")) {
-			setFirstRowNumber(getFirstRowNumber() - getNumberOfRows());
-		}
-		if (page != null && page.equals("down")) {
-			setFirstRowNumber(getFirstRowNumber() + getNumberOfRows());
+		if (ascending) {
+			if (page != null && page.equals("up")) {
+				setFirstRowNumber(getFirstRowNumber() - getRowsPerPage());
+			}
+			if (page != null && page.equals("down")) {
+				setFirstRowNumber(getFirstRowNumber() + getRowsPerPage());
+			}
+		} else {
+			if (page != null && page.equals("up")) {
+				setFirstRowNumber(getFirstRowNumber() + getRowsPerPage());
+			}
+			if (page != null && page.equals("down")) {
+				setFirstRowNumber(getFirstRowNumber() - getRowsPerPage());
+			}
 		}
 		editRecordKey = edit;
 		editMode = editRecordKey != null;
@@ -89,6 +98,9 @@ public class ViewParameter {
 
 /*
  * $Log: ViewParameter.java,v $
+ * Revision 1.2  2005/02/13 20:27:14  phormanns
+ * Funktioniert bis auf Filter
+ *
  * Revision 1.1  2004/12/31 17:13:11  phormanns
  * Erste öffentliche Version
  *

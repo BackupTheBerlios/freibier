@@ -1,4 +1,4 @@
-//$Id: RecordImpl.java,v 1.2 2005/01/29 20:21:59 phormanns Exp $
+//$Id: RecordImpl.java,v 1.3 2005/02/13 20:27:14 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -7,13 +7,12 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
+import com.crossdb.sql.Column;
+import de.jalin.freibier.database.DBTable;
 import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.Record;
-import de.jalin.freibier.database.Table;
-import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
-import de.jalin.freibier.database.impl.type.TypeDefinitionForeignKey;
 
 /**
  * @author tbayen
@@ -28,31 +27,18 @@ public class RecordImpl implements Record {
 	private static Log log = LogFactory.getLog(RecordImpl.class);
 	private static Perl5Util regex = new Perl5Util();
 	
-	private TableImpl tab;
+	private DBTableImpl tab;
 	private Map daten;
 
-	public RecordImpl(TableImpl tab, Map bean) {
+	public RecordImpl(DBTableImpl tab, Map bean) {
 		log.trace("RecordImpl Constructor(" + bean.keySet() + ")");
 		this.tab = tab;
 		this.daten = bean;
-		// Ein Foreign Key z.B. im Feld "kdnr" bedeutet, daß ein Schlüssel 
-		// "kdnr_foreign" angelegt ist, in dem der Wert aus der anderen Tabelle
-		// enthalten ist. Diese beiden müssen zusammengefasst werden in ein 
-		// Objekt:
 		Iterator i = tab.getFieldsList().iterator();
 		while (i.hasNext()) {
-			TypeDefinitionImpl typ = (TypeDefinitionImpl) i.next();
-			if (typ instanceof TypeDefinitionForeignKey) {
-				//log.debug("Foreign Key gefunden: " + key);
-				String keyname = typ.getName();
-				// Wenn schon ein Foreign Key übergeben wurde (z.B. von 
-				// getEmptyRecord()), brauche ich nichts mehr zu machen.
-				if(!(daten.get(keyname) instanceof ForeignKey)){
-					ForeignKey fk = new ForeignKey(daten.get(keyname), daten
-							.get(keyname + "_foreign"));
-					daten.put(keyname, fk);
-					daten.remove(keyname + "_foreign");
-				}
+			Column col = (Column) i.next();
+			if (col.isForeignKey()) {
+				// TODO Foreign Key Referenz
 			}
 		}
 	}
@@ -65,20 +51,20 @@ public class RecordImpl implements Record {
 		return getField(name).format();
 	}
 
-	public Printable getField(int col) throws DatabaseException {
-		TypeDefinition typdef = tab.getFieldDef(col);
-		return new DataObject(daten.get(typdef.getName()), typdef);
-	}
+//	public Printable getField(int col) throws DatabaseException {
+//		TypeDefinition typdef = tab.getFieldDef(col);
+//		return new DataObject(daten.get(typdef.getName()), typdef);
+//	}
 
 	public void setField(String name, DataObject value)
 			throws DatabaseException {
 		daten.put(name, value.getValue());
 	}
 
-	public void setField(int col, DataObject value) throws DatabaseException {
-		TypeDefinition typdef = tab.getFieldDef(col);
-		daten.put(typdef.getName(), value.getValue());
-	}
+//	public void setField(int col, DataObject value) throws DatabaseException {
+//		TypeDefinition typdef = tab.getFieldDef(col);
+//		daten.put(typdef.getName(), value.getValue());
+//	}
 
 	/**
 	 * Mit dieser Methode kann man direkt einen String in ein Feld setzen, ohne
@@ -92,17 +78,20 @@ public class RecordImpl implements Record {
 		daten.put(name, tab.getFieldDef(name).parse(value));
 	}
 
-	public void setField(int col, String value) throws DatabaseException {
-		TypeDefinition typdef = tab.getFieldDef(col);
-		daten.put(typdef.getName(), typdef.parse(value));
-	}
+//	public void setField(int col, String value) throws DatabaseException {
+//		TypeDefinition typdef = tab.getFieldDef(col);
+//		daten.put(typdef.getName(), typdef.parse(value));
+//	}
 	
-	public Table getTable() {
+	public DBTable getTable() {
 		return tab;
 	}
 }
 /*
  * $Log: RecordImpl.java,v $
+ * Revision 1.3  2005/02/13 20:27:14  phormanns
+ * Funktioniert bis auf Filter
+ *
  * Revision 1.2  2005/01/29 20:21:59  phormanns
  * RecordDefinition in TableImpl integriert
  *
