@@ -1,18 +1,23 @@
-// $Id: Table.java,v 1.2 2004/12/31 19:37:26 phormanns Exp $
+// $Id: Table.java,v 1.3 2005/01/28 17:13:25 phormanns Exp $
 package de.jalin.freibier.database;
 
 import java.util.List;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 
+/**
+ * Schnittstelle zu einer Datenbank-Tabelle.
+ * @author peter
+ */
 public interface Table {
+    
 	/**
-	 * Anzahl von Datensätzen lesen. Es werden numberOfRecords Datensätze ab (ausschließlich)
-	 * previousRecord zurückgeliefert, aufsteigende oder absteigende Reihenfolge.
+	 * Anzahl von Datensaetzen lesen. Es werden numberOfRecords Datensätze ab (ausschliesslich)
+	 * previousRecord zurueckgeliefert, aufsteigende oder absteigende Reihenfolge.
 	 * @param numberOfRecords
 	 * @param ascending
 	 * @param previousRecord
-	 * @return
+	 * @return List of Records
 	 * @throws DatabaseException
 	 */
 	public abstract List getMultipleRecords(int startRecordNr,
@@ -28,14 +33,12 @@ public interface Table {
 
 	/**
 	 * Dies ist die eierlegende Wollmilchsau-Query-Methode.
-	 * 
 	 * Mir ist noch nicht ganz klar, ob es besser ist, die anderen 
 	 * query-Methoden alle hierauf abzubilden, um alles einheitlich zu
 	 * haben (ist sauberer), oder diese zu lassen (ist vielleicht ein bisschen 
 	 * performanter).
-	 * 
-	 * Wenn Bestimmte PArameter nicht angegeben werden sollen, können diese
-	 * null bzw. 0 sein, insbesondere gilt dies für: 
+	 * Wenn bestimmte Parameter nicht angegeben werden sollen, koennen diese
+	 * null bzw. 0 sein, insbesondere gilt dies fuer: 
 	 * condition, orderColumn, numberOfRecords
 	 */
 	public abstract List getRecords(QueryCondition condition,
@@ -43,38 +46,16 @@ public interface Table {
 			int numberOfRecords) throws DatabaseException;
 
 	/**
-	 * Diese Funktion erlaubt, Datensätze über eine fortlaufende Nummer
-	 * anzusprechen. Der erste Datensatz hat die Nummer 1, der letzte die
-	 * Nummer getNumberOfRecords(). die Sortierung kann angegeben werden,
-	 * ansonsten wird nach dem Primärschlüssel sortiert.
-	 * 
-	 * @param recordNr
-	 * @param orderColumn
-	 * @return
+	 * Liefert die Anzahl der Datensaetze der Tabelle.
+	 * @return Anzahl
 	 * @throws DatabaseException
 	 */
-//	public abstract RecordImpl getRecordByNumber(int recordNr)
-//			throws DatabaseException;
-//
-//	public abstract RecordImpl getRecordByNumber(int recordNr, String orderColumn,
-//			int direction) throws DatabaseException;
-//
 	public abstract int getNumberOfRecords() throws DatabaseException;
 
 	/**
-	 * Lies einen Datensatz mit dem angegebenen Wert in der angegebenen Spalte.
-	 * @param columnName
-	 * @param value
-	 * @return
-	 * @throws DatabaseException
-	 */
-//	public abstract RecordImpl getRecordByValue(String columnName, String value)
-//			throws DatabaseException;
-
-	/**
-	 * Lies den Datensatz mit dem angegebenen Primärschlüssel.
+	 * Lies den Datensatz mit dem angegebenen Primaerschluessel.
 	 * @param pkValue
-	 * @return
+	 * @return Record
 	 * @throws DatabaseException
 	 */
 	public abstract Record getRecordByPrimaryKey(Object pkValue)
@@ -82,31 +63,27 @@ public interface Table {
 
 	/**
 	 * Diese Methode ergibt eine Liste von DataObjects, die alle Werte in
-	 * den angegebenen Spalten enthält.
-	 * 
-	 * Die Werte sind nach dem Wert der Primärspalte sortiert, so daß eine
+	 * den angegebenen Spalten enthaelt.
+	 * Die Werte sind nach dem Wert der Primaerspalte sortiert, so dass eine
 	 * eindeutige und wiederholbare Reihenfolge vorliegt.
-	 * 
-	 * Wird als Limit 0 angegeben, werden alle Einträge ausgegeben.
+	 * Wird als Limit 0 angegeben, werden alle Eintraege ausgegeben.
 	 */
 	public abstract List getGivenColumns(List colNames, int limit)
 			throws DatabaseException;
 
 	/**
-	 * Speichert den Datensatz. INSERT, falls der Primärschlüssel
+	 * Speichert den Datensatz. INSERT, falls der Primaerschluessel
 	 * undefiniert ist, sonst UPDATE.
 	 * @param data
 	 */
 	public abstract void setRecord(Record data) throws DatabaseException;
 
 	/**
-	 * Löscht den Datensatz.
+	 * Loescht den Datensatz.
 	 * @param data
 	 * @throws DatabaseException
 	 */
 	public abstract void deleteRecord(Record data) throws DatabaseException;
-
-//	public abstract RecordImpl getEmptyRecord();
 
 	public abstract String getName();
 	
@@ -120,6 +97,9 @@ public interface Table {
 }
 /*
  *  $Log: Table.java,v $
+ *  Revision 1.3  2005/01/28 17:13:25  phormanns
+ *  Schnittstelle dokumentiert.
+ *
  *  Revision 1.2  2004/12/31 19:37:26  phormanns
  *  Database Schnittstelle herausgearbeitet
  *
