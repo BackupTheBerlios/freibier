@@ -1,6 +1,7 @@
-// $Id: DBTableTest.java,v 1.4 2005/03/01 21:56:32 phormanns Exp $
+// $Id: DBTableTest.java,v 1.5 2005/03/03 11:53:46 phormanns Exp $
 package de.jalin.freibier.database.test;
 
+import java.sql.Types;
 import java.util.List;
 import com.crossdb.sql.IWhereClause;
 import com.crossdb.sql.WhereClause;
@@ -9,6 +10,7 @@ import de.jalin.freibier.database.DBTable;
 import de.jalin.freibier.database.Database;
 import de.jalin.freibier.database.DatabaseFactory;
 import de.jalin.freibier.database.Record;
+import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
 
 public class DBTableTest extends TestCase {
@@ -166,28 +168,69 @@ public class DBTableTest extends TestCase {
 	}
 
 	public void testDeleteRecord() {
-	//TODO Implement deleteRecord().
+		try {
+			DBTable tab = db.getTable("TABLE1");
+			Record rec = tab.getRecordByPrimaryKey(new Integer(255));
+			tab.deleteRecord(rec);
+			int numberOfRecords = tab.getNumberOfRecords(null);
+			assertEquals(500, numberOfRecords);
+			try {
+				tab.deleteRecord(rec);
+			} catch (DatabaseException e1) {
+				assertEquals("Datensatz fuer Delete nicht vorhanden", e1.getMessage());
+			}
+			numberOfRecords = tab.getNumberOfRecords(null);
+			assertEquals(500, numberOfRecords);
+		} catch (DatabaseException e) {
+			fail(e.getMessage());
+		}
 	}
 
 	public void testGetName() {
-	//TODO Implement getName().
+		try {
+			DBTable tab = db.getTable("TABLE1");
+			assertEquals("TABLE1", tab.getName());
+		} catch (DatabaseException e) {
+			fail(e.getMessage());
+		}
 	}
 
 	public void testGetFieldDef() {
-	//TODO Implement getFieldDef().
+		try {
+			DBTable tab = db.getTable("TABLE1");
+			TypeDefinition def = tab.getFieldDef("ID");
+			assertEquals("ID", def.getName());
+			assertEquals(Types.INTEGER, def.getSQLType());
+		} catch (DatabaseException e) {
+			fail(e.getMessage());
+		}
 	}
 
 	public void testGetPrimaryKey() {
-	//TODO Implement getPrimaryKey().
+		try {
+			DBTable tab = db.getTable("TABLE1");
+			assertEquals("ID", tab.getPrimaryKey());
+		} catch (DatabaseException e) {
+			fail(e.getMessage());
+		}
 	}
 
 	public void testGetFieldsList() {
-	//TODO Implement getFieldsList().
+		try {
+			DBTable tab = db.getTable("TABLE1");
+			List fieldsList = tab.getFieldsList();
+			assertEquals(4, fieldsList.size());
+		} catch (DatabaseException e) {
+			fail(e.getMessage());
+		}
 	}
 }
 
 /*
  *  $Log: DBTableTest.java,v $
+ *  Revision 1.5  2005/03/03 11:53:46  phormanns
+ *  deleteRecord implementiert
+ *
  *  Revision 1.4  2005/03/01 21:56:32  phormanns
  *  Long immer als Value-Objekt zu Number-Typen
  *  setRecord macht Insert, wenn PK = Default-Value

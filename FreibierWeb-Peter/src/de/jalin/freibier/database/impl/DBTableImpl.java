@@ -1,4 +1,4 @@
-//$Id: DBTableImpl.java,v 1.6 2005/03/01 21:56:32 phormanns Exp $
+//$Id: DBTableImpl.java,v 1.7 2005/03/03 11:53:46 phormanns Exp $
 package de.jalin.freibier.database.impl;
 
 import java.sql.SQLException;
@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.crossdb.sql.Column;
 import com.crossdb.sql.CrossdbResultSet;
+import com.crossdb.sql.DeleteQuery;
 import com.crossdb.sql.IWhereClause;
 import com.crossdb.sql.InsertQuery;
 import com.crossdb.sql.SelectQuery;
@@ -144,7 +145,11 @@ public class DBTableImpl implements DBTable {
 		clause.addCondition(new WhereCondition(this.getPrimaryKey(),
 				WhereCondition.EQUAL_TO, pkValue));
 		List l = this.getRecords(clause, null, true, 1, 1);
-		return (Record) l.get(0);
+		try {
+			return (Record) l.get(0);
+		} catch (IndexOutOfBoundsException e) {
+		    throw new SystemDatabaseException("Datensatz fuer Delete nicht vorhanden", e, log);
+		}
 	}
 	
 	public Record getEmptyRecord() throws DatabaseException {
@@ -202,7 +207,14 @@ public class DBTableImpl implements DBTable {
 	}
 
 	public void deleteRecord(Record data) throws DatabaseException {
-	// TODO Auto-generated method stub
+		DeleteQuery deleteQuery = db.getSQLFactory().getDeleteQuery();
+		WhereCondition cond = new WhereCondition(
+				this.getPrimaryKey(),
+				WhereCondition.EQUAL_TO,
+				data.getPrintable(this.getPrimaryKey()).getValue());
+		deleteQuery.setTable(this.getName());
+		deleteQuery.addWhereCondition(cond);
+		db.executeDeleteQuery(deleteQuery);
 	}
 
 	public String getName() {
@@ -254,6 +266,9 @@ public class DBTableImpl implements DBTable {
 }
 /*
  * $Log: DBTableImpl.java,v $
+ * Revision 1.7  2005/03/03 11:53:46  phormanns
+ * deleteRecord implementiert
+ *
  * Revision 1.6  2005/03/01 21:56:32  phormanns
  * Long immer als Value-Objekt zu Number-Typen
  * setRecord macht Insert, wenn PK = Default-Value

@@ -1,4 +1,4 @@
-//$Id: DatabaseImpl.java,v 1.11 2005/03/01 21:56:32 phormanns Exp $
+//$Id: DatabaseImpl.java,v 1.12 2005/03/03 11:53:46 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import com.crossdb.sql.Column;
 import com.crossdb.sql.CreateTableQuery;
 import com.crossdb.sql.CrossdbResultSet;
+import com.crossdb.sql.DeleteQuery;
 import com.crossdb.sql.InsertQuery;
 import com.crossdb.sql.SQLFactory;
 import com.crossdb.sql.SelectQuery;
@@ -168,7 +169,7 @@ public class DatabaseImpl implements Database {
     }
 
     public void executeInsertQuery(InsertQuery query)
-    throws SystemDatabaseException {
+    		throws SystemDatabaseException {
 		int retValue = 0;
 		try {
 		    retValue = query.execute(conn);
@@ -176,6 +177,20 @@ public class DatabaseImpl implements Database {
 		    throw new SystemDatabaseException("SQL Fehler", e, log);
 		}
     }
+
+	public void executeDeleteQuery(DeleteQuery deleteQuery)
+			throws SystemDatabaseException {
+        int updateCount = 0;
+		try {
+			updateCount = deleteQuery.execute(conn);
+            if (updateCount != 1) {
+                throw new SystemDatabaseException(
+                        "Datensatz fuer Delete nicht vorhanden", log);
+            }
+		} catch (SQLException e) {
+		    throw new SystemDatabaseException("SQL Fehler", e, log);
+		}
+ 	}
 
     private void readTablesFromCatalog() throws SystemDatabaseException {
         try {
@@ -272,6 +287,9 @@ public class DatabaseImpl implements Database {
 }
 /*
  * $Log: DatabaseImpl.java,v $
+ * Revision 1.12  2005/03/03 11:53:46  phormanns
+ * deleteRecord implementiert
+ *
  * Revision 1.11  2005/03/01 21:56:32  phormanns
  * Long immer als Value-Objekt zu Number-Typen
  * setRecord macht Insert, wenn PK = Default-Value

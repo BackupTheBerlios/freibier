@@ -1,8 +1,9 @@
-// $Id: DatabaseTest.java,v 1.1 2005/02/24 13:52:12 phormanns Exp $
+// $Id: DatabaseTest.java,v 1.2 2005/03/03 11:53:46 phormanns Exp $
 package de.jalin.freibier.database.test;
 
 import java.util.List;
 import junit.framework.TestCase;
+import de.jalin.freibier.database.DBTable;
 import de.jalin.freibier.database.Database;
 import de.jalin.freibier.database.DatabaseFactory;
 import de.jalin.freibier.database.exception.DatabaseException;
@@ -54,10 +55,20 @@ public class DatabaseTest extends TestCase {
 		}
 	}
 
-	public void testGetTable() {}
+	public void testGetTable() {
+		try {
+			DBTable table = db.getTable(("TABLE1"));
+			assertEquals("TABLE1", table.getName());
+		} catch (DatabaseException e) {
+			fail(e.getMessage());
+		}
+	}
 }
 /*
  *  $Log: DatabaseTest.java,v $
+ *  Revision 1.2  2005/03/03 11:53:46  phormanns
+ *  deleteRecord implementiert
+ *
  *  Revision 1.1  2005/02/24 13:52:12  phormanns
  *  Mit Tests begonnen
  *
