@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     17.12.2004 16:59:18                                                        
+
+     project      Freibier2004
+     description  Buildskript fuer Webapplikation
+                   
+     peter                                                                
+     ====================================================================== -->
+<project name="Freibier 2004" default="default">
+
+	<path id="path-jars">
+		<pathelement location="lib/mysql-3.0.9.jar"/>
+		<pathelement location="lib/junit-3.8.1.jar"/>
+		<pathelement location="lib/log4j-1.2.jar"/>
+		<pathelement location="lib/commons-logging-1.0.4.jar"/>
+		<pathelement location="lib/commons-beanutils-1.6.1.jar"/>
+		<pathelement location="lib/oro-2.0.8.jar"/>
+		<pathelement location="lib/velocity-1.3.1.jar"/>
+	</path>
+	
+	<target name="default" depends="compile" description="Create WAR File">
+      	<mkdir dir="dist"/>  
+		<war warfile="dist/dba.war" basedir="conf" includes="*.html" webxml="conf/web.xml">
+			<webinf dir="conf">
+				<include name="velocity.properties"/>
+			</webinf>
+			<classes dir="build"/>
+			<classes dir="templates"/>
+			<lib dir="lib">
+				<include name="mysql-3.0.9.jar"/>
+				<include name="junit-3.8.1.jar"/>
+				<include name="log4j-1.2.jar"/>
+				<include name="commons-logging-1.0.4.jar"/>
+				<include name="commons-beanutils-1.6.1.jar"/>
+				<include name="oro-2.0.8.jar"/>
+				<include name="velocity-1.3.1.jar"/>
+			</lib>
+		</war>
+    </target>
+
+    <target name="compile">
+    	<mkdir dir="build"/>
+    	<javac srcdir="src" destdir="build" debug="on">
+    		<classpath>
+    			<path refid="path-jars"></path>
+    			<pathelement location="lib/servlet-2.3.jar"/>
+    		</classpath>
+    	</javac>
+    </target>
+
+	<target name="clean">
+		<delete dir="build"/>
+		<delete dir="dist"/>
+    </target>
+	
+</project>
+

@@ -1,0 +1,62 @@
+<html>
+<head><title>Sample velocity page</title></head>
+<body bgcolor="#ffffff">
+#macro(format $row $column)$row.getFormatted($column)#end
+#macro(primarykey $row)#format($row $row.getRecordDefinition().getPrimaryKey())#end
+<table cellspacing="0" cellpadding="5" width="100%">
+    <tr>
+    #foreach ($name in $tablenames)
+        <td bgcolor="#ee00ee">
+        	<a href="?tab=$name">$name</a>
+        </td>
+    #end
+    </tr>
+</table>
+<p>
+	#if( $error ) <em>$error</em>
+	#end
+	<a href="?page=up">&lt;--</a>&nbsp;<a href="?page=down">--&gt;</a>
+</p>
+<table cellspacing="2" cellpadding="5" width="100%">
+    <tr>
+    	<form action="?" method="post">
+	        <th bgcolor="#00eeee">
+	        	<input type="hidden" name="filter" value="set" />
+	        	<br />
+	        	<input type="submit" value="Filter" />
+	        </th>
+		    #foreach ($type in $types)
+	        <th bgcolor="#00eeee">
+	            <a href="?order=${type.name}">${type.name}</a><br />
+	            #set( $pattern = ${filter.getFilterPattern($table,${type.name})} )
+	            <input name="ft_${type.name}" type="text" value="$pattern"/>
+	        </th>
+	    	#end
+	    </form>
+    </tr>
+    #foreach ($row in $data)
+    <tr>
+    #set( $key = $row.getFormatted($row.getRecordDefinition().getPrimaryKey()) )
+    #if( $editkey == $key )
+    	<form action="?" method="post">
+	        <td bgcolor="#eeeeee">
+	        	<input type="submit" value="Save" />
+	        	<input type="hidden" name="save" value="#primarykey($row)" />
+	        </td>
+	    	#foreach ($type in $types)
+	        <td bgcolor="#eeeeee">
+	        	<input type="text" name="ed_$type.name" value="#format($row $type.name)" />
+	        </td>
+	        #end
+	    </form>
+    #else
+        <td bgcolor="#eeeeee"><a href="?edit=#primarykey($row)">Edit</a></td>
+    	#foreach ($type in $types)
+        <td bgcolor="#eeeeee">#format($row $type.name)</td>
+        #end
+    #end
+    </tr>
+    #end
+</body>
+</table>
+</html>

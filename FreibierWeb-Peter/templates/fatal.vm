@@ -1,0 +1,20 @@
+<html>
+<head><title>Sample velocity page</title></head>
+<body bgcolor="#ffffff">
+#macro(format $row $column)$row.getFormatted($column)#end
+#macro(primarykey $row)#format($row $row.getRecordDefinition().getPrimaryKey())#end
+<table cellspacing="0" cellpadding="5" width="100%">
+    <tr>
+    #foreach ($name in $tablenames)
+        <td bgcolor="#ee00ee">
+        	<a href="?tab=$name">$name</a>
+        </td>
+    #end
+    </tr>
+</table>
+<p>
+	#if( $error ) <em>$error</em>
+	#end
+</p>
+</body>
+</html>
