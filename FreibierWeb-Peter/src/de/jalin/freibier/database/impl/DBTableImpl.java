@@ -1,4 +1,4 @@
-//$Id: DBTableImpl.java,v 1.9 2005/03/03 22:32:45 phormanns Exp $
+//$Id: DBTableImpl.java,v 1.10 2005/03/22 20:58:27 phormanns Exp $
 package de.jalin.freibier.database.impl;
 
 import java.sql.SQLException;
@@ -82,11 +82,11 @@ public class DBTableImpl implements DBTable {
 			query.addOrderBy(orderColumn);
 		}
 		return executeSelectQuery(ascending, startRecordNr, 
-				numberOfRecords, query, columnNames);
+				numberOfRecords, query, tab.getColumns());
 	}
 
 	private List executeSelectQuery(boolean ascending, int startRecordNr,
-			int numberOfRecords, SelectQuery query, List columnNames) throws DatabaseException {
+			int numberOfRecords, SelectQuery query, List columns) throws DatabaseException {
 		List resList = new ArrayList();
 		CrossdbResultSet res = db.executeSelectQuery(query);
 		try {
@@ -97,15 +97,20 @@ public class DBTableImpl implements DBTable {
 			while (count < numberOfRecords) {
 				if (hasMore) {
 					recHash = new HashMap();
-					Iterator readColumnsIterator = columnNames.iterator();
+					Iterator readColumnsIterator = columns.iterator();
 					Object obj = null;
-					ValueObject valueObject = null;
+					// ValueObject valueObject = null;
 					String readColName = null;
+					Column col = null;
 					while (readColumnsIterator.hasNext()) {
-						readColName = (String) readColumnsIterator.next();
+						col = (Column) readColumnsIterator.next();
+						readColName = col.getName();
 						obj = res.getObject(readColName);
 						if (obj instanceof Number) {
 							obj = new Long(((Number) obj).longValue());
+						}
+						if (col.isForeignKey()) {
+							obj = new ForeignKey(new ValueObject(obj, (TypeDefinition) columnTypeDefinitions.get(readColName)), null);
 						}
 						recHash.put(readColName, obj);
 					}
@@ -181,12 +186,13 @@ public class DBTableImpl implements DBTable {
 		query.addTable(tab.getName());
 		Iterator queryColumnsIterator = colNames.iterator();
 		String queryCol = null;
+		List columns = new ArrayList();
 		while (queryColumnsIterator.hasNext()) {
 			queryCol = (String) queryColumnsIterator.next();
 			query.addColumn(queryCol);
+			columns.add(tab.getColumn(queryCol));
 		}
-		return executeSelectQuery(true, 1, 
-			limit, query, colNames);
+		return executeSelectQuery(true, 1, limit, query, columns);
 	}
 
 	public void setRecord(Record data) throws DatabaseException {
@@ -289,6 +295,9 @@ public class DBTableImpl implements DBTable {
 }
 /*
  * $Log: DBTableImpl.java,v $
+ * Revision 1.10  2005/03/22 20:58:27  phormanns
+ * ForeignKey Objekt wird beim DB-Select angelegt, falls noetig
+ *
  * Revision 1.9  2005/03/03 22:32:45  phormanns
  * Arbeit an ForeignKeys
  *

@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionForeignKey.java,v 1.11 2005/03/21 21:41:11 tbayen Exp $
+//$Id: TypeDefinitionForeignKey.java,v 1.12 2005/03/22 20:58:27 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -12,6 +12,7 @@ import de.jalin.freibier.database.Database;
 import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
+import de.jalin.freibier.database.exception.SystemDatabaseException;
 import de.jalin.freibier.database.impl.ForeignKey;
 import de.jalin.freibier.database.impl.TypeDefinitionImpl;
 import de.jalin.freibier.database.impl.ValueObject;
@@ -77,17 +78,33 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 
 	public void addColumn(InsertQuery query, Printable printable) throws DatabaseException {
 		// TODO geht nur fuer ganzzahlige Fremdschluessel
-		query.addColumn(printable.getName(), 
-				((Long) ((Printable)((ForeignKey) printable.getValue()).getKey()).getValue()).intValue());
+		Object fkObj = printable.getValue();
+		if (fkObj instanceof ForeignKey) {
+			ForeignKey fk = (ForeignKey) printable.getValue();
+			Printable valObj = (Printable) fk.getKey();
+			query.addColumn(printable.getName(), ((Long) valObj.getValue()).intValue());
+		} else {
+			throw new SystemDatabaseException("ForeignKey Objekt erwartet.", log);
+		}
 	}
 
-	public void addColumn(UpdateQuery query, Printable printable) {
-		indexType.addColumn(query, printable);
-		// query.addColumn(printable.getName(), ((Long) printable.getValue()).intValue());
+	public void addColumn(UpdateQuery query, Printable printable) throws DatabaseException {
+		// TODO geht nur fuer ganzzahlige Fremdschluessel
+		Object fkObj = printable.getValue();
+		if (fkObj instanceof ForeignKey) {
+			ForeignKey fk = (ForeignKey) printable.getValue();
+			Printable valObj = (Printable) fk.getKey();
+			query.addColumn(printable.getName(), ((Long) valObj.getValue()).intValue());
+		} else {
+			throw new SystemDatabaseException("ForeignKey Objekt erwartet.", log);
+		}
 	}
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.12  2005/03/22 20:58:27  phormanns
+ * ForeignKey Objekt wird beim DB-Select angelegt, falls noetig
+ *
  * Revision 1.11  2005/03/21 21:41:11  tbayen
  * Probleme mit Fremdschluessel gefixt
  *

@@ -1,4 +1,4 @@
-// $Id: TypeDefinition.java,v 1.8 2005/03/21 21:41:11 tbayen Exp $
+// $Id: TypeDefinition.java,v 1.9 2005/03/22 20:58:27 phormanns Exp $
 package de.jalin.freibier.database;
 
 import com.crossdb.sql.InsertQuery;
@@ -111,10 +111,13 @@ public interface TypeDefinition {
 	public abstract void addColumn(InsertQuery query, Printable printable) 
 		throws DatabaseException;
 
-	public abstract void addColumn(UpdateQuery query, Printable printable);
+	public abstract void addColumn(UpdateQuery query, Printable printable) throws DatabaseException;
 }
 /*
  *  $Log: TypeDefinition.java,v $
+ *  Revision 1.9  2005/03/22 20:58:27  phormanns
+ *  ForeignKey Objekt wird beim DB-Select angelegt, falls noetig
+ *
  *  Revision 1.8  2005/03/21 21:41:11  tbayen
  *  Probleme mit Fremdschluessel gefixt
  *
