@@ -1,4 +1,4 @@
-// $Id: DBTableTest.java,v 1.7 2005/03/03 22:32:45 phormanns Exp $
+// $Id: DBTableTest.java,v 1.8 2005/03/21 21:41:11 tbayen Exp $
 package de.jalin.freibier.database.test;
 
 import java.sql.Types;
@@ -178,7 +178,9 @@ public class DBTableTest extends TestCase {
 				List possibleValues = foreignKeyDef.getPossibleValues();
 				Record value0 = (Record) possibleValues.get(0);
 				assertEquals("rot", value0.printText(foreignKeyDef.getReferenceType().getName()));
-				rec.setField("ID_COLOR", value0.printText(foreignKeyDef.getIndexType().getName()));
+				String idColor = value0.printText(foreignKeyDef.getIndexType().getName());
+				assertEquals("0", idColor);
+				rec.setField("ID_COLOR", idColor);
 			} else {
 				fail("Spalte ist Foreign Key!");
 			}
@@ -254,6 +256,9 @@ public class DBTableTest extends TestCase {
 
 /*
  *  $Log: DBTableTest.java,v $
+ *  Revision 1.8  2005/03/21 21:41:11  tbayen
+ *  Probleme mit Fremdschluessel gefixt
+ *
  *  Revision 1.7  2005/03/03 22:32:45  phormanns
  *  Arbeit an ForeignKeys
  *

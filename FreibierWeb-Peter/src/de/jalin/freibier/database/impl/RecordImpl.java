@@ -1,4 +1,4 @@
-//$Id: RecordImpl.java,v 1.7 2005/03/03 22:32:45 phormanns Exp $
+//$Id: RecordImpl.java,v 1.8 2005/03/21 21:41:11 tbayen Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -38,7 +38,8 @@ public class RecordImpl implements Record {
 		String colName = null;
 		while (colIterator.hasNext()) {
 			colName = (String) colIterator.next();
-			this.daten.put(colName, new ValueObject(bean.get(colName), tab.getFieldDef(colName)));
+			this.daten.put(colName, 
+					new ValueObject(bean.get(colName), tab.getFieldDef(colName)));
 		}
 		// TODO Foreign Key Referenz
 		//		Iterator i = tab.getFieldsList().iterator();
@@ -101,6 +102,9 @@ public class RecordImpl implements Record {
 }
 /*
  * $Log: RecordImpl.java,v $
+ * Revision 1.8  2005/03/21 21:41:11  tbayen
+ * Probleme mit Fremdschluessel gefixt
+ *
  * Revision 1.7  2005/03/03 22:32:45  phormanns
  * Arbeit an ForeignKeys
  *

@@ -1,4 +1,4 @@
-// $Id: TypeDefinition.java,v 1.7 2005/03/03 22:32:45 phormanns Exp $
+// $Id: TypeDefinition.java,v 1.8 2005/03/21 21:41:11 tbayen Exp $
 package de.jalin.freibier.database;
 
 import com.crossdb.sql.InsertQuery;
@@ -108,12 +108,16 @@ public interface TypeDefinition {
 	 */
 	public abstract boolean validatePart(String s);
 
-	public abstract void addColumn(InsertQuery query, Printable printable);
+	public abstract void addColumn(InsertQuery query, Printable printable) 
+		throws DatabaseException;
 
 	public abstract void addColumn(UpdateQuery query, Printable printable);
 }
 /*
  *  $Log: TypeDefinition.java,v $
+ *  Revision 1.8  2005/03/21 21:41:11  tbayen
+ *  Probleme mit Fremdschluessel gefixt
+ *
  *  Revision 1.7  2005/03/03 22:32:45  phormanns
  *  Arbeit an ForeignKeys
  *

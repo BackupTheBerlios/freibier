@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionForeignKey.java,v 1.10 2005/03/03 22:32:45 phormanns Exp $
+//$Id: TypeDefinitionForeignKey.java,v 1.11 2005/03/21 21:41:11 tbayen Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -75,16 +75,22 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 		return db.getTable(foreignTable).getGivenColumns(list, 10);
 	}
 
-	public void addColumn(InsertQuery query, Printable printable) {
-		query.addColumn(printable.getName(), ((Long) printable.getValue()).intValue());
+	public void addColumn(InsertQuery query, Printable printable) throws DatabaseException {
+		// TODO geht nur fuer ganzzahlige Fremdschluessel
+		query.addColumn(printable.getName(), 
+				((Long) ((Printable)((ForeignKey) printable.getValue()).getKey()).getValue()).intValue());
 	}
 
 	public void addColumn(UpdateQuery query, Printable printable) {
-		query.addColumn(printable.getName(), ((Long) printable.getValue()).intValue());
+		indexType.addColumn(query, printable);
+		// query.addColumn(printable.getName(), ((Long) printable.getValue()).intValue());
 	}
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.11  2005/03/21 21:41:11  tbayen
+ * Probleme mit Fremdschluessel gefixt
+ *
  * Revision 1.10  2005/03/03 22:32:45  phormanns
  * Arbeit an ForeignKeys
  *
