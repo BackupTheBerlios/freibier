@@ -10,6 +10,7 @@
 package com.crossdb.sql;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -267,7 +268,7 @@ public abstract class DefaultSelectQuery implements SelectQuery {
     }
 
     public CrossdbResultSet execute(Connection conn) throws SQLException{
-		Statement stmt = conn.createStatement();
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		CrossdbResultSet ret = execute(stmt);
 		// Can't close the statement here, because that also closes the Resultset!  ouch
         //stmt.close();

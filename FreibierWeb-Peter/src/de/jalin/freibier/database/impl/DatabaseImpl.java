@@ -1,4 +1,4 @@
-//$Id: DatabaseImpl.java,v 1.8 2005/02/21 22:55:25 phormanns Exp $
+//$Id: DatabaseImpl.java,v 1.9 2005/02/24 13:52:12 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -45,25 +45,32 @@ public class DatabaseImpl implements Database {
     private String propertyPath = "";
     private String sqlFactoryClass = null;
     private String jdbcDriverClass = null;
-    private String dbUser = null;
     private String jdbcConnectUrl = null;
+    private String dbName = null;
+    private String dbUser = null;
     private String dbPassword = null;
     private List tableNamesList = null;
     private Map tablesMap = null;
 
     public DatabaseImpl(String sqlFactoryClass, String jdbcDriverClass,
-            String jdbcConnectUrl, String dbUser, String dbPassword)
+            String jdbcConnectUrl, 
+			String dbName, String dbUser, String dbPassword)
             throws DatabaseException {
         log.trace("Konstruktor");
         this.sqlFactoryClass = sqlFactoryClass;
         this.jdbcDriverClass = jdbcDriverClass;
         this.jdbcConnectUrl = jdbcConnectUrl;
+        this.dbName = dbName;
         this.dbUser = dbUser;
         this.dbPassword = dbPassword;
         this.tablesMap = new HashMap();
         openConnection();
         tableNamesList = new ArrayList();
         readTablesFromCatalog();
+    }
+    
+    public String getName() {
+    	return dbName;
     }
     
     public void createTestData() throws SystemDatabaseException {
@@ -111,7 +118,7 @@ public class DatabaseImpl implements Database {
         return tableNamesList;
     }
 
-    public DBTable getTable(String name) throws SystemDatabaseException {
+    public DBTable getTable(String name) throws DatabaseException {
         DBTableImpl tab = (DBTableImpl) tablesMap.get(name);
         if (tab == null) {
             tab = initTableFromCatalog(name);
@@ -172,20 +179,23 @@ public class DatabaseImpl implements Database {
     }
 
     private DBTableImpl initTableFromCatalog(String name)
-            throws SystemDatabaseException {
+            throws DatabaseException {
         DBTableImpl dbtab = new DBTableImpl(this, name);
         try {
             Table tab = new Table(name);
-            dbtab.setTable(tab);
             ResultSet columns 
             		= conn.getMetaData().getColumns(null, null, name, "%");
             Column col = null;
-            while (columns.next()) {
-                col = new Column(columns.getString("COLUMN_NAME"));
-                col.setType(columns.getInt("DATA_TYPE"), 
-                        columns.getInt("COLUMN_SIZE"));
-                col.setNullable(columns.getInt("NULLABLE"));
-                tab.addColumn(col);
+            if (columns.next()) {
+	            do {
+	                col = new Column(columns.getString("COLUMN_NAME"));
+	                col.setType(columns.getInt("DATA_TYPE"), 
+	                        columns.getInt("COLUMN_SIZE"));
+	                col.setNullable(columns.getInt("NULLABLE"));
+	                tab.addColumn(col);
+	            } while (columns.next());
+            } else {
+            	throw new UserDatabaseException("Tabelle nicht definiert.");
             }
             columns.close();
             ResultSet primarykeys 
@@ -203,6 +213,7 @@ public class DatabaseImpl implements Database {
                         "Keine Primaerschluesselspalte definiert", log);
             }
             primarykeys.close();
+            dbtab.setTable(tab);
         } catch (SQLException e) {
             throw new SystemDatabaseException("", e, log);
         }
@@ -249,6 +260,9 @@ public class DatabaseImpl implements Database {
 }
 /*
  * $Log: DatabaseImpl.java,v $
+ * Revision 1.9  2005/02/24 13:52:12  phormanns
+ * Mit Tests begonnen
+ *
  * Revision 1.8  2005/02/21 22:55:25  phormanns
  * Hsqldb zugefuegt
  *

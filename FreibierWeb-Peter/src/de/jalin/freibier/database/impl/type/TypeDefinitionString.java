@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionString.java,v 1.3 2005/02/18 22:17:42 phormanns Exp $
+//$Id: TypeDefinitionString.java,v 1.4 2005/02/24 13:52:12 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -53,8 +53,8 @@ public class TypeDefinitionString extends TypeDefinitionImpl {
 		ValueObject stringValue = null;
 		if (s.length() > length) {
 			s = s.substring(0, length);
-			stringValue = new ValueObject(s, this);
 		}
+		stringValue = new ValueObject(s, this);
 		return stringValue;
 	}
 
@@ -64,6 +64,9 @@ public class TypeDefinitionString extends TypeDefinitionImpl {
 }
 /*
  * $Log: TypeDefinitionString.java,v $
+ * Revision 1.4  2005/02/24 13:52:12  phormanns
+ * Mit Tests begonnen
+ *
  * Revision 1.3  2005/02/18 22:17:42  phormanns
  * Umstellung auf Freemarker begonnen
  *

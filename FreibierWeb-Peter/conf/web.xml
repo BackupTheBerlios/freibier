@@ -26,6 +26,10 @@
 	    <param-value>jdbc:hsqldb:mem:test</param-value>                              
 	</init-param>
 	<init-param>                                   
+    	<param-name>dbName</param-name>                               
+	    <param-value>test</param-value>                              
+	</init-param>
+	<init-param>                                   
     	<param-name>dbUser</param-name>                               
 	    <param-value>sa</param-value>                              
 	</init-param>

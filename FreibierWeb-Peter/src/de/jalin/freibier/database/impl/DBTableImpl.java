@@ -1,5 +1,4 @@
-//$Id: DBTableImpl.java,v 1.3 2005/02/18 22:17:42 phormanns Exp $
-
+//$Id: DBTableImpl.java,v 1.4 2005/02/24 13:52:12 phormanns Exp $
 package de.jalin.freibier.database.impl;
 
 import java.sql.SQLException;
@@ -40,37 +39,36 @@ public class DBTableImpl implements DBTable {
 	private Table tab;
 	private Map columnTypeDefinitions;
 
-	protected DBTableImpl(DatabaseImpl db, String name) throws SystemDatabaseException {
+	protected DBTableImpl(DatabaseImpl db, String name)
+			throws SystemDatabaseException {
 		this.db = db;
 		this.name = name;
-		this.tab = new Table(name);
-		columnTypeDefinitions = new HashMap();
-		Iterator colIterator = tab.getColumns().iterator();
-		Column col = null;
-		while (colIterator.hasNext()) {
-			col = (Column) colIterator.next();
-			// TODO Ressourcebundle uebergeben.
-			columnTypeDefinitions.put(col.getName(), TypeDefinitionImpl.create(col, null, db));
-		}
+		// TODO Ressourcebundle uebergeben.
 	}
 
-	public List getMultipleRecords(int startRecordNr, int numberOfRecords, String orderColumn, boolean ascending) throws DatabaseException {
-		return this.getRecords(null, orderColumn, ascending, startRecordNr, numberOfRecords);
+	public List getMultipleRecords(int startRecordNr, int numberOfRecords,
+			String orderColumn, boolean ascending) throws DatabaseException {
+		return this.getRecords(null, orderColumn, ascending, startRecordNr,
+				numberOfRecords);
 	}
 
-	public List getRecordsFromQuery(IWhereClause clause, String orderColumn, boolean ascending) throws DatabaseException {
-		return this.getRecords(clause, orderColumn, ascending, 1, DBTable.MAX_FETCH_SIZE);
+	public List getRecordsFromQuery(IWhereClause clause, String orderColumn,
+			boolean ascending) throws DatabaseException {
+		return this.getRecords(clause, orderColumn, ascending, 1,
+				DBTable.MAX_FETCH_SIZE);
 	}
 
-	public List getRecords(IWhereClause clause, String orderColumn, boolean ascending, int startRecordNr, int numberOfRecords) throws DatabaseException {
+	public List getRecords(IWhereClause clause, String orderColumn,
+			boolean ascending, int startRecordNr, int numberOfRecords)
+			throws DatabaseException {
 		List resList = new ArrayList();
 		SelectQuery query = db.getSQLFactory().getSelectQuery();
- 		query.addTable(tab.getName());
-		Iterator i = tab.getColumns().iterator();
-		Column col = null;
-		while (i.hasNext()) {
-			col = (Column) i.next();
-			query.addColumn(col.getName());
+		query.addTable(tab.getName());
+		Iterator queryColumnsIterator = tab.getColumns().iterator();
+		Column queryCol = null;
+		while (queryColumnsIterator.hasNext()) {
+			queryCol = (Column) queryColumnsIterator.next();
+			query.addColumn(queryCol.getName());
 		}
 		if (clause != null) {
 			query.addWhereClause(clause);
@@ -87,15 +85,16 @@ public class DBTableImpl implements DBTable {
 			while (count < numberOfRecords) {
 				if (hasMore) {
 					recHash = new HashMap();
-					Iterator i2 = tab.getColumns().iterator();
-					Column col2 = null;
+					Iterator readColumnsIterator = tab.getColumns().iterator();
+					Column readCol = null;
 					ValueObject valueObject = null;
-					String colName = null;
-					while (i2.hasNext()) {
-						col2 = (Column) i2.next();
-						colName = col2.getName();
-						valueObject = new ValueObject(res.getObject(colName), (TypeDefinition) columnTypeDefinitions.get(colName));
-						recHash.put(col2.getName(), valueObject);
+					String readColName = null;
+					while (readColumnsIterator.hasNext()) {
+						readCol = (Column) readColumnsIterator.next();
+						readColName = readCol.getName();
+//						valueObject = new ValueObject(res.getObject(readColName),
+//								(TypeDefinition) columnTypeDefinitions.get(readColName));
+						recHash.put(readCol.getName(), res.getObject(readColName));
 					}
 					rec = new RecordImpl(this, recHash);
 					resList.add(rec);
@@ -110,8 +109,7 @@ public class DBTableImpl implements DBTable {
 				}
 			}
 		} catch (SQLException e) {
-    		throw new SystemDatabaseException(
-    				"Datensatz nicht vorhanden", e, log);
+			throw new SystemDatabaseException("Datensatz nicht vorhanden", e, log);
 		}
 		return resList;
 	}
@@ -130,29 +128,32 @@ public class DBTableImpl implements DBTable {
 				numOfRecords = res.getInt(1);
 			}
 		} catch (SQLException e) {
-    		throw new SystemDatabaseException(
-    				"Datensatz nicht vorhanden", e, log);
+			throw new SystemDatabaseException("Datensatz nicht vorhanden", e,
+					log);
 		}
 		return numOfRecords;
 	}
 
-	public Record getRecordByPrimaryKey(Object pkValue) throws DatabaseException {
+	public Record getRecordByPrimaryKey(Object pkValue)
+			throws DatabaseException {
 		IWhereClause clause = new WhereClause();
-		clause.addCondition(new WhereCondition(this.getPrimaryKey(), WhereCondition.EQUAL_TO, pkValue));
+		clause.addCondition(new WhereCondition(this.getPrimaryKey(),
+				WhereCondition.EQUAL_TO, pkValue));
 		List l = this.getRecords(clause, null, true, 1, 1);
 		return (Record) l.get(0);
 	}
 
-	public List getGivenColumns(List colNames, int limit) throws DatabaseException {
+	public List getGivenColumns(List colNames, int limit)
+			throws DatabaseException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public void setRecord(Record data) throws DatabaseException {
-		// TODO Auto-generated method stub
 		UpdateQuery query = db.getSQLFactory().getUpdateQuery();
-		WhereCondition condition = new WhereCondition(this.getPrimaryKey(), 
-				WhereCondition.EQUAL_TO, data.getPrintable(this.getPrimaryKey()).getValue());
+		WhereCondition condition = new WhereCondition(this.getPrimaryKey(),
+				WhereCondition.EQUAL_TO, data
+						.getPrintable(this.getPrimaryKey()).getValue());
 		query.setTable(this.getName());
 		query.addWhereCondition(condition);
 		Iterator i = tab.getColumns().iterator();
@@ -168,17 +169,17 @@ public class DBTableImpl implements DBTable {
 	}
 
 	public void deleteRecord(Record data) throws DatabaseException {
-		// TODO Auto-generated method stub
-		
+	// TODO Auto-generated method stub
 	}
 
 	public String getName() {
 		return tab.getName();
 	}
 
-	public TypeDefinition getFieldDef(String fieldName) throws SystemDatabaseException {
+	public TypeDefinition getFieldDef(String fieldName)
+			throws SystemDatabaseException {
 		// TODO Ressource Bundle uebergeben
-		return TypeDefinitionImpl.create(tab.getColumn(fieldName), null, db);
+		return (TypeDefinition) columnTypeDefinitions.get(fieldName);
 	}
 
 	public String getPrimaryKey() {
@@ -200,18 +201,29 @@ public class DBTableImpl implements DBTable {
 		List l = new ArrayList();
 		Column col = null;
 		while (i.hasNext()) {
-			l.add((Column) i.next());
+			col = (Column) i.next();
+			l.add(col.getName());
 		}
 		return l;
 	}
 
-	public void setTable(Table tab) {
+	public void setTable(Table tab) throws SystemDatabaseException {
 		this.tab = tab;
+		columnTypeDefinitions = new HashMap();
+		Iterator colIterator = tab.getColumns().iterator();
+		Column col = null;
+		while (colIterator.hasNext()) {
+			col = (Column) colIterator.next();
+			columnTypeDefinitions.put(col.getName(), 
+					TypeDefinitionImpl.create(col, null, db));
+		}
 	}
-
 }
 /*
  * $Log: DBTableImpl.java,v $
+ * Revision 1.4  2005/02/24 13:52:12  phormanns
+ * Mit Tests begonnen
+ *
  * Revision 1.3  2005/02/18 22:17:42  phormanns
  * Umstellung auf Freemarker begonnen
  *

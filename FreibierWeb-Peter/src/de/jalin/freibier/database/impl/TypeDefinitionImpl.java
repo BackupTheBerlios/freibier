@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionImpl.java,v 1.7 2005/02/18 22:17:42 phormanns Exp $
+//$Id: TypeDefinitionImpl.java,v 1.8 2005/02/24 13:52:12 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
@@ -60,7 +60,6 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 		typesMap.put(new Integer(Types.SMALLINT), TypeDefinitionInteger.class);
 		typesMap.put(new Integer(Types.TIME), TypeDefinitionTime.class);
 		typesMap.put(new Integer(Types.TIMESTAMP), TypeDefinitionDateTime.class);
-		// Types.DATETIME gibts nicht, weil das gleich Types.TIMESTAMP ist
 		typesMap.put(new Integer(Types.TINYINT), TypeDefinitionInteger.class);
 		typesMap.put(new Integer(Types.VARCHAR), TypeDefinitionString.class);
 	}
@@ -252,6 +251,9 @@ abstract public class TypeDefinitionImpl implements TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionImpl.java,v $
+ * Revision 1.8  2005/02/24 13:52:12  phormanns
+ * Mit Tests begonnen
+ *
  * Revision 1.7  2005/02/18 22:17:42  phormanns
  * Umstellung auf Freemarker begonnen
  *

@@ -1,7 +1,8 @@
-// $Id: Database.java,v 1.5 2005/02/21 22:55:25 phormanns Exp $
+// $Id: Database.java,v 1.6 2005/02/24 13:52:12 phormanns Exp $
 package de.jalin.freibier.database;
 
 import java.util.List;
+import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
 
 /**
@@ -10,6 +11,8 @@ import de.jalin.freibier.database.exception.SystemDatabaseException;
 public interface Database {
 	
     public void createTestData() throws SystemDatabaseException;
+    
+    public String getName();
     
 	/**
 	 * Ergibt eine Liste von Strings, die die Namen der Tabellen enthaelt, die
@@ -23,7 +26,7 @@ public interface Database {
 	 * @return Table
 	 * @throws SystemDatabaseException
 	 */
-	public abstract DBTable getTable(String name) throws SystemDatabaseException;
+	public abstract DBTable getTable(String name) throws DatabaseException;
 
 	/**
 	 * Schliessen der Datenbank-Ressourcen.
@@ -33,6 +36,9 @@ public interface Database {
 }
 /* 
  *  $Log: Database.java,v $
+ *  Revision 1.6  2005/02/24 13:52:12  phormanns
+ *  Mit Tests begonnen
+ *
  *  Revision 1.5  2005/02/21 22:55:25  phormanns
  *  Hsqldb zugefuegt
  *

@@ -1,4 +1,4 @@
-// $Id: DatabaseServlet.java,v 1.10 2005/02/21 22:55:25 phormanns Exp $
+// $Id: DatabaseServlet.java,v 1.11 2005/02/24 13:52:12 phormanns Exp $
 
 package de.jalin.freibier.webgui;
 
@@ -34,11 +34,12 @@ public class DatabaseServlet extends HttpServlet {
         String sqlFactoryClass = getInitParameter("sqlFactoryClass");
         String jdbcDriverClass = getInitParameter("jdbcDriverClass");
         String jdbcConnectUrl = getInitParameter("jdbcConnectUrl");
+        String dbName = getInitParameter("dbName");
         String dbUser = getInitParameter("dbUser");
         String dbPassword = getInitParameter("dbPassword");
         try {
             db = DatabaseFactory.getDatabaseInstance(sqlFactoryClass,
-                    jdbcDriverClass, jdbcConnectUrl, dbUser, dbPassword);
+                    jdbcDriverClass, jdbcConnectUrl, dbName, dbUser, dbPassword);
             db.createTestData();
         } catch (DatabaseException e) {
             log("Keine Verbindung zur Datenbank", e);
@@ -228,6 +229,9 @@ public class DatabaseServlet extends HttpServlet {
 
 /*
  * $Log: DatabaseServlet.java,v $
+ * Revision 1.11  2005/02/24 13:52:12  phormanns
+ * Mit Tests begonnen
+ *
  * Revision 1.10  2005/02/21 22:55:25  phormanns
  * Hsqldb zugefuegt
  *

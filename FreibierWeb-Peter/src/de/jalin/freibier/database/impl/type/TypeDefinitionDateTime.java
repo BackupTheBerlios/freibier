@@ -1,9 +1,10 @@
-//$Id: TypeDefinitionDateTime.java,v 1.4 2005/02/18 22:17:42 phormanns Exp $
+//$Id: TypeDefinitionDateTime.java,v 1.5 2005/02/24 13:52:12 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import de.jalin.freibier.database.exception.DatabaseException;
 import de.jalin.freibier.database.exception.SystemDatabaseException;
@@ -18,8 +19,12 @@ import de.jalin.freibier.database.impl.ValueObject;
  */
 public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 	
-	private DateFormat shortFormat
+	private DateFormat shortDateTimeFormat
 		= DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+	private DateFormat shortDateFormat
+		= DateFormat.getDateInstance(DateFormat.MEDIUM);
+	private DateFormat sqlDateFormat 
+		= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public TypeDefinitionDateTime() {
 		super();
@@ -41,7 +46,7 @@ public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 	public String printText(Object date) throws SystemDatabaseException {
 		if (date != null) {
 			if (date instanceof Date) {
-				return shortFormat.format((Date) date);
+				return shortDateTimeFormat.format((Date) date);
 			} else {
 				throw new SystemDatabaseException("Objekt vom Type Date erwartet.", log);
 			}
@@ -53,7 +58,7 @@ public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 	public String printSQL(Object date) throws SystemDatabaseException {
 		if (date != null) {
 			if (date instanceof Date) {
-				return "'" + shortFormat.format((Date) date) + "'";
+				return "'" + sqlDateFormat.format((Date) date) + "'";
 			} else {
 				throw new SystemDatabaseException("Objekt vom Type Date erwartet.", log);
 			}
@@ -67,35 +72,45 @@ public class TypeDefinitionDateTime extends TypeDefinitionImpl {
 		ValueObject dateValue = null;
 		try {
 			if(s != null && s.trim().length() > 0) {
-				date = shortFormat.parse(s.trim());
+				date = shortDateTimeFormat.parse(s.trim());
 				dateValue = new ValueObject(date, this);
 			}
-		} catch (ParseException e) {
-			throw new UserDatabaseException("Fehler im Datumsformat", log);
+		} catch (ParseException e1) {
+			try {
+				if(s != null && s.trim().length() > 0) {
+					date = shortDateFormat.parse(s.trim());
+					dateValue = new ValueObject(date, this);
+				}
+			} catch (ParseException e2) {
+				throw new UserDatabaseException("Fehler im Datumsformat", log);
+			}
 		}
 		return dateValue;
 	}
 
 	public boolean validate(String s) {
 		try {
-			Date date = shortFormat.parse(s);
+			Date date = shortDateTimeFormat.parse(s);
 			return true;
 		} catch (ParseException e) {
 			return false;
 		}
 	}
 	
-	protected DateFormat getShortFormat() {
-		return shortFormat;
+	protected DateFormat getShortDateTimeFormat() {
+		return shortDateTimeFormat;
 	}
 	
-	protected void setShortFormat(DateFormat shortFormat) {
-		this.shortFormat = shortFormat;
+	protected void setShortDateTimeFormat(DateFormat shortFormat) {
+		this.shortDateTimeFormat = shortFormat;
 	}
 }
 
 /*
  * $Log: TypeDefinitionDateTime.java,v $
+ * Revision 1.5  2005/02/24 13:52:12  phormanns
+ * Mit Tests begonnen
+ *
  * Revision 1.4  2005/02/18 22:17:42  phormanns
  * Umstellung auf Freemarker begonnen
  *

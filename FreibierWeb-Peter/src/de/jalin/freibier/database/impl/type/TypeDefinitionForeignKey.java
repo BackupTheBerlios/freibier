@@ -1,4 +1,4 @@
-//$Id: TypeDefinitionForeignKey.java,v 1.6 2005/02/18 22:17:42 phormanns Exp $
+//$Id: TypeDefinitionForeignKey.java,v 1.7 2005/02/24 13:52:12 phormanns Exp $
 
 package de.jalin.freibier.database.impl.type;
 
@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.Map;
 import de.jalin.freibier.database.TypeDefinition;
 import de.jalin.freibier.database.exception.DatabaseException;
-import de.jalin.freibier.database.exception.SystemDatabaseException;
-import de.jalin.freibier.database.impl.ValueObject;
 import de.jalin.freibier.database.impl.DatabaseImpl;
 import de.jalin.freibier.database.impl.ForeignKey;
 import de.jalin.freibier.database.impl.TypeDefinitionImpl;
+import de.jalin.freibier.database.impl.ValueObject;
 
 /**
  * Definition fuer einen Wert, der ein Fremdschluessel ist, d.h. er referenziert
@@ -26,7 +25,7 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 	private DatabaseImpl db;
 
 	public TypeDefinitionForeignKey(TypeDefinition indexType, DatabaseImpl db)
-			throws SystemDatabaseException {
+			throws DatabaseException {
 		super();
 		log.trace("TypeDefinitionForeignKey Constructor");
 		// Die Datenbank merke ich mir, weil man die ggf. braucht, um auf die
@@ -122,6 +121,9 @@ public class TypeDefinitionForeignKey extends TypeDefinitionImpl {
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.7  2005/02/24 13:52:12  phormanns
+ * Mit Tests begonnen
+ *
  * Revision 1.6  2005/02/18 22:17:42  phormanns
  * Umstellung auf Freemarker begonnen
  *

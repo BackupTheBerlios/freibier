@@ -11,15 +11,13 @@ So holds a list of columns.
  * @version 0.1
  */
 package com.crossdb.sql;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Table {
 
-	String name;
-//	String display_name;
-	
-java.util.List columns = new java.util.ArrayList();
-	
+	private String name;
+	private  List columns = new ArrayList();
 	
 	public Table(String n){
 		name = n;

@@ -1,13 +1,13 @@
-//$Id: RecordImpl.java,v 1.5 2005/02/18 22:17:42 phormanns Exp $
+//$Id: RecordImpl.java,v 1.6 2005/02/24 13:52:12 phormanns Exp $
 
 package de.jalin.freibier.database.impl;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
-
 import de.jalin.freibier.database.DBTable;
 import de.jalin.freibier.database.Printable;
 import de.jalin.freibier.database.Record;
@@ -30,10 +30,16 @@ public class RecordImpl implements Record {
 	private DBTableImpl tab;
 	private Map daten;
 
-	public RecordImpl(DBTableImpl tab, Map bean) {
+	public RecordImpl(DBTableImpl tab, Map bean) throws DatabaseException {
 		log.trace("RecordImpl Constructor(" + bean.keySet() + ")");
 		this.tab = tab;
-		this.daten = bean;
+		this.daten = new HashMap();
+		Iterator colIterator = this.tab.getFieldsList().iterator();
+		String colName = null;
+		while (colIterator.hasNext()) {
+			colName = (String) colIterator.next();
+			this.daten.put(colName, new ValueObject(bean.get(colName), tab.getFieldDef(colName)));
+		}
 		// TODO Foreign Key Referenz
 		//		Iterator i = tab.getFieldsList().iterator();
 		//		while (i.hasNext()) {
@@ -65,11 +71,6 @@ public class RecordImpl implements Record {
 		daten.put(name, value);
 	}
 
-//	public void setField(int col, DataObject value) throws DatabaseException {
-//		TypeDefinition typdef = tab.getFieldDef(col);
-//		daten.put(typdef.getName(), value.getValue());
-//	}
-
 	/**
 	 * Mit dieser Methode kann man direkt einen String in ein Feld setzen, ohne
 	 * dafür ein DataObject erzeugen zu müssen.
@@ -91,7 +92,11 @@ public class RecordImpl implements Record {
 	 * String-, Integer-, Double- oder Date-Objekt
 	 */
 	public Object get(String name) {
-		Object value = ((ValueObject) daten.get(name)).getValue();
+		Object datenObject = daten.get(name);
+		Object value = null;
+		if (datenObject != null) {
+			value = ((ValueObject) daten.get(name)).getValue();
+		} 
 		if (value == null) {
 			return "";
 		}
@@ -100,6 +105,9 @@ public class RecordImpl implements Record {
 }
 /*
  * $Log: RecordImpl.java,v $
+ * Revision 1.6  2005/02/24 13:52:12  phormanns
+ * Mit Tests begonnen
+ *
  * Revision 1.5  2005/02/18 22:17:42  phormanns
  * Umstellung auf Freemarker begonnen
  *
