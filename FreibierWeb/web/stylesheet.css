@@ -46,6 +46,8 @@ table {
 }
 td.empty{height: 1.5em; }  /* leere Felder sollen evtl. Platzhalter zum Eintagen beim Ausdruck sein */
 
+
+
 /* Layout mit Tabellen */
 /***********************/
 table.page{
@@ -103,6 +105,20 @@ td.oneofthree{
 
 
 
+/* Alignment */
+/*************/
+.left{
+  text-align: left;
+}
+.right{
+  text-align: right;
+}
+.center{
+  text-align: center;
+}
+
+
+
 /* besondere Auszeichnungen */
 /****************************/
 td.numbers{
@@ -118,6 +134,7 @@ td.haben{
 .pappenheimer{
   background-color: red;
 }
+
 
 
 /* Grafik */

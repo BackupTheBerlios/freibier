@@ -1,5 +1,5 @@
 <#-- Erzeugt am 26.02.2005 von tbayen
-     $Id: listmacros.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ 
+     $Id: listmacros.ftl,v 1.3 2005/04/07 20:32:49 tbayen Exp $ 
      
      Diese Datei enthält verschiedene Makros, die die Arbeit von "list.ftl"
      einfacher und übersichtlicher machen 
@@ -38,10 +38,11 @@
     />
   </td>
   <#list fields as feld>
+    <#assign align=record.getRecordDefinition().getFieldDef(feld).getProperty("align")?default("left")/>
     <#if record.getField(feld).getLength() < 100>
-      <td class=nowrap>
+      <td class="nowrap ${align}">
     <#else/>
-      <td>
+      <td class="${align}">
     </#if>
     <@feldausgabe feld=feld tablename=tablename record=record/>
     </td>
@@ -93,6 +94,9 @@
 
 <#--
 * $Log: listmacros.ftl,v $
+* Revision 1.3  2005/04/07 20:32:49  tbayen
+* Ausrichtung von Zahlenfeldern korrigiert
+*
 * Revision 1.2  2005/04/06 21:14:10  tbayen
 * Anwenderprobleme behoben,
 * redirect-view implementiert

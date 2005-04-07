@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: TypeDefinition.java,v 1.1 2005/04/05 21:34:46 tbayen Exp $
+ * $Id: TypeDefinition.java,v 1.2 2005/04/07 20:32:49 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -205,7 +205,8 @@ abstract public class TypeDefinition {
 	}
 
 	protected void setProperties(Map propsMap) {
-		properties = propsMap;
+		//properties = propsMap;
+		properties.putAll(propsMap);
 	}
 
 	/*
@@ -283,6 +284,9 @@ abstract public class TypeDefinition {
 }
 /*
  * $Log: TypeDefinition.java,v $
+ * Revision 1.2  2005/04/07 20:32:49  tbayen
+ * Ausrichtung von Zahlenfeldern korrigiert
+ *
  * Revision 1.1  2005/04/05 21:34:46  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

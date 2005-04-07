@@ -42,6 +42,7 @@ nicht wirklich nötig:
 - Sortieren nach Fremdschlüsseln
 
 erledigt:
+- Ausrichtung von Zahlen rechtsbündig
 - Daten aus alter (Maypole-)Applikation übernehmen
 - bei neuer Transaktion Korb vorbelegen
 - blz gross schreiben
