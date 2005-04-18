@@ -1,16 +1,20 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.2 2005/04/06 21:14:10 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.3 2005/04/18 10:57:55 tbayen Exp $
  */
 package de.bayen.webframework;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,12 +41,16 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateScalarModel;
 
 /**
- * Servlet für alle Datenbank-Webausgaben
+ * Servlet für alle Datenbank-Webausgaben.
+ * 
+ * Dies ist das Basis-Servlet, das von allen konkreten Applikationen
+ * abgeleitet werden sollte.
  * 
  * @author tbayen
  */
-public class ServletDatabase extends HttpServlet {
+public abstract class ServletDatabase extends HttpServlet {
 	static Logger logger = Logger.getLogger(ServletBanking.class.getName());
+	private Properties props;
 	private Configuration cfg;
 	private URIParser uriParser;
 	protected ActionDispatcher actionDispatcher;
@@ -66,6 +74,63 @@ public class ServletDatabase extends HttpServlet {
 		cfg.setTemplateLoader(new MultiTemplateLoader(loaders));
 		uriParser = new URIParserImpl();
 		actionDispatcher = new ActionDispatcherClassLoader();
+		readProperties();
+	}
+
+	/**
+	 * Liest die Properties-Dateien mit den Grundeinstellungen des Programms.
+	 * 
+	 * Die Einstellungen werden aus mehreren Dateien zusammengetragen. Als
+	 * erstes wird die Datei "config.properties" im webframework-Paket
+	 * gelesen, die allgemeine Default-Werte enthält. Danach wird eine 
+	 * gleichnamige Datei im Paket der abgeleiteten Applikations-Klasse
+	 * gesucht, die Defaults für diese Applikation enthalten kann. Danach 
+	 * wird eine Datei im Verzeichnis gesucht, dass in den bisherigen 
+	 * Properties-Dateien durch den Schlüssel "configdir" angegeben ist 
+	 * (vorgegeben ist "/etc/webdatabase/"). Die Datei hat den Namen des 
+	 * letzten Teils des Paketnamens der Applikation, gefolgt von 
+	 * ".properties", also z.B. für die Applikation im Paket 
+	 * "de.bayen.kontaktdaten" den Namen "{configdir}/kontaktdaten.properties".
+	 */
+	private void readProperties() {
+		// Properties einlesen
+		props = new Properties();
+		// zuerst die Properties der ServletDatabase-Klasse lesen:
+		String path = ServletDatabase.class.getPackage().getName().replace('.',
+				'/');
+		InputStream stream = getClass().getClassLoader().getResourceAsStream(
+				path + "/config.properties");
+		try {
+			if (stream != null)
+				props.load(stream);
+		} catch (IOException e) {}
+		// dann die Properties der konkret abgeleiteten Klasse lesen:
+		path = getClass().getPackage().getName().replace('.', '/');
+		stream = getClass().getClassLoader().getResourceAsStream(
+				path + "/config.properties");
+		try {
+			if (stream != null)
+				props.load(stream);
+		} catch (IOException e) {}
+		// Dann die Properties im Config-Verzeichnis
+		path = props.getProperty("configdir");
+		if (path == null) {
+			path = "";
+			props.setProperty("configdir",path);
+		} else if (!path.endsWith("/")){
+			path += "/";
+			props.setProperty("configdir",path);
+		}
+		String name = getClass().getPackage().getName();
+		path += name.substring(name.lastIndexOf('.') + 1) + ".properties";
+		try {
+			stream = new FileInputStream(path);
+			props.load(stream);
+		} catch (IOException e) {}
+	}
+
+	public String getProperty(String key) {
+		return props.getProperty(key);
 	}
 
 	/**
@@ -78,15 +143,15 @@ public class ServletDatabase extends HttpServlet {
 	 * Aktionen ausführt und weitere Daten in das root-Objekt schreibt.
 	 * Dann wird das entsprechende Template aufgerufen.
 	 * <p>
-	 * Es gibt zwie besondere views:
+	 * Es gibt zwei besondere views:
 	 * <ul><li>
 	 *   binarydata - es werden Binärdaten direkt ausgegeben, nicht
 	 *   per Template und nicht als MIME-Type HTML
 	 * </li><li>
-	 *   redirect- - hinter dem Minus-Zeichen steht eine URL, auf die
+	 *   redirect-* - hinter dem Minus-Zeichen steht eine URL, auf die
 	 *   ein redirect durchgeführt wird (nachdem die Action ausgeführt 
 	 *   wurde). Dadurch können natürlich auch mehrere Actions 
-	 *   hintereinander durch eine URL ausgeführt werden.
+	 *   hintereinander durch eine einzige URL ausgeführt werden.
 	 * </li></ul>
 	 * 
 	 */
@@ -94,33 +159,58 @@ public class ServletDatabase extends HttpServlet {
 			throws ServletException, IOException {
 		logger.info("Servlet '" + this.getClass().getName() + "' - '"
 				+ req.getRequestURI() + "'");
+		Map root = new HashMap();
+		Map uri = null;
+		String theme = null;
+		String table = null;
 		try {
 			// Die Datenbank wird in der Session gespeichert, damit sie nicht
 			// bei jedem Request neu aufgemacht werden muss
-			WebDBDatabase db=null;
+			WebDBDatabase db = null;
 			//db = (WebDBDatabase) req.getSession().getAttribute("de.bayen.database");
 			if (db == null) {
 				db = connectDatabase();
 				req.getSession().setAttribute("de.bayen.database", db);
 			}
-			Map root = populateContextRoot(req, db);
-			Map uri = (Map) root.get("uri");
+			root.putAll(populateContextRoot(req, db));
+			uri = (Map) root.get("uri");
 			String action = (String) uri.get("action");
-			actionDispatcher.executeAction(action, req, root, db);
+			actionDispatcher.executeAction(action, req, root, db, this);
 			String view = (String) uri.get("view");
-			String theme = (String) uri.get("theme");
-			if(view.startsWith("redirect-")){
+			theme = (String) uri.get("theme");
+			table = (String) uri.get("table");
+			if (view.startsWith("redirect-")) {
 				// redirect
 				resp.sendRedirect(view.substring(9));
-			}else if (view.equals("binarydata")) {
+			} else if (view.equals("binarydata")) {
 				// Das ist ein besonderes View, für das keine 
 				// Template-Engine gestartet wird
-				executeBinaryData(root, view, theme, (String) uri.get("table"), resp);
+				executeBinaryData(root, view, theme, table, resp);
 			} else {
-				executeTemplate(root, view, theme, (String) uri.get("table"), resp);
+				executeTemplate(root, view, theme, table, resp);
 			}
 		} catch (Exception e1) {
-			throw new ServletException("unbekannter Fehler im Servlet", e1);
+			// Falls eine Exception entsteht, die nicht abgefangen werden kann,
+			// werden die Informationen über diese Exception in das model-root
+			// gepackt und dann das View "exception" aufgerufen.
+			logger.error(e1.toString());
+			if (root.get("uri") == null) {
+				root.put("uri", uriParser.parseURI(req));
+			}
+			List exc = new ArrayList();
+			root.put("exceptions", exc);
+			Throwable thisexception = e1;
+			while (thisexception != null) {
+				Map ex = new HashMap();
+				exc.add(ex);
+				ex.put("class", thisexception.getClass());
+				ex.put("message", thisexception.getMessage());
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				thisexception.printStackTrace(new PrintStream(stream));
+				ex.put("stacktrace", stream.toString());
+				thisexception = thisexception.getCause();
+			}
+			executeTemplate(root, "exception", theme, table, resp);
 		}
 	}
 
@@ -219,9 +309,11 @@ public class ServletDatabase extends HttpServlet {
 			String tabname, HttpServletResponse resp) throws IOException,
 			ServletException {
 		logger.debug("sende Binärdaten");
-		resp.setContentType((String)root.get("contenttype"));
-		resp.getOutputStream().write(((BLOB)root.get("binarydata")).toByteArray());
+		resp.setContentType((String) root.get("contenttype"));
+		resp.getOutputStream().write(
+				((BLOB) root.get("binarydata")).toByteArray());
 	}
+
 	/**
 	 * Diese Methode stellt der Applikation eine Datenbank zur Verfügung.
 	 * Die Parameter liegen in *.property-Dateien vor.
@@ -249,6 +341,11 @@ public class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.3  2005/04/18 10:57:55  tbayen
+ * Urlaubsarbeit:
+ * Eigenes View, um Exceptions abzufangen
+ * System von verteilten Properties-Dateien
+ *
  * Revision 1.2  2005/04/06 21:14:10  tbayen
  * Anwenderprobleme behoben,
  * redirect-view implementiert

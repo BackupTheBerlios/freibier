@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionList.java,v 1.1 2005/04/05 21:34:47 tbayen Exp $
+ * $Id: ActionList.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -12,6 +12,7 @@ import de.bayen.database.Table.QueryCondition;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.webframework.Action;
 import de.bayen.webframework.ActionDispatcher;
+import de.bayen.webframework.ServletDatabase;
 import de.bayen.webframework.WebDBDatabase;
 
 /**
@@ -22,7 +23,7 @@ import de.bayen.webframework.WebDBDatabase;
 public class ActionList implements Action {
 
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db) throws DatabaseException,
+			Map root, WebDBDatabase db, ServletDatabase servlet) throws DatabaseException,
 			ServletException {
 		Map uri = (Map) root.get("uri");
 		String name = (String) uri.get("table");
@@ -51,6 +52,11 @@ public class ActionList implements Action {
 
 /*
  * $Log: ActionList.java,v $
+ * Revision 1.2  2005/04/18 10:57:55  tbayen
+ * Urlaubsarbeit:
+ * Eigenes View, um Exceptions abzufangen
+ * System von verteilten Properties-Dateien
+ *
  * Revision 1.1  2005/04/05 21:34:47  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *
