@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.4 2005/04/18 11:02:27 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.5 2005/04/18 13:11:53 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
@@ -72,6 +73,8 @@ public abstract class ServletDatabase extends HttpServlet {
 				new ClassTemplateLoader(ServletDatabase.class, "templates")
 		};
 		cfg.setTemplateLoader(new MultiTemplateLoader(loaders));
+		// normalerweise gibts keine Euro-Zeichen, das stelle ich hier aber ein:
+		cfg.setEncoding(new Locale("de","DE"),"ISO-8859-15");
 		uriParser = new URIParserImpl();
 		actionDispatcher = new ActionDispatcherClassLoader();
 		readProperties();
@@ -198,8 +201,8 @@ public abstract class ServletDatabase extends HttpServlet {
 			}
 		} catch (Exception e1) {
 			// Falls eine Exception entsteht, die nicht abgefangen werden kann,
-			// werden die Informationen über diese Exception in das model-root
-			// gepackt und dann das View "exception" aufgerufen.
+			// werden die Informationen über diese Exception jetzt in das 
+			// model-root gepackt und dann das View "exception" aufgerufen.
 			logger.error(e1.toString());
 			if (root.get("uri") == null) {
 				root.put("uri", uriParser.parseURI(req));
@@ -296,6 +299,7 @@ public abstract class ServletDatabase extends HttpServlet {
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
 			PrintWriter out = new PrintWriter(os);
 			Environment env = t.createProcessingEnvironment(root, out);
+			env.setOutputEncoding("ISO-8859-15");
 			env.process();
 			String contenttype = null;
 			TemplateModel tm = env.getVariable("contenttype");
@@ -304,6 +308,7 @@ public abstract class ServletDatabase extends HttpServlet {
 			} else {
 				contenttype = "text/html; charset=" + t.getEncoding();
 			}
+			logger.debug(cfg.getLocale().toString());
 			resp.setContentType(contenttype);
 			resp.getOutputStream().write(os.toByteArray());
 		} catch (TemplateException e) {
@@ -348,6 +353,9 @@ public abstract class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.5  2005/04/18 13:11:53  tbayen
+ * Sonderzeichen wie ":" im Verwendungszweck erlaubt
+ *
  * Revision 1.4  2005/04/18 11:02:27  tbayen
  * Urlaubsarbeit:
  * Eigenes View, um Exceptions abzufangen

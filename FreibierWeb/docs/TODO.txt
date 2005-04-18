@@ -3,8 +3,7 @@ TODO:
 
 
 nötig:
-- DTAUS-Dateien zu Transaktionen wandeln
-- bestimmte Zeichen (:.) im Verwendungszweck nicht erlaubt?!?
+- DTAUS-Dateien dekodieren und zu Transaktionen wandeln
 - BayenWeb
   - Aktualisierung statt neuimport
   - Filter (z.B. nach Aussendienstlern)
@@ -15,7 +14,6 @@ wünschenswert:
 - interne Verbesserungen
   - HBCICallback multithreading-konform benutzen
   - evtl. Session-Einstellungen für Theme, Filter, etc.
-  - Guten Platz für Passwörter finden
   - Connection Pool
   - System für Formulare, Validierung, etc.
 - Benutzersensitivität
@@ -23,7 +21,6 @@ wünschenswert:
   - logout, d.h. Formular-Login
   - Themes abhängig vom Benutzer / der Rolle
 - Benutzerfreundlichkeit
-  - Eurozeichen (DTAUS-Summe) nur angezeigt, wenn Browser umgestellt
   - verbesserte Navigation
   - Ausgabe von Auszugsdaten in schönerem Zahlenformat
   - Anker zum Aufruf bestimmter Teile der Seiten
@@ -45,6 +42,9 @@ nicht wirklich nötig:
 - Sortieren nach Fremdschlüsseln
 
 erledigt:
+- bestimmte Zeichen (:.) im Verwendungszweck nicht erlaubt?!?
+- Eurozeichen (DTAUS-Summe) nur angezeigt, wenn Browser-Encoding umgestellt
+- Guten Platz für Passwörter finden
 - properties-Dateien selber kommentieren
 - Benutzung der Properties-Dateien dokumentieren
 - spezifische Properties-Dateien für alle Einstellungen ermöglichen
