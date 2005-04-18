@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.3 2005/04/18 10:57:55 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.4 2005/04/18 11:02:27 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -129,6 +129,13 @@ public abstract class ServletDatabase extends HttpServlet {
 		} catch (IOException e) {}
 	}
 
+	/**
+	 * Hier werden Properties ausgelesen, die irgendwo in den verteilten
+	 * Proiperties-Dateien stehen können.
+	 * 
+	 * @param key
+	 * @return
+	 */
 	public String getProperty(String key) {
 		return props.getProperty(key);
 	}
@@ -341,6 +348,11 @@ public abstract class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.4  2005/04/18 11:02:27  tbayen
+ * Urlaubsarbeit:
+ * Eigenes View, um Exceptions abzufangen
+ * System von verteilten Properties-Dateien
+ *
  * Revision 1.3  2005/04/18 10:57:55  tbayen
  * Urlaubsarbeit:
  * Eigenes View, um Exceptions abzufangen

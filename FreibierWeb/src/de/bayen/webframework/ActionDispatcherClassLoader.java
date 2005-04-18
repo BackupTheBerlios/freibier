@@ -1,5 +1,5 @@
 /* Erzeugt am 19.03.2005 von tbayen
- * $Id: ActionDispatcherClassLoader.java,v 1.1 2005/04/05 21:34:46 tbayen Exp $
+ * $Id: ActionDispatcherClassLoader.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -29,7 +29,7 @@ public class ActionDispatcherClassLoader implements ActionDispatcher {
 			.getName());
 
 	public void executeAction(String action, HttpServletRequest req, Map root,
-			WebDBDatabase db) throws DatabaseException, ServletException {
+			WebDBDatabase db, ServletDatabase servlet) throws DatabaseException, ServletException {
 		logger.debug("ActionDispatcher.executeAction('" + action + "', ...)");
 		if (action.equals("nothing")) {
 			return;
@@ -47,7 +47,7 @@ public class ActionDispatcherClassLoader implements ActionDispatcher {
 				Class actionclass = Class.forName(classname);
 				Action a = ((Action) actionclass.newInstance());
 				fertig = true;
-				a.executeAction(this, req, root, db);
+				a.executeAction(this, req, root, db, servlet);
 			} catch (ClassNotFoundException e) {} 
 			  catch (InstantiationException e) {} 
 			  catch (IllegalAccessException e) {}
@@ -59,6 +59,11 @@ public class ActionDispatcherClassLoader implements ActionDispatcher {
 }
 /*
  * $Log: ActionDispatcherClassLoader.java,v $
+ * Revision 1.2  2005/04/18 10:57:55  tbayen
+ * Urlaubsarbeit:
+ * Eigenes View, um Exceptions abzufangen
+ * System von verteilten Properties-Dateien
+ *
  * Revision 1.1  2005/04/05 21:34:46  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

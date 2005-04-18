@@ -1,17 +1,15 @@
 /* Erzeugt am 02.04.2005 von tbayen
- * $Id: ActionSenddtaus.java,v 1.1 2005/04/05 21:34:48 tbayen Exp $
+ * $Id: ActionSenddtaus.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
@@ -33,6 +31,7 @@ import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.typedefinition.BLOB;
 import de.bayen.webframework.Action;
 import de.bayen.webframework.ActionDispatcher;
+import de.bayen.webframework.ServletDatabase;
 import de.bayen.webframework.WebDBDatabase;
 
 /**
@@ -46,7 +45,7 @@ public class ActionSenddtaus implements Action {
 	static Logger logger = Logger.getLogger(ActionSenddtaus.class.getName());
 
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db) throws DatabaseException,
+			Map root, WebDBDatabase db, ServletDatabase servlet) throws DatabaseException,
 			ServletException {
 		logger.debug("ActionSenddtaus");
 		Table tab = db.getTable("Pool");
@@ -74,10 +73,7 @@ public class ActionSenddtaus implements Action {
 			HBCIHandler hbciHandle = null;
 			try {
 				callback = new HBCICallbackWebinterface(map);
-				Properties prop = new Properties();
-				prop.load(new FileInputStream(
-						"/etc/webdatabase/banking.properties"));
-				passport = BankingUtils.makePassport(map, callback, db);
+				passport = BankingUtils.makePassport(map, callback, db, servlet);
 				hbciHandle = BankingUtils.makeHandle(passport);
 				// TODO: Callback in verschiedenen Threads gleichzeitig
 				// Was ich hier mit dem Callback mache, ist nicht 
@@ -94,7 +90,7 @@ public class ActionSenddtaus implements Action {
 				}
 				String kontonummer = kontorecord.getFormatted("Kontonummer");
 				// Hier wird die PIN und TAN gesetzt, wenn es eine gibt
-				callback.setPin(prop.getProperty(kontonummer + ".pin"));
+				callback.setPin(servlet.getProperty(kontonummer + ".pin"));
 				callback.setTan(req.getParameter("tan"));
 				Konto kto = new Konto(kontorecord.getFormatted("BLZ"),
 						kontonummer);
@@ -134,11 +130,16 @@ public class ActionSenddtaus implements Action {
 		// Umleitung auf andere Action
 		Map uri = (Map) root.get("uri");
 		uri.put("action", "show");
-		ad.executeAction("show", req, root, db);
+		ad.executeAction("show", req, root, db, servlet);
 	}
 }
 /*
  * $Log: ActionSenddtaus.java,v $
+ * Revision 1.2  2005/04/18 10:57:55  tbayen
+ * Urlaubsarbeit:
+ * Eigenes View, um Exceptions abzufangen
+ * System von verteilten Properties-Dateien
+ *
  * Revision 1.1  2005/04/05 21:34:48  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

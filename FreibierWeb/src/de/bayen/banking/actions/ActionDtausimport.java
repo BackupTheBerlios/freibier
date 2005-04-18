@@ -1,5 +1,5 @@
 /* Erzeugt am 05.04.2005 von tbayen
- * $Id: ActionDtausimport.java,v 1.1 2005/04/05 21:34:48 tbayen Exp $
+ * $Id: ActionDtausimport.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -12,7 +12,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-import java.util.Properties;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
@@ -23,6 +22,7 @@ import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.typedefinition.BLOB;
 import de.bayen.webframework.Action;
 import de.bayen.webframework.ActionDispatcher;
+import de.bayen.webframework.ServletDatabase;
 import de.bayen.webframework.WebDBDatabase;
 
 /**
@@ -36,16 +36,12 @@ public class ActionDtausimport implements Action {
 	static Logger logger = Logger.getLogger(ActionDtausimport.class.getName());
 
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db) throws DatabaseException,
+			Map root, WebDBDatabase db, ServletDatabase servlet) throws DatabaseException,
 			ServletException {
 		logger.debug("ActionDtausimport");
 		Table pool = db.getTable("Pool");
-		Properties prop = new Properties();
 		try {
-			prop
-					.load(new FileInputStream(
-							"/etc/webdatabase/banking.properties"));
-			String dirname = prop.getProperty("dtausimport.directory");
+			String dirname = servlet.getProperty("dtausimport.directory");
 			File[] dir = (new File(dirname)).listFiles();
 			for (int i = 0; i < dir.length; i++) {
 				InputStream stream = new FileInputStream(dir[i]);
@@ -73,6 +69,11 @@ public class ActionDtausimport implements Action {
 }
 /*
  * $Log: ActionDtausimport.java,v $
+ * Revision 1.2  2005/04/18 10:57:55  tbayen
+ * Urlaubsarbeit:
+ * Eigenes View, um Exceptions abzufangen
+ * System von verteilten Properties-Dateien
+ *
  * Revision 1.1  2005/04/05 21:34:48  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

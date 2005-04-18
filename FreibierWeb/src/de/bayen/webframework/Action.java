@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: Action.java,v 1.1 2005/04/05 21:34:46 tbayen Exp $
+ * $Id: Action.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -25,7 +25,6 @@ public interface Action {
 	 * für gewöhnlich von einem 
 	 * {@link de.bayen.webframework.ActionDispatcherClassLoader} bzw. einer 
 	 * Tochterklasse desselben aufgerufen.
-	 * 
 	 * @param ad ist der <code>ActionDispatcher</code>, der mich aufgerufen hat.
 	 * evtl. kann ich diesen benutzen, um eine weitere Action aufzurufen
 	 * (Forwarding als Ersatz oder nach meiner eigenen Funktion).
@@ -33,15 +32,22 @@ public interface Action {
 	 * @param root Die Map, die mein Model enthält, das später dem view 
 	 * übergeben wird
 	 * @param db Datenbankverbindung
+	 * @param servlet TODO
+	 * 
 	 * @throws DatabaseException
 	 * @throws ServletException
 	 */
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db) throws DatabaseException,
+			Map root, WebDBDatabase db, ServletDatabase servlet) throws DatabaseException,
 			ServletException;
 }
 /*
  * $Log: Action.java,v $
+ * Revision 1.2  2005/04/18 10:57:55  tbayen
+ * Urlaubsarbeit:
+ * Eigenes View, um Exceptions abzufangen
+ * System von verteilten Properties-Dateien
+ *
  * Revision 1.1  2005/04/05 21:34:46  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

@@ -1,5 +1,5 @@
 /* Erzeugt am 03.04.2005 von tbayen
- * $Id: BankingUtils.java,v 1.1 2005/04/05 21:34:46 tbayen Exp $
+ * $Id: BankingUtils.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
  */
 package de.bayen.banking.hbci;
 
@@ -12,6 +12,7 @@ import org.kapott.hbci.passport.AbstractHBCIPassport;
 import org.kapott.hbci.passport.HBCIPassport;
 import de.bayen.database.Record;
 import de.bayen.database.exception.DatabaseException;
+import de.bayen.webframework.ServletDatabase;
 import de.bayen.webframework.WebDBDatabase;
 
 /**
@@ -24,13 +25,14 @@ import de.bayen.webframework.WebDBDatabase;
  */
 public class BankingUtils {
 	public static HBCIPassport makePassport(Map map,
-			HBCICallbackWebinterface callback, WebDBDatabase db)
-			throws DatabaseException {
+			HBCICallbackWebinterface callback, WebDBDatabase db,
+			ServletDatabase servlet) throws DatabaseException {
 		try {
+			String path = servlet.getProperty("configdir");
 			// Parameter des HBCI-Kernels setzen
 			HBCIUtils.init(new FileSystemClassLoader(),
 			// "webdatabase" könnte man alternativ aus der URL extrahieren... 
-					"/etc/webdatabase/banking-hbci.properties", callback);
+					path + "banking-hbci.properties", callback);
 			Integer konto = Integer.valueOf((String) map.get("konto"));
 			if (konto != null) {
 				Record record = db.getTable("Konten").getRecordByPrimaryKey(
@@ -40,7 +42,7 @@ public class BankingUtils {
 					HBCIUtils.setParam("client.passport.default", medium);
 					if (medium.equals("PinTan")) {
 						HBCIUtils.setParam("client.passport.PinTan.filename",
-								"/etc/webdatabase/hbci4java-passports/"
+								path + "hbci4java-passports/"
 										+ record.getFormatted("Kurzname")
 										+ ".medium");
 					}
@@ -61,11 +63,14 @@ public class BankingUtils {
 		return new HBCIHandler((version.length() != 0) ? version : "plus",
 				passport);
 	}
-	
 }
-
 /*
  * $Log: BankingUtils.java,v $
+ * Revision 1.2  2005/04/18 10:57:55  tbayen
+ * Urlaubsarbeit:
+ * Eigenes View, um Exceptions abzufangen
+ * System von verteilten Properties-Dateien
+ *
  * Revision 1.1  2005/04/05 21:34:46  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

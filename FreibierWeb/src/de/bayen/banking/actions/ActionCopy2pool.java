@@ -1,5 +1,5 @@
 /* Erzeugt am 02.04.2005 von tbayen
- * $Id: ActionCopy2pool.java,v 1.1 2005/04/05 21:34:48 tbayen Exp $
+ * $Id: ActionCopy2pool.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -23,6 +23,7 @@ import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.typedefinition.BLOB;
 import de.bayen.webframework.Action;
 import de.bayen.webframework.ActionDispatcher;
+import de.bayen.webframework.ServletDatabase;
 import de.bayen.webframework.WebDBDatabase;
 
 /**
@@ -34,7 +35,7 @@ import de.bayen.webframework.WebDBDatabase;
  */
 public class ActionCopy2pool implements Action {
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db) throws DatabaseException,
+			Map root, WebDBDatabase db, ServletDatabase servlet) throws DatabaseException,
 			ServletException {
 		// Transaktionen aus der Datenbank holen
 		Table tab = db.getTable("Ausgangskoerbe");
@@ -101,11 +102,16 @@ public class ActionCopy2pool implements Action {
 		// Umleitung auf andere Action
 		Map uri = (Map) root.get("uri");
 		uri.put("action", "show");
-		ad.executeAction("show", req, root, db);
+		ad.executeAction("show", req, root, db, servlet);
 	}
 }
 /*
  * $Log: ActionCopy2pool.java,v $
+ * Revision 1.2  2005/04/18 10:57:55  tbayen
+ * Urlaubsarbeit:
+ * Eigenes View, um Exceptions abzufangen
+ * System von verteilten Properties-Dateien
+ *
  * Revision 1.1  2005/04/05 21:34:48  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

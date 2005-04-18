@@ -3,6 +3,8 @@ TODO:
 
 
 nötig:
+- DTAUS-Dateien zu Transaktionen wandeln
+- bestimmte Zeichen (:.) im Verwendungszweck nicht erlaubt?!?
 - BayenWeb
   - Aktualisierung statt neuimport
   - Filter (z.B. nach Aussendienstlern)
@@ -22,6 +24,7 @@ wünschenswert:
   - Themes abhängig vom Benutzer / der Rolle
 - Benutzerfreundlichkeit
   - Eurozeichen (DTAUS-Summe) nur angezeigt, wenn Browser umgestellt
+  - verbesserte Navigation
   - Ausgabe von Auszugsdaten in schönerem Zahlenformat
   - Anker zum Aufruf bestimmter Teile der Seiten
   - Paging bei der Listenanzeige
@@ -42,6 +45,10 @@ nicht wirklich nötig:
 - Sortieren nach Fremdschlüsseln
 
 erledigt:
+- properties-Dateien selber kommentieren
+- Benutzung der Properties-Dateien dokumentieren
+- spezifische Properties-Dateien für alle Einstellungen ermöglichen
+- Fehler abfangen und besser darstellen
 - Ausrichtung von Zahlen rechtsbündig
 - Daten aus alter (Maypole-)Applikation übernehmen
 - bei neuer Transaktion Korb vorbelegen

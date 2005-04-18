@@ -1,5 +1,5 @@
 /* Erzeugt am 19.03.2005 von tbayen
- * $Id: ActionDispatcher.java,v 1.1 2005/04/05 21:34:46 tbayen Exp $
+ * $Id: ActionDispatcher.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -26,20 +26,26 @@ public interface ActionDispatcher {
 	 * Seiteneffekt sein (z.B. Änderungen in der Datenbank), kann aber auch
 	 * eine Ausgabe bzw. Änderung im Model (in der <code>Map root</code>) 
 	 * sein.
-	 * 
 	 * @param action
 	 * @param req
 	 * @param root
 	 * @param db
+	 * @param servlet TODO
+	 * 
 	 * @throws DatabaseException
 	 * @throws ServletException
 	 */
 	public void executeAction(String action, HttpServletRequest req, Map root,
-			WebDBDatabase db) throws DatabaseException, ServletException;
+			WebDBDatabase db, ServletDatabase servlet) throws DatabaseException, ServletException;
 }
 
 /*
  * $Log: ActionDispatcher.java,v $
+ * Revision 1.2  2005/04/18 10:57:55  tbayen
+ * Urlaubsarbeit:
+ * Eigenes View, um Exceptions abzufangen
+ * System von verteilten Properties-Dateien
+ *
  * Revision 1.1  2005/04/05 21:34:46  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *
