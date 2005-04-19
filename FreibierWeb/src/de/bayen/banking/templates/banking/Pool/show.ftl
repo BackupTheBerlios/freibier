@@ -1,5 +1,5 @@
 <#-- Erzeugt am 03.04.2005 von tbayen
-     $Id: show.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ -->
+     $Id: show.ftl,v 1.3 2005/04/19 17:17:04 tbayen Exp $ -->
 <#assign title="Auftrag '${record.getField(fields[0]).format()}' aus dem Pool"/>
 <#include "include/editmacros.ftl"/>
 <#assign menu1_name=uri.table>
@@ -19,6 +19,7 @@
     <a href="<@call view="editform"/>">Diese Daten ändern</a>
   </td></tr><tr><td colspan="2">
   </td></tr></table>
+
   <h2>Informationen aus der DTAUS-Datei</h2>
   <#if dtauslg=="L">
     <#assign dtaustyp="Lastschriften"/>
@@ -31,15 +32,34 @@
     <li>Summe: ${dtaussumme} &euro;</li>
     <li>Lastschrift oder Überweisung: ${dtaustyp}</li>
   </ul>
+
   <h2>Versenden der ${dtaustyp}</h2>
   <form name="form" action="<@call action="senddtaus" view="show"/>" method="post">
   	TAN: <input name="tan" type="text" value="" size="6" maxlength="6"/>
     <button name="submit" type="submit" value="ok">${dtaustyp} zur Bank senden</button>
   </form>
+
+  <h2>DTAUS-Datei wieder in Ausgangskorb zurückholen</h2>
+  Diese Funktion dient z.B. zur Korrektur von bereits in den Pool gestellten
+  Aufträgen. Bei Lastschriften wird die Information, ob es sich um einen 
+  Einzug oder um eine Abbuchung handelt, nicht mit eingelesen. Sind die 
+  Last-/Gutschriften wieder im Ausgangskorb, wird die Pool-Datei nicht gelöscht. 
+  Dies muss ggf. von Hand gemacht werden.
+  <form name="form" action="<@call action="dtausparse" view="show"/>" method="post">
+    <select name="_konto">
+      <#list korbliste as option>
+    	<option value="${option.value}">${option.name}</option>
+      </#list>  
+    </select>
+    <button name="submit" type="submit" value="ok">${dtaustyp} in angegebenen Ausgangskorb kopieren</button>
+  </form>
 </@page>
 
 <#--
 * $Log: show.ftl,v $
+* Revision 1.3  2005/04/19 17:17:04  tbayen
+* DTAUS-Dateien wieder einlesen in die Datenbank
+*
 * Revision 1.2  2005/04/06 21:14:10  tbayen
 * Anwenderprobleme behoben,
 * redirect-view implementiert

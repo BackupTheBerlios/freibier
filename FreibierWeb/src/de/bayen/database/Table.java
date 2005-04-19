@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.1 2005/04/05 21:34:47 tbayen Exp $
+ * $Id: Table.java,v 1.2 2005/04/19 17:17:04 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -174,7 +174,7 @@ public class Table {
 
 	/**
 	 * Diese Funktion erlaubt, Datensätze über eine fortlaufende Nummer
-	 * anzusprechen. Der erste Datensatz hat die Nummer 1, der letzte die
+	 * anzusprechen. Der erste Datensatz hat die Nummer 0, der letzte die
 	 * Nummer getNumberOfRecords(). die Sortierung kann angegeben werden,
 	 * ansonsten wird nach dem Primärschlüssel sortiert.
 	 * 
@@ -352,6 +352,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.2  2005/04/19 17:17:04  tbayen
+ * DTAUS-Dateien wieder einlesen in die Datenbank
+ *
  * Revision 1.1  2005/04/05 21:34:47  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

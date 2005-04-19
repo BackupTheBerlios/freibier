@@ -3,14 +3,15 @@ TODO:
 
 
 nötig:
-- DTAUS-Dateien dekodieren und zu Transaktionen wandeln
+- BLZ-Feldname in der Datenbank in Grossbuchstaben ändern 
+    (dann Spezial-Templates für Transaktionen zurücksetzen)
+- Anzeige von Banken zur BLZ
+- Empfängerdaten speichern und wiederholen
 - BayenWeb
   - Aktualisierung statt neuimport
   - Filter (z.B. nach Aussendienstlern)
   - Telefonnummern in Liste für Günther
 wünschenswert:
-- BLZ-Feldname in der Datenbank in Grossbuchstaben ändern 
-    (dann Spezial-Templates für Transaktionen zurücksetzen)
 - interne Verbesserungen
   - HBCICallback multithreading-konform benutzen
   - evtl. Session-Einstellungen für Theme, Filter, etc.
@@ -31,9 +32,10 @@ wünschenswert:
   - Filter in Liste
   - Wechsel der Datenbankverbindung
   - Bilder in der Datenbank
-- weitere Applikationen
+- weitere Applikationen, z.B.:
   - Adressbuch
   - Event-Manager
+  - OP-Manager
 nicht wirklich nötig:
 - Versionsnummer nicht in Webadresse benutzen?
 - Codierung des Theme ändern
@@ -42,6 +44,7 @@ nicht wirklich nötig:
 - Sortieren nach Fremdschlüsseln
 
 erledigt:
+- DTAUS-Dateien dekodieren und zu Transaktionen wandeln
 - bestimmte Zeichen (:.) im Verwendungszweck nicht erlaubt?!?
 - Eurozeichen (DTAUS-Summe) nur angezeigt, wenn Browser-Encoding umgestellt
 - Guten Platz für Passwörter finden

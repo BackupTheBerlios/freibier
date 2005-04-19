@@ -1,5 +1,5 @@
 /* Erzeugt am 02.04.2005 von tbayen
- * $Id: ActionSenddtaus.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
+ * $Id: ActionSenddtaus.java,v 1.3 2005/04/19 17:17:04 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -53,13 +53,20 @@ public class ActionSenddtaus implements Action {
 		Record record = tab.getRecordByPrimaryKey(tab.getRecordDefinition()
 				.getFieldDef("id").parse(recordid));
 		BLOB dtausblob = ((BLOB) record.getField("DTAUS").getValue());
-		DTAUSReader dtaus = new DTAUSReader(dtausblob.toByteArray());
 		// Konto-Datensatz suchen
 		Table k_tab = db.getTable("Konten");
-		QueryCondition cond = k_tab.new QueryCondition("Kontonummer",
-				Table.QueryCondition.EQUAL, dtaus.getKontonummer());
-		cond.and(k_tab.new QueryCondition("BLZ", Table.QueryCondition.EQUAL,
-				dtaus.getBLZ()));
+		QueryCondition cond;
+		String lastorgut;
+		try {
+			DTAUSReader dtaus = new DTAUSReader(dtausblob.toByteArray());
+			cond = k_tab.new QueryCondition("Kontonummer",
+					Table.QueryCondition.EQUAL, dtaus.getA_Kontonummer());
+			cond.and(k_tab.new QueryCondition("BLZ",
+					Table.QueryCondition.EQUAL, dtaus.getA_BLZ()));
+			lastorgut=dtaus.getA_LastOrGut();
+		} catch (Exception e) {
+			throw new ServletException("Fehler beim Lesen der DTAUS-Datei",e);
+		}
 		List records = k_tab.getRecordsFromQuery(cond, k_tab
 				.getRecordDefinition().getFieldDef(0).getName(), true);
 		if (records.size() == 1) { //Konto gefunden?
@@ -83,7 +90,7 @@ public class ActionSenddtaus implements Action {
 						.getCallback();
 				// Job zum Versand der DTAUS-Datei erzeugen
 				HBCIJob auszug;
-				if (dtaus.getLastOrGut().equals("L")) {
+				if (lastorgut.equals("L")) {
 					auszug = hbciHandle.newJob("MultiLast");
 				} else {
 					auszug = hbciHandle.newJob("MultiUeb");
@@ -135,6 +142,9 @@ public class ActionSenddtaus implements Action {
 }
 /*
  * $Log: ActionSenddtaus.java,v $
+ * Revision 1.3  2005/04/19 17:17:04  tbayen
+ * DTAUS-Dateien wieder einlesen in die Datenbank
+ *
  * Revision 1.2  2005/04/18 10:57:55  tbayen
  * Urlaubsarbeit:
  * Eigenes View, um Exceptions abzufangen

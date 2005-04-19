@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.5 2005/04/18 13:11:53 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.6 2005/04/19 17:17:04 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -308,7 +308,6 @@ public abstract class ServletDatabase extends HttpServlet {
 			} else {
 				contenttype = "text/html; charset=" + t.getEncoding();
 			}
-			logger.debug(cfg.getLocale().toString());
 			resp.setContentType(contenttype);
 			resp.getOutputStream().write(os.toByteArray());
 		} catch (TemplateException e) {
@@ -353,6 +352,9 @@ public abstract class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.6  2005/04/19 17:17:04  tbayen
+ * DTAUS-Dateien wieder einlesen in die Datenbank
+ *
  * Revision 1.5  2005/04/18 13:11:53  tbayen
  * Sonderzeichen wie ":" im Verwendungszweck erlaubt
  *
