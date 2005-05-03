@@ -1,5 +1,5 @@
 /* Erzeugt am 05.04.2005 von tbayen
- * $Id: ActionDtausimport.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
+ * $Id: ActionDtausimport.java,v 1.3 2005/05/03 11:21:14 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -62,13 +62,16 @@ public class ActionDtausimport implements Action {
 				fisch.setField("DTAUS", new DataObject(new BLOB(dtaus), fisch
 						.getRecordDefinition().getFieldDef("DTAUS")));
 				pool.setRecord(fisch);
-				//dir[i].delete();
+				dir[i].delete();
 			}
 		} catch (FileNotFoundException e) {} catch (IOException e) {}
 	}
 }
 /*
  * $Log: ActionDtausimport.java,v $
+ * Revision 1.3  2005/05/03 11:21:14  tbayen
+ * löschen von Daten, die weiterbearbeitet wurden
+ *
  * Revision 1.2  2005/04/18 10:57:55  tbayen
  * Urlaubsarbeit:
  * Eigenes View, um Exceptions abzufangen

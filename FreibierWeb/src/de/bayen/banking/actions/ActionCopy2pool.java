@@ -1,5 +1,5 @@
 /* Erzeugt am 02.04.2005 von tbayen
- * $Id: ActionCopy2pool.java,v 1.3 2005/04/18 13:11:53 tbayen Exp $
+ * $Id: ActionCopy2pool.java,v 1.4 2005/05/03 11:21:15 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -86,11 +86,11 @@ public class ActionCopy2pool implements Action {
 				}
 			}
 			dtaus.addEntry(hbcita);
-			// TODO Records werden noch nicht gelöscht
-			//t_tab.deleteRecord(ta);
+			t_tab.deleteRecord(ta);
 		}
 		// Bevor ich HBCI4Java-Funktionen aufrufe, muss mit den folgenden
 		// zwei Befehlen die Bibliothek initialisiert werden:
+		// TODO: HBCI4Java sollte zentral initialisiert werden
 		HBCICallbackWebinterface callback = new HBCICallbackWebinterface(
 				new HashMap());
 		HBCIUtils.init(null, null, callback);
@@ -111,13 +111,14 @@ public class ActionCopy2pool implements Action {
 						"DTAUS")));
 		pool.setRecord(fisch);
 		// Umleitung auf andere Action
-		Map uri = (Map) root.get("uri");
-		uri.put("action", "show");
 		ad.executeAction("show", req, root, db, servlet);
 	}
 }
 /*
  * $Log: ActionCopy2pool.java,v $
+ * Revision 1.4  2005/05/03 11:21:15  tbayen
+ * löschen von Daten, die weiterbearbeitet wurden
+ *
  * Revision 1.3  2005/04/18 13:11:53  tbayen
  * Sonderzeichen wie ":" im Verwendungszweck erlaubt
  *
