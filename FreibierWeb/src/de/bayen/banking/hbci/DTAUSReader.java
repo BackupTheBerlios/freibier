@@ -1,5 +1,5 @@
 /* Erzeugt am 03.04.2005 von tbayen
- * $Id: DTAUSReader.java,v 1.2 2005/04/19 17:17:04 tbayen Exp $
+ * $Id: DTAUSReader.java,v 1.3 2005/05/03 11:54:53 tbayen Exp $
  */
 package de.bayen.banking.hbci;
 
@@ -103,6 +103,11 @@ public class DTAUSReader {
 	public String getC_Kontonummer(int satz) {
 		int offset = ((Integer) csatzoffsets.get(satz)).intValue();
 		return extract(offset + 4 + 1 + 8 + 8, 10);
+	}
+
+	public String getC_Textschluessel(int satz) {
+		int offset = ((Integer) csatzoffsets.get(satz)).intValue();
+		return extract(offset + 4 + 1 + 8 + 8 + 10 + 13, 2);
 	}
 
 	public String getC_Betrag(int satz) {
@@ -211,6 +216,9 @@ public class DTAUSReader {
 }
 /*
  * $Log: DTAUSReader.java,v $
+ * Revision 1.3  2005/05/03 11:54:53  tbayen
+ * Bei Dtausparse den Textschlüssel in den VWZ schreiben
+ *
  * Revision 1.2  2005/04/19 17:17:04  tbayen
  * DTAUS-Dateien wieder einlesen in die Datenbank
  *

@@ -1,5 +1,5 @@
 /* Erzeugt am 18.04.2005 von tbayen
- * $Id: ActionDtausparse.java,v 1.1 2005/04/19 17:17:04 tbayen Exp $
+ * $Id: ActionDtausparse.java,v 1.2 2005/05/03 11:54:53 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -47,8 +47,13 @@ public class ActionDtausparse implements Action {
 				ta.setField("Kontonummer",dtaus.getC_Kontonummer(i));
 				ta.setField("Ausgangskorb",req.getParameter("_konto"));
 				ta.setField("Betrag",dtaus.getC_Betrag(i));
+				//TODO: eine schönere Lösung ist mir nicht eingefallen:
+				String textschl=dtaus.getC_Textschluessel(i);
+				if((!textschl.equals("04"))&&(!textschl.equals("05"))){
+					textschl="";
+				}
 				List vwz=dtaus.getC_Verwendungszweck(i);
-				ta.setField("Vwz1",(String)vwz.get(0));
+				ta.setField("Vwz1",textschl+(String)vwz.get(0));
 				if(vwz.size()>1)
 					ta.setField("Vwz2",(String)vwz.get(1));
 				if(vwz.size()>2)
@@ -66,6 +71,9 @@ public class ActionDtausparse implements Action {
 
 /*
  * $Log: ActionDtausparse.java,v $
+ * Revision 1.2  2005/05/03 11:54:53  tbayen
+ * Bei Dtausparse den Textschlüssel in den VWZ schreiben
+ *
  * Revision 1.1  2005/04/19 17:17:04  tbayen
  * DTAUS-Dateien wieder einlesen in die Datenbank
  *
