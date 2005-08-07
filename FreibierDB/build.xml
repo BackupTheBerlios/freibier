@@ -1,0 +1,79 @@
+<project name="FreibierDB" default="compile" basedir=".">
+
+	<!-- ==================== File and Directory Names ======================== -->
+	  <property name="app.name"      value="FreibierDB"/>
+	  <property name="app.path"      value="/${app.name}"/>
+	  <property name="app.version"   value="1.0"/>
+	  <property name="build.home"    value="${basedir}/build"/>
+	  <property name="dist.home"     value="${basedir}/dist"/>
+	  <property name="src.home"      value="${basedir}/src"/>
+	  <property name="lib.home"      value="${basedir}/lib"/>
+	  <property name="doc.home"      value="${basedir}/doc"/>
+
+	<path id="compile.classpath">
+	  	<fileset dir="${lib.home}">
+	  		<include name="*.jar"/>
+    	</fileset>
+	</path>
+
+	
+	<!-- ==================== javadoc Target ================================== -->
+	<target name="javadoc" depends="compile"
+		description="Create Javadoc API documentation">
+
+	    <mkdir dir="${dist.home}/docs/api"/>
+	    <javadoc sourcepath="${src.home}"
+	                destdir="${dist.home}/docs/api"
+					overview="${src.home}/overview.html"
+	           packagenames="*">
+	      <classpath refid="compile.classpath"/>
+	    </javadoc>
+
+	  </target>
+
+	
+	
+	<!-- ==================== prepare Target ======================== -->
+	<target name="prepare">
+	    <mkdir  dir="${build.home}"/>
+	</target>
+
+	
+	<!-- ==================== compile Target ======================== -->
+	  <target name="compile" depends="prepare"
+	   description="Compile Java sources">
+
+	    <!-- Compile Java classes as necessary -->
+	    <javac srcdir="${src.home}"
+	          destdir="${build.home}"
+	            debug="${compile.debug}"
+	      deprecation="${compile.deprecation}"
+	         optimize="${compile.optimize}">
+	        <classpath refid="compile.classpath"/>
+	    </javac>
+
+	    <!-- Copy application resources -->
+	    <copy  todir="${build.home}">
+	      <fileset dir="${src.home}" excludes="**/*.java"/>
+	    </copy>
+
+	  </target>
+
+	
+	<!-- ==================== dist Target ======================== -->
+	<target name="dist" depends="compile, javadoc"
+		description="Create binary distribution">
+
+  		<!-- Create application JAR file -->
+    	<mkdir dir="${dist.home}"/>
+    	<jar jarfile="${dist.home}/${app.name}-${app.version}.jar"
+			basedir="${build.home}">
+		</jar>
+  	
+	    <mkdir dir="${dist.home}/docs"/>
+    	<copy  todir="${dist.home}/docs">
+      		<fileset dir="${doc.home}" excludes="**/*.java"/>
+    	</copy>
+	</target>
+
+</project>
