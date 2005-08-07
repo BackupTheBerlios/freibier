@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionNew.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
+ * $Id: ActionNew.java,v 1.3 2005/08/07 16:56:13 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -41,7 +41,6 @@ public class ActionNew implements Action {
 		// Ich leite auf edit um, dann kann man beim new-Aufruf noch per
 		// Parameter direkt einige Felder neu füllen. edit ruft dann show
 		// auf, so dass der neue Datensatz direkt angezeigt werden kann.
-		uri.put("action", "edit");
 		uri.put("id", recordid);
 		ad.executeAction("edit", req, root, db, servlet);
 	}
@@ -49,6 +48,9 @@ public class ActionNew implements Action {
 
 /*
  * $Log: ActionNew.java,v $
+ * Revision 1.3  2005/08/07 16:56:13  tbayen
+ * Produktionsversion 1.5
+ *
  * Revision 1.2  2005/04/18 10:57:55  tbayen
  * Urlaubsarbeit:
  * Eigenes View, um Exceptions abzufangen

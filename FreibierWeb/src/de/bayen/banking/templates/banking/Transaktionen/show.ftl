@@ -1,5 +1,5 @@
 <#-- Erzeugt am 02.04.2005 von tbayen
-     $Id: show.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ -->
+     $Id: show.ftl,v 1.3 2005/08/07 16:56:13 tbayen Exp $ -->
 <#assign title="Lastschrift/Überweisung"/>
 <#include "include/editmacros.ftl"/>
 <@page>
@@ -8,10 +8,11 @@
     <table class="fill">
       <#list fields as feld>
         <tr>
-          <#if feld=="blz"> <#-- Das finde ich nicht schön -->
+          <#if feld=="BLZ">
             <th>BLZ</th>
             <td class="maxwidth nowrap">
               <@eingabefeld feld=feld record=record/>
+              (${record_bankname})
             </td>
           <#else/>
             <@datenfeld feld=feld record=record/>
@@ -47,6 +48,9 @@
 
 <#--
 * $Log: show.ftl,v $
+* Revision 1.3  2005/08/07 16:56:13  tbayen
+* Produktionsversion 1.5
+*
 * Revision 1.2  2005/04/06 21:14:10  tbayen
 * Anwenderprobleme behoben,
 * redirect-view implementiert

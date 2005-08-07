@@ -1,5 +1,5 @@
 <#-- Erzeugt am 05.04.2005 von tbayen
-     $Id: editform.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ -->
+     $Id: editform.ftl,v 1.3 2005/08/07 16:56:13 tbayen Exp $ -->
 <#assign title="Lastschrift/Überweisung eingeben bzw. ändern"/>
 <#include "include/editmacros.ftl"/>
 <@page>
@@ -12,10 +12,11 @@
     <table class="fill">
       <#list fields as feld>
         <tr>
-          <#if feld=="blz"> <#-- Das finde ich nicht schön -->
+          <#if feld=="BLZ">
             <th>BLZ</th>
             <td class="maxwidth nowrap">
               <@feldeingabefeld feld=feld record=record/>
+              (${record_bankname})
             </td>
           <#else/>
             <@dateneingabefeld feld=feld record=record/>
@@ -26,38 +27,32 @@
   </td></tr><tr><td class="layout">
     <table class="fill maxwidth">
       <tr>
-        <td class="leftbutton oneofthree">
+        <td class="leftbutton oneoffour">
           <button name="submit" type="submit" value="ok">Eingabe bestät.</button>
+        </td><td class="middlebutton oneoffour">
+          <button type="submit" name="action" value="searchvorlage" 
+                  title="Nach Vorlage suchen">
+            Vorlage <@icon name="find" alt="?"/>
+          </button>
           </form>
-        </td><td class="middlebutton oneofthree">
+        </td><td class="middlebutton oneoffour">
           <form name="newbutton" action="<@call action="new" view="editform" id="-"/>" method="post">
             <button name="new" type="submit" value="ok">Neuer Datensatz</button>
           </form>
-        </td><td class="rightbutton oneofthree">
+        </td><td class="rightbutton oneoffour">
           <form name="deletebutton" action="<@call action="delete"/>" method="post">
             <button name="delete" type="submit" value="ok">Diesen löschen</button>
           </form>
         </td>
       </tr>
     </table>
-
-  <#if (lists?size>0) >
-    </td></tr><tr><td>
-    <h2>enthaltene Listen</h2>
-  </#if>
-  <#list lists as thislist>
-  </td></tr><tr><td>
-    <h3>${thislist.name}</h3>
-    <table class="fill">
-      <@unterliste sublist=thislist/>
-    </table>
-    <@sublistnewbutton sublist=thislist/>
-    </#list>
-  </td></tr></table>
 </@page>
 
 <#--
 * $Log: editform.ftl,v $
+* Revision 1.3  2005/08/07 16:56:13  tbayen
+* Produktionsversion 1.5
+*
 * Revision 1.2  2005/04/06 21:14:10  tbayen
 * Anwenderprobleme behoben,
 * redirect-view implementiert

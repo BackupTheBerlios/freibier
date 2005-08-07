@@ -96,6 +96,9 @@ td.middlebutton{
 td.oneofthree{
   width:33%;
 }
+td.oneoffour{
+  width:25%;
+}
 .maxheight{          /* Diese Reihe füllt z.B. die Seite nach unten auf */
   height: 100%;
 }

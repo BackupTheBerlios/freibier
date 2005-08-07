@@ -1,5 +1,5 @@
 /* Erzeugt am 09.10.2004 von tbayen
- * $Id: TypeDefinitionString.java,v 1.1 2005/04/05 21:34:46 tbayen Exp $
+ * $Id: TypeDefinitionString.java,v 1.2 2005/08/07 16:56:14 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -15,7 +15,7 @@ public class TypeDefinitionString extends TypeDefinition {
 		
 	public TypeDefinitionString() {
 		super();
-		defaultValue = "";
+		defaultValue="";
 	}
 
 	public Class getJavaType(){
@@ -48,6 +48,9 @@ public class TypeDefinitionString extends TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionString.java,v $
+ * Revision 1.2  2005/08/07 16:56:14  tbayen
+ * Produktionsversion 1.5
+ *
  * Revision 1.1  2005/04/05 21:34:46  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

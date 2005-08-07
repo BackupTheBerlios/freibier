@@ -1,5 +1,5 @@
 <#-- Erzeugt am 21.02.2005 von tbayen
-     $Id: tables.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ -->
+     $Id: tables.ftl,v 1.3 2005/08/07 16:56:13 tbayen Exp $ -->
 <#assign title="Banking-Programm"/>
 <#include "include/macros.ftl"/>
 <@page>
@@ -35,11 +35,15 @@
       <@link theme="standard" action="tables">
         <@icon name="fileimport" title="Datenbank-Administration"/>
         Datenbank-Administrationsmodus</@link>
+      (nur für den Systemverwalter)
     </li>
   </ul>
 </@page>
 <#--
 * $Log: tables.ftl,v $
+* Revision 1.3  2005/08/07 16:56:13  tbayen
+* Produktionsversion 1.5
+*
 * Revision 1.2  2005/04/06 21:14:10  tbayen
 * Anwenderprobleme behoben,
 * redirect-view implementiert

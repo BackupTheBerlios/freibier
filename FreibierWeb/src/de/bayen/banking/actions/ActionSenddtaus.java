@@ -1,5 +1,5 @@
 /* Erzeugt am 02.04.2005 von tbayen
- * $Id: ActionSenddtaus.java,v 1.3 2005/04/19 17:17:04 tbayen Exp $
+ * $Id: ActionSenddtaus.java,v 1.4 2005/08/07 16:56:15 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -135,13 +135,14 @@ public class ActionSenddtaus implements Action {
 		}
 		logger.debug("Senddtaus-Action abgeschlossen");
 		// Umleitung auf andere Action
-		Map uri = (Map) root.get("uri");
-		uri.put("action", "show");
 		ad.executeAction("show", req, root, db, servlet);
 	}
 }
 /*
  * $Log: ActionSenddtaus.java,v $
+ * Revision 1.4  2005/08/07 16:56:15  tbayen
+ * Produktionsversion 1.5
+ *
  * Revision 1.3  2005/04/19 17:17:04  tbayen
  * DTAUS-Dateien wieder einlesen in die Datenbank
  *

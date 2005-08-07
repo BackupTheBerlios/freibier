@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionSearch.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
+ * $Id: ActionSearch.java,v 1.3 2005/08/07 16:56:13 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -19,7 +19,8 @@ import de.bayen.webframework.ServletDatabase;
 import de.bayen.webframework.WebDBDatabase;
 
 /**
- * TODO Klassenbeschreibung für die Klasse "ActionSearch"
+ * Sucht einen Datensatz anhand der Eingaben in den übergebenen Parametern.
+ * Als Ergebnis wird immer nur ein Datensatz zurückgeliefert (oder keiner).
  * 
  * @author tbayen
  */
@@ -42,9 +43,21 @@ public class ActionSearch implements Action {
 			String parameter = (String) it.next();
 			if (parameter.charAt(0) == '_') {
 				// Mit _ beginnen alle Datenfelder in meinen Formularen
+				String value=req.getParameter(parameter);
+				int operator;
+				if(value.matches(".*%.*")){
+					operator=Table.QueryCondition.LIKE;
+				}else if(value.charAt(0)=='>'){
+					operator=Table.QueryCondition.LESS;
+					value=value.substring(1);
+				}else if(value.charAt(0)=='<'){
+					operator=Table.QueryCondition.GREATER;
+					value=value.substring(1);
+				}else{
+					operator=Table.QueryCondition.EQUAL;
+				}
 				QueryCondition nextcond = tab.new QueryCondition(parameter
-						.substring(1), Table.QueryCondition.EQUAL, req
-						.getParameter(parameter));
+						.substring(1), operator,value);
 				if (condi == null) {
 					condi = nextcond;
 				} else {
@@ -54,11 +67,13 @@ public class ActionSearch implements Action {
 		}
 		List records = tab.getRecordsFromQuery(condi, tab.getRecordDefinition()
 				.getPrimaryKey(), true);
+		// Fertigmachen für ein List-View
+		root.put("list", records);
 		if (records.size() == 0) {
 			return;
 		} else {
-			// Umleitung auf andere Action
-			uri.put("action", "show");
+			// Umleitung auf andere Action 
+			// (für ein Show-View des ersten Satzes)
 			Record record = (Record) records.get(0);
 			uri.put("id", record.getField(
 					record.getRecordDefinition().getPrimaryKey()).format());
@@ -69,6 +84,9 @@ public class ActionSearch implements Action {
 
 /*
  * $Log: ActionSearch.java,v $
+ * Revision 1.3  2005/08/07 16:56:13  tbayen
+ * Produktionsversion 1.5
+ *
  * Revision 1.2  2005/04/18 10:57:55  tbayen
  * Urlaubsarbeit:
  * Eigenes View, um Exceptions abzufangen

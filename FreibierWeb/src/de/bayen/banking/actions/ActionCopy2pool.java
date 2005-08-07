@@ -1,5 +1,5 @@
 /* Erzeugt am 02.04.2005 von tbayen
- * $Id: ActionCopy2pool.java,v 1.4 2005/05/03 11:21:15 tbayen Exp $
+ * $Id: ActionCopy2pool.java,v 1.5 2005/08/07 16:56:15 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -86,7 +86,9 @@ public class ActionCopy2pool implements Action {
 				}
 			}
 			dtaus.addEntry(hbcita);
-			t_tab.deleteRecord(ta);
+			if(ausgangskorb.getFormatted("Dauerauftraege").equals("false")){
+				t_tab.deleteRecord(ta);
+			}
 		}
 		// Bevor ich HBCI4Java-Funktionen aufrufe, muss mit den folgenden
 		// zwei Befehlen die Bibliothek initialisiert werden:
@@ -116,6 +118,9 @@ public class ActionCopy2pool implements Action {
 }
 /*
  * $Log: ActionCopy2pool.java,v $
+ * Revision 1.5  2005/08/07 16:56:15  tbayen
+ * Produktionsversion 1.5
+ *
  * Revision 1.4  2005/05/03 11:21:15  tbayen
  * löschen von Daten, die weiterbearbeitet wurden
  *

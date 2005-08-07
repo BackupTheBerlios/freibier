@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: TypeDefinition.java,v 1.2 2005/04/07 20:32:49 tbayen Exp $
+ * $Id: TypeDefinition.java,v 1.3 2005/08/07 16:56:14 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -45,12 +45,14 @@ abstract public class TypeDefinition {
 		typesMap.put(new Integer(Types.DOUBLE), TypeDefinitionDecimal.class);
 		typesMap.put(new Integer(Types.FLOAT), TypeDefinitionDecimal.class);
 		typesMap.put(new Integer(Types.INTEGER), TypeDefinitionInteger.class);
-		typesMap.put(new Integer(Types.LONGVARCHAR), TypeDefinitionString.class);
+		typesMap
+				.put(new Integer(Types.LONGVARCHAR), TypeDefinitionString.class);
 		typesMap.put(new Integer(Types.NUMERIC), TypeDefinitionDecimal.class);
 		typesMap.put(new Integer(Types.REAL), TypeDefinitionDecimal.class);
 		typesMap.put(new Integer(Types.SMALLINT), TypeDefinitionInteger.class);
 		typesMap.put(new Integer(Types.TIME), TypeDefinitionTime.class);
-		typesMap.put(new Integer(Types.TIMESTAMP), TypeDefinitionDateTime.class);
+		typesMap
+				.put(new Integer(Types.TIMESTAMP), TypeDefinitionDateTime.class);
 		// Types.DATETIME gibts nicht, weil das gleich Types.TIMESTAMP ist
 		typesMap.put(new Integer(Types.TINYINT), TypeDefinitionBool.class);
 		typesMap.put(new Integer(Types.VARCHAR), TypeDefinitionString.class);
@@ -94,6 +96,9 @@ abstract public class TypeDefinition {
 			typeDef.setSQLType(type);
 			typeDef.setName(name);
 			typeDef.setLength(length);
+			String def = typeDef.getProperty("default");
+			if (def != null)
+				typeDef.setDefaultValue(typeDef.parse(def));
 		} catch (InstantiationException e) {
 			throw new SystemDatabaseException(
 					"Spezialisierung von TypeDefinition fehlt (1)", e, log);
@@ -101,8 +106,11 @@ abstract public class TypeDefinition {
 			throw new SystemDatabaseException(
 					"Spezialisierung von TypeDefinition fehlt (2)", e, log);
 		} catch (NullPointerException e) {
-			throw new SystemDatabaseException("unbekannter Datentyp " + type, e,
-					log);
+			throw new SystemDatabaseException("unbekannter Datentyp " + type,
+					e, log);
+		} catch (DatabaseException e) {
+			throw new SystemDatabaseException(
+					"Fehler im Defaultwert des Datentyps " + type, e, log);
 		}
 		return typeDef;
 	}
@@ -137,7 +145,7 @@ abstract public class TypeDefinition {
 	public void setSQLType(int type) {
 		this.type = type;
 	}
-	
+
 	/**
 	 * Ergibt den Typ als Stringwert. Die Angabe entspricht einem SQL-Typ,
 	 * wobei der sich hier ergebende Typ nicht unbedingt identisch mit dem
@@ -145,11 +153,10 @@ abstract public class TypeDefinition {
 	 * 
 	 * @return String - SQL-Typ
 	 */
-	
-	public String getStringType(){
+	public String getStringType() {
 		// TODO Peter: Diese Funktion ist neu
-		int sqltype=getSQLType();
-		String type=String.valueOf(sqltype);
+		int sqltype = getSQLType();
+		String type = String.valueOf(sqltype);
 		if (sqltype == Types.VARCHAR) {
 			type = "char";
 		} else if (sqltype == Types.CHAR) {
@@ -161,9 +168,9 @@ abstract public class TypeDefinition {
 		} else if (sqltype == Types.DECIMAL) {
 			type = "decimal";
 		} else if (sqltype == Types.TINYINT) {
-			type = "bool";  // MySQL wandelt das in "tinyint(1)"
+			type = "bool"; // MySQL wandelt das in "tinyint(1)"
 		} else if (sqltype == Types.VARBINARY) {
-			type = "blob";  // in MySQL benutze ich hierfür mediumblob
+			type = "blob"; // in MySQL benutze ich hierfür mediumblob
 		}
 		return type;
 	}
@@ -284,6 +291,9 @@ abstract public class TypeDefinition {
 }
 /*
  * $Log: TypeDefinition.java,v $
+ * Revision 1.3  2005/08/07 16:56:14  tbayen
+ * Produktionsversion 1.5
+ *
  * Revision 1.2  2005/04/07 20:32:49  tbayen
  * Ausrichtung von Zahlenfeldern korrigiert
  *

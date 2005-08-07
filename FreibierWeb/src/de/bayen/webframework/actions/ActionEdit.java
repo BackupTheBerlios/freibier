@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionEdit.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
+ * $Id: ActionEdit.java,v 1.3 2005/08/07 16:56:13 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -67,13 +67,14 @@ public class ActionEdit implements Action {
 		// und in die Datenbank schreiben:
 		tab.setRecord(record);
 		// Umleitung auf andere Action
-		uri.put("action", "show");
-		uri.put("id", recordid);
 		ad.executeAction("show", req, root, db, servlet);
 	}
 }
 /*
  * $Log: ActionEdit.java,v $
+ * Revision 1.3  2005/08/07 16:56:13  tbayen
+ * Produktionsversion 1.5
+ *
  * Revision 1.2  2005/04/18 10:57:55  tbayen
  * Urlaubsarbeit:
  * Eigenes View, um Exceptions abzufangen

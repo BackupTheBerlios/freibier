@@ -1,5 +1,5 @@
 /* Erzeugt am 19.03.2005 von tbayen
- * $Id: ActionDispatcherClassLoader.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
+ * $Id: ActionDispatcherClassLoader.java,v 1.3 2005/08/07 16:56:14 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -19,7 +19,7 @@ import de.bayen.database.exception.DatabaseException;
  * sind die Standard-Actions).
  * <p>
  * Action-Klassen befinden sich immer in einem Unterpackage 
- * <code>...actions<code> und haben immer einen Namen, der mit "Action" anfängt, 
+ * <code>...actions</code> und haben immer einen Namen, der mit "Action" anfängt, 
  * gefolgt vom grossgeschriebenen Namen der Action.
  * 
  * @author tbayen
@@ -59,6 +59,9 @@ public class ActionDispatcherClassLoader implements ActionDispatcher {
 }
 /*
  * $Log: ActionDispatcherClassLoader.java,v $
+ * Revision 1.3  2005/08/07 16:56:14  tbayen
+ * Produktionsversion 1.5
+ *
  * Revision 1.2  2005/04/18 10:57:55  tbayen
  * Urlaubsarbeit:
  * Eigenes View, um Exceptions abzufangen

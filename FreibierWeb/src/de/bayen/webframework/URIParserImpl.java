@@ -1,5 +1,5 @@
 /* Erzeugt am 19.03.2005 von tbayen
- * $Id: URIParserImpl.java,v 1.2 2005/04/06 21:14:10 tbayen Exp $
+ * $Id: URIParserImpl.java,v 1.3 2005/08/07 16:56:14 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -20,9 +20,14 @@ import freemarker.template.TemplateModelIterator;
  * Umsetzung der URI-Parser-Klasse für das von mir bevorzugte URI-Format
  * 
  * Die URL hat die Bestandteile
- * 
+ * <pre>
  *     /context/servlet/[theme-[view-]]action[/table[/id]]
- * 
+ * </pre>
+ * <p>
+ * Besonderheit: Parameter aus dem Query-String oder POST-Parameter überladen 
+ * die Parameter aus dem URL-Pfad, wenn nötig. Damit kann ein Button in einem 
+ * Formular eine andere Action aufrufen als das Formular eigentlich nötig hat.
+ * </p>
  */
 public class URIParserImpl implements URIParser, URIParserForFreeMarker {
 	public Map parseURI(HttpServletRequest req) {
@@ -39,7 +44,7 @@ public class URIParserImpl implements URIParser, URIParserForFreeMarker {
 		map.put("baseurl", req.getContextPath());
 		String querystring = req.getQueryString() == null ? "" : "?"
 				+ req.getQueryString();
-		map.put("original", req.getRequestURI()+querystring);
+		map.put("original", req.getRequestURI() + querystring);
 		String url[] = req.getRequestURI().split("/");
 		map.put("context", url[1]);
 		map.put("servlet", url[2]);
@@ -47,13 +52,10 @@ public class URIParserImpl implements URIParser, URIParserForFreeMarker {
 			String parts[] = url[3].split("-");
 			switch (parts.length) {
 			case 1:
-				map.put("theme", "standard");
-				map.put("view", parts[0]);
 				map.put("action", parts[0]);
 				break;
 			case 2:
 				map.put("theme", parts[0]);
-				map.put("view", parts[1]);
 				map.put("action", parts[1]);
 				break;
 			case 3:
@@ -61,21 +63,38 @@ public class URIParserImpl implements URIParser, URIParserForFreeMarker {
 				map.put("view", parts[1]);
 				map.put("action", parts[2]);
 				break;
-			default:
-				map.put("theme", "standard");
-				map.put("view", "tables");
-				map.put("action", "tables");
-				break;
 			}
 		}
+		//
+		// Parameter aus dem Query-String oder POST-Parameter überladen 
+		// die Parameter aus dem URL-Pfad, wenn nötig.
+		if (req.getParameter("action") != null)
+			map.put("action", req.getParameter("action"));
+		if (req.getParameter("view") != null)
+			map.put("view", req.getParameter("view"));
+		if (req.getParameter("theme") != null)
+			map.put("theme", req.getParameter("theme"));
+		//
+		// Default-Werte:
+		// Ist keine action angegeben, so wird eine Einstiegs-Seite genommen
+		if (map.get("action") == null)
+			map.put("action", "tables");
+		// Ist kein view angegeben, wird der Name der Action genommen
+		if (map.get("view") == null)
+			map.put("view", map.get("action"));
+		// Ist kein theme angegeben, wird das Standard-Theme genommen
+		if (map.get("theme") == null)
+			map.put("theme", "standard");
+		//
 		// Ein view kann ein redirect enthalten, das '/' enthält. Diese
 		// werden als '\' kodiert
-		String view=(String)map.get("view");
+		String view = (String) map.get("view");
 		Perl5Util regex = new Perl5Util();
-		view=regex.substitute("s#!1#/#g",view);
-		view=regex.substitute("s#!2#-#g",view);
-		view=regex.substitute("s#!!#!#g",view);
-		map.put("view",view);
+		view = regex.substitute("s#!1#/#g", view);
+		view = regex.substitute("s#!2#-#g", view);
+		view = regex.substitute("s#!3#?#g", view);
+		view = regex.substitute("s#!!#!#g", view);
+		map.put("view", view);
 		if (url.length > 4) {
 			map.put("table", url[4]);
 		}
@@ -137,9 +156,10 @@ public class URIParserImpl implements URIParser, URIParserForFreeMarker {
 		String theme = (String) map.get("theme");
 		String view = (String) map.get("view");
 		Perl5Util regex = new Perl5Util();
-		view=regex.substitute("s#!#!!#g",view);
-		view=regex.substitute("s#/#!1#g",view);
-		view=regex.substitute("s#-#!2#g",view);
+		view = regex.substitute("s#!#!!#g", view);
+		view = regex.substitute("s#/#!1#g", view);
+		view = regex.substitute("s#-#!2#g", view);
+		view = regex.substitute("s#\\?#!3#g", view);
 		String action = (String) map.get("action");
 		String table = (String) map.get("table");
 		String id = (String) map.get("id");
@@ -183,6 +203,9 @@ public class URIParserImpl implements URIParser, URIParserForFreeMarker {
 }
 /*
  * $Log: URIParserImpl.java,v $
+ * Revision 1.3  2005/08/07 16:56:14  tbayen
+ * Produktionsversion 1.5
+ *
  * Revision 1.2  2005/04/06 21:14:10  tbayen
  * Anwenderprobleme behoben,
  * redirect-view implementiert

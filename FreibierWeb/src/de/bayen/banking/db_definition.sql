@@ -1,5 +1,5 @@
 # SQL-Definitionen
-# $Id: db_definition.sql,v 1.1 2005/04/05 21:34:47 tbayen Exp $
+# $Id: db_definition.sql,v 1.2 2005/08/07 16:56:14 tbayen Exp $
 
 create table Konten(
 	Bezeichnung			char(30),
@@ -42,7 +42,7 @@ create table Ausgangskoerbe (
 	Bezeichnung		char(30),
 	Konto			int,
 	Zahlungsart		int,
-	Dauerauftraege	boolean,
+	Dauerauftraege	bool,
 # ID-Feld
 	id int auto_increment, 
 	PRIMARY KEY(id)
@@ -67,7 +67,24 @@ create table Transaktionen (
 
 
 
+# Vorgegebene Daten
+###################
+insert into Konten (Bezeichnung,Kurzname,Inhaber,Kontonummer,BLZ,Sicherheitsmedium,id)
+    values("Testkonto","Test","Niemand","123456789","32050000","PinTan",1);
+
+insert into Zahlungsarten (Bezeichnung, Textschluessel, id) values("Überweisung","51",1);
+insert into Zahlungsarten (Bezeichnung, Textschluessel, id) values("Abbuchung (sofort)","04",2);
+insert into Zahlungsarten (Bezeichnung, Textschluessel, id) values("Einzug (6 Wochen)","05",3);
+
+insert into Ausgangskoerbe (Bezeichnung,Konto,Zahlungsart,Dauerauftraege)
+    values("Standardkorb",1,1,0);
+
+
+
 # $Log: db_definition.sql,v $
+# Revision 1.2  2005/08/07 16:56:14  tbayen
+# Produktionsversion 1.5
+#
 # Revision 1.1  2005/04/05 21:34:47  tbayen
 # WebDatabase 1.4 - freigegeben auf Berlios
 #

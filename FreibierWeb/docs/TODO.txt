@@ -2,18 +2,27 @@ TODO:
 -----
 
 
+auf dem Produktionssystem testen/umsetzen und ggf. fertigmachen:
+- BLZ-Feldname in der Datenbank in Grossbuchstaben ändern
+- Spezial-Templates für "blz" in Transaktionen zurücksetzen
+
 nötig:
-- BLZ-Feldname in der Datenbank in Grossbuchstaben ändern 
-    (dann Spezial-Templates für Transaktionen zurücksetzen)
-- Anzeige von Banken zur BLZ
-- Empfängerdaten speichern und wiederholen
+- banking
+  - Bei Umwandlung Pool->Korb ggf. Testkorb als Ziel vorgeben
 - BayenWeb
   - Aktualisierung statt neuimport
   - Filter (z.B. nach Aussendienstlern)
   - Telefonnummern in Liste für Günther
+  - Bei der Anlage neuer Datensätze haben Verweisfelder immer Index 1
 wünschenswert:
+- banking
+  - Liquiditätsmanagement
+  - Speichern von Kontoauszügen
+  - Vorkontierte Ausgabe von Kontoauszügen
 - interne Verbesserungen
   - HBCICallback multithreading-konform benutzen
+  - Wechsel (und Neuinitialisierung) der Datenbank möglich machen
+  - HBCI4Java zentral initialisieren (wird an manchen Stellen von Hand gemacht)
   - evtl. Session-Einstellungen für Theme, Filter, etc.
   - Connection Pool
   - System für Formulare, Validierung, etc.
@@ -22,10 +31,10 @@ wünschenswert:
   - logout, d.h. Formular-Login
   - Themes abhängig vom Benutzer / der Rolle
 - Benutzerfreundlichkeit
+  - Suchformular
   - verbesserte Navigation
   - Ausgabe von Auszugsdaten in schönerem Zahlenformat
   - Anker zum Aufruf bestimmter Teile der Seiten
-  - Paging bei der Listenanzeige
   - Focus wieder automatisch setzen (im Template oder im Controller?!?)
   - kein Javascript in Günther-Template
 - neue Funktionen
@@ -36,7 +45,12 @@ wünschenswert:
   - Adressbuch
   - Event-Manager
   - OP-Manager
+- database-Klassen
+  - benutzte Properties auf Methoden abbilden
+  - Interfaces erstellen
+  - API besser standardisieren: get/set, toString, etc.
 nicht wirklich nötig:
+- Paging bei der Listenanzeige
 - Versionsnummer nicht in Webadresse benutzen?
 - Codierung des Theme ändern
 - Euro-Zeichen eingeben und ausgeben (und in PHPMyAdmin auch)
@@ -44,6 +58,24 @@ nicht wirklich nötig:
 - Sortieren nach Fremdschlüsseln
 
 erledigt:
+Version 1.5
+- Codierung von "?" bei der Erzeugung von redirect-URL nötig
+- Bei Neuanlage von Datensätzen nicht direkt eine Vorlage erstellen
+- bei Suchfunktion prüfen, ob Vorlagenkorb existiert
+- Fehler bei der Neuanlage von Transaktionen wg. Suche nach Vorlagen
+Version 1.5rc
+- Datenbank-Parameter auch in die neuen Properties
+- Im Transaktions-editform Button für Suchfunktion nach unten
+- Empfängerdaten aus Vorlagen suchen
+- Empfängerdaten in Vorlagen speichern
+- Daueraufträge nicht löschen
+- beim parsen von DTAUS-Lastschriften kommt der Tctschlüssel in den VWZ
+- echtes löschen von nicht mehr benötigten Daten
+- Default-Werte aus Tabellen-Properties wurden nicht genommen
+- Anzeige von Banken zur BLZ
+- Im configdir eine Datei für globale Einstellungen (config.properties)
+- Zahlungsarten fest in neue SQL-Init-Daten
+- Standard-Konto und -Korb in SQL-Init-Daten
 - DTAUS-Dateien dekodieren und zu Transaktionen wandeln
 - bestimmte Zeichen (:.) im Verwendungszweck nicht erlaubt?!?
 - Eurozeichen (DTAUS-Summe) nur angezeigt, wenn Browser-Encoding umgestellt
@@ -144,3 +176,20 @@ Sonstige Notizen
 ----------------
 Pennewitz (Innenausbauer von Malomo) 02151/398885, 0173/5111014
 Fabian: 0511/7900580
+
+name=banking
+host=sqlserver
+user=kontaktdaten
+password=kontaktdaten
+
+bayenweb:
+name=kontaktdaten
+host=sqlserver
+user=kontaktdaten
+password=kontaktdaten
+
+kontaktdaten:
+name=tbayen
+host=sqlserver
+user=kontaktdaten
+password=kontaktdaten

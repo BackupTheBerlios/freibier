@@ -1,5 +1,5 @@
 <#-- Erzeugt am 26.02.2005 von tbayen
-     $Id: editmacros.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ 
+     $Id: editmacros.ftl,v 1.3 2005/08/07 16:56:15 tbayen Exp $ 
      
      Diese Datei enthält verschiedene Makros, die die Arbeit von "editform.ftl"
      einfacher und übersichtlicher machen 
@@ -15,7 +15,8 @@
     <span class="data">
       <@feldausgabe feld=feld record=record/>
     </span>
-    <input type="hidden" name="_${feld}" value="${objekt.format()}"/>
+    <input type="hidden" name="_${feld}" value="${objekt.format()}"
+           onClick=""/>
   <#else/>
 
     <#if objekt.getProperty("foreignkey.table")?exists >
@@ -92,6 +93,9 @@
 
 <#--
 * $Log: editmacros.ftl,v $
+* Revision 1.3  2005/08/07 16:56:15  tbayen
+* Produktionsversion 1.5
+*
 * Revision 1.2  2005/04/06 21:14:10  tbayen
 * Anwenderprobleme behoben,
 * redirect-view implementiert

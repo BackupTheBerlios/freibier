@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.6 2005/04/19 17:17:04 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.7 2005/08/07 16:56:14 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -74,7 +74,7 @@ public abstract class ServletDatabase extends HttpServlet {
 		};
 		cfg.setTemplateLoader(new MultiTemplateLoader(loaders));
 		// normalerweise gibts keine Euro-Zeichen, das stelle ich hier aber ein:
-		cfg.setEncoding(new Locale("de","DE"),"ISO-8859-15");
+		cfg.setEncoding(new Locale("de", "DE"), "ISO-8859-15");
 		uriParser = new URIParserImpl();
 		actionDispatcher = new ActionDispatcherClassLoader();
 		readProperties();
@@ -88,12 +88,13 @@ public abstract class ServletDatabase extends HttpServlet {
 	 * gelesen, die allgemeine Default-Werte enthält. Danach wird eine 
 	 * gleichnamige Datei im Paket der abgeleiteten Applikations-Klasse
 	 * gesucht, die Defaults für diese Applikation enthalten kann. Danach 
-	 * wird eine Datei im Verzeichnis gesucht, dass in den bisherigen 
+	 * werden Dateien im Verzeichnis gesucht, dass in den bisherigen 
 	 * Properties-Dateien durch den Schlüssel "configdir" angegeben ist 
-	 * (vorgegeben ist "/etc/webdatabase/"). Die Datei hat den Namen des 
-	 * letzten Teils des Paketnamens der Applikation, gefolgt von 
-	 * ".properties", also z.B. für die Applikation im Paket 
-	 * "de.bayen.kontaktdaten" den Namen "{configdir}/kontaktdaten.properties".
+	 * (vorgegeben ist "/etc/webdatabase/"). Die erste Datei ist 
+	 * "config.properties", die zweite hat den Namen des letzten Teils des 
+	 * Paketnamens der Applikation, gefolgt von ".properties", also z.B. 
+	 * für die Applikation im Paket "de.bayen.kontaktdaten" den Namen 
+	 * "{configdir}/kontaktdaten.properties".
 	 */
 	private void readProperties() {
 		// Properties einlesen
@@ -119,15 +120,19 @@ public abstract class ServletDatabase extends HttpServlet {
 		path = props.getProperty("configdir");
 		if (path == null) {
 			path = "";
-			props.setProperty("configdir",path);
-		} else if (!path.endsWith("/")){
+			props.setProperty("configdir", path);
+		} else if (!path.endsWith("/")) {
 			path += "/";
-			props.setProperty("configdir",path);
+			props.setProperty("configdir", path);
 		}
-		String name = getClass().getPackage().getName();
-		path += name.substring(name.lastIndexOf('.') + 1) + ".properties";
 		try {
-			stream = new FileInputStream(path);
+			stream = new FileInputStream(path + "config.properties");
+			props.load(stream);
+		} catch (IOException e) {}
+		try {
+			String name = getClass().getPackage().getName();
+			stream = new FileInputStream(path
+					+ name.substring(name.lastIndexOf('.') + 1) + ".properties");
 			props.load(stream);
 		} catch (IOException e) {}
 	}
@@ -335,12 +340,9 @@ public abstract class ServletDatabase extends HttpServlet {
 	protected WebDBDatabase connectDatabase() throws DatabaseException {
 		ResourceBundle resource = null;
 		try {
-			resource = ResourceBundle.getBundle(getClass().getPackage()
-					.getName()
-					+ "." + "database");
-			WebDBDatabase db = new WebDBDatabase(resource.getString("name"),
-					resource.getString("host"), resource.getString("user"),
-					resource.getString("password"));
+			WebDBDatabase db = new WebDBDatabase(getProperty("database.name"),
+					getProperty("database.host"), getProperty("database.user"),
+					getProperty("database.password"));
 			db.setPropertyPath(getClass().getPackage().getName());
 			return db;
 		} catch (MissingResourceException e) {
@@ -352,6 +354,9 @@ public abstract class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.7  2005/08/07 16:56:14  tbayen
+ * Produktionsversion 1.5
+ *
  * Revision 1.6  2005/04/19 17:17:04  tbayen
  * DTAUS-Dateien wieder einlesen in die Datenbank
  *
