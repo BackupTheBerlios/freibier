@@ -9,6 +9,7 @@ auf dem Produktionssystem testen/umsetzen und ggf. fertigmachen:
 nötig:
 - banking
   - Bei Umwandlung Pool->Korb ggf. Testkorb als Ziel vorgeben
+  - Suche funktioniert nicht
 - BayenWeb
   - Aktualisierung statt neuimport
   - Filter (z.B. nach Aussendienstlern)
@@ -57,7 +58,11 @@ nicht wirklich nötig:
 - Beschleunigung
 - Sortieren nach Fremdschlüsseln
 
+
+
 erledigt:
+- Das build-Skript findet die libraries nun selber
+- Abspaltung von der Datenbankklassen als Projekt FreibierDB
 Version 1.5
 - Codierung von "?" bei der Erzeugung von redirect-URL nötig
 - Bei Neuanlage von Datensätzen nicht direkt eine Vorlage erstellen

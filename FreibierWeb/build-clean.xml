@@ -18,7 +18,7 @@
                              image files), including the WEB-INF subdirectory
                              and its configuration file contents.
 
-     $Id: build-clean.xml,v 1.2 2005/04/06 21:14:10 tbayen Exp $
+     $Id: build-clean.xml,v 1.3 2005/08/07 22:11:49 tbayen Exp $
 -->
 
 
@@ -217,6 +217,7 @@
     <pathelement location="${foo.jar}"/>
 -->
 	<!-- TB -->
+<!--  obsolet?
   	<pathelement location="${oro.jar}"/>
   	<pathelement location="${junit.jar}"/>
   	<pathelement location="${mysql.jar}"/>
@@ -225,7 +226,10 @@
   	<pathelement location="${freemarker.jar}"/>
   	<pathelement location="${hbci4java.jar}"/>
   	<pathelement location="${commons-fileupload.jar}"/>
-
+-->
+  	<fileset dir="${web.home}/WEB-INF/lib">
+  		<include name="*.jar"/>
+  	</fileset>
     <!-- Include all elements that Tomcat exposes to applications -->
     <pathelement location="${catalina.home}/common/classes"/>
     <fileset dir="${catalina.home}/common/endorsed">
