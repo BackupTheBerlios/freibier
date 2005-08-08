@@ -1,5 +1,5 @@
 /* Erzeugt am 14.10.2004 von phormanns
- * $Id: TypeDefinitionDecimal.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: TypeDefinitionDecimal.java,v 1.2 2005/08/08 06:35:29 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -65,7 +65,7 @@ public class TypeDefinitionDecimal extends TypeDefinitionNumber {
 			s = regex.group(1) + "." + regex.group(3);
 		}
 		try {
-			BigDecimal dec = new BigDecimal(s);
+			new BigDecimal(s);
 			return true;
 		} catch (NumberFormatException e) {
 			return false;
@@ -74,6 +74,9 @@ public class TypeDefinitionDecimal extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionDecimal.java,v $
+ * Revision 1.2  2005/08/08 06:35:29  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

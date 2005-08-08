@@ -1,5 +1,5 @@
 /* Erzeugt am 09.10.2004 von phormanns
- * $Id: TypeDefinitionDateTime.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: TypeDefinitionDateTime.java,v 1.2 2005/08/08 06:35:29 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -65,7 +65,7 @@ public class TypeDefinitionDateTime extends TypeDefinition {
 
 	public boolean validate(String s) {
 		try {
-			Date date = shortFormat.parse(s);
+			shortFormat.parse(s);
 			return true;
 		} catch (ParseException e) {
 			return false;
@@ -75,6 +75,9 @@ public class TypeDefinitionDateTime extends TypeDefinition {
 
 /*
  * $Log: TypeDefinitionDateTime.java,v $
+ * Revision 1.2  2005/08/08 06:35:29  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

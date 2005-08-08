@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: RecordDefinition.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: RecordDefinition.java,v 1.2 2005/08/08 06:35:29 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -83,7 +83,6 @@ public class RecordDefinition {
 	}
 
 	public int fieldName2Int(String name) throws SystemDatabaseException {
-		String erg = "";
 		for (int i = 0; i < columnslist.size(); i++) {
 			if (((TypeDefinition) (columnslist.get(i))).getName().equals(name)) {
 				return i;
@@ -150,6 +149,9 @@ public class RecordDefinition {
 }
 /*
  * $Log: RecordDefinition.java,v $
+ * Revision 1.2  2005/08/08 06:35:29  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

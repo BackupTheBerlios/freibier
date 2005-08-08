@@ -1,4 +1,4 @@
-//  $Id: DatabaseTest.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+//  $Id: DatabaseTest.java,v 1.2 2005/08/08 06:35:29 tbayen Exp $
 package de.bayen.database.test;
 
 import java.util.List;
@@ -47,7 +47,7 @@ public class DatabaseTest extends TestCase {
             fail(e.getMessage());
         }
 	    try {
-            Table tab=db.getTable("adressen2");
+            db.getTable("adressen2");
             fail("Exception erwartet.");
         } catch (SystemDatabaseException e) {
             assertEquals("Keine Primärschlüsselspalte definiert",e.getMessage());
@@ -78,6 +78,9 @@ public class DatabaseTest extends TestCase {
 
 /*
  *  $Log: DatabaseTest.java,v $
+ *  Revision 1.2  2005/08/08 06:35:29  tbayen
+ *  Compiler-Warnings bereinigt
+ *
  *  Revision 1.1  2005/08/07 21:18:49  tbayen
  *  Version 1.0 der Freibier-Datenbankklassen,
  *  extrahiert aus dem Projekt WebDatabase V1.5

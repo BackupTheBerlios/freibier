@@ -1,2 +1,8 @@
 TODO
 
+nötig:
+
+
+
+erledigt:
+- alle Warnings behoben, die Eclipse angezeigt hat

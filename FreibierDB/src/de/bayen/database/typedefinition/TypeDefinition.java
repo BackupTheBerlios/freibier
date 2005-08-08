@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: TypeDefinition.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: TypeDefinition.java,v 1.2 2005/08/08 06:35:29 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -195,9 +195,9 @@ abstract public class TypeDefinition {
 		Map propsMap = new HashMap();
 		try {
 			Perl5Util regex = new Perl5Util();
-			Enumeration enum = resource.getKeys();
-			while (enum.hasMoreElements()) {
-				String key = (String) enum.nextElement();
+			Enumeration keysenum = resource.getKeys();
+			while (keysenum.hasMoreElements()) {
+				String key = (String) keysenum.nextElement();
 				if (regex.match("/^" + columnName + "\\.(.*)$/", key)) {
 					//log.debug("properties.put(" + columnName + ","
 					//		+ regex.group(1) + "," + resource.getString(key)
@@ -291,6 +291,9 @@ abstract public class TypeDefinition {
 }
 /*
  * $Log: TypeDefinition.java,v $
+ * Revision 1.2  2005/08/08 06:35:29  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

@@ -21,3 +21,7 @@ in die Applikation kopiert werden. Nur dann kann ein build-Skript dieser
 Applikation eine aktuelle Distrinution erzeugen. Hierzu kann man in Eclipse
 die *.jar-Datei aus dem dist-Verzeichnis in ein entsprechendes lib-Verzeichnis
 der Applikation kopieren und diese dann neu build-en.
+
+Die Bibliothek ist von den im lib-Verzeichnis befindlichen Fremdbibliotheken 
+abhängig. Dieses sind also auch in das Applikations-Projekt zu kopieren und
+dort in den Classpath einzubinden.
