@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.5 2005/08/12 23:37:21 tbayen Exp $
+ * $Id: Database.java,v 1.6 2005/08/12 23:39:58 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -127,7 +127,6 @@ public class Database {
 	 * @return
 	 * @throws SystemDatabaseException
 	 */
-	
 	public Table getTable(String name) throws SystemDatabaseException {
 		try {
 			ResultSet columns = conn.getMetaData().getColumns(null, null, name,
@@ -186,19 +185,32 @@ public class Database {
 			throw new SystemDatabaseException("", e, log);
 		}
 	}
-	
+
+	/**
+	 * löscht eine gesamte Tabelle (Inhalt und Struktur) aus der Datenbank.
+	 * 
+	 * @throws UserDatabaseException
+	 *
+	 */
+	public void dropTable(String name) throws UserDatabaseException {
+		try {
+			executeUpdate("DROP TABLE `" + name + "`");
+		} catch (DatabaseException e) {
+			throw new UserDatabaseException(
+					"Tabelle kann nicht gelöscht werden", e, log);
+		}
+	}
+
 	/**
 	 * Führt einen String als SQL-Befehl (oder mehrere Befehle) aus.
 	 * 
 	 * @param sqltext
 	 * @throws SystemDatabaseException
 	 */
-
-
-	public void executeSql(String sqltext) throws SystemDatabaseException{
+	public void executeSql(String sqltext) throws SystemDatabaseException {
 		executeSqlFile(new ByteArrayInputStream(sqltext.getBytes()));
 	}
-	
+
 	public void executeSqlFile(String filename) throws SystemDatabaseException {
 		InputStream datei = this.getClass().getClassLoader()
 				.getResourceAsStream(filename);
@@ -306,7 +318,6 @@ public class Database {
 	 * @param sqltext
 	 * @throws SystemDatabaseException
 	 */
-
 	public void executeUpdate(String sql) throws DatabaseException {
 		log.trace("executeUpdate");
 		try {
@@ -338,6 +349,9 @@ public class Database {
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.6  2005/08/12 23:39:58  tbayen
+ * Table.dropTable() neu und einige Methoden besser dokumentiert
+ *
  * Revision 1.5  2005/08/12 23:37:21  tbayen
  * Table.dropTable() neu und einige Methoden besser dokumentiert
  *
