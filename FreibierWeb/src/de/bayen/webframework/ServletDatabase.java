@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.8 2005/08/12 20:59:02 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.9 2005/08/12 21:00:16 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -16,7 +16,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -338,7 +337,6 @@ public abstract class ServletDatabase extends HttpServlet {
 	 * diese Methode entsprechend überladen.
 	 */
 	protected WebDBDatabase connectDatabase() throws DatabaseException {
-		ResourceBundle resource = null;
 		try {
 			WebDBDatabase db = new WebDBDatabase(getProperty("database.name"),
 					getProperty("database.host"), getProperty("database.user"),
@@ -354,6 +352,9 @@ public abstract class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.9  2005/08/12 21:00:16  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.8  2005/08/12 20:59:02  tbayen
  * Compiler-Warnings bereinigt
  *
