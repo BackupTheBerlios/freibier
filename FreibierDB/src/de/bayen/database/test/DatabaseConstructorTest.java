@@ -1,5 +1,5 @@
 /* Erzeugt am 06.10.2004 von tbayen
- * $Id: DatabaseConstructorTest.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: DatabaseConstructorTest.java,v 1.2 2005/08/12 19:27:44 tbayen Exp $
  */
 package de.bayen.database.test;
 
@@ -30,7 +30,7 @@ public class DatabaseConstructorTest extends TestCase {
         Database db = null;
         try {
             db = new Database("test","localhost","test",null);
-            db.executeSqlFile("de.bayen.database/test/test.sql");
+            db.executeSqlFile("de/bayen/database/test/test.sql");
         } catch (DatabaseException e) {
             fail(e.getMessage());
         }
@@ -39,6 +39,9 @@ public class DatabaseConstructorTest extends TestCase {
 
 /*
  * $Log: DatabaseConstructorTest.java,v $
+ * Revision 1.2  2005/08/12 19:27:44  tbayen
+ * Tests laufen wieder alle
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

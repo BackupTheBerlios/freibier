@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: RecordDefinition.java,v 1.2 2005/08/08 06:35:29 tbayen Exp $
+ * $Id: RecordDefinition.java,v 1.3 2005/08/12 19:27:45 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -26,7 +26,7 @@ public class RecordDefinition {
 	private Map columnshash = null;
 	private List columnslist = null;
 	private String primaryKey = null;
-	private List sublists=null;  // TODO Peter
+	private List sublists = null; // TODO Peter
 
 	public RecordDefinition() {
 		columnshash = new HashMap();
@@ -46,14 +46,14 @@ public class RecordDefinition {
 		this.primaryKey = primaryKey;
 	}
 
-	public List getSublists() {  // TODO Peter
+	public List getSublists() { // TODO Peter
 		return sublists;
 	}
-	
-	public void setSublists(List sublists) {  // TODO Peter
+
+	public void setSublists(List sublists) { // TODO Peter
 		this.sublists = sublists;
 	}
-	
+
 	public List getFieldsList() {
 		return columnslist;
 	}
@@ -62,18 +62,18 @@ public class RecordDefinition {
 			throws SystemDatabaseException {
 		if (!columnshash.containsKey(name)) {
 			Perl5Util re = new Perl5Util();
-			if(re.match("/^[[:upper:]]+$/",name)){
+			if (re.match("/^[[:upper:]]+$/", name)) {
 				// Falls in der Datenbank ein Feldname nur aus Grossbuchstaben
 				// besteht, wird das vom Java-Treiber in Kleinbuchstaben 
 				// konvertiert. Damit ich nun mit dem "richtigen" Namen darauf
 				// zugreifen kann, mache ich den ggf. hier klein.
-				name=name.toLowerCase();
-				if (!columnshash.containsKey(name)) {
-					throw new SystemDatabaseException(
-							"Angefordertes Feld existiert nicht: " + name + "("+
-							columnshash.keySet().toString()+")", log);
-				}
+				name = name.toLowerCase();
 			}
+		}
+		if (!columnshash.containsKey(name)) {
+			throw new SystemDatabaseException(
+					"Angefordertes Feld existiert nicht: " + name + "("
+							+ columnshash.keySet().toString() + ")", log);
 		}
 		return (TypeDefinition) columnshash.get(name);
 	}
@@ -117,7 +117,7 @@ public class RecordDefinition {
 		String where = null;
 		Iterator i = columnslist.iterator();
 		TypeDefinition feldtyp;
-		String foreigntablename="_foreign_x";
+		String foreigntablename = "_foreign_x";
 		while (i.hasNext()) {
 			feldtyp = (TypeDefinition) i.next();
 			if (!felder.equals("")) {
@@ -127,16 +127,18 @@ public class RecordDefinition {
 			if (feldtyp instanceof TypeDefinitionForeignKey) {
 				String tabelle = feldtyp.getProperty("foreignkey.table");
 				String spalte = feldtyp.getProperty("foreignkey.resultcolumn");
-				felder += ", " + foreigntablename + "." + spalte + " AS " + feldtyp.getName() +"_foreign";
-				tabellen += ", `" + tabelle + "` AS "+foreigntablename;
+				felder += ", " + foreigntablename + "." + spalte + " AS "
+						+ feldtyp.getName() + "_foreign";
+				tabellen += ", `" + tabelle + "` AS " + foreigntablename;
 				if (where == null) {
 					where = " WHERE ";
 				} else {
 					where += " AND ";
 				}
-				where += myTable + "." + feldtyp.getName() + "=" + foreigntablename
-						+ "." + feldtyp.getProperty("foreignkey.indexcolumn");
-				foreigntablename=foreigntablename+"x";
+				where += myTable + "." + feldtyp.getName() + "="
+						+ foreigntablename + "."
+						+ feldtyp.getProperty("foreignkey.indexcolumn");
+				foreigntablename = foreigntablename + "x";
 			}
 		}
 		if (where == null)
@@ -149,6 +151,9 @@ public class RecordDefinition {
 }
 /*
  * $Log: RecordDefinition.java,v $
+ * Revision 1.3  2005/08/12 19:27:45  tbayen
+ * Tests laufen wieder alle
+ *
  * Revision 1.2  2005/08/08 06:35:29  tbayen
  * Compiler-Warnings bereinigt
  *

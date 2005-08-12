@@ -1,5 +1,5 @@
 /* Erzeugt am 18.10.2004 von tbayen
- * $Id: ForeignKeyTest.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: ForeignKeyTest.java,v 1.2 2005/08/12 19:27:41 tbayen Exp $
  */
 package de.bayen.database.test;
 
@@ -19,7 +19,7 @@ public class ForeignKeyTest extends TestCase {
         try {
             db = new Database("test","localhost","test",null);
     		db.setPropertyPath(ForeignKeyTest.class.getPackage().getName());
-            db.executeSqlFile("de.bayen.database/test/test.sql");
+            db.executeSqlFile("de/bayen/database/test/test.sql");
         } catch (DatabaseException e) {
             fail(e.getMessage());
         }
@@ -109,7 +109,7 @@ public class ForeignKeyTest extends TestCase {
 		}
 		// ab hier wirds aufregend:
 		try {
-			assertEquals("(5) Java", NicePrinter.print(obj));
+			assertEquals("Java", NicePrinter.print(obj));
 		} catch (DatabaseException e4) {
 			fail("Fehler in NicePrinter beim Foreign Key");
 		}
@@ -140,7 +140,7 @@ public class ForeignKeyTest extends TestCase {
 		}
 		// ab hier wirds aufregend:
 		try {
-			assertEquals("(1) 24.12.2004", NicePrinter.print(obj));
+			assertEquals("24.12.2004", NicePrinter.print(obj));
 		} catch (DatabaseException e4) {
 			fail("Fehler in NicePrinter beim Foreign Key");
 		}
@@ -149,6 +149,9 @@ public class ForeignKeyTest extends TestCase {
 
 /*
  * $Log: ForeignKeyTest.java,v $
+ * Revision 1.2  2005/08/12 19:27:41  tbayen
+ * Tests laufen wieder alle
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

@@ -1,4 +1,4 @@
-//  $Id: TableTest.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+//  $Id: TableTest.java,v 1.2 2005/08/12 19:27:44 tbayen Exp $
 package de.bayen.database.test;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class TableTest extends TestCase {
     protected void setUp() throws Exception {
         try {
             db = new Database("test","localhost","test",null);
-            db.executeSqlFile("de.bayen.database/test/test.sql");
+            db.executeSqlFile("de/bayen/database/test/test.sql");
             tab = db.getTable("adressen");
         } catch (DatabaseException e) {
             fail(e.getMessage());
@@ -99,6 +99,9 @@ public class TableTest extends TestCase {
 
 /*
  *  $Log: TableTest.java,v $
+ *  Revision 1.2  2005/08/12 19:27:44  tbayen
+ *  Tests laufen wieder alle
+ *
  *  Revision 1.1  2005/08/07 21:18:49  tbayen
  *  Version 1.0 der Freibier-Datenbankklassen,
  *  extrahiert aus dem Projekt WebDatabase V1.5

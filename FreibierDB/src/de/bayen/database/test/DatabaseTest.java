@@ -1,4 +1,4 @@
-//  $Id: DatabaseTest.java,v 1.2 2005/08/08 06:35:29 tbayen Exp $
+//  $Id: DatabaseTest.java,v 1.3 2005/08/12 19:27:41 tbayen Exp $
 package de.bayen.database.test;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class DatabaseTest extends TestCase {
 	protected void setUp() throws Exception {
         try {
             db = new Database("test","localhost","test",null);
-            db.executeSqlFile("de.bayen.database/test/test.sql");
+            db.executeSqlFile("de/bayen/database/test/test.sql");
         } catch (DatabaseException e) {
             fail(e.getMessage());
         }
@@ -78,6 +78,9 @@ public class DatabaseTest extends TestCase {
 
 /*
  *  $Log: DatabaseTest.java,v $
+ *  Revision 1.3  2005/08/12 19:27:41  tbayen
+ *  Tests laufen wieder alle
+ *
  *  Revision 1.2  2005/08/08 06:35:29  tbayen
  *  Compiler-Warnings bereinigt
  *
