@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.2 2005/08/12 19:37:18 tbayen Exp $
+ * $Id: Table.java,v 1.3 2005/08/12 19:39:47 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -352,8 +352,11 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.3  2005/08/12 19:39:47  tbayen
+ * kleine Nachbesserung...
+ *
  * Revision 1.2  2005/08/12 19:37:18  tbayen
- * unnötige TODO-Kommentare entfernt
+ * unnötige TO DO-Kommentare entfernt
  *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,

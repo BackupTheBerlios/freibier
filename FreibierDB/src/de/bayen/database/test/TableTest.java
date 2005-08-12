@@ -1,4 +1,4 @@
-//  $Id: TableTest.java,v 1.3 2005/08/12 19:37:19 tbayen Exp $
+//  $Id: TableTest.java,v 1.4 2005/08/12 19:39:47 tbayen Exp $
 package de.bayen.database.test;
 
 import java.util.List;
@@ -97,8 +97,11 @@ public class TableTest extends TestCase {
 
 /*
  *  $Log: TableTest.java,v $
+ *  Revision 1.4  2005/08/12 19:39:47  tbayen
+ *  kleine Nachbesserung...
+ *
  *  Revision 1.3  2005/08/12 19:37:19  tbayen
- *  unnötige TODO-Kommentare entfernt
+ *  unnötige TO DO-Kommentare entfernt
  *
  *  Revision 1.2  2005/08/12 19:27:44  tbayen
  *  Tests laufen wieder alle

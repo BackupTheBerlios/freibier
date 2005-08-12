@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: TypeDefinition.java,v 1.3 2005/08/12 19:37:18 tbayen Exp $
+ * $Id: TypeDefinition.java,v 1.4 2005/08/12 19:39:47 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -290,8 +290,11 @@ abstract public class TypeDefinition {
 }
 /*
  * $Log: TypeDefinition.java,v $
+ * Revision 1.4  2005/08/12 19:39:47  tbayen
+ * kleine Nachbesserung...
+ *
  * Revision 1.3  2005/08/12 19:37:18  tbayen
- * unnötige TODO-Kommentare entfernt
+ * unnötige TO DO-Kommentare entfernt
  *
  * Revision 1.2  2005/08/08 06:35:29  tbayen
  * Compiler-Warnings bereinigt
