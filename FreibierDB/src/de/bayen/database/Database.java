@@ -1,9 +1,10 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.3 2005/08/12 19:39:47 tbayen Exp $
+ * $Id: Database.java,v 1.4 2005/08/12 22:39:37 tbayen Exp $
  */
 package de.bayen.database;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -176,6 +177,10 @@ public class Database {
 		}
 	}
 
+	public void executeSql(String sqltext) throws SystemDatabaseException{
+		executeSqlFile(new ByteArrayInputStream(sqltext.getBytes()));
+	}
+	
 	public void executeSqlFile(String filename) throws SystemDatabaseException {
 		InputStream datei = this.getClass().getClassLoader()
 				.getResourceAsStream(filename);
@@ -308,6 +313,9 @@ public class Database {
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.4  2005/08/12 22:39:37  tbayen
+ * executeSql(String), um SQL-Text direkt angeben zu können
+ *
  * Revision 1.3  2005/08/12 19:39:47  tbayen
  * kleine Nachbesserung...
  *
