@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.7 2005/08/07 16:56:14 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.8 2005/08/12 20:59:02 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -68,7 +68,7 @@ public abstract class ServletDatabase extends HttpServlet {
 				new WebappTemplateLoader(getServletContext(),
 						"WEB-INF/templates"),
 				// mit folgender Zeile werden auch noch abgeleitete Klassen
-				// durchsucht (TODO: aber keine mehrfach abgeleiteten).
+				// durchsucht (TO DO: aber keine mehrfach abgeleiteten).
 				new ClassTemplateLoader(this.getClass(), "templates"),
 				new ClassTemplateLoader(ServletDatabase.class, "templates")
 		};
@@ -354,6 +354,9 @@ public abstract class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.8  2005/08/12 20:59:02  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.7  2005/08/07 16:56:14  tbayen
  * Produktionsversion 1.5
  *
