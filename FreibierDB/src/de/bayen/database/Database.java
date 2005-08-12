@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.4 2005/08/12 22:39:37 tbayen Exp $
+ * $Id: Database.java,v 1.5 2005/08/12 23:37:21 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -118,6 +118,16 @@ public class Database {
 		return liste;
 	}
 
+	/**
+	 * Besorgt ein Tabellenobjekt aus der Datenbank. Über dieses kann dann 
+	 * auf die eigentlichen Daten zugegriffen werden, die als Zeilen in der
+	 * Tabelle stehen.
+	 *  
+	 * @param name
+	 * @return
+	 * @throws SystemDatabaseException
+	 */
+	
 	public Table getTable(String name) throws SystemDatabaseException {
 		try {
 			ResultSet columns = conn.getMetaData().getColumns(null, null, name,
@@ -176,6 +186,14 @@ public class Database {
 			throw new SystemDatabaseException("", e, log);
 		}
 	}
+	
+	/**
+	 * Führt einen String als SQL-Befehl (oder mehrere Befehle) aus.
+	 * 
+	 * @param sqltext
+	 * @throws SystemDatabaseException
+	 */
+
 
 	public void executeSql(String sqltext) throws SystemDatabaseException{
 		executeSqlFile(new ByteArrayInputStream(sqltext.getBytes()));
@@ -282,6 +300,13 @@ public class Database {
 		return resultList;
 	}
 
+	/**
+	 * Führt einen String als SQL-Befehl (oder mehrere) aus.
+	 * 
+	 * @param sqltext
+	 * @throws SystemDatabaseException
+	 */
+
 	public void executeUpdate(String sql) throws DatabaseException {
 		log.trace("executeUpdate");
 		try {
@@ -313,6 +338,9 @@ public class Database {
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.5  2005/08/12 23:37:21  tbayen
+ * Table.dropTable() neu und einige Methoden besser dokumentiert
+ *
  * Revision 1.4  2005/08/12 22:39:37  tbayen
  * executeSql(String), um SQL-Text direkt angeben zu können
  *
