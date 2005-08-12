@@ -1,10 +1,9 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionEdit.java,v 1.3 2005/08/07 16:56:13 tbayen Exp $
+ * $Id: ActionEdit.java,v 1.4 2005/08/12 22:57:11 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.ServletException;
@@ -28,11 +27,10 @@ import de.bayen.webframework.WebDBDatabase;
  */
 public class ActionEdit implements Action {
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db, ServletDatabase servlet) throws DatabaseException,
-			ServletException {
+			Map root, WebDBDatabase db, ServletDatabase servlet)
+			throws DatabaseException, ServletException {
 		Map uri = (Map) root.get("uri");
 		String name = (String) uri.get("table");
-		List fields = (List) root.get("fields");
 		Table tab = db.getTable(name);
 		String primarykey = tab.getRecordDefinition().getPrimaryKey();
 		String recordid = (String) ((Map) root.get("uri")).get("id");
@@ -59,7 +57,7 @@ public class ActionEdit implements Action {
 					} else {
 						record.setField(feldname, req.getParameter(parameter));
 					}
-				}else{
+				} else {
 					record.setField(feldname, req.getParameter(parameter));
 				}
 			}
@@ -72,6 +70,9 @@ public class ActionEdit implements Action {
 }
 /*
  * $Log: ActionEdit.java,v $
+ * Revision 1.4  2005/08/12 22:57:11  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.3  2005/08/07 16:56:13  tbayen
  * Produktionsversion 1.5
  *

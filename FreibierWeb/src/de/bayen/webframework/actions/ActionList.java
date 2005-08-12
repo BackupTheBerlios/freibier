@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionList.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
+ * $Id: ActionList.java,v 1.3 2005/08/12 22:57:11 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -21,22 +21,17 @@ import de.bayen.webframework.WebDBDatabase;
  * @author tbayen
  */
 public class ActionList implements Action {
-
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db, ServletDatabase servlet) throws DatabaseException,
-			ServletException {
+			Map root, WebDBDatabase db, ServletDatabase servlet)
+			throws DatabaseException, ServletException {
 		Map uri = (Map) root.get("uri");
 		String name = (String) uri.get("table");
-		List fields = (List) root.get("fields");
-		Table tab = db.getTable(name);
-		String ordercol = (String) root.get("order");
-		String orderdir = (String) root.get("orderdir");
 		root.put("list", populateTableData(db.getTable(name), (String) root
 				.get("order"), (String) root.get("orderdir"), null));
 	}
 
-	private List populateTableData(Table tab, String ordercol,
-			String orderdir, String filter) throws DatabaseException {
+	private List populateTableData(Table tab, String ordercol, String orderdir,
+			String filter) throws DatabaseException {
 		QueryCondition cond = null;
 		if (filter != null) {
 			String condparts[] = filter.split("=");
@@ -49,9 +44,11 @@ public class ActionList implements Action {
 		return records;
 	}
 }
-
 /*
  * $Log: ActionList.java,v $
+ * Revision 1.3  2005/08/12 22:57:11  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.2  2005/04/18 10:57:55  tbayen
  * Urlaubsarbeit:
  * Eigenes View, um Exceptions abzufangen

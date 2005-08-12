@@ -1,5 +1,5 @@
 /* Erzeugt am 03.04.2005 von tbayen
- * $Id: DTAUSReader.java,v 1.3 2005/05/03 11:54:53 tbayen Exp $
+ * $Id: DTAUSReader.java,v 1.4 2005/08/12 22:57:11 tbayen Exp $
  */
 package de.bayen.banking.hbci;
 
@@ -188,8 +188,6 @@ public class DTAUSReader {
 			// Konvertierung in DIN 66003-Zeichensatz (wie es sich gehört):
 			if (((int) erg[i]) + 256 == (int) '\133')
 				erg[i] = (byte) 'Ä';
-			int i1 = ((int) erg[i]) + 256;
-			int i2 = (int) '\134';
 			if (((int) erg[i]) + 256 == (int) '\134')
 				erg[i] = (byte) 'Ö';
 			if (((int) erg[i]) + 256 == (int) '\135')
@@ -214,8 +212,12 @@ public class DTAUSReader {
 		return new String(erg);
 	}
 }
+
 /*
  * $Log: DTAUSReader.java,v $
+ * Revision 1.4  2005/08/12 22:57:11  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.3  2005/05/03 11:54:53  tbayen
  * Bei Dtausparse den Textschlüssel in den VWZ schreiben
  *

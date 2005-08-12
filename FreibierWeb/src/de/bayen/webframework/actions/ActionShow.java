@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionShow.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
+ * $Id: ActionShow.java,v 1.3 2005/08/12 22:57:11 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -25,13 +25,11 @@ import de.bayen.webframework.WebDBDatabase;
  * @author tbayen
  */
 public class ActionShow implements Action {
-
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db, ServletDatabase servlet) throws DatabaseException,
-			ServletException {
+			Map root, WebDBDatabase db, ServletDatabase servlet)
+			throws DatabaseException, ServletException {
 		Map uri = (Map) root.get("uri");
 		String name = (String) uri.get("table");
-		List fields = (List) root.get("fields");
 		Table tab = db.getTable(name);
 		String primarykey = tab.getRecordDefinition().getPrimaryKey();
 		String recordid = (String) ((Map) root.get("uri")).get("id");
@@ -75,9 +73,11 @@ public class ActionShow implements Action {
 		}
 	}
 }
-
 /*
  * $Log: ActionShow.java,v $
+ * Revision 1.3  2005/08/12 22:57:11  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.2  2005/04/18 10:57:55  tbayen
  * Urlaubsarbeit:
  * Eigenes View, um Exceptions abzufangen

@@ -1,5 +1,5 @@
 /* Erzeugt am 18.04.2005 von tbayen
- * $Id: ActionDtausparse.java,v 1.2 2005/05/03 11:54:53 tbayen Exp $
+ * $Id: ActionDtausparse.java,v 1.3 2005/08/12 22:57:11 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -36,7 +36,6 @@ public class ActionDtausparse implements Action {
 		new ActionShow().executeAction(ad,req,root,db,servlet);
 		Record record = (Record) root.get("record");
 		BLOB dtausblob = ((BLOB) record.getField("DTAUS").getValue());
-		Table ausgangskoerbe=db.getTable("Ausgangskoerbe");
 		Table transaktionen=db.getTable("Transaktionen");
 		try {
 			DTAUSReader dtaus = new DTAUSReader(dtausblob.toByteArray());
@@ -71,6 +70,9 @@ public class ActionDtausparse implements Action {
 
 /*
  * $Log: ActionDtausparse.java,v $
+ * Revision 1.3  2005/08/12 22:57:11  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.2  2005/05/03 11:54:53  tbayen
  * Bei Dtausparse den Textschlüssel in den VWZ schreiben
  *

@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionSearch.java,v 1.3 2005/08/07 16:56:13 tbayen Exp $
+ * $Id: ActionSearch.java,v 1.4 2005/08/12 22:57:11 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -29,11 +29,10 @@ public class ActionSearch implements Action {
 	 * @see de.bayen.webframework.actions.Action#executeAction(de.bayen.webframework.ActionDispatcher, javax.servlet.http.HttpServletRequest, java.util.Map, de.bayen.webframework.WebDBDatabase)
 	 */
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db, ServletDatabase servlet) throws DatabaseException,
-			ServletException {
+			Map root, WebDBDatabase db, ServletDatabase servlet)
+			throws DatabaseException, ServletException {
 		Map uri = (Map) root.get("uri");
 		String name = (String) uri.get("table");
-		List fields = (List) root.get("fields");
 		Table tab = db.getTable(name);
 		// QueryCondition zusammenbauen:
 		QueryCondition condi = null;
@@ -43,21 +42,21 @@ public class ActionSearch implements Action {
 			String parameter = (String) it.next();
 			if (parameter.charAt(0) == '_') {
 				// Mit _ beginnen alle Datenfelder in meinen Formularen
-				String value=req.getParameter(parameter);
+				String value = req.getParameter(parameter);
 				int operator;
-				if(value.matches(".*%.*")){
-					operator=Table.QueryCondition.LIKE;
-				}else if(value.charAt(0)=='>'){
-					operator=Table.QueryCondition.LESS;
-					value=value.substring(1);
-				}else if(value.charAt(0)=='<'){
-					operator=Table.QueryCondition.GREATER;
-					value=value.substring(1);
-				}else{
-					operator=Table.QueryCondition.EQUAL;
+				if (value.matches(".*%.*")) {
+					operator = Table.QueryCondition.LIKE;
+				} else if (value.charAt(0) == '>') {
+					operator = Table.QueryCondition.LESS;
+					value = value.substring(1);
+				} else if (value.charAt(0) == '<') {
+					operator = Table.QueryCondition.GREATER;
+					value = value.substring(1);
+				} else {
+					operator = Table.QueryCondition.EQUAL;
 				}
 				QueryCondition nextcond = tab.new QueryCondition(parameter
-						.substring(1), operator,value);
+						.substring(1), operator, value);
 				if (condi == null) {
 					condi = nextcond;
 				} else {
@@ -81,9 +80,11 @@ public class ActionSearch implements Action {
 		}
 	}
 }
-
 /*
  * $Log: ActionSearch.java,v $
+ * Revision 1.4  2005/08/12 22:57:11  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.3  2005/08/07 16:56:13  tbayen
  * Produktionsversion 1.5
  *

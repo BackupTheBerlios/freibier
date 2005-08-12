@@ -1,5 +1,5 @@
 
-/*  $Id: Crypt.java,v 1.1 2005/04/05 21:34:47 tbayen Exp $
+/*  $Id: Crypt.java,v 1.2 2005/08/12 22:57:11 tbayen Exp $
 
     This file is part of HBCI4Java
     Copyright (C) 2001-2004  Stefan Palme
@@ -268,14 +268,14 @@ public final class Crypt
                      */
 
                     if (passport.getSysStatus().equals("1")) {
-                        String sysid=null;
-                        try {
-                            // falls noch keine system-id ausgehandelt wurde, so sendet der
-                            // hbci-server auch keine... deshalb der try-catch-block
-                            sysid=crypthead.getValueOfDE(msgName+".CryptHead.SecIdnDetails.sysid");
-                        } catch (Exception e) {
-                            sysid="0";
-                        }
+//                        String sysid=null;
+//                        try {
+//                            // falls noch keine system-id ausgehandelt wurde, so sendet der
+//                            // hbci-server auch keine... deshalb der try-catch-block
+//                            sysid=crypthead.getValueOfDE(msgName+".CryptHead.SecIdnDetails.sysid");
+//                        } catch (Exception e) {
+//                            sysid="0";
+//                        }
                         
                         // TODO: sysid checken (kann eigentlich auch entfallen, weil
                         // das jeweils auf höherer ebene geschehen sollte!)

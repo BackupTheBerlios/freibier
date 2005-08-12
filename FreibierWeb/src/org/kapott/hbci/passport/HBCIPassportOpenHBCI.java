@@ -1,5 +1,5 @@
 
-/*  $Id: HBCIPassportOpenHBCI.java,v 1.1 2005/04/05 21:34:46 tbayen Exp $
+/*  $Id: HBCIPassportOpenHBCI.java,v 1.2 2005/08/12 22:57:11 tbayen Exp $
 
     This file is part of HBCI4Java
     Copyright (C) 2001-2004  Stefan Palme
@@ -190,8 +190,8 @@ public class HBCIPassportOpenHBCI
 
                 byte[] content=getTLVValue(tlvdata,TAG_SEQ);
                 if (content!=null){
-                	String str=bytearray2string(content);
-                	Long lo=new Long(Long.parseLong(str));
+                	// String str=bytearray2string(content);
+                	// Long lo=new Long(Long.parseLong(str));
                     setSigId(new Long(Long.parseLong(bytearray2string(content))+1));
                 }
                 

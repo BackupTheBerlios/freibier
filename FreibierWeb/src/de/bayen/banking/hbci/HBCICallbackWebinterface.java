@@ -1,5 +1,5 @@
 /* Erzeugt am 25.03.2005 von tbayen
- * $Id: HBCICallbackWebinterface.java,v 1.1 2005/04/05 21:34:46 tbayen Exp $
+ * $Id: HBCICallbackWebinterface.java,v 1.2 2005/08/12 22:57:11 tbayen Exp $
  */
 package de.bayen.banking.hbci;
 
@@ -33,8 +33,8 @@ public class HBCICallbackWebinterface implements HBCICallback {
 	// benutze ich einen zweiten Logger:
 	static Logger hbcilogger = Logger.getLogger(HBCICallback.class.getName());
 	private String logCache = "";
-	private String pin=null;
-	private String tan=null;
+	private String pin = null;
+	private String tan = null;
 	private Map parameter;
 	private Map logLevelMapping;
 
@@ -81,7 +81,6 @@ public class HBCICallbackWebinterface implements HBCICallback {
 			logger.error("Exception im Callback");
 		}
 	}
-	
 
 	/**
 	 * Hiermit kann die PIN angegeben werden, die ggf. benutzt wird, wenn
@@ -92,6 +91,7 @@ public class HBCICallbackWebinterface implements HBCICallback {
 	public void setPin(String pin) {
 		this.pin = pin;
 	}
+
 	/**
 	 * Hiermit kann eine TAN angegeben werden, die ggf. benutzt wird, sobald
 	 * eine benötigt wird.
@@ -108,10 +108,10 @@ public class HBCICallbackWebinterface implements HBCICallback {
 	 * 
 	 * @return
 	 */
-	public boolean isTan(){
-		return tan!=null;
+	public boolean isTan() {
+		return tan != null;
 	}
-	
+
 	/*
 	 * @see org.kapott.hbci.callback.HBCICallback#callback(org.kapott.hbci.passport.HBCIPassport, int, java.lang.String, int, java.lang.StringBuffer)
 	 */
@@ -140,14 +140,14 @@ public class HBCICallbackWebinterface implements HBCICallback {
 				// weil diese Passports gar keine wichtigen Informationen enthalten
 				retData.delete(0, retData.length());
 				retData.append(parameter.get("passportpassword"));
-			} else if (reason == NEED_PT_PIN){
+			} else if (reason == NEED_PT_PIN) {
 				retData.delete(0, retData.length());
 				retData.append(pin);
-			} else if (reason == NEED_PT_TAN){
-				if(tan!=null){
+			} else if (reason == NEED_PT_TAN) {
+				if (tan != null) {
 					retData.delete(0, retData.length());
 					retData.append(tan);
-					tan=null;
+					tan = null;
 				}
 			} else {
 				logger.error("unbekannter Callback aufgerufen: "
@@ -168,8 +168,8 @@ public class HBCICallbackWebinterface implements HBCICallback {
 	public void status(HBCIPassport passport, int statusTag, Object[] o) {
 		try {
 			Constant status = HBCIStatusConstant.fromInt(statusTag);
-			String info = (o == null || o.length == 0 || o[0] == null ? ""
-					: o[0].toString());
+			//String info = (o == null || o.length == 0 || o[0] == null ? ""
+			//		: o[0].toString());
 			logger.info("status '" + status.toString() + "'");
 			logCache += "status '" + status.toString() + "'" + "\n";
 			//logger.debug("Info: " + info + "...");  // Achtung, macht Binärdaten!
@@ -188,7 +188,7 @@ public class HBCICallbackWebinterface implements HBCICallback {
 	public void status(HBCIPassport passport, int statusTag, Object o) {
 		try {
 			Constant status = HBCIStatusConstant.fromInt(statusTag);
-			String info = (o == null ? "" : o.toString());
+			//String info = (o == null ? "" : o.toString());
 			logger.info("status '" + status.toString() + "'");
 			logCache += "status '" + status.toString() + "'" + "\n";
 			//logger.debug("Info: " + info + "...");  // Achtung, macht Binärdaten!
@@ -207,6 +207,9 @@ public class HBCICallbackWebinterface implements HBCICallback {
 }
 /*
  * $Log: HBCICallbackWebinterface.java,v $
+ * Revision 1.2  2005/08/12 22:57:11  tbayen
+ * Compiler-Warnings bereinigt
+ *
  * Revision 1.1  2005/04/05 21:34:46  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *
