@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.6 2005/08/12 23:39:58 tbayen Exp $
+ * $Id: Database.java,v 1.7 2005/08/12 23:49:18 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -202,6 +203,19 @@ public class Database {
 	}
 
 	/**
+	 * Löscht die gesamte Datenbank mit allen Tabellen. (GEFÄHRLICH!)
+	 * @throws SystemDatabaseException 
+	 * @throws DatabaseException 
+	 */
+	public void wipeOutDatabase() throws DatabaseException {
+		List tables = getTableNamesList();
+		for (Iterator iter = tables.iterator(); iter.hasNext();) {
+			String element = (String) iter.next();
+			dropTable(element);
+		}
+	}
+
+	/**
 	 * Führt einen String als SQL-Befehl (oder mehrere Befehle) aus.
 	 * 
 	 * @param sqltext
@@ -349,6 +363,9 @@ public class Database {
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.7  2005/08/12 23:49:18  tbayen
+ * wipeOutDatabase() neu erstellt
+ *
  * Revision 1.6  2005/08/12 23:39:58  tbayen
  * Table.dropTable() neu und einige Methoden besser dokumentiert
  *
