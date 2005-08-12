@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: RecordDefinition.java,v 1.3 2005/08/12 19:27:45 tbayen Exp $
+ * $Id: RecordDefinition.java,v 1.4 2005/08/12 19:37:18 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -26,7 +26,7 @@ public class RecordDefinition {
 	private Map columnshash = null;
 	private List columnslist = null;
 	private String primaryKey = null;
-	private List sublists = null; // TODO Peter
+	private List sublists = null;
 
 	public RecordDefinition() {
 		columnshash = new HashMap();
@@ -46,11 +46,11 @@ public class RecordDefinition {
 		this.primaryKey = primaryKey;
 	}
 
-	public List getSublists() { // TODO Peter
+	public List getSublists() {
 		return sublists;
 	}
 
-	public void setSublists(List sublists) { // TODO Peter
+	public void setSublists(List sublists) {
 		this.sublists = sublists;
 	}
 
@@ -151,6 +151,9 @@ public class RecordDefinition {
 }
 /*
  * $Log: RecordDefinition.java,v $
+ * Revision 1.4  2005/08/12 19:37:18  tbayen
+ * unnötige TODO-Kommentare entfernt
+ *
  * Revision 1.3  2005/08/12 19:27:45  tbayen
  * Tests laufen wieder alle
  *

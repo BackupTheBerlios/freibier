@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: TypeDefinition.java,v 1.2 2005/08/08 06:35:29 tbayen Exp $
+ * $Id: TypeDefinition.java,v 1.3 2005/08/12 19:37:18 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -154,7 +154,6 @@ abstract public class TypeDefinition {
 	 * @return String - SQL-Typ
 	 */
 	public String getStringType() {
-		// TODO Peter: Diese Funktion ist neu
 		int sqltype = getSQLType();
 		String type = String.valueOf(sqltype);
 		if (sqltype == Types.VARCHAR) {
@@ -291,6 +290,9 @@ abstract public class TypeDefinition {
 }
 /*
  * $Log: TypeDefinition.java,v $
+ * Revision 1.3  2005/08/12 19:37:18  tbayen
+ * unnötige TODO-Kommentare entfernt
+ *
  * Revision 1.2  2005/08/08 06:35:29  tbayen
  * Compiler-Warnings bereinigt
  *

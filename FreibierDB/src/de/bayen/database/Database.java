@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: Database.java,v 1.2 2005/08/12 19:37:18 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -149,8 +149,7 @@ public class Database {
 						"Keine Primärschlüsselspalte definiert", log);
 			}
 			primarykeys.close();
-			// TODO Peter: Zugriff auf Informationen über Unterlisten
-			// Unterlisten
+			// Zugriff auf Informationen über Unterlisten
 			if (resource != null) {
 				try {
 					String liste = resource.getString("_lists");
@@ -309,6 +308,9 @@ public class Database {
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.2  2005/08/12 19:37:18  tbayen
+ * unnötige TODO-Kommentare entfernt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

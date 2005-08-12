@@ -1,5 +1,5 @@
 /* Erzeugt am 21.10.2004 von tbayen
- * $Id: TypeDefinitionForeignKey.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: TypeDefinitionForeignKey.java,v 1.2 2005/08/12 19:37:18 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -59,7 +59,6 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 			list.add(indexColumn);
 			list.add(resultColumn);
 			try {
-				// TODO: Peter: Abfrage, ob ein erster REcord existiert, ist neu
 				List ersterRecord = db.getTable(
 						indexType.getProperty("foreignkey.table"))
 						.getGivenColumns(list, 1);
@@ -121,6 +120,9 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.2  2005/08/12 19:37:18  tbayen
+ * unnötige TODO-Kommentare entfernt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

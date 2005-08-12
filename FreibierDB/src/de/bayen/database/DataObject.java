@@ -1,5 +1,5 @@
 /* Erzeugt am 09.10.2004 von tbayen
- * $Id: DataObject.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: DataObject.java,v 1.2 2005/08/12 19:37:18 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -34,7 +34,6 @@ public class DataObject implements Printable {
 	}
 	
 	public String formatNice() throws DatabaseException{
-		// TODO: Peter - dies ist neu
 		return NicePrinter.print(this);	
 	}
 
@@ -86,7 +85,6 @@ public class DataObject implements Printable {
 	}
 
 	public boolean getReadonly() {
-		// TODO Peter: dies ist neu
 		// damit fuer sowas nicht getProperty() aufgerufen werden muss
 		String prop=def.getProperty("readonly");
 		if(prop != null && prop.equals("1")){
@@ -102,6 +100,9 @@ public class DataObject implements Printable {
 }
 /*
  * $Log: DataObject.java,v $
+ * Revision 1.2  2005/08/12 19:37:18  tbayen
+ * unnötige TODO-Kommentare entfernt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

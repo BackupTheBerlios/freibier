@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: Table.java,v 1.2 2005/08/12 19:37:18 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -84,7 +84,7 @@ public class Table {
 			this.value = value;
 		}
 
-		// TODO Peter: Das macht das Leben einfacher:
+		// Das macht das Leben einfacher:
 		public QueryCondition(String column, int operator, String value) throws DatabaseException {
 			this.column = column;
 			this.operator = operator;
@@ -96,7 +96,7 @@ public class Table {
 		}
 
 		public String expression() throws DatabaseException {
-			String erg = getName()+"."+column;  // TODO Peter: getName() hier ist wichtig
+			String erg = getName()+"."+column;
 			switch (operator) {
 			case EQUAL:				erg += " = ";	break;
 			case GREATER:			erg += " > ";	break;
@@ -352,6 +352,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.2  2005/08/12 19:37:18  tbayen
+ * unnötige TODO-Kommentare entfernt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

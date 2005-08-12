@@ -1,5 +1,5 @@
 /* Erzeugt am 09.10.2004 von tbayen
- * $Id: TypeDefinitionInteger.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: TypeDefinitionInteger.java,v 1.2 2005/08/12 19:37:18 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -24,7 +24,7 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 	}
 
 	public String format(Object i) throws SystemDatabaseException {
-		if (i != null && !i.equals("")) {  // TODO muss Peter übernehmen
+		if (i != null && !i.equals("")) {
 			if (i instanceof Number) {
 				return i.toString();
 			} else {
@@ -55,6 +55,9 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionInteger.java,v $
+ * Revision 1.2  2005/08/12 19:37:18  tbayen
+ * unnötige TODO-Kommentare entfernt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5
