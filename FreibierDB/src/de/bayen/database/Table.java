@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.7 2005/08/13 11:59:05 tbayen Exp $
+ * $Id: Table.java,v 1.8 2005/08/13 12:26:05 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -330,17 +330,23 @@ public class Table {
 	 * @throws DatabaseException 
 	 *
 	 */
-	public int setRecordAndReturnID(Record data) throws DatabaseException{
+	public DataObject setRecordAndReturnID(Record data) throws DatabaseException {
 		setRecord(data);
-		DataObject id = data.getField(data.getRecordDefinition().getPrimaryKey());
-		if(id==null){
-		Map erg = db.executeSelectSingleRow("SELECT LAST_INSERT_ID()");
-		return Integer.parseInt(erg.get("last_insert_id()").toString());
-		}else{
-			return Integer.parseInt(id.toString());
+		DataObject id = data.getField(data.getRecordDefinition()
+				.getPrimaryKey());
+		TypeDefinition def=getRecordDefinition().getFieldDef(
+				getRecordDefinition().getPrimaryKey());
+		Object ergo;
+		if (id == null || ((Long) id.getValue()).intValue() == 0) {
+			Map erg = db.executeSelectSingleRow("SELECT LAST_INSERT_ID()");
+			ergo=def.parse(erg.get("last_insert_id()").toString());
+		} else {
+			ergo=(DataObject)def.parse(id.format());
 		}
+		return new DataObject(ergo,def);
 		
 	}
+
 	/**
 	 * Löscht den Datensatz.
 	 * @param data
@@ -380,6 +386,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.8  2005/08/13 12:26:05  tbayen
+ * setRecordAndReturnID() gibt beim neu Anlegen eines Records dessen ID zurück
+ *
  * Revision 1.7  2005/08/13 11:59:05  tbayen
  * setRecordAndReturnID() gibt beim neu Anlegen eines Records dessen ID zurück
  *
