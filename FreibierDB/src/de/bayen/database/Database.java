@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.7 2005/08/12 23:49:18 tbayen Exp $
+ * $Id: Database.java,v 1.8 2005/08/13 00:11:08 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -195,7 +195,7 @@ public class Database {
 	 */
 	public void dropTable(String name) throws UserDatabaseException {
 		try {
-			executeUpdate("DROP TABLE `" + name + "`");
+			executeSql("DROP TABLE `" + name + "`;");
 		} catch (DatabaseException e) {
 			throw new UserDatabaseException(
 					"Tabelle kann nicht gelöscht werden", e, log);
@@ -245,7 +245,7 @@ public class Database {
 					datei));
 			zeile = buffer.readLine();
 			while (zeile != null) {
-				if (zeile.length() > 0 && zeile.charAt(0) != '#') { // Kommentarzeilen weglassen
+				if (zeile.length() > 0 && zeile.charAt(0) != '#' && !zeile.startsWith("--")) { // Kommentarzeilen weglassen
 					sql += zeile;
 					Perl5Util regex = new Perl5Util();
 					// Langer RegEx kurzer Sinn: Haben wir ein Semikolon?
@@ -363,6 +363,9 @@ public class Database {
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.8  2005/08/13 00:11:08  tbayen
+ * SQL darf jetzt auch Kommentare enthalten, die PHPMyAdmin erzeugt
+ *
  * Revision 1.7  2005/08/12 23:49:18  tbayen
  * wipeOutDatabase() neu erstellt
  *
