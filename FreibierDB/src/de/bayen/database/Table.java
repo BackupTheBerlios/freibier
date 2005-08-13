@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.6 2005/08/13 11:52:33 tbayen Exp $
+ * $Id: Table.java,v 1.7 2005/08/13 11:59:05 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -330,7 +330,7 @@ public class Table {
 	 * @throws DatabaseException 
 	 *
 	 */
-	public int setRecordReturnID(Record data) throws DatabaseException{
+	public int setRecordAndReturnID(Record data) throws DatabaseException{
 		setRecord(data);
 		DataObject id = data.getField(data.getRecordDefinition().getPrimaryKey());
 		if(id==null){
@@ -380,6 +380,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.7  2005/08/13 11:59:05  tbayen
+ * setRecordAndReturnID() gibt beim neu Anlegen eines Records dessen ID zurück
+ *
  * Revision 1.6  2005/08/13 11:52:33  tbayen
  * setRecordReturnID() gibt beim neu Anlegen eines Records dessen ID zurück
  *
