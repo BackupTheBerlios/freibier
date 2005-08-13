@@ -1,5 +1,5 @@
 /* Erzeugt am 06.10.2004 von tbayen
- * $Id: DatabaseConstructorTest.java,v 1.2 2005/08/12 19:27:44 tbayen Exp $
+ * $Id: DatabaseConstructorTest.java,v 1.3 2005/08/13 12:26:43 tbayen Exp $
  */
 package de.bayen.database.test;
 
@@ -35,10 +35,26 @@ public class DatabaseConstructorTest extends TestCase {
             fail(e.getMessage());
         }
     }
+
+    /**
+     * ergibt die Anzahl der Tabellen, die in den Testdaten in "test.sql"
+     * angelegt werden. Dieser Wert kann von anderen Tests benutzt werden,
+     * um andere Tests durchzuführen, die davon abhängig sind.
+     * 
+     * Wird also "test.sql" geändert, so muss auch diese Methode geändert werden.
+     * 
+     * @return
+     */
+    public static int numberOfTables(){
+    	return 4;
+    }
 }
 
 /*
  * $Log: DatabaseConstructorTest.java,v $
+ * Revision 1.3  2005/08/13 12:26:43  tbayen
+ * Test angepasst, damit andere Tests besser darauf zugreifen können
+ *
  * Revision 1.2  2005/08/12 19:27:44  tbayen
  * Tests laufen wieder alle
  *
