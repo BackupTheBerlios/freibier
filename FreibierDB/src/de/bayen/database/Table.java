@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.4 2005/08/12 23:37:22 tbayen Exp $
+ * $Id: Table.java,v 1.6 2005/08/13 11:52:33 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -32,23 +32,6 @@ public class Table {
 		this.db = db;
 		this.name = name;
 		this.def = def;
-	}
-	
-	/**
-	 * löscht die gesamte Tabelle (Inhalt und Struktur) aus der Datenbank.
-	 * @throws UserDatabaseException 
-	 *
-	 */
-	
-	public void dropTable() throws UserDatabaseException{
-		try {
-			db.executeUpdate("DROP TABLE `" + name + "`");
-		} catch (DatabaseException e) {
-			throw new UserDatabaseException(
-					"Tabelle kann nicht gelöscht werden", e, log);
-		}
-		
-		
 	}
 
 	/**
@@ -95,14 +78,15 @@ public class Table {
 		public static final int LESS_OR_EQUAL = 4;
 		public static final int LIKE = 5;
 
-		public QueryCondition(String column, int operator, Object value){
+		public QueryCondition(String column, int operator, Object value) {
 			this.column = column;
 			this.operator = operator;
 			this.value = value;
 		}
 
 		// Das macht das Leben einfacher:
-		public QueryCondition(String column, int operator, String value) throws DatabaseException {
+		public QueryCondition(String column, int operator, String value)
+				throws DatabaseException {
 			this.column = column;
 			this.operator = operator;
 			this.value = getRecordDefinition().getFieldDef(column).parse(value);
@@ -113,19 +97,31 @@ public class Table {
 		}
 
 		public String expression() throws DatabaseException {
-			String erg = getName()+"."+column;
+			String erg = getName() + "." + column;
 			switch (operator) {
-			case EQUAL:				erg += " = ";	break;
-			case GREATER:			erg += " > ";	break;
-			case GREATER_OR_EQUAL:	erg += " >= ";	break;
-			case LESS:				erg += " < ";	break;
-			case LESS_OR_EQUAL:		erg += " <= ";	break;
-			case LIKE:				erg += " LIKE ";break;
+			case EQUAL:
+				erg += " = ";
+				break;
+			case GREATER:
+				erg += " > ";
+				break;
+			case GREATER_OR_EQUAL:
+				erg += " >= ";
+				break;
+			case LESS:
+				erg += " < ";
+				break;
+			case LESS_OR_EQUAL:
+				erg += " <= ";
+				break;
+			case LIKE:
+				erg += " LIKE ";
+				break;
 			default:
 				throw new SystemDatabaseException("falsche QueryCondition: ("
 						+ column + "," + operator + "," + "value" + ")", log);
 			}
-			DataObject val=new DataObject(value,def.getFieldDef(column));
+			DataObject val = new DataObject(value, def.getFieldDef(column));
 			erg += SQLPrinter.print(val);
 			if (next != null)
 				erg += " AND " + next.expression();
@@ -137,9 +133,9 @@ public class Table {
 	 * Diese Methode erlaubt, Anfragen mit bestimmten Konditionen anzugeben.
 	 * Diese Konditionen werden in eine QueryCondition-Klasse verpackt.
 	 */
-	public List getRecordsFromQuery(QueryCondition condition, String orderColumn,
-			boolean ascending) throws DatabaseException {
-		return getRecords(condition,orderColumn,ascending,0,0);
+	public List getRecordsFromQuery(QueryCondition condition,
+			String orderColumn, boolean ascending) throws DatabaseException {
+		return getRecords(condition, orderColumn, ascending, 0, 0);
 	}
 
 	/**
@@ -154,16 +150,15 @@ public class Table {
 	 * null bzw. 0 sein, insbesondere gilt dies für: 
 	 * condition, orderColumn, numberOfRecords
 	 */
-	public List getRecords(QueryCondition condition,
-			String orderColumn,
-			boolean ascending, int startRecordNr, int numberOfRecords
-	) throws DatabaseException{
+	public List getRecords(QueryCondition condition, String orderColumn,
+			boolean ascending, int startRecordNr, int numberOfRecords)
+			throws DatabaseException {
 		String selectRumpf = def.getSelectStatement(name);
 		String sql = selectRumpf;
 		// Filtern
-		if(condition!=null)
+		if (condition != null)
 			// Das getSelectStatement endet imm er mit einem WHERE, das verlängere ich hier ggf.:
-			sql += " AND "+condition.expression();
+			sql += " AND " + condition.expression();
 		// Sortieren
 		sql += " ORDER BY ";
 		// Wenn angegeben, nach einer bestimmten Spalte sortieren
@@ -248,24 +243,22 @@ public class Table {
 	 */
 	public Record getRecordByPrimaryKey(Object pkValue)
 			throws DatabaseException {
-		TypeDefinition primdef=def.getFieldDef(def.getPrimaryKey());
-		if(pkValue instanceof DataObject){
+		TypeDefinition primdef = def.getFieldDef(def.getPrimaryKey());
+		if (pkValue instanceof DataObject) {
 			// Wird ein DataObject übergeben, wird automatisch
 			// dessen Wert ermittelt.
-			pkValue=((DataObject)pkValue).getValue();
+			pkValue = ((DataObject) pkValue).getValue();
 		}
-		if(pkValue instanceof ForeignKey){
+		if (pkValue instanceof ForeignKey) {
 			// wenn man von einem Satz auf den anderen schliesst, kann
 			// man hier auch einen FK übergeben, ohne, dass unser
 			// Primärschlüssel wirklich diesen Typ hat:
 			//pkValue=new DataObject(((ForeignKey)pkValue).getKey(),primdef);
-			pkValue=((ForeignKey)pkValue).getKey();
+			pkValue = ((ForeignKey) pkValue).getKey();
 		}
 		String selectRumpf = def.getSelectStatement(name);
-		Map hash = db.executeSelectSingleRow(selectRumpf
-				+ " AND "
-				+ makeWhereExpression(primdef,
-						pkValue));
+		Map hash = db.executeSelectSingleRow(selectRumpf + " AND "
+				+ makeWhereExpression(primdef, pkValue));
 		return new Record(def, hash);
 	}
 
@@ -331,6 +324,24 @@ public class Table {
 	}
 
 	/**
+	 * Diese Methode setzt einen Record genau wie "setRecord()", sie gibt
+	 * aber das Primärfeld eines neu angelegten Records zurück.
+	 * 
+	 * @throws DatabaseException 
+	 *
+	 */
+	public int setRecordReturnID(Record data) throws DatabaseException{
+		setRecord(data);
+		DataObject id = data.getField(data.getRecordDefinition().getPrimaryKey());
+		if(id==null){
+		Map erg = db.executeSelectSingleRow("SELECT LAST_INSERT_ID()");
+		return Integer.parseInt(erg.get("last_insert_id()").toString());
+		}else{
+			return Integer.parseInt(id.toString());
+		}
+		
+	}
+	/**
 	 * Löscht den Datensatz.
 	 * @param data
 	 * @throws DatabaseException
@@ -357,18 +368,24 @@ public class Table {
 
 	private String makeWhereExpression(TypeDefinition def, Object value)
 			throws DatabaseException {
-// Änderung habe ich wieder verworfen
-//		return (name + "." + def.getName() + "=" + 
-//				(value.getClass()==String.class 
-//					? value 
-//					:SQLPrinter.print(new DataObject(value, def))
-//				));
+		// Änderung habe ich wieder verworfen
+		//		return (name + "." + def.getName() + "=" + 
+		//				(value.getClass()==String.class 
+		//					? value 
+		//					:SQLPrinter.print(new DataObject(value, def))
+		//				));
 		return (name + "." + def.getName() + "=" + SQLPrinter
 				.print(new DataObject(value, def)));
 	}
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.6  2005/08/13 11:52:33  tbayen
+ * setRecordReturnID() gibt beim neu Anlegen eines Records dessen ID zurück
+ *
+ * Revision 1.5  2005/08/12 23:39:58  tbayen
+ * Table.dropTable() neu und einige Methoden besser dokumentiert
+ *
  * Revision 1.4  2005/08/12 23:37:22  tbayen
  * Table.dropTable() neu und einige Methoden besser dokumentiert
  *
