@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.8 2005/08/13 12:26:05 tbayen Exp $
+ * $Id: Table.java,v 1.9 2005/08/14 20:06:21 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -231,7 +231,8 @@ public class Table {
 			throws DatabaseException {
 		String selectRumpf = def.getSelectStatement(name);
 		Map hash = db.executeSelectSingleRow(selectRumpf + " AND "
-				+ makeWhereExpression(def.getFieldDef(columnName), value));
+				+ makeWhereExpression(def.getFieldDef(columnName), value)
+				+ " GROUP BY " + name + "." + def.getPrimaryKey());
 		return new Record(def, hash);
 	}
 
@@ -244,6 +245,12 @@ public class Table {
 	public Record getRecordByPrimaryKey(Object pkValue)
 			throws DatabaseException {
 		TypeDefinition primdef = def.getFieldDef(def.getPrimaryKey());
+		if (pkValue instanceof String) {
+			// Wird ein String übergeben, so wird dieser automatisch umgewandelt
+			TypeDefinition typeDef = getRecordDefinition().getFieldDef(
+					getRecordDefinition().getPrimaryKey());
+			pkValue = new DataObject(typeDef.parse((String) pkValue), typeDef);
+		}
 		if (pkValue instanceof DataObject) {
 			// Wird ein DataObject übergeben, wird automatisch
 			// dessen Wert ermittelt.
@@ -330,21 +337,21 @@ public class Table {
 	 * @throws DatabaseException 
 	 *
 	 */
-	public DataObject setRecordAndReturnID(Record data) throws DatabaseException {
+	public DataObject setRecordAndReturnID(Record data)
+			throws DatabaseException {
 		setRecord(data);
 		DataObject id = data.getField(data.getRecordDefinition()
 				.getPrimaryKey());
-		TypeDefinition def=getRecordDefinition().getFieldDef(
+		TypeDefinition def = getRecordDefinition().getFieldDef(
 				getRecordDefinition().getPrimaryKey());
 		Object ergo;
 		if (id == null || ((Long) id.getValue()).intValue() == 0) {
 			Map erg = db.executeSelectSingleRow("SELECT LAST_INSERT_ID()");
-			ergo=def.parse(erg.get("last_insert_id()").toString());
+			ergo = def.parse(erg.get("last_insert_id()").toString());
 		} else {
-			ergo=(DataObject)def.parse(id.format());
+			ergo = (DataObject) def.parse(id.format());
 		}
-		return new DataObject(ergo,def);
-		
+		return new DataObject(ergo, def);
 	}
 
 	/**
@@ -372,6 +379,10 @@ public class Table {
 		return name;
 	}
 
+	public Database getDatabase() {
+		return db;
+	}
+
 	private String makeWhereExpression(TypeDefinition def, Object value)
 			throws DatabaseException {
 		// Änderung habe ich wieder verworfen
@@ -386,6 +397,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.9  2005/08/14 20:06:21  tbayen
+ * Verbesserungen an den ForeignKeys, die sich aus der FiBu ergeben haben
+ *
  * Revision 1.8  2005/08/13 12:26:05  tbayen
  * setRecordAndReturnID() gibt beim neu Anlegen eines Records dessen ID zurück
  *

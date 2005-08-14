@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.8 2005/08/13 00:11:08 tbayen Exp $
+ * $Id: Database.java,v 1.9 2005/08/14 20:06:21 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -183,7 +183,9 @@ public class Database {
 			}
 			return new Table(this, name, def);
 		} catch (SQLException e) {
-			throw new SystemDatabaseException("", e, log);
+			throw new SystemDatabaseException(
+					"Tabelle kann nicht angesprochen werden: '" + name + "'",
+					e, log);
 		}
 	}
 
@@ -245,7 +247,8 @@ public class Database {
 					datei));
 			zeile = buffer.readLine();
 			while (zeile != null) {
-				if (zeile.length() > 0 && zeile.charAt(0) != '#' && !zeile.startsWith("--")) { // Kommentarzeilen weglassen
+				if (zeile.length() > 0 && zeile.charAt(0) != '#'
+						&& !zeile.startsWith("--")) { // Kommentarzeilen weglassen
 					sql += zeile;
 					Perl5Util regex = new Perl5Util();
 					// Langer RegEx kurzer Sinn: Haben wir ein Semikolon?
@@ -363,6 +366,9 @@ public class Database {
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.9  2005/08/14 20:06:21  tbayen
+ * Verbesserungen an den ForeignKeys, die sich aus der FiBu ergeben haben
+ *
  * Revision 1.8  2005/08/13 00:11:08  tbayen
  * SQL darf jetzt auch Kommentare enthalten, die PHPMyAdmin erzeugt
  *

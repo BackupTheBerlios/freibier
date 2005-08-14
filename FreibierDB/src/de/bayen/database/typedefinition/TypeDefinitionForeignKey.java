@@ -1,12 +1,10 @@
 /* Erzeugt am 21.10.2004 von tbayen
- * $Id: TypeDefinitionForeignKey.java,v 1.3 2005/08/12 19:39:47 tbayen Exp $
+ * $Id: TypeDefinitionForeignKey.java,v 1.4 2005/08/14 20:06:21 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import de.bayen.database.DataObject;
 import de.bayen.database.Database;
 import de.bayen.database.ForeignKey;
 import de.bayen.database.exception.DatabaseException;
@@ -34,12 +32,6 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 		// ich mir hier die Typen von beiden, um diese z.B. im NicePrinter beide 
 		// formatieren zu können.
 		this.indexType = indexType;
-		if (db != null) {
-			referenceType = db.getTable(
-					indexType.getProperty("foreignkey.table"))
-					.getRecordDefinition().getFieldDef(
-							indexType.getProperty("foreignkey.resultcolumn"));
-		}
 		// Default Value setzen:
 		String defaultProp = getProperty("default");
 		if (defaultProp != null) {
@@ -58,24 +50,24 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 					.getProperty("foreignkey.resultcolumn");
 			list.add(indexColumn);
 			list.add(resultColumn);
-			try {
-				List ersterRecord = db.getTable(
-						indexType.getProperty("foreignkey.table"))
-						.getGivenColumns(list, 1);
-				if (ersterRecord.size() == 0) {
-					throw new SystemDatabaseException(
-							"Fremdschlüsseltabelle leer", log);
-				}
-				Map hash = (Map) ersterRecord.get(0);
-				log.debug("Wert: " + hash.get(indexColumn));
-				Object keyVal = ((DataObject) hash.get(indexColumn)).getValue();
-				Object contentVal = ((DataObject) hash.get(resultColumn))
-						.getValue();
-				defaultValue = new ForeignKey(keyVal, contentVal);
-			} catch (DatabaseException e) {
-				log.error("Kann keinen default Foreign Key festlegen");
-				defaultValue = null;
-			}
+			//			try {
+			//				List ersterRecord = db.getTable(
+			//						indexType.getProperty("foreignkey.table"))
+			//						.getGivenColumns(list, 1);
+			//				if (ersterRecord.size() == 0) {
+			//					throw new SystemDatabaseException(
+			//							"Fremdschlüsseltabelle leer", log);
+			//				}
+			//				Map hash = (Map) ersterRecord.get(0);
+			//				log.debug("Wert: " + hash.get(indexColumn));
+			//				Object keyVal = ((DataObject) hash.get(indexColumn)).getValue();
+			//				Object contentVal = ((DataObject) hash.get(resultColumn))
+			//						.getValue();
+			//				defaultValue = new ForeignKey(keyVal, contentVal);
+			//			} catch (DatabaseException e) {
+			//				log.error("Kann keinen default Foreign Key festlegen");
+			defaultValue = null;
+			//			}
 		}
 	}
 
@@ -100,6 +92,20 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 	}
 
 	public TypeDefinition getReferenceType() {
+		if (db != null && referenceType == null) {
+			// Ich hole den Referenztyp erst, wenn er benutzt wird. 
+			// Am Anfang hatte ich den bei der Initialisierung geholt, was
+			// aber zu Endlosschleifen führt, wenn z.B. ein Konto auf ein 
+			// anderes Konto verweist.
+			try {
+				referenceType = db
+						.getTable(indexType.getProperty("foreignkey.table"))
+						.getRecordDefinition()
+						.getFieldDef(
+								indexType
+										.getProperty("foreignkey.resultcolumn"));
+			} catch (SystemDatabaseException e) {}
+		}
 		return referenceType;
 	}
 
@@ -120,6 +126,9 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.4  2005/08/14 20:06:21  tbayen
+ * Verbesserungen an den ForeignKeys, die sich aus der FiBu ergeben haben
+ *
  * Revision 1.3  2005/08/12 19:39:47  tbayen
  * kleine Nachbesserung...
  *

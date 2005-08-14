@@ -1,5 +1,5 @@
 /* Erzeugt am 09.10.2004 von tbayen
- * $Id: DataObject.java,v 1.3 2005/08/12 19:39:47 tbayen Exp $
+ * $Id: DataObject.java,v 1.4 2005/08/14 20:06:21 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -62,7 +62,49 @@ public class DataObject implements Printable {
 		}
 		this.value = value;
 	}
+	
+	/**
+	 * Diese Methode kann aufgerufen werden, wenn es sich bei diesem Feld um
+	 * einen Foreign Key handelt. Sie ergibt den Record, auf den dieser 
+	 * Foreign Key verweist.
+	 * @throws DatabaseException 
+	 *
+	 */
+	public Record getForeignRecord(Database db) throws DatabaseException{
+		if(!(getValue() instanceof ForeignKey)){
+			throw new SystemDatabaseException("Dies ist kein Foreign Key",log);
+		}
+		ForeignKey fkey = ((ForeignKey)getValue());
+		if(fkey.getKey()==null)
+			return null;
+		String foreigntable=def.getProperty("foreignkey.table");
+		Table ftable = db.getTable(foreigntable);
+		return ftable.getRecordByPrimaryKey(fkey.getKey());
+	}
 
+	/**
+	 * Diese Methode kann aufgerufen werden, wenn es sich bei diesem Feld um
+	 * einen Foreign Key handelt. Sie ergibt den Wert in der Resultcolumn der
+	 * Zieltabelle.
+	 * 
+	 * @param db
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public String getForeignResultColumn(Database db) throws DatabaseException{
+		if(!(getValue() instanceof ForeignKey)){
+			throw new SystemDatabaseException("Dies ist kein Foreign Key",log);
+		}
+		ForeignKey fkey = ((ForeignKey)getValue());
+		if(fkey.getKey()==null)
+			return null;
+		String foreigntable=def.getProperty("foreignkey.table");
+		String resultcolumn=def.getProperty("foreignkey.resultcolumn");
+		Table ftable = db.getTable(foreigntable);
+		Record rec=ftable.getRecordByPrimaryKey(fkey.getKey());
+		return rec.getFormatted(resultcolumn);
+	}
+	
 	public TypeDefinition getTypeDefinition() {
 		return def;
 	}
@@ -100,6 +142,9 @@ public class DataObject implements Printable {
 }
 /*
  * $Log: DataObject.java,v $
+ * Revision 1.4  2005/08/14 20:06:21  tbayen
+ * Verbesserungen an den ForeignKeys, die sich aus der FiBu ergeben haben
+ *
  * Revision 1.3  2005/08/12 19:39:47  tbayen
  * kleine Nachbesserung...
  *

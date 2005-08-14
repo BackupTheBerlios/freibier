@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: RecordDefinition.java,v 1.5 2005/08/12 19:39:47 tbayen Exp $
+ * $Id: RecordDefinition.java,v 1.6 2005/08/14 20:06:21 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -110,6 +110,10 @@ public class RecordDefinition {
 	 * 
 	 * Das Statement enthält immer eine WHERE-Klausel am Ende, so daß mit 
 	 * "AND ..." weitere WHERE-Bedingungen angehängt werden können.
+	 * 
+	 * Dieses SELECT-Statement funktioniert übrigens nicht, wenn ich einen
+	 * Fremdschlüssel auf eine Tabelle habe, die leer ist. Dann gibt es keinen
+	 * Ergebnis-Datensatz.
 	 */
 	public String getSelectStatement(String myTable) {
 		String felder = "";
@@ -127,7 +131,8 @@ public class RecordDefinition {
 			if (feldtyp instanceof TypeDefinitionForeignKey) {
 				String tabelle = feldtyp.getProperty("foreignkey.table");
 				String spalte = feldtyp.getProperty("foreignkey.resultcolumn");
-				felder += ", " + foreigntablename + "." + spalte + " AS "
+				felder += ", IF(ISNULL(" + myTable + "." + feldtyp.getName()
+						+ "),NULL," + foreigntablename + "." + spalte + ") AS "
 						+ feldtyp.getName() + "_foreign";
 				tabellen += ", `" + tabelle + "` AS " + foreigntablename;
 				if (where == null) {
@@ -135,9 +140,11 @@ public class RecordDefinition {
 				} else {
 					where += " AND ";
 				}
-				where += myTable + "." + feldtyp.getName() + "="
+				where += "(" + myTable + "." + feldtyp.getName() + "="
 						+ foreigntablename + "."
-						+ feldtyp.getProperty("foreignkey.indexcolumn");
+						+ feldtyp.getProperty("foreignkey.indexcolumn")
+						+ " OR ISNULL(" + myTable + "." + feldtyp.getName()
+						+ "))";
 				foreigntablename = foreigntablename + "x";
 			}
 		}
@@ -151,6 +158,9 @@ public class RecordDefinition {
 }
 /*
  * $Log: RecordDefinition.java,v $
+ * Revision 1.6  2005/08/14 20:06:21  tbayen
+ * Verbesserungen an den ForeignKeys, die sich aus der FiBu ergeben haben
+ *
  * Revision 1.5  2005/08/12 19:39:47  tbayen
  * kleine Nachbesserung...
  *
