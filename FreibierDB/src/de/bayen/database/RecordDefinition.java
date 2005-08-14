@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: RecordDefinition.java,v 1.6 2005/08/14 20:06:21 tbayen Exp $
+ * $Id: RecordDefinition.java,v 1.7 2005/08/14 22:34:19 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -107,13 +107,17 @@ public class RecordDefinition {
 	 * Ergibt ein SQL-Select-Statement, das geeignet ist, alle Daten für diesen
 	 * Record einzulesen. Dabei werden auch durch Fremdschlüssel referenzierte
 	 * Werte miteingelesen. 
-	 * 
+	 * <p>
 	 * Das Statement enthält immer eine WHERE-Klausel am Ende, so daß mit 
 	 * "AND ..." weitere WHERE-Bedingungen angehängt werden können.
-	 * 
+	 * </p><p>
+	 * Falls ein Fremdschlüssel NULL ist, ist der Wert, der dazu gelesen wird,
+	 * garantiert falsch.
+	 * </p><p>
 	 * Dieses SELECT-Statement funktioniert übrigens nicht, wenn ich einen
 	 * Fremdschlüssel auf eine Tabelle habe, die leer ist. Dann gibt es keinen
 	 * Ergebnis-Datensatz.
+	 * </p>
 	 */
 	public String getSelectStatement(String myTable) {
 		String felder = "";
@@ -131,8 +135,7 @@ public class RecordDefinition {
 			if (feldtyp instanceof TypeDefinitionForeignKey) {
 				String tabelle = feldtyp.getProperty("foreignkey.table");
 				String spalte = feldtyp.getProperty("foreignkey.resultcolumn");
-				felder += ", IF(ISNULL(" + myTable + "." + feldtyp.getName()
-						+ "),NULL," + foreigntablename + "." + spalte + ") AS "
+				felder += ",  " + foreigntablename + "." + spalte + " AS "
 						+ feldtyp.getName() + "_foreign";
 				tabellen += ", `" + tabelle + "` AS " + foreigntablename;
 				if (where == null) {
@@ -158,6 +161,9 @@ public class RecordDefinition {
 }
 /*
  * $Log: RecordDefinition.java,v $
+ * Revision 1.7  2005/08/14 22:34:19  tbayen
+ * Foreign Keys können jetzt auch NULL sein
+ *
  * Revision 1.6  2005/08/14 20:06:21  tbayen
  * Verbesserungen an den ForeignKeys, die sich aus der FiBu ergeben haben
  *

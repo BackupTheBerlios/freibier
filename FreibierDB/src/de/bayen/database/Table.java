@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.9 2005/08/14 20:06:21 tbayen Exp $
+ * $Id: Table.java,v 1.10 2005/08/14 22:34:19 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -43,11 +43,11 @@ public class Table {
 	public List getMultipleRecords(int startRecordNr, int numberOfRecords,
 			String orderColumn, boolean ascending) throws DatabaseException {
 		String selectRumpf = def.getSelectStatement(name);
-		List dbResult = db.executeSelectMultipleRows(selectRumpf + " ORDER BY "
-				+ name + "." + orderColumn + (ascending ? " ASC" : " DESC")
-				+ ", " + name + "." + def.getPrimaryKey()
-				+ (ascending ? " ASC" : " DESC") + " LIMIT " + startRecordNr
-				+ ", " + numberOfRecords);
+		List dbResult = db.executeSelectMultipleRows(selectRumpf + " GROUP BY "
+				+ name + "." + def.getPrimaryKey() + " ORDER BY " + name + "."
+				+ orderColumn + (ascending ? " ASC" : " DESC") + ", " + name
+				+ "." + def.getPrimaryKey() + (ascending ? " ASC" : " DESC")
+				+ " LIMIT " + startRecordNr + ", " + numberOfRecords);
 		//log.debug("dbResult ist: "+dbResult.size());
 		List recordList = new ArrayList();
 		Iterator resIterator = dbResult.iterator();
@@ -160,7 +160,7 @@ public class Table {
 			// Das getSelectStatement endet imm er mit einem WHERE, das verlängere ich hier ggf.:
 			sql += " AND " + condition.expression();
 		// Sortieren
-		sql += " ORDER BY ";
+		sql += " GROUP BY " + name + "." + def.getPrimaryKey() + " ORDER BY ";
 		// Wenn angegeben, nach einer bestimmten Spalte sortieren
 		if (orderColumn != null && !orderColumn.equals(""))
 			sql += name + "." + orderColumn + (ascending ? " ASC" : " DESC")
@@ -207,8 +207,9 @@ public class Table {
 			orderColumn = def.getPrimaryKey();
 		}
 		String selectRumpf = def.getSelectStatement(name);
-		Map hash = db.executeSelectSingleRow(selectRumpf + " ORDER BY `"
-				+ orderColumn + "` " + (direction < 0 ? "DESC" : "ASC") + ", `"
+		Map hash = db.executeSelectSingleRow(selectRumpf + " GROUP BY " + name
+				+ "." + def.getPrimaryKey() + " ORDER BY `" + orderColumn
+				+ "` " + (direction < 0 ? "DESC" : "ASC") + ", `"
 				+ def.getPrimaryKey() + "` " + (direction < 0 ? "DESC" : "ASC")
 				+ " LIMIT " + recordNr + ",1");
 		return new Record(def, hash);
@@ -265,7 +266,8 @@ public class Table {
 		}
 		String selectRumpf = def.getSelectStatement(name);
 		Map hash = db.executeSelectSingleRow(selectRumpf + " AND "
-				+ makeWhereExpression(primdef, pkValue));
+				+ makeWhereExpression(primdef, pkValue) + " GROUP BY " + name
+				+ "." + def.getPrimaryKey());
 		return new Record(def, hash);
 	}
 
@@ -397,6 +399,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.10  2005/08/14 22:34:19  tbayen
+ * Foreign Keys können jetzt auch NULL sein
+ *
  * Revision 1.9  2005/08/14 20:06:21  tbayen
  * Verbesserungen an den ForeignKeys, die sich aus der FiBu ergeben haben
  *
