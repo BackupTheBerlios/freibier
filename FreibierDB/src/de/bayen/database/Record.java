@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Record.java,v 1.2 2005/08/08 06:35:29 tbayen Exp $
+ * $Id: Record.java,v 1.3 2005/08/14 20:05:11 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -95,6 +95,16 @@ public class Record {
 		return new DataObject(daten.get(typdef.getName()), typdef);
 	}
 
+	/**
+	 * Besorgt den Wert des Primärschlüssels dieses Records.
+	 * 
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public DataObject getPrimaryKey() throws DatabaseException{
+		return getField(def.getPrimaryKey());
+	}
+
 	public void setField(String name, DataObject value)
 			throws DatabaseException {
 		daten.put(name, value.getValue());
@@ -128,6 +138,9 @@ public class Record {
 }
 /*
  * $Log: Record.java,v $
+ * Revision 1.3  2005/08/14 20:05:11  tbayen
+ * neue Methode getPrimaryKey()
+ *
  * Revision 1.2  2005/08/08 06:35:29  tbayen
  * Compiler-Warnings bereinigt
  *
