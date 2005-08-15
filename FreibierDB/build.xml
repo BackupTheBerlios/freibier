@@ -19,6 +19,12 @@
     	</fileset>
 	</path>
 
+	<!-- ==================== clean Target ================================== -->
+	  <target name="clean"
+	   description="Delete old build and dist directories">
+	    <delete dir="${build.home}"/>
+	    <delete dir="${dist.home}"/>
+	  </target>
 	
 	<!-- ==================== javadoc Target ================================== -->
 	<target name="javadoc" depends="compile"
@@ -64,7 +70,7 @@
 
 	
 	<!-- ==================== dist Target ======================== -->
-	<target name="dist" depends="compile, javadoc"
+	<target name="dist" depends="clean, compile, javadoc"
 		description="Create binary distribution">
 
   		<!-- Create application JAR file -->
