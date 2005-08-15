@@ -1,5 +1,5 @@
 /* Erzeugt am 09.10.2004 von tbayen
- * $Id: DataObject.java,v 1.4 2005/08/14 20:06:21 tbayen Exp $
+ * $Id: DataObject.java,v 1.5 2005/08/15 16:17:12 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -88,7 +88,7 @@ public class DataObject implements Printable {
 	 * Zieltabelle.
 	 * 
 	 * @param db
-	 * @return
+	 * @return Zielwert
 	 * @throws DatabaseException
 	 */
 	public String getForeignResultColumn(Database db) throws DatabaseException{
@@ -142,6 +142,9 @@ public class DataObject implements Printable {
 }
 /*
  * $Log: DataObject.java,v $
+ * Revision 1.5  2005/08/15 16:17:12  tbayen
+ * Javadoc-Warnungen beseitigt
+ *
  * Revision 1.4  2005/08/14 20:06:21  tbayen
  * Verbesserungen an den ForeignKeys, die sich aus der FiBu ergeben haben
  *

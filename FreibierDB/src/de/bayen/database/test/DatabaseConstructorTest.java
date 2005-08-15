@@ -1,5 +1,5 @@
 /* Erzeugt am 06.10.2004 von tbayen
- * $Id: DatabaseConstructorTest.java,v 1.3 2005/08/13 12:26:43 tbayen Exp $
+ * $Id: DatabaseConstructorTest.java,v 1.4 2005/08/15 16:17:12 tbayen Exp $
  */
 package de.bayen.database.test;
 
@@ -42,8 +42,6 @@ public class DatabaseConstructorTest extends TestCase {
      * um andere Tests durchzuführen, die davon abhängig sind.
      * 
      * Wird also "test.sql" geändert, so muss auch diese Methode geändert werden.
-     * 
-     * @return
      */
     public static int numberOfTables(){
     	return 4;
@@ -52,6 +50,9 @@ public class DatabaseConstructorTest extends TestCase {
 
 /*
  * $Log: DatabaseConstructorTest.java,v $
+ * Revision 1.4  2005/08/15 16:17:12  tbayen
+ * Javadoc-Warnungen beseitigt
+ *
  * Revision 1.3  2005/08/13 12:26:43  tbayen
  * Test angepasst, damit andere Tests besser darauf zugreifen können
  *

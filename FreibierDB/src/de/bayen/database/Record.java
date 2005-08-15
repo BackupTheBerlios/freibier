@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Record.java,v 1.4 2005/08/15 11:47:09 tbayen Exp $
+ * $Id: Record.java,v 1.5 2005/08/15 16:17:12 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -98,7 +98,7 @@ public class Record {
 	/**
 	 * Besorgt den Wert des Primärschlüssels dieses Records.
 	 * 
-	 * @return
+	 * @return schlüsselwert
 	 * @throws DatabaseException
 	 */
 	public DataObject getPrimaryKey() throws DatabaseException {
@@ -143,6 +143,9 @@ public class Record {
 }
 /*
  * $Log: Record.java,v $
+ * Revision 1.5  2005/08/15 16:17:12  tbayen
+ * Javadoc-Warnungen beseitigt
+ *
  * Revision 1.4  2005/08/15 11:47:09  tbayen
  * Record.setField() nimmt bei ForeignKey-Feldern als Wert auch einen einfachen Wert
  *

@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.9 2005/08/14 20:06:21 tbayen Exp $
+ * $Id: Database.java,v 1.10 2005/08/15 16:17:12 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -125,7 +125,7 @@ public class Database {
 	 * Tabelle stehen.
 	 *  
 	 * @param name
-	 * @return
+	 * @return table
 	 * @throws SystemDatabaseException
 	 */
 	public Table getTable(String name) throws SystemDatabaseException {
@@ -332,7 +332,7 @@ public class Database {
 	/**
 	 * Führt einen String als SQL-Befehl (oder mehrere) aus.
 	 * 
-	 * @param sqltext
+	 * @param sql
 	 * @throws SystemDatabaseException
 	 */
 	public void executeUpdate(String sql) throws DatabaseException {
@@ -366,6 +366,9 @@ public class Database {
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.10  2005/08/15 16:17:12  tbayen
+ * Javadoc-Warnungen beseitigt
+ *
  * Revision 1.9  2005/08/14 20:06:21  tbayen
  * Verbesserungen an den ForeignKeys, die sich aus der FiBu ergeben haben
  *
