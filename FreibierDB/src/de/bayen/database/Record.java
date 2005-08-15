@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Record.java,v 1.3 2005/08/14 20:05:11 tbayen Exp $
+ * $Id: Record.java,v 1.4 2005/08/15 11:47:09 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -101,13 +101,18 @@ public class Record {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public DataObject getPrimaryKey() throws DatabaseException{
+	public DataObject getPrimaryKey() throws DatabaseException {
 		return getField(def.getPrimaryKey());
 	}
 
 	public void setField(String name, DataObject value)
 			throws DatabaseException {
-		daten.put(name, value.getValue());
+		if (def.getFieldDef(name).getJavaType().equals(ForeignKey.class)
+				&& (!value.getValue().getClass().equals(ForeignKey.class))) {
+			daten.put(name, new ForeignKey(value.getValue(), null));
+		} else {
+			daten.put(name, value.getValue());
+		}
 	}
 
 	public void setField(int col, DataObject value) throws DatabaseException {
@@ -138,6 +143,9 @@ public class Record {
 }
 /*
  * $Log: Record.java,v $
+ * Revision 1.4  2005/08/15 11:47:09  tbayen
+ * Record.setField() nimmt bei ForeignKey-Feldern als Wert auch einen einfachen Wert
+ *
  * Revision 1.3  2005/08/14 20:05:11  tbayen
  * neue Methode getPrimaryKey()
  *
