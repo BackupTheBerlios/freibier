@@ -69,6 +69,23 @@
 	  </target>
 
 	
+	<!-- ==================== test Target ======================== -->
+	<target name="test" depends="compile">
+		<mkdir dir="${build.home}/reports"/>
+		<junit printsummary="withOutAndErr">
+			<formatter type="plain"/>
+		    <classpath>
+		      	<path refid="compile.classpath"/>
+				<pathelement path="${build.home}"/>
+		    </classpath>
+			<batchtest fork="yes" todir="${build.home}/reports">
+				<fileset dir="${src.home}">
+					<include name="**/*Test.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+	
 	<!-- ==================== dist Target ======================== -->
 	<target name="dist" depends="clean, compile, javadoc"
 		description="Create binary distribution">
