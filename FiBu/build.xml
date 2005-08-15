@@ -1,0 +1,105 @@
+<project name="FreibierDB" default="compile" basedir=".">
+
+	<!-- ==================== File and Directory Names ======================== -->
+	<property file="build.properties"/>
+	<property file="${user.home}/build.properties"/>
+
+	<property name="app.name"      value="appname"/>
+	<property name="app.path"      value="/${app.name}"/>
+	<property name="app.version"   value="0.1-dev"/>
+	<property name="build.home"    value="${basedir}/build"/>
+	<property name="dist.home"     value="${basedir}/dist"/>
+	<property name="src.home"      value="${basedir}/src"/>
+	<property name="lib.home"      value="${basedir}/lib"/>
+	<property name="doc.home"      value="${basedir}/doc"/>
+
+	<path id="compile.classpath">
+	  	<fileset dir="${lib.home}">
+	  		<include name="*.jar"/>
+    	</fileset>
+	</path>
+
+	<!-- ==================== clean Target ================================== -->
+	  <target name="clean"
+	   description="Delete old build and dist directories">
+	    <delete dir="${build.home}"/>
+	    <delete dir="${dist.home}"/>
+	  </target>
+	
+	<!-- ==================== javadoc Target ================================== -->
+	<target name="javadoc" depends="compile"
+		description="Create Javadoc API documentation">
+
+	    <mkdir dir="${dist.home}/docs/api"/>
+	    <javadoc sourcepath="${src.home}"
+	                destdir="${dist.home}/docs/api"
+					overview="${src.home}/overview.html"
+	           packagenames="*">
+	      <classpath refid="compile.classpath"/>
+	    </javadoc>
+
+	  </target>
+
+	
+	
+	<!-- ==================== prepare Target ======================== -->
+	<target name="prepare">
+	    <mkdir  dir="${build.home}"/>
+	</target>
+
+	
+	<!-- ==================== compile Target ======================== -->
+	  <target name="compile" depends="prepare"
+	   description="Compile Java sources">
+
+	    <!-- Compile Java classes as necessary -->
+	    <javac srcdir="${src.home}"
+	          destdir="${build.home}"
+	            debug="${compile.debug}"
+	      deprecation="${compile.deprecation}"
+	         optimize="${compile.optimize}">
+	        <classpath refid="compile.classpath"/>
+	    </javac>
+
+	    <!-- Copy application resources -->
+	    <copy  todir="${build.home}">
+	      <fileset dir="${src.home}" excludes="**/*.java"/>
+	    </copy>
+
+	  </target>
+
+	
+	<!-- ==================== test Target ======================== -->
+	<target name="test" depends="compile">
+		<mkdir dir="${build.home}/reports"/>
+		<junit printsummary="withOutAndErr">
+			<formatter type="plain"/>
+		    <classpath>
+		      	<path refid="compile.classpath"/>
+				<pathelement path="${build.home}"/>
+		    </classpath>
+			<batchtest fork="yes" todir="${build.home}/reports">
+				<fileset dir="${src.home}">
+					<include name="**/*Test.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+	
+	<!-- ==================== dist Target ======================== -->
+	<target name="dist" depends="clean, compile, javadoc"
+		description="Create binary distribution">
+
+  		<!-- Create application JAR file -->
+    	<mkdir dir="${dist.home}"/>
+    	<jar jarfile="${dist.home}/${app.name}-${app.version}.jar"
+			basedir="${build.home}">
+		</jar>
+  	
+	    <mkdir dir="${dist.home}/docs"/>
+    	<copy  todir="${dist.home}/docs">
+      		<fileset dir="${doc.home}" excludes="**/*.java"/>
+    	</copy>
+	</target>
+
+</project>

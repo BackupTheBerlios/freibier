@@ -1,0 +1,15 @@
+INSTALL.txt
+-----------
+
+MySQL
+-----
+Erstmal Mysql und am besten auch PHPMyAdmin installieren (soll hier nicht erklärt 
+werden). Die Datenbank "test" mit dem Benutzer "test" ohne Passwort sollte bei
+einem Debian-System automatisch eingerichtet sein. Die Datenbankstruktur erzeugt 
+die Applikation selber.
+
+
+
+Java
+----
+Ich benutze das Java-SDK 1.4 von Sun.

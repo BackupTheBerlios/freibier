@@ -1,0 +1,27 @@
+TODO
+
+Fibu:
+- Journal
+- Klassen für die sechs Tabellen
+
+
+FreibierDB:
+- Aufnehmen der Tests in die build.xml
+
+
+später:
+- Exceptions in Klassenhierarchie aufteilen
+
+
+
+erledigt:
+- clean im build-Skript
+- Lizenz
+- Javadoc prüfen und ggf. aufhübschen
+- setter für Jahr und Periode
+- build-Skript
+- DB: Prüfen der Tests
+- Erstellung der Properties-Dateien, die die Datenbank beschreiben
+- Bezug auf FreibierDB-Test im Initialisierungstest, um falsche Daten zu bekommen
+- Erste Test-Klasse zum Erstellen der Datenbank
+- prüfen der Warnungen in den Datenbankklassen
