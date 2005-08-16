@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Record.java,v 1.5 2005/08/15 16:17:12 tbayen Exp $
+ * $Id: Record.java,v 1.6 2005/08/16 07:37:14 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -105,6 +105,16 @@ public class Record {
 		return getField(def.getPrimaryKey());
 	}
 
+	/**
+	 * setzt den Wert eines einzelnen Datenfeldes in dem Record. Falls es sich
+	 * um einen ForeignKey handelt, kann als Wert sowohl ein echter ForeignKey
+	 * als auch der gewünschte Schlüsselwert übergeben werden (Natürlich immer
+	 * innerhalb des DataObjects).
+	 * 
+	 * @param name
+	 * @param value
+	 * @throws DatabaseException
+	 */
 	public void setField(String name, DataObject value)
 			throws DatabaseException {
 		if (def.getFieldDef(name).getJavaType().equals(ForeignKey.class)
@@ -136,6 +146,20 @@ public class Record {
 		TypeDefinition typdef = def.getFieldDef(col);
 		daten.put(typdef.getName(), typdef.parse(value));
 	}
+	
+	/**
+	 * Hiermit ist es möglich, in ein ForeignKey-Feld direkt einen Record
+	 * als Wert einzusetzen.
+	 * 
+	 * @return
+	 */
+	public void setField(String name, Record value) throws DatabaseException {
+		daten.put(name, value.getPrimaryKey().getValue());
+	}
+
+	public void setField(int col, Record value) throws DatabaseException {
+		setField(def.getFieldDef(col).getName(), value);
+	}
 
 	public RecordDefinition getRecordDefinition() {
 		return def;
@@ -143,6 +167,9 @@ public class Record {
 }
 /*
  * $Log: Record.java,v $
+ * Revision 1.6  2005/08/16 07:37:14  tbayen
+ * setField auch für Records
+ *
  * Revision 1.5  2005/08/15 16:17:12  tbayen
  * Javadoc-Warnungen beseitigt
  *
