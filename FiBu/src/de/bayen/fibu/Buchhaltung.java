@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.1 2005/08/15 19:13:09 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.2 2005/08/16 00:06:42 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -26,7 +26,7 @@ import de.bayen.database.exception.UserDatabaseException;
 public class Buchhaltung {
 	private static Log log = LogFactory.getLog(Buchhaltung.class);
 	private Database db = null;
-	private Record firmenstamm=null;
+	private Record firmenstamm = null;
 
 	/**
 	 * Dies main-Methode ist hier nur zu Testzwecken während der Entwicklung
@@ -46,10 +46,10 @@ public class Buchhaltung {
 	 * @param password
 	 * @throws DatabaseException
 	 */
-	public Buchhaltung(String name, String server, String user,
-			String password) throws DatabaseException {
+	public Buchhaltung(String name, String server, String user, String password)
+			throws DatabaseException {
 		db = new Database(name, server, user, password);
-		db.setPropertyPath(getClass().getPackage().getName()+".dbdefinition");
+		db.setPropertyPath(getClass().getPackage().getName() + ".dbdefinition");
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class Buchhaltung {
 	public Buchhaltung() throws DatabaseException {
 		// diese Parameter sind in einem Standard-Debian möglich:
 		db = new Database("test", "localhost", "test", null);
-		db.setPropertyPath(getClass().getPackage().getName()+".dbdefinition");
+		db.setPropertyPath(getClass().getPackage().getName() + ".dbdefinition");
 	}
 
 	public void close() throws SystemDatabaseException {
@@ -113,9 +113,10 @@ public class Buchhaltung {
 	 * @return Record, der die Firmenstammdaten enthält
 	 * @throws DatabaseException 
 	 */
-	public Record setFirmenstammdaten(int nr) throws DatabaseException{
+	public Record setFirmenstammdaten(int nr) throws DatabaseException {
 		assertOk();
-		firmenstamm=db.getTable("Firmenstammdaten").getRecordByPrimaryKey(String.valueOf(nr));
+		firmenstamm = db.getTable("Firmenstammdaten").getRecordByPrimaryKey(
+				String.valueOf(nr));
 		return firmenstamm;
 	}
 
@@ -128,14 +129,14 @@ public class Buchhaltung {
 	 * @return Record, der die Firmenstammdaten enthält
 	 * @throws DatabaseException
 	 */
-	public Record setFirmenstammdaten(Record stamm) throws DatabaseException{
+	public Record setFirmenstammdaten(Record stamm) throws DatabaseException {
 		assertOk();
 		Table table = db.getTable("Firmenstammdaten");
-		DataObject stammId=table.setRecordAndReturnID(stamm);
-		firmenstamm=table.getRecordByPrimaryKey(stammId);
+		DataObject stammId = table.setRecordAndReturnID(stamm);
+		firmenstamm = table.getRecordByPrimaryKey(stammId);
 		return firmenstamm;
 	}
-	
+
 	/**
 	 * ergibt den Record der aktuellen Firmenstammdaten. Ist noch keine bestimmte
 	 * Firma gesetzt (mit setFirmenstammdaten()), so wird die erste (und oft
@@ -150,35 +151,40 @@ public class Buchhaltung {
 	 * @return Record, der die Firmenstammdaten enthält
 	 * @throws UserDatabaseException 
 	 */
-	public Record getFirmenstammdaten() throws DatabaseException{
+	public Record getFirmenstammdaten() throws DatabaseException {
 		assertOk();
-		if(firmenstamm==null){
+		if (firmenstamm == null) {
 			Table table = db.getTable("Firmenstammdaten");
 			try {
-				firmenstamm=table.getRecordByNumber(0);
+				firmenstamm = table.getRecordByNumber(0);
 			} catch (UserDatabaseException e) {
-				if(e.getMessage().equals("angegebener Datensatz existiert nicht")){
-					firmenstamm=table.getEmptyRecord();
-					firmenstamm.setField("Firma","Finanzbuchhaltung");
+				if (e.getMessage().equals(
+						"angegebener Datensatz existiert nicht")) {
+					firmenstamm = table.getEmptyRecord();
+					firmenstamm.setField("Firma", "Finanzbuchhaltung");
+					firmenstamm.setField("PeriodeAktuell","01");
+					// TODO aktuelles Jahr feststellen:
+					firmenstamm.setField("JahrAktuell","2005");
 					return setFirmenstammdaten(firmenstamm);
-				}else{
-					throw new SystemDatabaseException("unbekannte Exception",e,log);
+				} else {
+					throw new SystemDatabaseException("unbekannte Exception",
+							e, log);
 				}
 			}
 		}
 		return firmenstamm;
 	}
-	
+
 	/**
 	 * ergibt den aktuellen Firmennamen
 	 * 
 	 * @throws DatabaseException 
 	 *
 	 */
-	public String getFirma() throws DatabaseException{
+	public String getFirma() throws DatabaseException {
 		return getFirmenstammdaten().getField("Firma").format();
 	}
-	
+
 	/**
 	 * Ergibt das aktuelle Buchungsjahr. Dies ist das Jahr, in das automatisch
 	 * gebucht wird, d.h. dieser Wert kann z.B. in einer GUI als Vorgabe
@@ -188,13 +194,13 @@ public class Buchhaltung {
 	 * bei der Buchung angibt.
 	 * </p>
 	 */
-	public String getJahrAktuell() throws DatabaseException{
+	public String getJahrAktuell() throws DatabaseException {
 		return getFirmenstammdaten().getField("JahrAktuell").format();
 	}
-	
-	public void setJahrAktuell(String jahr) throws DatabaseException{
+
+	public void setJahrAktuell(String jahr) throws DatabaseException {
 		Record stamm = getFirmenstammdaten();
-		stamm.setField("JahrAktuell",jahr);
+		stamm.setField("JahrAktuell", jahr);
 		setFirmenstammdaten(stamm);
 	}
 
@@ -214,13 +220,13 @@ public class Buchhaltung {
 	 * erste Periode stehen, nicht für Januar.
 	 * </p>
 	 */
-	public String getPeriodeAktuell() throws DatabaseException{
+	public String getPeriodeAktuell() throws DatabaseException {
 		return getFirmenstammdaten().getField("PeriodeAktuell").format();
 	}
 
-	public void setPeriodeAktuell(String jahr) throws DatabaseException{
+	public void setPeriodeAktuell(String jahr) throws DatabaseException {
 		Record stamm = getFirmenstammdaten();
-		stamm.setField("PeriodeAktuell",jahr);
+		stamm.setField("PeriodeAktuell", jahr);
 		setFirmenstammdaten(stamm);
 	}
 
@@ -231,7 +237,7 @@ public class Buchhaltung {
 	 * @return Konto
 	 * @throws DatabaseException
 	 */
-	public Konto createKonto() throws DatabaseException{
+	public Konto createKonto() throws DatabaseException {
 		return new Konto(db.getTable("Konten"));
 	}
 
@@ -243,12 +249,20 @@ public class Buchhaltung {
 	 * @return Konto
 	 * @throws DatabaseException
 	 */
-	public Konto getKonto(String ktonr) throws DatabaseException{
-		return new Konto(db.getTable("Konten"),ktonr);
+	public Konto getKonto(String ktonr) throws DatabaseException {
+		return new Konto(db.getTable("Konten"), ktonr);
+	}
+
+	public Journal createJournal() throws DatabaseException {
+		return new Journal(db.getTable("Journale"), getJahrAktuell(),
+				getPeriodeAktuell());
 	}
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.2  2005/08/16 00:06:42  tbayen
+ * grundlegende Journal-Eigenschaften implementiert
+ *
  * Revision 1.1  2005/08/15 19:13:09  tbayen
  * Erste Version von heute.
  *

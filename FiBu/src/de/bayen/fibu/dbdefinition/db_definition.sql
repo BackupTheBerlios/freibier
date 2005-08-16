@@ -59,6 +59,7 @@ CREATE TABLE `Buchungszeilen` (
 
 CREATE TABLE `Journale` (
   `id` int(10) unsigned NOT NULL auto_increment,
+  `Journalnummer` int(10) unsigned NOT NULL default 0,
   `Startdatum` date NOT NULL default '0000-00-00',
   `Buchungsjahr` char(4) NOT NULL default '',
   `Buchungsperiode` char(2) NOT NULL default '',
