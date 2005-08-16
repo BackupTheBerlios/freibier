@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Record.java,v 1.8 2005/08/16 08:52:01 tbayen Exp $
+ * $Id: Record.java,v 1.9 2005/08/16 12:21:06 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -164,10 +164,17 @@ public class Record {
 	 * Records zu setzen.
 	 */
 	public void setField(String name, Object value) throws DatabaseException {
+		if (def.getFieldDef(name).getClass().equals(
+				TypeDefinitionForeignKey.class)) {
+			// Wer ein Objekt übergibt (also in dieser Methode hier landet),
+			// übergibt garantiert keinen sauberen ForeignKey, also erzeuge ich
+			// den ggf. hier:
+			value = new ForeignKey(value, null);
+		}
 		if (!def.getFieldDef(name).getJavaType().isInstance(value)) {
 			throw new SystemDatabaseException("Objekt '" + value
-					+ "' ist nicht vom richtigen Typ '" + def.getFieldDef(name)
-					+ "'",log);
+					+ "' ist nicht vom richtigen Typ '"
+					+ def.getFieldDef(name).getJavaType() + "'", log);
 		}
 		daten.put(name, value);
 	}
@@ -187,6 +194,9 @@ public class Record {
 }
 /*
  * $Log: Record.java,v $
+ * Revision 1.9  2005/08/16 12:21:06  tbayen
+ * kleinere Ergänzungen und Bugfixes bei der Arbeit an der FiBu
+ *
  * Revision 1.8  2005/08/16 08:52:01  tbayen
  * kleinere Ergänzungen und Bugfixes bei der Arbeit an der FiBu
  *

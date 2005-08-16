@@ -1,5 +1,5 @@
 /* Erzeugt am 14.10.2004 von phormanns
- * $Id: TypeDefinitionDecimal.java,v 1.2 2005/08/08 06:35:29 tbayen Exp $
+ * $Id: TypeDefinitionDecimal.java,v 1.3 2005/08/16 12:21:06 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -23,7 +23,7 @@ public class TypeDefinitionDecimal extends TypeDefinitionNumber {
 	}
 
 	public Class getJavaType() {
-		return Double.class;
+		return BigDecimal.class;
 	}
 
 	public void setProperties(Map propsMap) {
@@ -74,6 +74,9 @@ public class TypeDefinitionDecimal extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionDecimal.java,v $
+ * Revision 1.3  2005/08/16 12:21:06  tbayen
+ * kleinere Ergänzungen und Bugfixes bei der Arbeit an der FiBu
+ *
  * Revision 1.2  2005/08/08 06:35:29  tbayen
  * Compiler-Warnings bereinigt
  *
