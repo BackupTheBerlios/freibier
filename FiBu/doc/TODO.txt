@@ -6,7 +6,6 @@ Fibu:
 
 
 FreibierDB:
-- Aufnehmen der Tests in die build.xml
 
 
 später:
@@ -15,6 +14,7 @@ später:
 
 
 erledigt:
+- Aufnehmen der Tests in die build.xml
 - clean im build-Skript
 - Lizenz
 - Javadoc prüfen und ggf. aufhübschen

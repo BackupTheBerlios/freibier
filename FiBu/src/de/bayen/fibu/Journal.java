@@ -1,5 +1,5 @@
 /* Erzeugt am 15.08.2005 von tbayen
- * $Id: Journal.java,v 1.2 2005/08/16 00:06:42 tbayen Exp $
+ * $Id: Journal.java,v 1.3 2005/08/16 07:02:33 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -19,15 +19,6 @@ import de.bayen.database.exception.DatabaseException;
  * 
  * @author tbayen
  */
-//CREATE TABLE `Journale` (
-//		  `id` int(10) unsigned NOT NULL auto_increment,
-//		  `Journalnummer` int(10) unsigned NOT NULL default 0,
-//		  `Startdatum` date NOT NULL default '0000-00-00',
-//		  `Buchungsjahr` char(4) NOT NULL default '',
-//		  `Buchungsperiode` char(2) NOT NULL default '',
-//		  `absummiert` tinyint(1) NOT NULL default '0',
-//		  PRIMARY KEY  (`id`)
-//) TYPE=InnoDB AUTO_INCREMENT=1 ;
 public class Journal {
 	private static Log log = LogFactory.getLog(Journal.class);
 	private Table table;
@@ -43,22 +34,24 @@ public class Journal {
 				.getRecordDefinition().getFieldDef("Startdatum")));
 		List list = table.getMultipleRecords(0, table.getNumberOfRecords(),
 				"Journalnummer", false);
-		Object value;
+		int value;
 		if (list.size() == 0) {
-			value = new Long(1);
+			value = 1;
 		} else {
-			value = ((Record) list.get(0)).getField("Journalnummer").getValue();
+			value = ((Long) ((Record) list.get(0)).getField("Journalnummer")
+					.getValue()).intValue() + 1;
 		}
-		record.setField("Journalnummer", new DataObject(value, record
+		record.setField("Journalnummer", new DataObject(new Long(value), record
 				.getRecordDefinition().getFieldDef("Journalnummer")));
 		write();
 		log.info("Anlegen eines neuen Journals <"
-				+ record.getField("Journalnummer") + ">");
+				+ record.getField("Journalnummer").format() + ">");
 	}
 
-	protected Journal(Table table, String nummer) throws DatabaseException {
+	protected Journal(Table table, int nummer) throws DatabaseException {
 		this.table = table;
-		Record rec = table.getRecordByValue("Journalnummer", nummer);
+		Record rec = table.getRecordByValue("Journalnummer", String
+				.valueOf(nummer));
 		record = table.getRecordByPrimaryKey(rec.getPrimaryKey());
 	}
 
@@ -107,6 +100,9 @@ public class Journal {
 }
 /*
  * $Log: Journal.java,v $
+ * Revision 1.3  2005/08/16 07:02:33  tbayen
+ * Journal-Klasse steht als Grundgerüst
+ *
  * Revision 1.2  2005/08/16 00:06:42  tbayen
  * grundlegende Journal-Eigenschaften implementiert
  *

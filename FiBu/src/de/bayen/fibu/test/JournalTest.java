@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: JournalTest.java,v 1.1 2005/08/16 00:06:42 tbayen Exp $
+ * $Id: JournalTest.java,v 1.2 2005/08/16 07:02:33 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -28,11 +28,22 @@ public class JournalTest extends TestCase {
 		assertEquals("2005",jou.getBuchungsjahr());
 		assertEquals("01",jou.getBuchungsperiode());
 		if(print) System.out.println(jou);
+		Journal j2=bh.createJournal();
+		Journal j3=bh.createJournal();
+		assertEquals(2,j2.getJournalnummer());
+		assertEquals(3,j3.getJournalnummer());
+		Journal gelesen=bh.getJournal(2);
+		assertEquals(2,gelesen.getJournalnummer());
+		gelesen.write();
+		assertEquals(3,bh.getDatabase().getTable("Journale").getNumberOfRecords());
 	}
 }
 
 /*
  * $Log: JournalTest.java,v $
+ * Revision 1.2  2005/08/16 07:02:33  tbayen
+ * Journal-Klasse steht als Grundgerüst
+ *
  * Revision 1.1  2005/08/16 00:06:42  tbayen
  * grundlegende Journal-Eigenschaften implementiert
  *

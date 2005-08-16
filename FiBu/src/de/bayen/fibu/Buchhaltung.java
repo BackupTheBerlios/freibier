@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.2 2005/08/16 00:06:42 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.3 2005/08/16 07:02:33 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -68,6 +68,16 @@ public class Buchhaltung {
 		db = null;
 	}
 
+	/**
+	 * Diese Methode bietet den direkten Zugriff auf die Datenbank. Sie sollte
+	 * normalerweise nicht nötig sein. Bisher wird sie nur beim Debugging,
+	 * also bei Tests, benutzt. Falls direkter DB-Zugriff für ein Spezialproblem
+	 * nötig erscheint, sollten besser die FiBu-Klassen erweitert werden.
+	 */
+	public Database getDatabase(){
+		return db;
+	}
+	
 	/**
 	 * Hiermit kann geprüft werden, ob die Buchhaltung initialisiert ist,
 	 * die Datenbankverbindung steht, etc., ob ich also mit der Klasse
@@ -163,7 +173,6 @@ public class Buchhaltung {
 					firmenstamm = table.getEmptyRecord();
 					firmenstamm.setField("Firma", "Finanzbuchhaltung");
 					firmenstamm.setField("PeriodeAktuell","01");
-					// TODO aktuelles Jahr feststellen:
 					firmenstamm.setField("JahrAktuell","2005");
 					return setFirmenstammdaten(firmenstamm);
 				} else {
@@ -253,13 +262,26 @@ public class Buchhaltung {
 		return new Konto(db.getTable("Konten"), ktonr);
 	}
 
+	/**
+	 * Erzeugt ein ganz neues Journal.
+	 * 
+	 * @return
+	 * @throws DatabaseException
+	 */
 	public Journal createJournal() throws DatabaseException {
 		return new Journal(db.getTable("Journale"), getJahrAktuell(),
 				getPeriodeAktuell());
 	}
+	
+	public Journal getJournal(int nummer) throws DatabaseException{
+		return new Journal(db.getTable("Journale"),nummer);
+	}
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.3  2005/08/16 07:02:33  tbayen
+ * Journal-Klasse steht als Grundgerüst
+ *
  * Revision 1.2  2005/08/16 00:06:42  tbayen
  * grundlegende Journal-Eigenschaften implementiert
  *
