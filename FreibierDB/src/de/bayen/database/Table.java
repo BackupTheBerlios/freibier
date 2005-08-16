@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.11 2005/08/16 00:08:17 tbayen Exp $
+ * $Id: Table.java,v 1.12 2005/08/16 07:03:23 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -226,13 +226,21 @@ public class Table {
 
 	/**
 	 * Lies einen Datensatz mit dem angegebenen Wert in der angegebenen Spalte.
+	 * <p>
+	 * Der Wert kann als DataObject oder als String angegeben werden.
+	 * 
 	 * @param columnName
 	 * @param value
 	 * @return Record
 	 * @throws DatabaseException
 	 */
-	public Record getRecordByValue(String columnName, String value)
+	public Record getRecordByValue(String columnName, Object value)
 			throws DatabaseException {
+		if (value instanceof String) {
+			value = new DataObject(getRecordDefinition()
+					.getFieldDef(columnName).parse((String) value),
+					getRecordDefinition().getFieldDef(columnName));
+		}
 		String selectRumpf = def.getSelectStatement(name);
 		Map hash = db.executeSelectSingleRow(selectRumpf + " AND "
 				+ makeWhereExpression(def.getFieldDef(columnName), value)
@@ -354,7 +362,7 @@ public class Table {
 			Map erg = db.executeSelectSingleRow("SELECT LAST_INSERT_ID()");
 			ergo = def.parse(erg.get("last_insert_id()").toString());
 		} else {
-			ergo = (DataObject) def.parse(id.format());
+			ergo = new DataObject(def.parse(id.format()),def);
 		}
 		return new DataObject(ergo, def);
 	}
@@ -396,12 +404,20 @@ public class Table {
 		//					? value 
 		//					:SQLPrinter.print(new DataObject(value, def))
 		//				));
-		return (name + "." + def.getName() + "=" + SQLPrinter
-				.print(new DataObject(value, def)));
+		DataObject dataobject;
+		if (!(value instanceof DataObject)) {
+			dataobject = new DataObject(value, def);
+		} else {
+			dataobject = (DataObject) value;
+		}
+		return (name + "." + def.getName() + "=" + SQLPrinter.print(dataobject));
 	}
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.12  2005/08/16 07:03:23  tbayen
+ * Kleinere Bugfixes beim Erstellen der FiBu
+ *
  * Revision 1.11  2005/08/16 00:08:17  tbayen
  * Kommentare verbessert
  *
