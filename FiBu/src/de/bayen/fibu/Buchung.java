@@ -1,9 +1,12 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchung.java,v 1.1 2005/08/16 08:52:32 tbayen Exp $
+ * $Id: Buchung.java,v 1.2 2005/08/16 12:22:09 tbayen Exp $
  */
 package de.bayen.fibu;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import de.bayen.database.DataObject;
@@ -25,6 +28,7 @@ public class Buchung {
 	private static Log log = LogFactory.getLog(Buchung.class);
 	private Table table;
 	private Record record;
+	private List zeilen = new ArrayList();
 
 	/**
 	 * Erzeugt eine ganz neue Buchung.
@@ -37,6 +41,7 @@ public class Buchung {
 		record = table.getEmptyRecord();
 		setErfassungsdatum(new Date());
 		setValutadatum(new Date());
+		setJournal(journal);
 		write();
 		log.info("Buchung neu angelegt");
 	}
@@ -50,6 +55,10 @@ public class Buchung {
 	public void write() throws DatabaseException {
 		DataObject id = table.setRecordAndReturnID(record);
 		record = table.getRecordByPrimaryKey(id);
+	}
+	
+	public int getID() throws DatabaseException{
+		return ((Long)record.getField("id").getValue()).intValue();
 	}
 
 	public Journal getJournal() throws DatabaseException {
@@ -94,6 +103,13 @@ public class Buchung {
 		record.setField("Erfassungsdatum", datum);
 	}
 
+	public Buchungszeile createZeile() throws DatabaseException {
+		Buchungszeile bz = new Buchungszeile(table.getDatabase().getTable(
+				"Buchungszeilen"),this);
+		zeilen.add(bz);
+		return bz;
+	}
+
 	/**
 	 * Ausgabe in einen String
 	 */
@@ -101,7 +117,11 @@ public class Buchung {
 		String erg;
 		try {
 			erg = "<" + getJournal().getJournalnummer() + "/"
-					+ getBelegnummer() +"> - " + getBuchungstext();
+					+ getBelegnummer() + "> - " + getBuchungstext();
+			for (Iterator iter = zeilen.iterator(); iter.hasNext();) {
+				Buchungszeile zeile = (Buchungszeile) iter.next();
+				erg+="\n......"+zeile;
+			}
 		} catch (DatabaseException e) {
 			log.error("Fehler in toString()", e);
 			erg = "EXCEPTION: " + e.getMessage();
@@ -111,6 +131,9 @@ public class Buchung {
 }
 /*
  * $Log: Buchung.java,v $
+ * Revision 1.2  2005/08/16 12:22:09  tbayen
+ * rudimentäres Arbeiten mit Buchungszeilen möglich
+ *
  * Revision 1.1  2005/08/16 08:52:32  tbayen
  * Grundgerüst der Klasse Buchung (mit Test) steht
  *

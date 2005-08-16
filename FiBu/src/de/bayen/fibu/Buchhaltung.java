@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.3 2005/08/16 07:02:33 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.4 2005/08/16 12:22:09 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -265,7 +265,7 @@ public class Buchhaltung {
 	/**
 	 * Erzeugt ein ganz neues Journal.
 	 * 
-	 * @return
+	 * @return Journal
 	 * @throws DatabaseException
 	 */
 	public Journal createJournal() throws DatabaseException {
@@ -279,6 +279,9 @@ public class Buchhaltung {
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.4  2005/08/16 12:22:09  tbayen
+ * rudimentäres Arbeiten mit Buchungszeilen möglich
+ *
  * Revision 1.3  2005/08/16 07:02:33  tbayen
  * Journal-Klasse steht als Grundgerüst
  *

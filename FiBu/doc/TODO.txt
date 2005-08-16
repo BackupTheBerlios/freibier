@@ -2,6 +2,7 @@ TODO
 
 Fibu:
 - Buchung
+- Klasse für Beträge (mit Soll/Haben)
 - Buchungszeile (als eingebettete Klasse von Buchung?)
 - Journal und Konto erweitern, damit sie mit Buchungen umgehen können
 
@@ -11,7 +12,7 @@ FreibierDB:
 
 später:
 - Exceptions in Klassenhierarchie aufteilen
-- Buchhaltungs-Klassen von Record ableiten?
+- Buchhaltungs-Klassen von Record ableiten oder nicht?
 
 
 

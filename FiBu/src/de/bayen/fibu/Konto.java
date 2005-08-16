@@ -1,5 +1,5 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.2 2005/08/16 08:52:32 tbayen Exp $
+ * $Id: Konto.java,v 1.3 2005/08/16 12:22:09 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -69,6 +69,10 @@ public class Konto {
 	public void write() throws DatabaseException {
 		DataObject id=table.setRecordAndReturnID(record);
 		record=table.getRecordByPrimaryKey(id);
+	}
+
+	public int getID() throws DatabaseException{
+		return ((Long)record.getField("id").getValue()).intValue();
 	}
 
 	public String getKontonummer() throws DatabaseException {
@@ -173,6 +177,9 @@ public class Konto {
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.3  2005/08/16 12:22:09  tbayen
+ * rudimentäres Arbeiten mit Buchungszeilen möglich
+ *
  * Revision 1.2  2005/08/16 08:52:32  tbayen
  * Grundgerüst der Klasse Buchung (mit Test) steht
  *
