@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.10 2005/08/14 22:34:19 tbayen Exp $
+ * $Id: Table.java,v 1.11 2005/08/16 00:08:17 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -187,7 +187,7 @@ public class Table {
 	/**
 	 * Diese Funktion erlaubt, Datensätze über eine fortlaufende Nummer
 	 * anzusprechen. Der erste Datensatz hat die Nummer 0, der letzte die
-	 * Nummer getNumberOfRecords(). die Sortierung kann angegeben werden,
+	 * Nummer getNumberOfRecords()-1. die Sortierung kann angegeben werden,
 	 * ansonsten wird nach dem Primärschlüssel sortiert.
 	 * 
 	 * @param recordNr
@@ -215,6 +215,9 @@ public class Table {
 		return new Record(def, hash);
 	}
 
+	/*
+	 * Ergibt die Anzahl Datensätze in der Tabelle (oder 0, wenn es keine gibt).
+	 */
 	public int getNumberOfRecords() throws DatabaseException {
 		Map hash = db.executeSelectSingleRow("SELECT COUNT(*) AS COUNT FROM "
 				+ name);
@@ -399,6 +402,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.11  2005/08/16 00:08:17  tbayen
+ * Kommentare verbessert
+ *
  * Revision 1.10  2005/08/14 22:34:19  tbayen
  * Foreign Keys können jetzt auch NULL sein
  *
