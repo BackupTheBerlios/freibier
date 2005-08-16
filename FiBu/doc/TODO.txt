@@ -1,9 +1,7 @@
 TODO
 
 Fibu:
-- Buchung
-- Klasse für Beträge (mit Soll/Haben)
-- Buchungszeile (als eingebettete Klasse von Buchung?)
+- Buchungen und Buchungszeilen lesen
 - Journal und Konto erweitern, damit sie mit Buchungen umgehen können
 
 
@@ -17,6 +15,10 @@ später:
 
 
 erledigt:
+- buchungszeilen speichern
+- Buchungszeile Basis
+- Klasse für Beträge (mit Soll/Haben)
+- Buchung Basis
 - Journal
 - Aufnehmen der Tests in die build.xml
 - clean im build-Skript

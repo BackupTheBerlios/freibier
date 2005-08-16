@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchungszeile.java,v 1.1 2005/08/16 12:22:09 tbayen Exp $
+ * $Id: Buchungszeile.java,v 1.2 2005/08/16 21:11:47 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -29,24 +29,33 @@ public class Buchungszeile {
 	/**
 	 * erzeugt eine neue Buchungszeile. Diese wird noch nicht in die Datenbank
 	 * geschrieben. Das sollte erst veranlasst werden, wenn die Buchung komplett
-	 * ist.
+	 * ist. Buchungszeilen können nicht direkt, sondern nur über 
+	 * Buchung.createZeile() erzeugt werden.
 	 * 
 	 * @param table
 	 * @throws DatabaseException 
 	 */
-	public Buchungszeile(Table table, Buchung buchung) throws DatabaseException {
+	protected Buchungszeile(Table table, Buchung buchung)
+			throws DatabaseException {
 		this.table = table;
-		this.buchung=buchung;
+		this.buchung = buchung;
 		record = table.getEmptyRecord();
-		setBetrag(new Betrag(new BigDecimal("0.00"),"S"));
+		setBetrag(new Betrag(new BigDecimal("0.00"), "S"));
 		setBuchung(buchung);
 		log.debug("neue Buchungszeile erzeugt");
+	}
+
+	protected Buchungszeile(Table table, Buchung buchung, Long nummer)
+			throws DatabaseException {
+		this.table = table;
+		this.buchung = buchung;
+		record = table.getRecordByPrimaryKey(nummer);
 	}
 
 	/**
 	 * Änderungen werden erst hiermit endgültig in die Datenbank
 	 * geschrieben. die Methode ist nicht public, da das Schreiben von
-	 * Buchungszeilen nur in ganzen Buchungen erfolgen darf.
+	 * Buchungszeilen nur bei kompletten Buchungen erfolgen darf.
 	 * 
 	 * @throws DatabaseException
 	 */
@@ -55,8 +64,8 @@ public class Buchungszeile {
 		record = table.getRecordByPrimaryKey(id);
 	}
 
-	public int getID() throws DatabaseException{
-		return ((Long)record.getField("id").getValue()).intValue();
+	public int getID() throws DatabaseException {
+		return ((Long) record.getField("id").getValue()).intValue();
 	}
 
 	public Betrag getBetrag() throws DatabaseException {
@@ -78,7 +87,7 @@ public class Buchungszeile {
 
 	public void setBuchung(Buchung buchung) throws DatabaseException {
 		record.setField("Buchung", new Long(buchung.getID()));
-		this.buchung=buchung;
+		this.buchung = buchung;
 	}
 
 	public Konto getKonto() throws DatabaseException {
@@ -90,13 +99,13 @@ public class Buchungszeile {
 	public void setKonto(Konto konto) throws DatabaseException {
 		record.setField("Konto", new Long(konto.getID()));
 	}
-		
+
 	/**
 	 * Ausgabe in einen String.
 	 */
-	public String toString(){
+	public String toString() {
 		try {
-			return "<"+getKonto().getKontonummer() + "> -> " + getBetrag();
+			return "<" + getKonto().getKontonummer() + "> -> " + getBetrag();
 		} catch (Exception e) {
 			log.error("Fehler in toString()", e);
 			return "EXCEPTION: " + e.getMessage();
@@ -105,6 +114,9 @@ public class Buchungszeile {
 }
 /*
  * $Log: Buchungszeile.java,v $
+ * Revision 1.2  2005/08/16 21:11:47  tbayen
+ * Buchungszeilen werden gespeichert
+ *
  * Revision 1.1  2005/08/16 12:22:09  tbayen
  * rudimentäres Arbeiten mit Buchungszeilen möglich
  *

@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: BuchungTest.java,v 1.2 2005/08/16 12:22:09 tbayen Exp $
+ * $Id: BuchungTest.java,v 1.3 2005/08/16 21:11:47 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -54,23 +54,34 @@ public class BuchungTest extends TestCase {
 		konto.setBezeichnung("Bilanz");
 		konto.setKontonummer("00001");
 		konto.write();
-
+		// Vorbereiten: Buchung erzeugen
 		Buchung buch = j.createBuchung();
 		buch.setBelegnummer("10001");
 		buch.setBuchungstext("Testbuchung 2");
-		Buchungszeile bz=buch.createZeile();
-		bz.setBetrag(new Betrag(new BigDecimal("123.45"),"S"));
+		// ab jetzt was neues: Buchungszeilen!
+		Buchungszeile bz = buch.createZeile();
+		bz.setBetrag(new Betrag(new BigDecimal("123.45"), "S"));
 		bz.setKonto(bh.getKonto("00001"));
-		Buchungszeile bz2=buch.createZeile();
-		bz2.setBetrag(new Betrag(new BigDecimal("100.00"),"H"));
+		Buchungszeile bz2 = buch.createZeile();
+		bz2.setBetrag(new Betrag(new BigDecimal("100.00"), "H"));
 		bz2.setKonto(bh.getKonto("00001"));
+		assertTrue("Saldo stimmt nicht", buch.getSaldo()
+				.equals(new Betrag(new BigDecimal("23.45"), "S")));
+		assertFalse("Saldo darf nicht Null sein",buch.isSaldoNull());
+		Buchungszeile bz3 = buch.createZeile();
+		bz3.setBetrag(buch.getSaldo().negate());
+		bz3.setKonto(bh.getKonto("00001"));
+		assertTrue("Saldo sollte Null sein",buch.isSaldoNull());
+		buch.write();
 		if (print)
 			System.out.println(buch);
 	}
-
 }
 /*
  * $Log: BuchungTest.java,v $
+ * Revision 1.3  2005/08/16 21:11:47  tbayen
+ * Buchungszeilen werden gespeichert
+ *
  * Revision 1.2  2005/08/16 12:22:09  tbayen
  * rudimentäres Arbeiten mit Buchungszeilen möglich
  *

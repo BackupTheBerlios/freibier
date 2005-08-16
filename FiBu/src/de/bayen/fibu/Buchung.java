@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchung.java,v 1.2 2005/08/16 12:22:09 tbayen Exp $
+ * $Id: Buchung.java,v 1.3 2005/08/16 21:11:47 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -43,7 +43,23 @@ public class Buchung {
 		setValutadatum(new Date());
 		setJournal(journal);
 		write();
+		read();
 		log.info("Buchung neu angelegt");
+	}
+
+	private void read() throws DatabaseException {
+		Table zeilentab = table.getDatabase().getTable("Buchungszeilen");
+		List liste = zeilentab.getRecordsFromQuery(
+				zeilentab.new QueryCondition("Buchung",
+						Table.QueryCondition.EQUAL, String.valueOf(getID())),
+				null, true);
+		for (Iterator iter = liste.iterator(); iter.hasNext();) {
+			Record rec = (Record) iter.next();
+			Buchungszeile bz = new Buchungszeile(table.getDatabase().getTable(
+					"Buchungszeilen"), this, (Long) rec.getPrimaryKey()
+					.getValue());
+			zeilen.add(bz);
+		}
 	}
 
 	/**
@@ -55,10 +71,29 @@ public class Buchung {
 	public void write() throws DatabaseException {
 		DataObject id = table.setRecordAndReturnID(record);
 		record = table.getRecordByPrimaryKey(id);
+		if (isSaldoNull()) {
+			// erstmal alle vorhandenen Buchungszeilen löschen
+			Table zeilentab = table.getDatabase().getTable("Buchungszeilen");
+			List liste = zeilentab
+					.getRecordsFromQuery(zeilentab.new QueryCondition(
+							"Buchung", Table.QueryCondition.EQUAL, String
+									.valueOf(getID())), null, true);
+			for (Iterator iter = liste.iterator(); iter.hasNext();) {
+				Record rec = (Record) iter.next();
+				table.deleteRecord(rec);
+			}
+			// und dann die neuen speichern.
+			// (Die, die ich ggf. am Anfang gelesen habe, haben schon eine ID,
+			// die wird dann praktischerweise wiederbenutzt)
+			for (Iterator iter = zeilen.iterator(); iter.hasNext();) {
+				Buchungszeile zeile = (Buchungszeile) iter.next();
+				zeile.write();
+			}
+		}
 	}
-	
-	public int getID() throws DatabaseException{
-		return ((Long)record.getField("id").getValue()).intValue();
+
+	public int getID() throws DatabaseException {
+		return ((Long) record.getField("id").getValue()).intValue();
 	}
 
 	public Journal getJournal() throws DatabaseException {
@@ -105,9 +140,27 @@ public class Buchung {
 
 	public Buchungszeile createZeile() throws DatabaseException {
 		Buchungszeile bz = new Buchungszeile(table.getDatabase().getTable(
-				"Buchungszeilen"),this);
+				"Buchungszeilen"), this);
 		zeilen.add(bz);
 		return bz;
+	}
+
+	/**
+	 * ergibt den Saldo aller Buchungszeilen. Bei einer abgeschlossenen
+	 * Buchung muss das immer "0.00" sein.
+	 * @throws DatabaseException 
+	 */
+	public Betrag getSaldo() throws DatabaseException {
+		Betrag saldo = new Betrag();
+		for (Iterator iter = zeilen.iterator(); iter.hasNext();) {
+			Buchungszeile zeile = (Buchungszeile) iter.next();
+			saldo = saldo.add(zeile.getBetrag());
+		}
+		return saldo;
+	}
+
+	public boolean isSaldoNull() throws DatabaseException {
+		return getSaldo().equals(new Betrag());
 	}
 
 	/**
@@ -120,8 +173,9 @@ public class Buchung {
 					+ getBelegnummer() + "> - " + getBuchungstext();
 			for (Iterator iter = zeilen.iterator(); iter.hasNext();) {
 				Buchungszeile zeile = (Buchungszeile) iter.next();
-				erg+="\n......"+zeile;
+				erg += "\n......" + zeile;
 			}
+			erg += "\n......Saldo:" + getSaldo();
 		} catch (DatabaseException e) {
 			log.error("Fehler in toString()", e);
 			erg = "EXCEPTION: " + e.getMessage();
@@ -131,6 +185,9 @@ public class Buchung {
 }
 /*
  * $Log: Buchung.java,v $
+ * Revision 1.3  2005/08/16 21:11:47  tbayen
+ * Buchungszeilen werden gespeichert
+ *
  * Revision 1.2  2005/08/16 12:22:09  tbayen
  * rudimentäres Arbeiten mit Buchungszeilen möglich
  *
