@@ -1,5 +1,5 @@
 /* Erzeugt am 15.08.2005 von tbayen
- * $Id: Journal.java,v 1.3 2005/08/16 07:02:33 tbayen Exp $
+ * $Id: Journal.java,v 1.4 2005/08/16 08:52:32 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -11,6 +11,7 @@ import de.bayen.database.DataObject;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.exception.DatabaseException;
+import de.bayen.database.exception.SystemDatabaseException;
 
 /**
  * Ein Journal entspricht dem Grundbuch der Buchhaltung. Im Grundbuch stehen
@@ -22,7 +23,7 @@ import de.bayen.database.exception.DatabaseException;
 public class Journal {
 	private static Log log = LogFactory.getLog(Journal.class);
 	private Table table;
-	private Record record;
+	protected Record record;
 
 	protected Journal(Table table, String jahr, String periode)
 			throws DatabaseException {
@@ -31,7 +32,7 @@ public class Journal {
 		record.setField("Buchungsjahr", jahr);
 		record.setField("Buchungsperiode", periode);
 		record.setField("Startdatum", new DataObject(new Date(), record
-				.getRecordDefinition().getFieldDef("Startdatum")));
+				.getFieldDef("Startdatum")));
 		List list = table.getMultipleRecords(0, table.getNumberOfRecords(),
 				"Journalnummer", false);
 		int value;
@@ -42,7 +43,7 @@ public class Journal {
 					.getValue()).intValue() + 1;
 		}
 		record.setField("Journalnummer", new DataObject(new Long(value), record
-				.getRecordDefinition().getFieldDef("Journalnummer")));
+				.getFieldDef("Journalnummer")));
 		write();
 		log.info("Anlegen eines neuen Journals <"
 				+ record.getField("Journalnummer").format() + ">");
@@ -66,6 +67,10 @@ public class Journal {
 		record = table.getRecordByPrimaryKey(id);
 	}
 
+	public int getID() throws DatabaseException{
+		return ((Long) record.getPrimaryKey().getValue()).intValue();
+	}
+	
 	public int getJournalnummer() throws DatabaseException {
 		return ((Long) record.getField("Journalnummer").getValue()).intValue();
 	}
@@ -82,6 +87,19 @@ public class Journal {
 		return record.getField("Buchungsperiode").format();
 	}
 
+	// Umgang mit Buchungen
+
+	/**
+	 * Erzeugt eine ganz neue Buchung
+	 * 
+	 * @throws SystemDatabaseException 
+	 */
+	public Buchung createBuchung() throws DatabaseException{
+		return new Buchung(table.getDatabase().getTable("Buchungen"),this);
+	}
+	
+	// Ausgabefunktionen
+	
 	/**
 	 * Ausgabe des Journals in Textform
 	 */
@@ -93,6 +111,7 @@ public class Journal {
 			erg += " - Periode: " + getBuchungsperiode() + "/"
 					+ getBuchungsjahr() + "\n";
 		} catch (Exception e) {
+			log.error("Fehler in toString()",e);
 			erg = "EXCEPTION: " + e.getMessage();
 		}
 		return erg;
@@ -100,6 +119,9 @@ public class Journal {
 }
 /*
  * $Log: Journal.java,v $
+ * Revision 1.4  2005/08/16 08:52:32  tbayen
+ * Grundgerüst der Klasse Buchung (mit Test) steht
+ *
  * Revision 1.3  2005/08/16 07:02:33  tbayen
  * Journal-Klasse steht als Grundgerüst
  *

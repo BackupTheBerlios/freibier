@@ -1,8 +1,10 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.1 2005/08/15 19:13:09 tbayen Exp $
+ * $Id: Konto.java,v 1.2 2005/08/16 08:52:32 tbayen Exp $
  */
 package de.bayen.fibu;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import de.bayen.database.DataObject;
 import de.bayen.database.ForeignKey;
 import de.bayen.database.Record;
@@ -16,6 +18,7 @@ import de.bayen.database.exception.DatabaseException;
  * @author tbayen
  */
 public class Konto {
+	private static Log log = LogFactory.getLog(Konto.class);
 	private Table table;
 	private Record record;
 
@@ -162,6 +165,7 @@ public class Konto {
 			erg+="; Gewicht: "+getGewicht();
 			erg+=")\n";
 		} catch (Exception e) {
+			log.error("Fehler in toString()",e);
 			erg="EXCEPTION: "+e.getMessage();
 		}
 		return erg;
@@ -169,6 +173,9 @@ public class Konto {
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.2  2005/08/16 08:52:32  tbayen
+ * Grundgerüst der Klasse Buchung (mit Test) steht
+ *
  * Revision 1.1  2005/08/15 19:13:09  tbayen
  * Erste Version von heute.
  *

@@ -1,8 +1,9 @@
 TODO
 
 Fibu:
-- Journal
-- Klassen für die sechs Tabellen
+- Buchung
+- Buchungszeile (als eingebettete Klasse von Buchung?)
+- Journal und Konto erweitern, damit sie mit Buchungen umgehen können
 
 
 FreibierDB:
@@ -10,10 +11,12 @@ FreibierDB:
 
 später:
 - Exceptions in Klassenhierarchie aufteilen
+- Buchhaltungs-Klassen von Record ableiten?
 
 
 
 erledigt:
+- Journal
 - Aufnehmen der Tests in die build.xml
 - clean im build-Skript
 - Lizenz

@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: BuchhaltungsDatenTest.java,v 1.1 2005/08/15 19:13:09 tbayen Exp $
+ * $Id: BuchhaltungsDatenTest.java,v 1.2 2005/08/16 08:52:32 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -11,21 +11,6 @@ import de.bayen.database.test.DatabaseConstructorTest;
 import de.bayen.fibu.Buchhaltung;
 
 public class BuchhaltungsDatenTest extends TestCase {
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(BuchhaltungsDatenTest.class);
-	}
-
-	//	public BuchhaltungsDatenTest(String name) {
-	//		super(name);
-	//	}
-	//
-	//	protected void setUp() throws Exception {
-	//		super.setUp();
-	//	}
-	//
-	//	protected void tearDown() throws Exception {
-	//		super.tearDown();
-	//	}
 	public void testNoDatabase() {
 		try {
 			Buchhaltung bh = new Buchhaltung("gibtsnicht",
@@ -109,6 +94,9 @@ public class BuchhaltungsDatenTest extends TestCase {
 }
 /*
  * $Log: BuchhaltungsDatenTest.java,v $
+ * Revision 1.2  2005/08/16 08:52:32  tbayen
+ * Grundgerüst der Klasse Buchung (mit Test) steht
+ *
  * Revision 1.1  2005/08/15 19:13:09  tbayen
  * Erste Version von heute.
  *

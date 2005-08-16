@@ -19,7 +19,7 @@
 CREATE TABLE `Buchungen` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `Journal` int(10) unsigned NOT NULL default '0',
-  `Belegnr` char(8) NOT NULL default '',
+  `Belegnummer` char(8) NOT NULL default '',
   `Buchungstext` char(20) NOT NULL default '',
   `Valutadatum` date NOT NULL default '0000-00-00',
   `Erfassungsdatum` date NOT NULL default '0000-00-00',
