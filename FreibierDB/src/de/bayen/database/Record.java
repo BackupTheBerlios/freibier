@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Record.java,v 1.6 2005/08/16 07:37:14 tbayen Exp $
+ * $Id: Record.java,v 1.7 2005/08/16 07:44:44 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -164,9 +164,16 @@ public class Record {
 	public RecordDefinition getRecordDefinition() {
 		return def;
 	}
+	
+	public TypeDefinition getFieldDef(String feldname) throws SystemDatabaseException{
+		return def.getFieldDef(feldname);
+	}
 }
 /*
  * $Log: Record.java,v $
+ * Revision 1.7  2005/08/16 07:44:44  tbayen
+ * Record.getFieldDef() als Verkürzung
+ *
  * Revision 1.6  2005/08/16 07:37:14  tbayen
  * setField auch für Records
  *

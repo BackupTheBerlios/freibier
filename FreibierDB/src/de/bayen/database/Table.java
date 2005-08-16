@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.12 2005/08/16 07:03:23 tbayen Exp $
+ * $Id: Table.java,v 1.13 2005/08/16 07:44:45 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -353,8 +353,7 @@ public class Table {
 	public DataObject setRecordAndReturnID(Record data)
 			throws DatabaseException {
 		setRecord(data);
-		DataObject id = data.getField(data.getRecordDefinition()
-				.getPrimaryKey());
+		DataObject id = data.getPrimaryKey();
 		TypeDefinition def = getRecordDefinition().getFieldDef(
 				getRecordDefinition().getPrimaryKey());
 		Object ergo;
@@ -415,6 +414,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.13  2005/08/16 07:44:45  tbayen
+ * Record.getFieldDef() als Verkürzung
+ *
  * Revision 1.12  2005/08/16 07:03:23  tbayen
  * Kleinere Bugfixes beim Erstellen der FiBu
  *
