@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Record.java,v 1.7 2005/08/16 07:44:44 tbayen Exp $
+ * $Id: Record.java,v 1.8 2005/08/16 08:52:01 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -146,12 +146,10 @@ public class Record {
 		TypeDefinition typdef = def.getFieldDef(col);
 		daten.put(typdef.getName(), typdef.parse(value));
 	}
-	
+
 	/**
 	 * Hiermit ist es möglich, in ein ForeignKey-Feld direkt einen Record
 	 * als Wert einzusetzen.
-	 * 
-	 * @return
 	 */
 	public void setField(String name, Record value) throws DatabaseException {
 		daten.put(name, value.getPrimaryKey().getValue());
@@ -161,16 +159,37 @@ public class Record {
 		setField(def.getFieldDef(col).getName(), value);
 	}
 
+	/**
+	 * Hiermit ist es möglich, direkt ein Datenobjekt in ein Feld eines
+	 * Records zu setzen.
+	 */
+	public void setField(String name, Object value) throws DatabaseException {
+		if (!def.getFieldDef(name).getJavaType().isInstance(value)) {
+			throw new SystemDatabaseException("Objekt '" + value
+					+ "' ist nicht vom richtigen Typ '" + def.getFieldDef(name)
+					+ "'",log);
+		}
+		daten.put(name, value);
+	}
+
+	public void setField(int col, Object value) throws DatabaseException {
+		setField(def.getFieldDef(col).getName(), value);
+	}
+
 	public RecordDefinition getRecordDefinition() {
 		return def;
 	}
-	
-	public TypeDefinition getFieldDef(String feldname) throws SystemDatabaseException{
+
+	public TypeDefinition getFieldDef(String feldname)
+			throws SystemDatabaseException {
 		return def.getFieldDef(feldname);
 	}
 }
 /*
  * $Log: Record.java,v $
+ * Revision 1.8  2005/08/16 08:52:01  tbayen
+ * kleinere Ergänzungen und Bugfixes bei der Arbeit an der FiBu
+ *
  * Revision 1.7  2005/08/16 07:44:44  tbayen
  * Record.getFieldDef() als Verkürzung
  *
