@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO8859-1"?> 
+
+<plugin name="FiBu" version="0.2">
+
+	<description>Freibier - FiBu-Plugin für Jameica</description>
+	<url></url>
+	<homepage>http://freibier.berlios.de</homepage>
+	<license>GPL - http://www.gnu.org/copyleft/gpl.html</license>
+
+	<menu>
+		<item name="FiBu">
+			<item name="Stammdaten" action="de.bayen.fibu.gui.action.StammdatenAction" />
+		    <item name="-" /> 
+		    <item name="Info" action="de.bayen.fibu.gui.action.AboutAction" /> 
+		</item>
+	</menu>
+
+	<navigation> 
+		<item name="FiBu" icon-close="folder.gif" icon-open="folder.gif" action="de.bayen.fibu.gui.action.StammdatenAction">
+		    <item name="Info" icon-close="page.gif" icon-open="page.gif" action="de.bayen.fibu.gui.action.AboutAction" /> 
+		</item>
+   	</navigation>
+
+	<services>
+		<service name="buchhaltung" depends="" autostart="true"
+				 class="de.bayen.fibu.FibuService" />
+	</services>
+	
+</plugin>
+
