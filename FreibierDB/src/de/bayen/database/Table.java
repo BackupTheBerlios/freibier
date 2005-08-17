@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.14 2005/08/17 19:41:38 tbayen Exp $
+ * $Id: Table.java,v 1.15 2005/08/17 19:43:46 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -83,7 +83,8 @@ public class Table {
 			this.operator = operator;
 			try {
 				if (getRecordDefinition().getFieldDef(column).getJavaType()
-						.equals(ForeignKey.class)) {
+						.equals(ForeignKey.class)
+						&& !value.getClass().equals(ForeignKey.class)) {
 					this.value = new ForeignKey(value, null);
 				} else {
 					this.value = value;
@@ -425,6 +426,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.15  2005/08/17 19:43:46  tbayen
+ * QueryCondition konnte nicht richtig mit ForeignKey-Spalten umgehen
+ *
  * Revision 1.14  2005/08/17 19:41:38  tbayen
  * QueryCondition konnte nicht richtig mit ForeignKey-Spalten umgehen
  *
