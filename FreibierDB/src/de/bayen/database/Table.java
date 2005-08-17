@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.15 2005/08/17 19:43:46 tbayen Exp $
+ * $Id: Table.java,v 1.16 2005/08/17 21:29:31 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -174,9 +174,21 @@ public class Table {
 		// Sortieren
 		sql += " GROUP BY " + name + "." + def.getPrimaryKey() + " ORDER BY ";
 		// Wenn angegeben, nach einer bestimmten Spalte sortieren
-		if (orderColumn != null && !orderColumn.equals(""))
-			sql += name + "." + orderColumn + (ascending ? " ASC" : " DESC")
-					+ ", ";
+		if (orderColumn != null && !orderColumn.equals("")) {
+			String cols[] = orderColumn.split(",");
+			if (cols.length > 1) {
+				// Man kann auch mehrere Sortierspalten angeben
+				for (int i = 0; i < cols.length; i++) {
+					String col = cols[i];
+					sql += name + "." + col;
+					if (i < cols.length - 1)
+						sql += ", ";
+				}
+			} else {
+				sql += name + "." + orderColumn;
+			}
+			sql += (ascending ? " ASC" : " DESC") + ", ";
+		}
 		// auf jeden Fall nach der Primärspalte sortieren, um immer eine eindeutige Reihenfolge zu haben
 		sql += name + "." + def.getPrimaryKey()
 				+ (ascending ? " ASC" : " DESC");
@@ -261,7 +273,12 @@ public class Table {
 	}
 
 	/**
-	 * Lies den Datensatz mit dem angegebenen Primärschlüssel.
+	 * Lies den Datensatz mit dem angegebenen Primärschlüssel. Der Schlüssel
+	 * kann als Typ den grundlegenden Objekttyp (z.B. Long oder Date) haben,
+	 * er kann String sein (woraufhin das Objekt automatisch umgewandelt wird
+	 * und er kann vom Typ ForeignKey sein (muss aber nicht, wenn es sich um 
+	 * ein Schlüsselfeld handelt).
+	 * 
 	 * @param pkValue - Ein Datenwert (oder ein DataObject)
 	 * @return Record
 	 * @throws DatabaseException
@@ -426,6 +443,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.16  2005/08/17 21:29:31  tbayen
+ * mehrere Sortierspalten möglich im Query
+ *
  * Revision 1.15  2005/08/17 19:43:46  tbayen
  * QueryCondition konnte nicht richtig mit ForeignKey-Spalten umgehen
  *
