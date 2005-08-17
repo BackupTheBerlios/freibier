@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: BuchungTest.java,v 1.4 2005/08/17 20:28:04 tbayen Exp $
+ * $Id: BuchungTest.java,v 1.5 2005/08/17 21:31:28 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -48,6 +48,7 @@ public class BuchungTest extends TestCase {
 
 	public void testBuchungszeilen() throws DatabaseException {
 		Journal j = bh.createJournal();
+		assertEquals(0, j.getBuchungen().size());
 		// Vorbereitung: Konto erzeugen
 		Konto konto = bh.createKonto();
 		konto.setBezeichnung("Bilanz");
@@ -64,20 +65,35 @@ public class BuchungTest extends TestCase {
 		Buchungszeile bz2 = buch.createZeile();
 		bz2.setBetrag(new Betrag(new BigDecimal("100.00"), "H"));
 		bz2.setKonto(bh.getKonto("00001"));
-		assertTrue("Saldo stimmt nicht", buch.getSaldo()
-				.equals(new Betrag(new BigDecimal("23.45"), "S")));
-		assertFalse("Saldo darf nicht Null sein",buch.isSaldoNull());
+		assertTrue("Saldo stimmt nicht", buch.getSaldo().equals(
+				new Betrag(new BigDecimal("23.45"), "S")));
+		assertFalse("Saldo darf nicht Null sein", buch.isSaldoNull());
 		Buchungszeile bz3 = buch.createZeile();
 		bz3.setBetrag(buch.getSaldo().negate());
 		bz3.setKonto(bh.getKonto("00001"));
-		assertTrue("Saldo sollte Null sein",buch.isSaldoNull());
+		assertTrue("Saldo sollte Null sein", buch.isSaldoNull());
 		buch.write();
 		if (TestConfig.print)
 			System.out.println(buch);
+		// ein paar Tests zum Thema getBuchungen()
+		assertEquals(1, j.getBuchungen().size());
+		Buchung buch2 = j.createBuchung();
+		buch2.setBelegnummer("10002");
+		buch2.write();
+		assertEquals(2, j.getBuchungen().size());
+		assertEquals("10001", ((Buchung) j.getBuchungen().get(0))
+				.getBelegnummer());
+		assertEquals("10002", ((Buchung) j.getBuchungen().get(1))
+				.getBelegnummer());
+		if(TestConfig.print)
+			System.out.println(j+"\n");
 	}
 }
 /*
  * $Log: BuchungTest.java,v $
+ * Revision 1.5  2005/08/17 21:31:28  tbayen
+ * Test etwas ausführlicher gemacht
+ *
  * Revision 1.4  2005/08/17 20:28:04  tbayen
  * zwei Methoden zum Auflisten von Objekten und alles, was dazu sonst noch nötig war
  *
