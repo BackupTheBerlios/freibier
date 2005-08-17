@@ -1,5 +1,5 @@
 /* Erzeugt am 15.08.2005 von tbayen
- * $Id: Journal.java,v 1.4 2005/08/16 08:52:32 tbayen Exp $
+ * $Id: Journal.java,v 1.5 2005/08/17 18:54:32 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -49,10 +49,9 @@ public class Journal {
 				+ record.getField("Journalnummer").format() + ">");
 	}
 
-	protected Journal(Table table, int nummer) throws DatabaseException {
+	protected Journal(Table table, Long nummer) throws DatabaseException {
 		this.table = table;
-		Record rec = table.getRecordByValue("Journalnummer", String
-				.valueOf(nummer));
+		Record rec = table.getRecordByValue("Journalnummer", nummer.toString());
 		record = table.getRecordByPrimaryKey(rec.getPrimaryKey());
 	}
 
@@ -67,12 +66,12 @@ public class Journal {
 		record = table.getRecordByPrimaryKey(id);
 	}
 
-	public int getID() throws DatabaseException{
-		return ((Long) record.getPrimaryKey().getValue()).intValue();
+	public Long getID() throws DatabaseException{
+		return (Long) record.getPrimaryKey().getValue();
 	}
 	
-	public int getJournalnummer() throws DatabaseException {
-		return ((Long) record.getField("Journalnummer").getValue()).intValue();
+	public Long getJournalnummer() throws DatabaseException {
+		return (Long) record.getField("Journalnummer").getValue();
 	}
 
 	public String getStartdatum() throws DatabaseException {
@@ -119,6 +118,9 @@ public class Journal {
 }
 /*
  * $Log: Journal.java,v $
+ * Revision 1.5  2005/08/17 18:54:32  tbayen
+ * An vielen Stellen int durch Long ersetzt. Das macht vieles klarer und kürzer
+ *
  * Revision 1.4  2005/08/16 08:52:32  tbayen
  * Grundgerüst der Klasse Buchung (mit Test) steht
  *

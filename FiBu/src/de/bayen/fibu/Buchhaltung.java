@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.4 2005/08/16 12:22:09 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.5 2005/08/17 18:54:32 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -273,12 +273,15 @@ public class Buchhaltung {
 				getPeriodeAktuell());
 	}
 	
-	public Journal getJournal(int nummer) throws DatabaseException{
+	public Journal getJournal(Long nummer) throws DatabaseException{
 		return new Journal(db.getTable("Journale"),nummer);
 	}
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.5  2005/08/17 18:54:32  tbayen
+ * An vielen Stellen int durch Long ersetzt. Das macht vieles klarer und kürzer
+ *
  * Revision 1.4  2005/08/16 12:22:09  tbayen
  * rudimentäres Arbeiten mit Buchungszeilen möglich
  *

@@ -1,14 +1,18 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.3 2005/08/16 12:22:09 tbayen Exp $
+ * $Id: Konto.java,v 1.4 2005/08/17 18:54:32 tbayen Exp $
  */
 package de.bayen.fibu;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import de.bayen.database.DataObject;
 import de.bayen.database.ForeignKey;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
+import de.bayen.database.Table.QueryCondition;
 import de.bayen.database.exception.DatabaseException;
 
 /**
@@ -29,19 +33,19 @@ public class Konto {
 	 * @param id
 	 * @throws DatabaseException
 	 */
-	protected Konto(Table table, int id) throws DatabaseException {
+	protected Konto(Table table, Long id) throws DatabaseException {
 		this.table = table;
-		record = table.getRecordByPrimaryKey(String.valueOf(id));
+		record = table.getRecordByPrimaryKey(id.toString());
 	}
 
 	/**
 	 * Dieser Konstruktor liest das Konto mit der angegebenen buchhalterischen
 	 * Kontonummer aus der Datenbank.
 	 */
-	protected Konto(Table table, String ktonr) throws DatabaseException{
-		this.table=table;
-		Record rec = table.getRecordByValue("Kontonummer",ktonr);
-		record=table.getRecordByPrimaryKey(rec.getPrimaryKey());
+	protected Konto(Table table, String ktonr) throws DatabaseException {
+		this.table = table;
+		Record rec = table.getRecordByValue("Kontonummer", ktonr);
+		record = table.getRecordByPrimaryKey(rec.getPrimaryKey());
 	}
 
 	/**
@@ -55,7 +59,7 @@ public class Konto {
 		record = table.getEmptyRecord();
 		//		record.setField("MwSt","1");
 	}
-	
+
 	/**
 	 * Änderungen am Konto werden erst hiermit endgültig in die Datenbank
 	 * geschrieben.
@@ -67,12 +71,12 @@ public class Konto {
 	 * @throws DatabaseException
 	 */
 	public void write() throws DatabaseException {
-		DataObject id=table.setRecordAndReturnID(record);
-		record=table.getRecordByPrimaryKey(id);
+		DataObject id = table.setRecordAndReturnID(record);
+		record = table.getRecordByPrimaryKey(id);
 	}
 
-	public int getID() throws DatabaseException{
-		return ((Long)record.getField("id").getValue()).intValue();
+	public Long getID() throws DatabaseException {
+		return (Long) record.getField("id").getValue();
 	}
 
 	public String getKontonummer() throws DatabaseException {
@@ -105,21 +109,21 @@ public class Konto {
 
 	public Konto getOberkonto() throws DatabaseException {
 		Object field = record.getField("Oberkonto").getValue();
-		Long ktoid = ((Long)((ForeignKey) field).getKey());
+		Long ktoid = ((Long) ((ForeignKey) field).getKey());
 		if (ktoid == null)
 			return null;
-		return new Konto(table, ktoid.intValue());
+		return new Konto(table, ktoid);
 	}
 
 	public int getGewicht() throws DatabaseException {
 		return Integer.parseInt(record.getFormatted("Gewicht"));
 	}
-	
-	public void setKontonummer(String ktonr) throws DatabaseException{
+
+	public void setKontonummer(String ktonr) throws DatabaseException {
 		record.setField("Kontonummer", ktonr);
 	}
 
-	public void setBezeichnung(String bezeichnung) throws DatabaseException{
+	public void setBezeichnung(String bezeichnung) throws DatabaseException {
 		record.setField("Bezeichnung", bezeichnung);
 	}
 
@@ -128,8 +132,8 @@ public class Konto {
 	 * @param mwst
 	 * @throws DatabaseException
 	 */
-	public void setMwSt(int mwst) throws DatabaseException{
-		record.setField("MwSt", String.valueOf(mwst));
+	public void setMwSt(Long mwst) throws DatabaseException {
+		record.setField("MwSt", mwst);
 	}
 
 	/**
@@ -137,8 +141,8 @@ public class Konto {
 	 * 
 	 * @throws DatabaseException
 	 */
-	public void setOberkonto(int kto) throws DatabaseException{
-		record.setField("Oberkonto", String.valueOf(kto));
+	public void setOberkonto(Long kto) throws DatabaseException {
+		record.setField("Oberkonto", kto);
 	}
 
 	/**
@@ -146,37 +150,57 @@ public class Konto {
 	 * 
 	 * @throws DatabaseException
 	 */
-	public void setOberkontoNummer(String ktonr) throws DatabaseException{
-		Record rec = table.getRecordByValue("Kontonummer",ktonr);
+	public void setOberkontoNummer(String ktonr) throws DatabaseException {
+		Record rec = table.getRecordByValue("Kontonummer", ktonr);
 		record.setField("Oberkonto", rec.getPrimaryKey());
 	}
 
-	public void setGewicht(int gew) throws DatabaseException{
+	public void setGewicht(int gew) throws DatabaseException {
 		record.setField("Gewicht", String.valueOf(gew));
+	}
+
+	/**
+	 * Ergibt eine Liste mit Konto-Objekten. Die aufgelisteten Konten sind die,
+	 * die dieses Konto als Oberkonto angegeben haben.
+	 * @throws DatabaseException 
+	 *
+	 */
+	public void getUnterkonten() throws DatabaseException {
+		List konten = new ArrayList();
+		List records = table.getRecordsFromQuery(table.new QueryCondition(
+				"Oberkonto", QueryCondition.EQUAL, getKontonummer()), null,
+				true);
+		for (Iterator iter = records.iterator(); iter.hasNext();) {
+			Record rec = (Record) iter.next();
+			konten.add(new Konto(table,(Long)rec.getPrimaryKey().getValue()));
+		}
 	}
 
 	/**
 	 * Ausgabe des Kontos in Textform
 	 */
-	public String toString(){
+	public String toString() {
 		String erg;
 		try {
 			erg = "Konto <" + getKontonummer() + ">:";
 			erg += " '" + getBezeichnung() + "'";
-			erg+="\n";
-			erg+="(";
-			erg+="Oberkonto <"+getOberkontoNummer()+">";
-			erg+="; Gewicht: "+getGewicht();
-			erg+=")\n";
+			erg += "\n";
+			erg += "(";
+			erg += "Oberkonto <" + getOberkontoNummer() + ">";
+			erg += "; Gewicht: " + getGewicht();
+			erg += ")\n";
 		} catch (Exception e) {
-			log.error("Fehler in toString()",e);
-			erg="EXCEPTION: "+e.getMessage();
+			log.error("Fehler in toString()", e);
+			erg = "EXCEPTION: " + e.getMessage();
 		}
 		return erg;
 	}
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.4  2005/08/17 18:54:32  tbayen
+ * An vielen Stellen int durch Long ersetzt. Das macht vieles klarer und kürzer
+ *
  * Revision 1.3  2005/08/16 12:22:09  tbayen
  * rudimentäres Arbeiten mit Buchungszeilen möglich
  *

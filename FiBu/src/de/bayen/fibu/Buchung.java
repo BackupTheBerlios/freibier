@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchung.java,v 1.3 2005/08/16 21:11:47 tbayen Exp $
+ * $Id: Buchung.java,v 1.4 2005/08/17 18:54:32 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -92,18 +92,18 @@ public class Buchung {
 		}
 	}
 
-	public int getID() throws DatabaseException {
-		return ((Long) record.getField("id").getValue()).intValue();
+	public Long getID() throws DatabaseException {
+		return (Long) record.getField("id").getValue();
 	}
 
 	public Journal getJournal() throws DatabaseException {
 		return new Journal(table.getDatabase().getTable("Journale"),
-				((Long) ((ForeignKey) record.getField("Journal").getValue())
-						.getKey()).intValue());
+				(Long) ((ForeignKey) record.getField("Journal").getValue())
+						.getKey());
 	}
 
 	public void setJournal(Journal journal) throws DatabaseException {
-		record.setField("Journal", new Long(journal.getID()));
+		record.setField("Journal", journal.getID());
 	}
 
 	public String getBelegnummer() throws DatabaseException {
@@ -185,6 +185,9 @@ public class Buchung {
 }
 /*
  * $Log: Buchung.java,v $
+ * Revision 1.4  2005/08/17 18:54:32  tbayen
+ * An vielen Stellen int durch Long ersetzt. Das macht vieles klarer und kürzer
+ *
  * Revision 1.3  2005/08/16 21:11:47  tbayen
  * Buchungszeilen werden gespeichert
  *

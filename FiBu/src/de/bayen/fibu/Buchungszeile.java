@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchungszeile.java,v 1.2 2005/08/16 21:11:47 tbayen Exp $
+ * $Id: Buchungszeile.java,v 1.3 2005/08/17 18:54:32 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -64,8 +64,8 @@ public class Buchungszeile {
 		record = table.getRecordByPrimaryKey(id);
 	}
 
-	public int getID() throws DatabaseException {
-		return ((Long) record.getField("id").getValue()).intValue();
+	public Long getID() throws DatabaseException {
+		return (Long) record.getField("id").getValue();
 	}
 
 	public Betrag getBetrag() throws DatabaseException {
@@ -86,18 +86,18 @@ public class Buchungszeile {
 	}
 
 	public void setBuchung(Buchung buchung) throws DatabaseException {
-		record.setField("Buchung", new Long(buchung.getID()));
+		record.setField("Buchung", buchung.getID());
 		this.buchung = buchung;
 	}
 
 	public Konto getKonto() throws DatabaseException {
 		return new Konto(table.getDatabase().getTable("Konten"),
-				((Long) ((ForeignKey) record.getField("Konto").getValue())
-						.getKey()).intValue());
+				(Long) ((ForeignKey) record.getField("Konto").getValue())
+						.getKey());
 	}
 
 	public void setKonto(Konto konto) throws DatabaseException {
-		record.setField("Konto", new Long(konto.getID()));
+		record.setField("Konto", konto.getID());
 	}
 
 	/**
@@ -114,6 +114,9 @@ public class Buchungszeile {
 }
 /*
  * $Log: Buchungszeile.java,v $
+ * Revision 1.3  2005/08/17 18:54:32  tbayen
+ * An vielen Stellen int durch Long ersetzt. Das macht vieles klarer und kürzer
+ *
  * Revision 1.2  2005/08/16 21:11:47  tbayen
  * Buchungszeilen werden gespeichert
  *
