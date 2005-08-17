@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.13 2005/08/16 07:44:45 tbayen Exp $
+ * $Id: Table.java,v 1.14 2005/08/17 19:41:38 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -81,7 +81,18 @@ public class Table {
 		public QueryCondition(String column, int operator, Object value) {
 			this.column = column;
 			this.operator = operator;
-			this.value = value;
+			try {
+				if (getRecordDefinition().getFieldDef(column).getJavaType()
+						.equals(ForeignKey.class)) {
+					this.value = new ForeignKey(value, null);
+				} else {
+					this.value = value;
+				}
+			} catch (Exception e) {
+				// da fällt mir hier auch nichts besseres ein.
+				// Oder werfe ich die Exception besser direkt wieder aus?
+				this.value = value;
+			}
 		}
 
 		// Das macht das Leben einfacher:
@@ -361,7 +372,7 @@ public class Table {
 			Map erg = db.executeSelectSingleRow("SELECT LAST_INSERT_ID()");
 			ergo = def.parse(erg.get("last_insert_id()").toString());
 		} else {
-			ergo = new DataObject(def.parse(id.format()),def);
+			ergo = new DataObject(def.parse(id.format()), def);
 		}
 		return new DataObject(ergo, def);
 	}
@@ -414,6 +425,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.14  2005/08/17 19:41:38  tbayen
+ * QueryCondition konnte nicht richtig mit ForeignKey-Spalten umgehen
+ *
  * Revision 1.13  2005/08/16 07:44:45  tbayen
  * Record.getFieldDef() als Verkürzung
  *
