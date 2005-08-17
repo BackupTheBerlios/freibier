@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: BuchungTest.java,v 1.3 2005/08/16 21:11:47 tbayen Exp $
+ * $Id: BuchungTest.java,v 1.4 2005/08/17 20:28:04 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -15,7 +15,6 @@ import de.bayen.fibu.Konto;
 
 public class BuchungTest extends TestCase {
 	private Buchhaltung bh;
-	private boolean print = true;
 
 	public BuchungTest(String arg0) {
 		super(arg0);
@@ -43,7 +42,7 @@ public class BuchungTest extends TestCase {
 		Buchung buch = j.createBuchung();
 		buch.setBelegnummer("10000");
 		buch.setBuchungstext("Testbuchung 1");
-		if (print)
+		if (TestConfig.print)
 			System.out.println(buch);
 	}
 
@@ -73,12 +72,15 @@ public class BuchungTest extends TestCase {
 		bz3.setKonto(bh.getKonto("00001"));
 		assertTrue("Saldo sollte Null sein",buch.isSaldoNull());
 		buch.write();
-		if (print)
+		if (TestConfig.print)
 			System.out.println(buch);
 	}
 }
 /*
  * $Log: BuchungTest.java,v $
+ * Revision 1.4  2005/08/17 20:28:04  tbayen
+ * zwei Methoden zum Auflisten von Objekten und alles, was dazu sonst noch nötig war
+ *
  * Revision 1.3  2005/08/16 21:11:47  tbayen
  * Buchungszeilen werden gespeichert
  *

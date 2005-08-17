@@ -1,14 +1,18 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.5 2005/08/17 18:54:32 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.6 2005/08/17 20:28:04 tbayen Exp $
  */
 package de.bayen.fibu;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import de.bayen.database.DataObject;
 import de.bayen.database.Database;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
+import de.bayen.database.Table.QueryCondition;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.exception.SystemDatabaseException;
 import de.bayen.database.exception.UserDatabaseException;
@@ -74,10 +78,10 @@ public class Buchhaltung {
 	 * also bei Tests, benutzt. Falls direkter DB-Zugriff für ein Spezialproblem
 	 * nötig erscheint, sollten besser die FiBu-Klassen erweitert werden.
 	 */
-	public Database getDatabase(){
+	public Database getDatabase() {
 		return db;
 	}
-	
+
 	/**
 	 * Hiermit kann geprüft werden, ob die Buchhaltung initialisiert ist,
 	 * die Datenbankverbindung steht, etc., ob ich also mit der Klasse
@@ -172,8 +176,8 @@ public class Buchhaltung {
 						"angegebener Datensatz existiert nicht")) {
 					firmenstamm = table.getEmptyRecord();
 					firmenstamm.setField("Firma", "Finanzbuchhaltung");
-					firmenstamm.setField("PeriodeAktuell","01");
-					firmenstamm.setField("JahrAktuell","2005");
+					firmenstamm.setField("PeriodeAktuell", "01");
+					firmenstamm.setField("JahrAktuell", "2005");
 					return setFirmenstammdaten(firmenstamm);
 				} else {
 					throw new SystemDatabaseException("unbekannte Exception",
@@ -263,7 +267,8 @@ public class Buchhaltung {
 	}
 
 	/**
-	 * Erzeugt ein ganz neues Journal.
+	 * Erzeugt ein ganz neues Journal. Das Journal wird direkt in der
+	 * Datenbank erzeugt, muss also nicht noch mit write() bestätigt werden.
 	 * 
 	 * @return Journal
 	 * @throws DatabaseException
@@ -272,13 +277,52 @@ public class Buchhaltung {
 		return new Journal(db.getTable("Journale"), getJahrAktuell(),
 				getPeriodeAktuell());
 	}
-	
-	public Journal getJournal(Long nummer) throws DatabaseException{
-		return new Journal(db.getTable("Journale"),nummer);
+
+	public Journal getJournal(Long nummer) throws DatabaseException {
+		return new Journal(db.getTable("Journale"), nummer);
+	}
+
+	/**
+	 * Ergibt eine Liste, die alle Journale der Buchhaltung enthält.
+	 * @throws DatabaseException 
+	 */
+	public List getAlleJournale() throws DatabaseException {
+		List journale = new ArrayList();
+		Table table = db.getTable("Journale");
+		List records = table.getRecordsFromQuery(null, null, true);
+		for (Iterator iter = records.iterator(); iter.hasNext();) {
+			Record rec = (Record) iter.next();
+			journale
+					.add(new Konto(table, (Long) rec.getPrimaryKey().getValue()));
+		}
+		return journale;
+	}
+
+	/**
+	 * Ergibt eine Liste, die nur die nicht-abgeschlossenen Journale der 
+	 * Buchhaltung enthält. Die Liste ist nach Journalnummern sortiert.
+	 * 
+	 * @throws DatabaseException 
+	 */
+	public List getOffeneJournale() throws DatabaseException {
+		List journale = new ArrayList();
+		Table table = db.getTable("Journale");
+		List records = table.getRecordsFromQuery(table.new QueryCondition(
+				"absummiert", QueryCondition.EQUAL, new Boolean(false)), "Journalnummer",
+				true);
+		for (Iterator iter = records.iterator(); iter.hasNext();) {
+			Record rec = (Record) iter.next();
+			journale
+					.add(new Konto(table, (Long) rec.getPrimaryKey().getValue()));
+		}
+		return journale;
 	}
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.6  2005/08/17 20:28:04  tbayen
+ * zwei Methoden zum Auflisten von Objekten und alles, was dazu sonst noch nötig war
+ *
  * Revision 1.5  2005/08/17 18:54:32  tbayen
  * An vielen Stellen int durch Long ersetzt. Das macht vieles klarer und kürzer
  *

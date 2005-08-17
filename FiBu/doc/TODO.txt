@@ -1,6 +1,8 @@
 TODO
 
 Fibu:
+- Wie bekomme ich eine Liste aller Unterkonten zu einem Konto?
+- Wie bekomme ist eine Liste aller offenen Journale?
 - Buchungen und Buchungszeilen lesen
 - Journal und Konto erweitern, damit sie mit Buchungen umgehen können
 

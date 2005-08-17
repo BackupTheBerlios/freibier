@@ -1,5 +1,5 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.4 2005/08/17 18:54:32 tbayen Exp $
+ * $Id: Konto.java,v 1.5 2005/08/17 20:28:04 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -144,6 +144,13 @@ public class Konto {
 	public void setOberkonto(Long kto) throws DatabaseException {
 		record.setField("Oberkonto", kto);
 	}
+	
+	/**
+	 * Hier wird ein Konto-Objekt angegeben, um das Oberkonto festzulegen.
+	 */
+	public void setOberkonto(Konto kto) throws DatabaseException {
+		record.setField("Oberkonto", kto.getID());
+	}
 
 	/**
 	 * Das Oberkonto wird anhand der buchhalterischen Kontonummer gesetzt.
@@ -165,15 +172,16 @@ public class Konto {
 	 * @throws DatabaseException 
 	 *
 	 */
-	public void getUnterkonten() throws DatabaseException {
+	public List getUnterkonten() throws DatabaseException {
 		List konten = new ArrayList();
 		List records = table.getRecordsFromQuery(table.new QueryCondition(
-				"Oberkonto", QueryCondition.EQUAL, getKontonummer()), null,
+				"Oberkonto", QueryCondition.EQUAL, getID()), null,
 				true);
 		for (Iterator iter = records.iterator(); iter.hasNext();) {
 			Record rec = (Record) iter.next();
-			konten.add(new Konto(table,(Long)rec.getPrimaryKey().getValue()));
+			konten.add(new Konto(table, (Long) rec.getPrimaryKey().getValue()));
 		}
+		return konten;
 	}
 
 	/**
@@ -198,6 +206,9 @@ public class Konto {
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.5  2005/08/17 20:28:04  tbayen
+ * zwei Methoden zum Auflisten von Objekten und alles, was dazu sonst noch nötig war
+ *
  * Revision 1.4  2005/08/17 18:54:32  tbayen
  * An vielen Stellen int durch Long ersetzt. Das macht vieles klarer und kürzer
  *

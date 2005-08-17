@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: BuchhaltungsDatenTest.java,v 1.2 2005/08/16 08:52:32 tbayen Exp $
+ * $Id: BuchhaltungTest.java,v 1.1 2005/08/17 20:28:04 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -10,7 +10,7 @@ import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.test.DatabaseConstructorTest;
 import de.bayen.fibu.Buchhaltung;
 
-public class BuchhaltungsDatenTest extends TestCase {
+public class BuchhaltungTest extends TestCase {
 	public void testNoDatabase() {
 		try {
 			Buchhaltung bh = new Buchhaltung("gibtsnicht",
@@ -93,7 +93,10 @@ public class BuchhaltungsDatenTest extends TestCase {
 
 }
 /*
- * $Log: BuchhaltungsDatenTest.java,v $
+ * $Log: BuchhaltungTest.java,v $
+ * Revision 1.1  2005/08/17 20:28:04  tbayen
+ * zwei Methoden zum Auflisten von Objekten und alles, was dazu sonst noch nötig war
+ *
  * Revision 1.2  2005/08/16 08:52:32  tbayen
  * Grundgerüst der Klasse Buchung (mit Test) steht
  *

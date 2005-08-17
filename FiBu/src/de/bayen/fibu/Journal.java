@@ -1,5 +1,5 @@
 /* Erzeugt am 15.08.2005 von tbayen
- * $Id: Journal.java,v 1.5 2005/08/17 18:54:32 tbayen Exp $
+ * $Id: Journal.java,v 1.6 2005/08/17 20:28:04 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -86,6 +86,28 @@ public class Journal {
 		return record.getField("Buchungsperiode").format();
 	}
 
+	/**
+	 * Stellt fest, ob dieses Journal bereits absummiert ist. In einem
+	 * absummierten Journal kann nicht mehr weitergebucht werden.
+	 * 
+	 * @return boolean
+	 * @throws DatabaseException
+	 */
+	public boolean isAbsummiert() throws DatabaseException{
+		return record.getField("absummiert").format().equals("");
+	}
+
+	/**
+	 * Hiermit wird ein Journal absummiert. Danach kann in dieses Journal
+	 * nicht mehr gebucht werden. Dieser Vorgang kann nicht mehr
+	 * rückgängig gemacht werden. Der Vorgang wird direkt in der Datenbank
+	 * vermerkt, braucht also nicht mehr mit write() bestätigt zu werden.
+	 */
+	public void absummieren() throws DatabaseException{
+		record.setField("absummiert", new Boolean(true));
+		write();
+	}
+
 	// Umgang mit Buchungen
 
 	/**
@@ -94,6 +116,8 @@ public class Journal {
 	 * @throws SystemDatabaseException 
 	 */
 	public Buchung createBuchung() throws DatabaseException{
+		if(isAbsummiert())
+			return null;
 		return new Buchung(table.getDatabase().getTable("Buchungen"),this);
 	}
 	
@@ -108,7 +132,9 @@ public class Journal {
 			erg = "Journal <" + getJournalnummer() + ">";
 			erg += " vom " + getStartdatum();
 			erg += " - Periode: " + getBuchungsperiode() + "/"
-					+ getBuchungsjahr() + "\n";
+					+ getBuchungsjahr();
+			if(isAbsummiert()) erg+=" --Absummiert--";
+			erg += "\n";
 		} catch (Exception e) {
 			log.error("Fehler in toString()",e);
 			erg = "EXCEPTION: " + e.getMessage();
@@ -118,6 +144,9 @@ public class Journal {
 }
 /*
  * $Log: Journal.java,v $
+ * Revision 1.6  2005/08/17 20:28:04  tbayen
+ * zwei Methoden zum Auflisten von Objekten und alles, was dazu sonst noch nötig war
+ *
  * Revision 1.5  2005/08/17 18:54:32  tbayen
  * An vielen Stellen int durch Long ersetzt. Das macht vieles klarer und kürzer
  *
