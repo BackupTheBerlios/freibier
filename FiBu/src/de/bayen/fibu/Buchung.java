@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchung.java,v 1.4 2005/08/17 18:54:32 tbayen Exp $
+ * $Id: Buchung.java,v 1.5 2005/08/17 21:33:29 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -36,7 +36,7 @@ public class Buchung {
 	 * @param table
 	 * @throws DatabaseException 
 	 */
-	public Buchung(Table table, Journal journal) throws DatabaseException {
+	protected Buchung(Table table, Journal journal) throws DatabaseException {
 		this.table = table;
 		record = table.getEmptyRecord();
 		setErfassungsdatum(new Date());
@@ -45,6 +45,18 @@ public class Buchung {
 		write();
 		read();
 		log.info("Buchung neu angelegt");
+	}
+
+	/**
+	 * liest eine vorhandene Buchung anhand der ID aus der Datenbank.
+	 * 
+	 * @param table
+	 * @param nummer
+	 * @throws DatabaseException
+	 */
+	protected Buchung(Table table, Long nummer) throws DatabaseException {
+		this.table = table;
+		record = table.getRecordByPrimaryKey(nummer);
 	}
 
 	private void read() throws DatabaseException {
@@ -69,10 +81,12 @@ public class Buchung {
 	 * @throws DatabaseException
 	 */
 	public void write() throws DatabaseException {
+		setErfassungsdatum(new Date());
 		DataObject id = table.setRecordAndReturnID(record);
 		record = table.getRecordByPrimaryKey(id);
 		if (isSaldoNull()) {
-			// erstmal alle vorhandenen Buchungszeilen löschen
+			// TODO das hier ist ein Fall für eine Transaktion
+			// erstmal alle vorhandenen Buchungszeilen löschen:
 			Table zeilentab = table.getDatabase().getTable("Buchungszeilen");
 			List liste = zeilentab
 					.getRecordsFromQuery(zeilentab.new QueryCondition(
@@ -134,7 +148,7 @@ public class Buchung {
 		return (Date) record.getField("Erfassungsdatum").getValue();
 	}
 
-	public void setErfassungsdatum(Date datum) throws DatabaseException {
+	private void setErfassungsdatum(Date datum) throws DatabaseException {
 		record.setField("Erfassungsdatum", datum);
 	}
 
@@ -185,6 +199,9 @@ public class Buchung {
 }
 /*
  * $Log: Buchung.java,v $
+ * Revision 1.5  2005/08/17 21:33:29  tbayen
+ * Journal.getBuchungen() neu und alles, was ich dazu benötigt habe
+ *
  * Revision 1.4  2005/08/17 18:54:32  tbayen
  * An vielen Stellen int durch Long ersetzt. Das macht vieles klarer und kürzer
  *

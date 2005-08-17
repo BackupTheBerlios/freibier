@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchungszeile.java,v 1.3 2005/08/17 18:54:32 tbayen Exp $
+ * $Id: Buchungszeile.java,v 1.4 2005/08/17 21:33:29 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -45,6 +45,14 @@ public class Buchungszeile {
 		log.debug("neue Buchungszeile erzeugt");
 	}
 
+	/**
+	 * Liest eine vorhandene Buchungszeile aus der Datenbank.
+	 * 
+	 * @param table
+	 * @param buchung
+	 * @param nummer
+	 * @throws DatabaseException
+	 */
 	protected Buchungszeile(Table table, Buchung buchung, Long nummer)
 			throws DatabaseException {
 		this.table = table;
@@ -114,6 +122,9 @@ public class Buchungszeile {
 }
 /*
  * $Log: Buchungszeile.java,v $
+ * Revision 1.4  2005/08/17 21:33:29  tbayen
+ * Journal.getBuchungen() neu und alles, was ich dazu benötigt habe
+ *
  * Revision 1.3  2005/08/17 18:54:32  tbayen
  * An vielen Stellen int durch Long ersetzt. Das macht vieles klarer und kürzer
  *

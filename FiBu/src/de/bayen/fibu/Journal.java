@@ -1,15 +1,18 @@
 /* Erzeugt am 15.08.2005 von tbayen
- * $Id: Journal.java,v 1.6 2005/08/17 20:28:04 tbayen Exp $
+ * $Id: Journal.java,v 1.7 2005/08/17 21:33:29 tbayen Exp $
  */
 package de.bayen.fibu;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import de.bayen.database.DataObject;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
+import de.bayen.database.Table.QueryCondition;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.exception.SystemDatabaseException;
 
@@ -49,6 +52,13 @@ public class Journal {
 				+ record.getField("Journalnummer").format() + ">");
 	}
 
+	/**
+	 * liest ein vorhandenes Journal aus der Datenbank.
+	 * 
+	 * @param table
+	 * @param nummer
+	 * @throws DatabaseException
+	 */
 	protected Journal(Table table, Long nummer) throws DatabaseException {
 		this.table = table;
 		Record rec = table.getRecordByValue("Journalnummer", nummer.toString());
@@ -66,10 +76,10 @@ public class Journal {
 		record = table.getRecordByPrimaryKey(id);
 	}
 
-	public Long getID() throws DatabaseException{
+	public Long getID() throws DatabaseException {
 		return (Long) record.getPrimaryKey().getValue();
 	}
-	
+
 	public Long getJournalnummer() throws DatabaseException {
 		return (Long) record.getField("Journalnummer").getValue();
 	}
@@ -93,7 +103,7 @@ public class Journal {
 	 * @return boolean
 	 * @throws DatabaseException
 	 */
-	public boolean isAbsummiert() throws DatabaseException{
+	public boolean isAbsummiert() throws DatabaseException {
 		return record.getField("absummiert").format().equals("");
 	}
 
@@ -103,26 +113,44 @@ public class Journal {
 	 * rückgängig gemacht werden. Der Vorgang wird direkt in der Datenbank
 	 * vermerkt, braucht also nicht mehr mit write() bestätigt zu werden.
 	 */
-	public void absummieren() throws DatabaseException{
+	public void absummieren() throws DatabaseException {
 		record.setField("absummiert", new Boolean(true));
 		write();
 	}
 
 	// Umgang mit Buchungen
-
 	/**
 	 * Erzeugt eine ganz neue Buchung
 	 * 
 	 * @throws SystemDatabaseException 
 	 */
-	public Buchung createBuchung() throws DatabaseException{
-		if(isAbsummiert())
+	public Buchung createBuchung() throws DatabaseException {
+		if (isAbsummiert())
 			return null;
-		return new Buchung(table.getDatabase().getTable("Buchungen"),this);
+		return new Buchung(table.getDatabase().getTable("Buchungen"), this);
 	}
-	
+
+	/**
+	 * Ergibt eine Liste der Buchungen in diesem Journal. Die Liste ist 
+	 * nach Erfassungsdatum sortiert.
+	 * 
+	 * @throws DatabaseException 
+	 */
+	public List getBuchungen() throws DatabaseException {
+		List buchungen = new ArrayList();
+		Table table = this.table.getDatabase().getTable("Buchungen");
+		List records = table.getRecordsFromQuery(table.new QueryCondition(
+				"Journal", QueryCondition.EQUAL, getID()),
+				"Erfassungsdatum,id", true);
+		for (Iterator iter = records.iterator(); iter.hasNext();) {
+			Record rec = (Record) iter.next();
+			buchungen.add(new Buchung(table, (Long) rec.getPrimaryKey()
+					.getValue()));
+		}
+		return buchungen;
+	}
+
 	// Ausgabefunktionen
-	
 	/**
 	 * Ausgabe des Journals in Textform
 	 */
@@ -133,10 +161,15 @@ public class Journal {
 			erg += " vom " + getStartdatum();
 			erg += " - Periode: " + getBuchungsperiode() + "/"
 					+ getBuchungsjahr();
-			if(isAbsummiert()) erg+=" --Absummiert--";
-			erg += "\n";
+			if (isAbsummiert())
+				erg += " --Absummiert--";
+			List buchungen=getBuchungen();
+			for (Iterator iter = buchungen.iterator(); iter.hasNext();) {
+				Buchung buch = (Buchung) iter.next();
+				erg+="\n"+buch;
+			}
 		} catch (Exception e) {
-			log.error("Fehler in toString()",e);
+			log.error("Fehler in toString()", e);
 			erg = "EXCEPTION: " + e.getMessage();
 		}
 		return erg;
@@ -144,6 +177,9 @@ public class Journal {
 }
 /*
  * $Log: Journal.java,v $
+ * Revision 1.7  2005/08/17 21:33:29  tbayen
+ * Journal.getBuchungen() neu und alles, was ich dazu benötigt habe
+ *
  * Revision 1.6  2005/08/17 20:28:04  tbayen
  * zwei Methoden zum Auflisten von Objekten und alles, was dazu sonst noch nötig war
  *

@@ -1,7 +1,7 @@
 TODO
 
 Fibu:
-- Buchungen und Buchungszeilen lesen
+- Buchungszeilen lesen
 - Journal und Konto erweitern, damit sie mit Buchungen umgehen können
 
 
@@ -14,6 +14,7 @@ später:
 
 
 Changes:
+- Buchungen lesen
 - Wie bekomme ich eine Liste aller Unterkonten zu einem Konto?
 - Wie bekomme ist eine Liste aller offenen Journale?
 - buchungszeilen speichern
