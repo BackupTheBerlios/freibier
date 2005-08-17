@@ -100,7 +100,7 @@ CREATE TABLE `Konten` (
 -- 
 
 CREATE TABLE `MwSt` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(10) NOT NULL auto_increment,
   `MwStSatz` decimal(3,1) NOT NULL default '0.0',
   `Bezeichnung` char(15) NOT NULL default '',
   PRIMARY KEY  (`id`)
@@ -129,7 +129,7 @@ CREATE TABLE `Firmenstammdaten` (
   `JahrAktuell` char(4) NOT NULL default '2005',
   `PeriodeAktuell` char(2) NOT NULL default '01',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=1 ;
+) TYPE=InnoDB AUTO_INCREMENT=1 ;
 
 -- 
 -- Daten für Tabelle `Firmenstammdaten`
