@@ -1,3 +1,5 @@
+-- $Id: db_definition.sql,v 1.5 2005/08/17 21:13:22 tbayen Exp $
+--
 -- phpMyAdmin SQL Dump
 -- version 2.6.2
 -- http://www.phpmyadmin.net
@@ -22,7 +24,7 @@ CREATE TABLE `Buchungen` (
   `Belegnummer` char(8) NOT NULL default '',
   `Buchungstext` char(20) NOT NULL default '',
   `Valutadatum` date NOT NULL default '0000-00-00',
-  `Erfassungsdatum` date NOT NULL default '0000-00-00',
+  `Erfassungsdatum` datetime NOT NULL default '0000-00-00',
   PRIMARY KEY  (`id`)
 ) TYPE=InnoDB AUTO_INCREMENT=1 ;
 
@@ -134,3 +136,8 @@ CREATE TABLE `Firmenstammdaten` (
 -- 
 -- Daten für Tabelle `Firmenstammdaten`
 -- 
+
+-- $Log: db_definition.sql,v $
+-- Revision 1.5  2005/08/17 21:13:22  tbayen
+-- Erstellungsdatum mit Uhrzeit speichern
+--
