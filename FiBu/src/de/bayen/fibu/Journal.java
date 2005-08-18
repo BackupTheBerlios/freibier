@@ -1,5 +1,5 @@
 /* Erzeugt am 15.08.2005 von tbayen
- * $Id: Journal.java,v 1.8 2005/08/18 14:14:04 tbayen Exp $
+ * $Id: Journal.java,v 1.9 2005/08/18 17:04:23 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -23,10 +23,9 @@ import de.bayen.database.exception.SystemDatabaseException;
  * 
  * @author tbayen
  */
-public class Journal implements Comparable {
+public class Journal extends AbstractObject implements Comparable {
 	private static Log log = LogFactory.getLog(Journal.class);
 	private Table table;
-	protected Record record;
 
 	protected Journal(Table table, String jahr, String periode)
 			throws DatabaseException {
@@ -74,10 +73,6 @@ public class Journal implements Comparable {
 	public void write() throws DatabaseException {
 		DataObject id = table.setRecordAndReturnID(record);
 		record = table.getRecordByPrimaryKey(id);
-	}
-
-	public Long getID() throws DatabaseException {
-		return (Long) record.getPrimaryKey().getValue();
 	}
 
 	public Long getJournalnummer() throws DatabaseException {
@@ -159,7 +154,7 @@ public class Journal implements Comparable {
 	 * @return -1: this<o; 1: this>o; 0:this=o
 	 * @throws Exception 
 	 */
-	public int compareTo(Object o){
+	public int compareTo(Object o) {
 		try {
 			Journal journal = (Journal) o;
 			int cmp = getJournalnummer().compareTo(journal.getJournalnummer());
@@ -197,6 +192,11 @@ public class Journal implements Comparable {
 }
 /*
  * $Log: Journal.java,v $
+ * Revision 1.9  2005/08/18 17:04:23  tbayen
+ * Interface GenericObject für alle Business-Objekte eingeführt
+ * durch Ableitung von AbstractObject
+ * Fehler in Buchhaltung (Journal statt Konto)
+ *
  * Revision 1.8  2005/08/18 14:14:04  tbayen
  * diverse Erweiterungen, Konto kennt jetzt auch Buchungen
  *

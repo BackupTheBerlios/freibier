@@ -1,5 +1,5 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.6 2005/08/18 14:14:04 tbayen Exp $
+ * $Id: Konto.java,v 1.7 2005/08/18 17:04:24 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -22,7 +22,7 @@ import de.bayen.database.exception.DatabaseException;
  * 
  * @author tbayen
  */
-public class Konto implements Comparable {
+public class Konto extends AbstractObject implements Comparable {
 	private static Log log = LogFactory.getLog(Konto.class);
 	private Table table;
 	private Record record;
@@ -251,6 +251,11 @@ public class Konto implements Comparable {
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.7  2005/08/18 17:04:24  tbayen
+ * Interface GenericObject für alle Business-Objekte eingeführt
+ * durch Ableitung von AbstractObject
+ * Fehler in Buchhaltung (Journal statt Konto)
+ *
  * Revision 1.6  2005/08/18 14:14:04  tbayen
  * diverse Erweiterungen, Konto kennt jetzt auch Buchungen
  *

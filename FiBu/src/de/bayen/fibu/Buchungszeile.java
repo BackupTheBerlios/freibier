@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchungszeile.java,v 1.5 2005/08/18 14:14:04 tbayen Exp $
+ * $Id: Buchungszeile.java,v 1.6 2005/08/18 17:04:24 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -20,7 +20,7 @@ import de.bayen.database.exception.DatabaseException;
  * 
  * @author tbayen
  */
-public class Buchungszeile implements Comparable {
+public class Buchungszeile extends AbstractObject implements Comparable {
 	private static Log log = LogFactory.getLog(Buchungszeile.class);
 	private Table table;
 	private Record record;
@@ -160,6 +160,11 @@ public class Buchungszeile implements Comparable {
 }
 /*
  * $Log: Buchungszeile.java,v $
+ * Revision 1.6  2005/08/18 17:04:24  tbayen
+ * Interface GenericObject für alle Business-Objekte eingeführt
+ * durch Ableitung von AbstractObject
+ * Fehler in Buchhaltung (Journal statt Konto)
+ *
  * Revision 1.5  2005/08/18 14:14:04  tbayen
  * diverse Erweiterungen, Konto kennt jetzt auch Buchungen
  *

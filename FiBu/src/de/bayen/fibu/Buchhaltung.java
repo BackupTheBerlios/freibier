@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.7 2005/08/18 14:14:04 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.8 2005/08/18 17:04:24 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -27,10 +27,10 @@ import de.bayen.database.exception.UserDatabaseException;
  * 
  * @author tbayen
  */
-public class Buchhaltung {
+public class Buchhaltung extends AbstractObject {
 	private static Log log = LogFactory.getLog(Buchhaltung.class);
 	private Database db = null;
-	private Record firmenstamm = null;
+	private Record record = null;
 
 	/**
 	 * Dies main-Methode ist hier nur zu Testzwecken während der Entwicklung
@@ -129,9 +129,9 @@ public class Buchhaltung {
 	 */
 	public Record setFirmenstammdaten(int nr) throws DatabaseException {
 		assertOk();
-		firmenstamm = db.getTable("Firmenstammdaten").getRecordByPrimaryKey(
+		record = db.getTable("Firmenstammdaten").getRecordByPrimaryKey(
 				String.valueOf(nr));
-		return firmenstamm;
+		return record;
 	}
 
 	/**
@@ -147,8 +147,8 @@ public class Buchhaltung {
 		assertOk();
 		Table table = db.getTable("Firmenstammdaten");
 		DataObject stammId = table.setRecordAndReturnID(stamm);
-		firmenstamm = table.getRecordByPrimaryKey(stammId);
-		return firmenstamm;
+		record = table.getRecordByPrimaryKey(stammId);
+		return record;
 	}
 
 	/**
@@ -167,25 +167,25 @@ public class Buchhaltung {
 	 */
 	public Record getFirmenstammdaten() throws DatabaseException {
 		assertOk();
-		if (firmenstamm == null) {
+		if (record == null) {
 			Table table = db.getTable("Firmenstammdaten");
 			try {
-				firmenstamm = table.getRecordByNumber(0);
+				record = table.getRecordByNumber(0);
 			} catch (UserDatabaseException e) {
 				if (e.getMessage().equals(
 						"angegebener Datensatz existiert nicht")) {
-					firmenstamm = table.getEmptyRecord();
-					firmenstamm.setField("Firma", "Finanzbuchhaltung");
-					firmenstamm.setField("PeriodeAktuell", "01");
-					firmenstamm.setField("JahrAktuell", "2005");
-					return setFirmenstammdaten(firmenstamm);
+					record = table.getEmptyRecord();
+					record.setField("Firma", "Finanzbuchhaltung");
+					record.setField("PeriodeAktuell", "01");
+					record.setField("JahrAktuell", "2005");
+					return setFirmenstammdaten(record);
 				} else {
 					throw new SystemDatabaseException("unbekannte Exception",
 							e, log);
 				}
 			}
 		}
-		return firmenstamm;
+		return record;
 	}
 
 	/**
@@ -293,7 +293,7 @@ public class Buchhaltung {
 		for (Iterator iter = records.iterator(); iter.hasNext();) {
 			Record rec = (Record) iter.next();
 			journale
-					.add(new Konto(table, (Long) rec.getPrimaryKey().getValue()));
+					.add(new Journal(table, (Long) rec.getPrimaryKey().getValue()));
 		}
 		return journale;
 	}
@@ -314,13 +314,18 @@ public class Buchhaltung {
 		for (Iterator iter = records.iterator(); iter.hasNext();) {
 			Record rec = (Record) iter.next();
 			journale
-					.add(new Konto(table, (Long) rec.getPrimaryKey().getValue()));
+					.add(new Journal(table, (Long) rec.getPrimaryKey().getValue()));
 		}
 		return journale;
 	}
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.8  2005/08/18 17:04:24  tbayen
+ * Interface GenericObject für alle Business-Objekte eingeführt
+ * durch Ableitung von AbstractObject
+ * Fehler in Buchhaltung (Journal statt Konto)
+ *
  * Revision 1.7  2005/08/18 14:14:04  tbayen
  * diverse Erweiterungen, Konto kennt jetzt auch Buchungen
  *
