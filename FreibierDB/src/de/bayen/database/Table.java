@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.16 2005/08/17 21:29:31 tbayen Exp $
+ * $Id: Table.java,v 1.17 2005/08/18 06:45:40 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -175,7 +175,7 @@ public class Table {
 		sql += " GROUP BY " + name + "." + def.getPrimaryKey() + " ORDER BY ";
 		// Wenn angegeben, nach einer bestimmten Spalte sortieren
 		if (orderColumn != null && !orderColumn.equals("")) {
-			String cols[] = orderColumn.split(",");
+			String cols[] = orderColumn.split("\\s*,\\s*");
 			if (cols.length > 1) {
 				// Man kann auch mehrere Sortierspalten angeben
 				for (int i = 0; i < cols.length; i++) {
@@ -443,6 +443,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.17  2005/08/18 06:45:40  tbayen
+ * RegEx verbessert, um nach mehreren Spalten sortieren zu können
+ *
  * Revision 1.16  2005/08/17 21:29:31  tbayen
  * mehrere Sortierspalten möglich im Query
  *
