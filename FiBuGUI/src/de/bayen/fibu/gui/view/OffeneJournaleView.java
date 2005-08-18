@@ -1,7 +1,7 @@
-// $Id: OffeneJournaleView.java,v 1.1 2005/08/18 11:24:11 phormanns Exp $
+// $Id: OffeneJournaleView.java,v 1.2 2005/08/18 14:08:13 phormanns Exp $
 package de.bayen.fibu.gui.view;
 
-import de.bayen.fibu.gui.action.ActionJournalBuchen;
+import de.bayen.fibu.gui.action.JournalBuchenAction;
 import de.bayen.fibu.gui.action.AlleJournaleAction;
 import de.bayen.fibu.gui.control.JournaleControl;
 import de.willuhn.jameica.gui.Action;
@@ -45,6 +45,9 @@ public class OffeneJournaleView extends JournaleView {
 
 /*
  *  $Log: OffeneJournaleView.java,v $
+ *  Revision 1.2  2005/08/18 14:08:13  phormanns
+ *  Buchungsdialog begonnen
+ *
  *  Revision 1.1  2005/08/18 11:24:11  phormanns
  *  Neue FiBu Version von Thomas
  *  Anzeige Journal-Listen

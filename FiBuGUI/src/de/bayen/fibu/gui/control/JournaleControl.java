@@ -1,4 +1,4 @@
-// $Id: JournaleControl.java,v 1.1 2005/08/18 11:24:12 phormanns Exp $
+// $Id: JournaleControl.java,v 1.2 2005/08/18 14:08:13 phormanns Exp $
 package de.bayen.fibu.gui.control;
 
 import java.rmi.RemoteException;
@@ -9,7 +9,7 @@ import de.bayen.fibu.FibuService;
 import de.bayen.fibu.Journal;
 import de.bayen.fibu.gui.FiBuPlugin;
 import de.bayen.fibu.gui.Settings;
-import de.bayen.fibu.gui.action.ActionJournalBuchen;
+import de.bayen.fibu.gui.action.JournalBuchenAction;
 import de.bayen.fibu.gui.menu.AlleJournalMenu;
 import de.bayen.fibu.gui.menu.OffenesJournalMenu;
 import de.willuhn.datasource.GenericIterator;
@@ -61,7 +61,7 @@ public class JournaleControl extends AbstractControl {
 		} catch (Exception e) {
 			throw new ApplicationException("FiBu-Service nicht gefunden", e);
 		}
-		TablePart journaleTable = new TablePart(new JournaleIterator(service.getFiBu(), alleJournale), new ActionJournalBuchen());
+		TablePart journaleTable = new TablePart(new JournaleIterator(service.getFiBu(), alleJournale), new JournalBuchenAction());
 		journaleTable.addColumn("Journalnummer", "Journalnummer");
 		journaleTable.addColumn("Startdatum", "Startdatum", new DateFormatter(Settings.getDateFormat()));
 		journaleTable.addColumn("Buchungsjahr", "Buchungsjahr");
@@ -177,6 +177,9 @@ public class JournaleControl extends AbstractControl {
 
 /*
  *  $Log: JournaleControl.java,v $
+ *  Revision 1.2  2005/08/18 14:08:13  phormanns
+ *  Buchungsdialog begonnen
+ *
  *  Revision 1.1  2005/08/18 11:24:12  phormanns
  *  Neue FiBu Version von Thomas
  *  Anzeige Journal-Listen
