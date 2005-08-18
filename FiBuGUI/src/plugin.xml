@@ -17,7 +17,10 @@
 
 	<navigation> 
 		<item name="FiBu" icon-close="folder.gif" icon-open="folder.gif" action="de.bayen.fibu.gui.action.StammdatenAction">
-		    <item name="Info" icon-close="page.gif" icon-open="page.gif" action="de.bayen.fibu.gui.action.AboutAction" /> 
+		    <item name="Journale" icon-close="page.gif" icon-open="page.gif" action="de.bayen.fibu.gui.action.OffeneJournaleAction" /> 
+		    <item name="Buchen" icon-close="page.gif" icon-open="page.gif" action="de.bayen.fibu.gui.action.BuchenAction" /> 
+		    <item name="Konten" icon-close="page.gif" icon-open="page.gif" action="de.bayen.fibu.gui.action.KontenAction" /> 
+		    <item name="Abschluß" icon-close="page.gif" icon-open="page.gif" action="de.bayen.fibu.gui.action.AbschlussAction" /> 
 		</item>
    	</navigation>
 

@@ -1,4 +1,4 @@
-// $Id: StammdatenView.java,v 1.1 2005/08/17 15:04:56 phormanns Exp $
+// $Id: StammdatenView.java,v 1.2 2005/08/18 11:24:11 phormanns Exp $
 
 package de.bayen.fibu.gui.view;
 
@@ -11,10 +11,6 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
 public class StammdatenView extends AbstractView {
-
-	public StammdatenView() {
-		super();
-	}
 
 	public void bind() throws Exception {
 		final StammdatenControl control = new StammdatenControl(this);
@@ -44,6 +40,10 @@ public class StammdatenView extends AbstractView {
 
 //
 // $Log: StammdatenView.java,v $
+// Revision 1.2  2005/08/18 11:24:11  phormanns
+// Neue FiBu Version von Thomas
+// Anzeige Journal-Listen
+//
 // Revision 1.1  2005/08/17 15:04:56  phormanns
 // Start der Integration mit FiBu-Klassen (Firmenstammdaten)
 //
