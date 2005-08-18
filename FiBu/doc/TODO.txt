@@ -2,14 +2,13 @@ TODO
 
 Fibu:
 - Exceptions in Klassenhierarchie aufteilen
+- Datenbank-Parameter aus Properties-Datei und aus Config im Home-Verzeichnis
 
 
 FreibierDB:
 
 
 mit Peter absprechen:
-- FreibierDB.jar (und andere dafür benötigte jars) nicht ins CVS,
-  dafür im build-Skript (bzw. in build.properties) automatisch einbinden
 
 
 später:
@@ -19,6 +18,7 @@ später:
 
 
 Changes:
+- automatische Installation von jar-Files
 - Doku mit Internet-Ressourcen zum Thema verlinken
 - Sortierung unterstützen (Interface Comparable)
 - Konto erweitern, damit es mit Buchungen umgehen kann

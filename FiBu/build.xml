@@ -1,4 +1,4 @@
-<project name="FreibierDB" default="compile" basedir=".">
+<project name="FreibierDB" default="dist" basedir=".">
 
 	<!-- ==================== File and Directory Names ======================== -->
 	<property file="build.properties"/>
@@ -13,12 +13,8 @@
 	<property name="lib.home"      value="${basedir}/lib"/>
 	<property name="doc.home"      value="${basedir}/doc"/>
 
-	<path id="compile.classpath">
-	  	<fileset dir="${lib.home}">
-	  		<include name="*.jar"/>
-    	</fileset>
-	</path>
-
+	
+	
 	<!-- ==================== clean Target ================================== -->
 	  <target name="clean"
 	   description="Delete old build and dist directories">
@@ -27,7 +23,7 @@
 	  </target>
 	
 	<!-- ==================== javadoc Target ================================== -->
-	<target name="javadoc" depends="compile"
+	<target name="javadoc" depends="compile, importlibs"
 		description="Create Javadoc API documentation">
 
 	    <mkdir dir="${dist.home}/docs/api"/>
@@ -42,6 +38,20 @@
 
 	
 	
+	<!-- ==================== importlibs Target ======================== -->
+	<target name="importlibs" 
+		description="Import JAR Files from other Projects">
+		
+		<copy todir="${lib.home}" flatten="yes">
+			<fileset dir="${basedir}/.." includes="${importlibs}"/>
+		</copy>
+		<path id="compile.classpath">
+		  	<fileset dir="${lib.home}">
+		  		<include name="*.jar"/>
+	    	</fileset>
+		</path>
+	</target>
+
 	<!-- ==================== prepare Target ======================== -->
 	<target name="prepare">
 	    <mkdir  dir="${build.home}"/>
@@ -49,7 +59,7 @@
 
 	
 	<!-- ==================== compile Target ======================== -->
-	  <target name="compile" depends="prepare"
+	  <target name="compile" depends="prepare, importlibs"
 	   description="Compile Java sources">
 
 	    <!-- Compile Java classes as necessary -->
@@ -70,7 +80,8 @@
 
 	
 	<!-- ==================== test Target ======================== -->
-	<target name="test" depends="compile">
+	<target name="test" depends="compile,importlibs"
+		description="run all JUnit tests">
 		<mkdir dir="${build.home}/reports"/>
 		<junit printsummary="withOutAndErr">
 			<formatter type="plain"/>
