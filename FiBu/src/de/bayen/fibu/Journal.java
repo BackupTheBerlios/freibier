@@ -1,5 +1,5 @@
 /* Erzeugt am 15.08.2005 von tbayen
- * $Id: Journal.java,v 1.7 2005/08/17 21:33:29 tbayen Exp $
+ * $Id: Journal.java,v 1.8 2005/08/18 14:14:04 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -23,7 +23,7 @@ import de.bayen.database.exception.SystemDatabaseException;
  * 
  * @author tbayen
  */
-public class Journal {
+public class Journal implements Comparable {
 	private static Log log = LogFactory.getLog(Journal.class);
 	private Table table;
 	protected Record record;
@@ -150,6 +150,26 @@ public class Journal {
 		return buchungen;
 	}
 
+	/**
+	 * vergleicht zwei Objekte miteinander. Diese Methode implementiert
+	 * das Comparable-Interface. Sie erlaubt, Listen dieser Klasse zu 
+	 * sortieren.
+	 * 
+	 * @param o
+	 * @return -1: this<o; 1: this>o; 0:this=o
+	 * @throws Exception 
+	 */
+	public int compareTo(Object o){
+		try {
+			Journal journal = (Journal) o;
+			int cmp = getJournalnummer().compareTo(journal.getJournalnummer());
+			return cmp;
+		} catch (Exception e) {
+			// in compareTo() darf keine "fangbare" Exception geworfen werden
+			throw new RuntimeException("Fehler beim Vergleich von Objekten", e);
+		}
+	}
+
 	// Ausgabefunktionen
 	/**
 	 * Ausgabe des Journals in Textform
@@ -163,10 +183,10 @@ public class Journal {
 					+ getBuchungsjahr();
 			if (isAbsummiert())
 				erg += " --Absummiert--";
-			List buchungen=getBuchungen();
+			List buchungen = getBuchungen();
 			for (Iterator iter = buchungen.iterator(); iter.hasNext();) {
 				Buchung buch = (Buchung) iter.next();
-				erg+="\n"+buch;
+				erg += "\n" + buch;
 			}
 		} catch (Exception e) {
 			log.error("Fehler in toString()", e);
@@ -177,6 +197,9 @@ public class Journal {
 }
 /*
  * $Log: Journal.java,v $
+ * Revision 1.8  2005/08/18 14:14:04  tbayen
+ * diverse Erweiterungen, Konto kennt jetzt auch Buchungen
+ *
  * Revision 1.7  2005/08/17 21:33:29  tbayen
  * Journal.getBuchungen() neu und alles, was ich dazu benötigt habe
  *

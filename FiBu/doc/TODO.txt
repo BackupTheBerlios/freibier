@@ -1,19 +1,29 @@
 TODO
 
 Fibu:
-- Buchungszeilen lesen
-- Journal und Konto erweitern, damit sie mit Buchungen umgehen können
+- Exceptions in Klassenhierarchie aufteilen
 
 
 FreibierDB:
 
 
+mit Peter absprechen:
+- FreibierDB.jar (und andere dafür benötigte jars) nicht ins CVS,
+  dafür im build-Skript (bzw. in build.properties) automatisch einbinden
+
+
 später:
-- Exceptions in Klassenhierarchie aufteilen
+- Kommandozeileninterface (zum Testen und für Batch-Betrieb)
+  (Scripting-Framework: http://www.javaworld.com/jw-10-1999/jw-10-script-p4.html)
 
 
 
 Changes:
+- Doku mit Internet-Ressourcen zum Thema verlinken
+- Sortierung unterstützen (Interface Comparable)
+- Konto erweitern, damit es mit Buchungen umgehen kann
+- Buchungszeilen lesen
+- Journal erweitern, damit es mit Buchungen umgehen kann
 - Buchungen lesen
 - Wie bekomme ich eine Liste aller Unterkonten zu einem Konto?
 - Wie bekomme ist eine Liste aller offenen Journale?

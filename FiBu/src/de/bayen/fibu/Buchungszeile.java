@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchungszeile.java,v 1.4 2005/08/17 21:33:29 tbayen Exp $
+ * $Id: Buchungszeile.java,v 1.5 2005/08/18 14:14:04 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -20,7 +20,7 @@ import de.bayen.database.exception.DatabaseException;
  * 
  * @author tbayen
  */
-public class Buchungszeile {
+public class Buchungszeile implements Comparable {
 	private static Log log = LogFactory.getLog(Buchungszeile.class);
 	private Table table;
 	private Record record;
@@ -46,7 +46,8 @@ public class Buchungszeile {
 	}
 
 	/**
-	 * Liest eine vorhandene Buchungszeile aus der Datenbank.
+	 * Liest eine vorhandene Buchungszeile aus der Datenbank und verknüpft sie
+	 * mit einem bereits geladenen Buchungs-Objekt.
 	 * 
 	 * @param table
 	 * @param buchung
@@ -58,6 +59,21 @@ public class Buchungszeile {
 		this.table = table;
 		this.buchung = buchung;
 		record = table.getRecordByPrimaryKey(nummer);
+	}
+
+	/**
+	 * Liest eine vorhandene Buchungszeile aus der Datenbank.
+	 * 
+	 * @param table
+	 * @param nummer
+	 * @throws DatabaseException
+	 */
+	protected Buchungszeile(Table table, Long nummer) throws DatabaseException {
+		this.table = table;
+		record = table.getRecordByPrimaryKey(nummer);
+		this.buchung = new Buchung(table.getDatabase().getTable("Buchungen"),
+				((Long) ((ForeignKey) record.getField("Buchung").getValue())
+						.getKey()));
 	}
 
 	/**
@@ -109,6 +125,28 @@ public class Buchungszeile {
 	}
 
 	/**
+	 * vergleicht zwei Objekte miteinander. Diese Methode implementiert
+	 * das Comparable-Interface. Sie erlaubt, Listen dieser Klasse zu 
+	 * sortieren.
+	 * 
+	 * @param o
+	 * @return -1: this<o; 1: this>o; 0:this=o
+	 * @throws Exception 
+	 */
+	public int compareTo(Object o){
+		try {
+			Buchungszeile buchungszeile = (Buchungszeile) o;
+			int cmp = getBuchung().compareTo(buchungszeile.getBuchung());
+			if (cmp != 0)
+				return cmp;
+			return getID().compareTo(buchungszeile.getID());
+		} catch (Exception e) {
+			// in compareTo() darf keine "fangbare" Exception geworfen werden
+			throw new RuntimeException("Fehler beim Vergleich von Objekten", e);
+		}
+	}
+
+	/**
 	 * Ausgabe in einen String.
 	 */
 	public String toString() {
@@ -122,6 +160,9 @@ public class Buchungszeile {
 }
 /*
  * $Log: Buchungszeile.java,v $
+ * Revision 1.5  2005/08/18 14:14:04  tbayen
+ * diverse Erweiterungen, Konto kennt jetzt auch Buchungen
+ *
  * Revision 1.4  2005/08/17 21:33:29  tbayen
  * Journal.getBuchungen() neu und alles, was ich dazu benötigt habe
  *

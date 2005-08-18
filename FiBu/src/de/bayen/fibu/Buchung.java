@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchung.java,v 1.5 2005/08/17 21:33:29 tbayen Exp $
+ * $Id: Buchung.java,v 1.6 2005/08/18 14:14:04 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -24,7 +24,7 @@ import de.bayen.database.exception.DatabaseException;
  * 
  * @author tbayen
  */
-public class Buchung {
+public class Buchung implements Comparable {
 	private static Log log = LogFactory.getLog(Buchung.class);
 	private Table table;
 	private Record record;
@@ -160,6 +160,15 @@ public class Buchung {
 	}
 
 	/**
+	 * Ergibt die Liste der Buchungszeilen.
+	 * 
+	 * @return List von Buchungszeilen-Objekten
+	 */
+	public List getBuchungszeilen() {
+		return new ArrayList(zeilen);
+	}
+
+	/**
 	 * ergibt den Saldo aller Buchungszeilen. Bei einer abgeschlossenen
 	 * Buchung muss das immer "0.00" sein.
 	 * @throws DatabaseException 
@@ -175,6 +184,29 @@ public class Buchung {
 
 	public boolean isSaldoNull() throws DatabaseException {
 		return getSaldo().equals(new Betrag());
+	}
+
+	/**
+	 * vergleicht zwei Objekte miteinander. Diese Methode implementiert
+	 * das Comparable-Interface. Sie erlaubt, Listen dieser Klasse zu 
+	 * sortieren.
+	 * 
+	 * @param o
+	 * @return -1: this<o; 1: this>o; 0:this=o
+	 * @throws Exception 
+	 */
+	public int compareTo(Object o){
+		try {
+			Buchung buchung = (Buchung) o;
+			int cmp = getErfassungsdatum().compareTo(
+					buchung.getErfassungsdatum());
+			if (cmp != 0)
+				return cmp;
+			return getID().compareTo(buchung.getID());
+		} catch (Exception e) {
+			// in compareTo() darf keine "fangbare" Exception geworfen werden
+			throw new RuntimeException("Fehler beim Vergleich von Objekten", e);
+		}
 	}
 
 	/**
@@ -199,6 +231,9 @@ public class Buchung {
 }
 /*
  * $Log: Buchung.java,v $
+ * Revision 1.6  2005/08/18 14:14:04  tbayen
+ * diverse Erweiterungen, Konto kennt jetzt auch Buchungen
+ *
  * Revision 1.5  2005/08/17 21:33:29  tbayen
  * Journal.getBuchungen() neu und alles, was ich dazu benötigt habe
  *

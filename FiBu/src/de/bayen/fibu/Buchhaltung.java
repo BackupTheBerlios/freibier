@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.6 2005/08/17 20:28:04 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.7 2005/08/18 14:14:04 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -301,6 +301,7 @@ public class Buchhaltung {
 	/**
 	 * Ergibt eine Liste, die nur die nicht-abgeschlossenen Journale der 
 	 * Buchhaltung enthält. Die Liste ist nach Journalnummern sortiert.
+	 * Nicht abgeschlossene Journale werden auch Primanota genannt.
 	 * 
 	 * @throws DatabaseException 
 	 */
@@ -320,6 +321,9 @@ public class Buchhaltung {
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.7  2005/08/18 14:14:04  tbayen
+ * diverse Erweiterungen, Konto kennt jetzt auch Buchungen
+ *
  * Revision 1.6  2005/08/17 20:28:04  tbayen
  * zwei Methoden zum Auflisten von Objekten und alles, was dazu sonst noch nötig war
  *

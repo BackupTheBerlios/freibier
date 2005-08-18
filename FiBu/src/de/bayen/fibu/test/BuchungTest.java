@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: BuchungTest.java,v 1.5 2005/08/17 21:31:28 tbayen Exp $
+ * $Id: BuchungTest.java,v 1.6 2005/08/18 14:14:04 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -87,10 +87,17 @@ public class BuchungTest extends TestCase {
 				.getBelegnummer());
 		if(TestConfig.print)
 			System.out.println(j+"\n");
+		// Sind die Buchungen auch auf dem Konto angekommen?
+		assertEquals(3,bh.getKonto("00001").getBuchungszeilen().size());
+		if(TestConfig.print)
+			System.out.println(bh.getKonto("00001")+"\n");
 	}
 }
 /*
  * $Log: BuchungTest.java,v $
+ * Revision 1.6  2005/08/18 14:14:04  tbayen
+ * diverse Erweiterungen, Konto kennt jetzt auch Buchungen
+ *
  * Revision 1.5  2005/08/17 21:31:28  tbayen
  * Test etwas ausführlicher gemacht
  *

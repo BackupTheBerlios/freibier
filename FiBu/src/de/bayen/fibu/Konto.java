@@ -1,9 +1,10 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.5 2005/08/17 20:28:04 tbayen Exp $
+ * $Id: Konto.java,v 1.6 2005/08/18 14:14:04 tbayen Exp $
  */
 package de.bayen.fibu;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.logging.Log;
@@ -21,7 +22,7 @@ import de.bayen.database.exception.DatabaseException;
  * 
  * @author tbayen
  */
-public class Konto {
+public class Konto implements Comparable {
 	private static Log log = LogFactory.getLog(Konto.class);
 	private Table table;
 	private Record record;
@@ -144,7 +145,7 @@ public class Konto {
 	public void setOberkonto(Long kto) throws DatabaseException {
 		record.setField("Oberkonto", kto);
 	}
-	
+
 	/**
 	 * Hier wird ein Konto-Objekt angegeben, um das Oberkonto festzulegen.
 	 */
@@ -175,13 +176,53 @@ public class Konto {
 	public List getUnterkonten() throws DatabaseException {
 		List konten = new ArrayList();
 		List records = table.getRecordsFromQuery(table.new QueryCondition(
-				"Oberkonto", QueryCondition.EQUAL, getID()), null,
-				true);
+				"Oberkonto", QueryCondition.EQUAL, getID()), null, true);
 		for (Iterator iter = records.iterator(); iter.hasNext();) {
 			Record rec = (Record) iter.next();
 			konten.add(new Konto(table, (Long) rec.getPrimaryKey().getValue()));
 		}
 		return konten;
+	}
+
+	/**
+	 * Ergibt alle Buchungszeilen auf diesem Konto.
+	 * @throws DatabaseException 
+	 */
+	public List getBuchungszeilen() throws DatabaseException {
+		List zeilen = new ArrayList();
+		Table table = this.table.getDatabase().getTable("Buchungszeilen");
+		List records = table.getRecordsFromQuery(table.new QueryCondition(
+				"Konto", QueryCondition.EQUAL, getID()), null, true);
+		for (Iterator iter = records.iterator(); iter.hasNext();) {
+			Record zeile = (Record) iter.next();
+			zeilen.add(new Buchungszeile(table, (Long) zeile.getPrimaryKey()
+					.getValue()));
+		}
+		// Besser wäre, die Sortierung dem SQL-Server zu überlassen, aber bei
+		// dieser Datenstruktur ist das mit FreibierDB nicht so einfach. 
+		// Dies hier ist aufwendiger, aber einstweilen funktioniert es:
+		Collections.sort(zeilen);
+		return zeilen;
+	}
+
+	/**
+	 * vergleicht zwei Objekte miteinander. Diese Methode implementiert
+	 * das Comparable-Interface. Sie erlaubt, Listen dieser Klasse zu 
+	 * sortieren.
+	 * 
+	 * @param o
+	 * @return -1: this<o; 1: this>o; 0:this=o
+	 * @throws Exception 
+	 */
+	public int compareTo(Object o){
+		try {
+			Konto konto = (Konto) o;
+			int cmp = getKontonummer().compareTo(konto.getKontonummer());
+			return cmp;
+		} catch (Exception e) {
+			// in compareTo() darf keine "fangbare" Exception geworfen werden
+			throw new RuntimeException("Fehler beim Vergleich von Objekten", e);
+		}
 	}
 
 	/**
@@ -196,7 +237,11 @@ public class Konto {
 			erg += "(";
 			erg += "Oberkonto <" + getOberkontoNummer() + ">";
 			erg += "; Gewicht: " + getGewicht();
-			erg += ")\n";
+			erg += ")";
+			for (Iterator iter = getBuchungszeilen().iterator(); iter.hasNext();) {
+				Buchungszeile zeile = (Buchungszeile) iter.next();
+				erg += "\n" + zeile;
+			}
 		} catch (Exception e) {
 			log.error("Fehler in toString()", e);
 			erg = "EXCEPTION: " + e.getMessage();
@@ -206,6 +251,9 @@ public class Konto {
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.6  2005/08/18 14:14:04  tbayen
+ * diverse Erweiterungen, Konto kennt jetzt auch Buchungen
+ *
  * Revision 1.5  2005/08/17 20:28:04  tbayen
  * zwei Methoden zum Auflisten von Objekten und alles, was dazu sonst noch nötig war
  *
