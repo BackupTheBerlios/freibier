@@ -1,4 +1,4 @@
-// $Id: BuchenView.java,v 1.2 2005/08/18 14:08:13 phormanns Exp $
+// $Id: BuchenView.java,v 1.3 2005/08/18 19:06:28 tbayen Exp $
 package de.bayen.fibu.gui.view;
 
 import de.bayen.fibu.gui.control.BuchenControl;
@@ -15,11 +15,11 @@ public class BuchenView extends AbstractView {
 		LabelGroup grpJournal = new LabelGroup(getParent(), "Journal");
 		grpJournal.addLabelPair("Journalnummer", control.getJournalnummer());
 		grpJournal.addLabelPair("Startdatum", control.getStartdatum());
-//		LabelGroup grpBuchung = new LabelGroup(getParent(), "Journal");
-//		grpBuchung.addLabelPair("Belegnummer", control.getBelegnummer());
-//		grpBuchung.addLabelPair("Buchungstext", control.getBuchungstext());
-//		grpBuchung.addLabelPair("Erfassungsdatum", control.getErfassungsdatum());
-//		grpBuchung.addLabelPair("Valutadatum", control.getValutadatum());
+		LabelGroup grpBuchung = new LabelGroup(getParent(), "Buchung");
+		grpBuchung.addLabelPair("Belegnummer", control.getBelegnummer());
+		grpBuchung.addLabelPair("Buchungstext", control.getBuchungstext());
+		grpBuchung.addLabelPair("Erfassungsdatum", control.getErfassungsdatum());
+		grpBuchung.addLabelPair("Valutadatum", control.getValutadatum());
 //		LabelGroup grpZeile1 = new LabelGroup(getParent(), "Konto 1");
 //		grpZeile1.addLabelPair("Konto", control.getKonto1());
 //		grpZeile1.addLabelPair("Betrag", control.getBetrag1());
@@ -37,6 +37,9 @@ public class BuchenView extends AbstractView {
 
 /*
  *  $Log: BuchenView.java,v $
+ *  Revision 1.3  2005/08/18 19:06:28  tbayen
+ *  Buchungsfelder in Buchungsdialog
+ *
  *  Revision 1.2  2005/08/18 14:08:13  phormanns
  *  Buchungsdialog begonnen
  *
