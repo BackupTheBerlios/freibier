@@ -1,4 +1,4 @@
-// $Id: JournaleControl.java,v 1.2 2005/08/18 14:08:13 phormanns Exp $
+// $Id: JournaleControl.java,v 1.3 2005/08/18 17:45:48 tbayen Exp $
 package de.bayen.fibu.gui.control;
 
 import java.rmi.RemoteException;
@@ -7,6 +7,7 @@ import de.bayen.database.exception.DatabaseException;
 import de.bayen.fibu.Buchhaltung;
 import de.bayen.fibu.FibuService;
 import de.bayen.fibu.Journal;
+import de.bayen.fibu.ObjectWrapper;
 import de.bayen.fibu.gui.FiBuPlugin;
 import de.bayen.fibu.gui.Settings;
 import de.bayen.fibu.gui.action.JournalBuchenAction;
@@ -33,7 +34,7 @@ public class JournaleControl extends AbstractControl {
 	public void createJournal() throws ApplicationException {
 		try {
 			Journal journal = Settings.getFibuService().getFiBu().createJournal();
-			offeneJournale.addItem(new JournalWrapper(journal));
+			offeneJournale.addItem(new ObjectWrapper(journal));
 		} catch (Exception e) {
 			throw new ApplicationException("Fehler beim Journal-Anlegen", e);
 		}
@@ -89,14 +90,14 @@ public class JournaleControl extends AbstractControl {
 		}
 
 		public GenericObject next() throws RemoteException {
-			GenericObject jrnl = new JournalWrapper((Journal) journaleList.get(idx));
+			GenericObject jrnl = new ObjectWrapper((Journal) journaleList.get(idx));
 			idx++;
 			return jrnl;
 		}
 
 		public GenericObject previous() throws RemoteException {
 			if (idx > 0) idx--;
-			return new JournalWrapper((Journal) journaleList.get(idx));
+			return new ObjectWrapper((Journal) journaleList.get(idx));
 		}
 
 		public void begin() throws RemoteException {
@@ -123,60 +124,13 @@ public class JournaleControl extends AbstractControl {
 		
 	}
 	
-	private class JournalWrapper implements GenericObject {
-
-		private Journal jrnl;
-		
-		public JournalWrapper(Journal j) {
-			this.jrnl = j;
-		}
-		
-		public Object getAttribute(String property) throws RemoteException {
-			try {
-				if ("ID".equals(property)) return jrnl.getID().toString();
-				if ("Journalnummer".equals(property)) return jrnl.getJournalnummer();
-				if ("Startdatum".equals(property)) return jrnl.getStartdatum();
-				if ("Buchungsjahr".equals(property)) return jrnl.getBuchungsjahr();
-				if ("Buchungsperiode".equals(property)) return jrnl.getBuchungsperiode();
-				if ("absummiert".equals(property)) return new Boolean(jrnl.isAbsummiert());
-			} catch (DatabaseException e) {
-				throw new RemoteException("Fehler beim Lesen eines Journals", e);
-			}
-			return null;
-		}
-
-		public String[] getAttributeNames() throws RemoteException {
-			return new String[] {
-									"ID", 
-									"Journalnummer", 
-									"Startdatum",
-									"Buchungsjahr",
-									"Buchungsperiode",
-									"absummiert"
-								};
-		}
-
-		public String getID() throws RemoteException {
-			try {
-				return jrnl.getID().toString();
-			} catch (DatabaseException e) {
-				throw new RemoteException("Fehler beim Lesen eines Journals", e);
-			}
-		}
-
-		public String getPrimaryAttribute() throws RemoteException {
-			return "ID";
-		}
-
-		public boolean equals(GenericObject obj) throws RemoteException {
-			return obj.getID().equals(getID());
-		}
-		
-	}
 }
 
 /*
  *  $Log: JournaleControl.java,v $
+ *  Revision 1.3  2005/08/18 17:45:48  tbayen
+ *  generischer Wrapper für FiBu-Objekte
+ *
  *  Revision 1.2  2005/08/18 14:08:13  phormanns
  *  Buchungsdialog begonnen
  *

@@ -1,4 +1,4 @@
-// $Id: BuchenControl.java,v 1.1 2005/08/18 14:08:13 phormanns Exp $
+// $Id: BuchenControl.java,v 1.2 2005/08/18 17:45:48 tbayen Exp $
 package de.bayen.fibu.gui.control;
 
 import java.rmi.RemoteException;
@@ -41,9 +41,8 @@ public class BuchenControl extends AbstractControl {
 			try {
 				GenericObject go = ((GenericObject) view.getCurrentObject());
 				Object start = go.getAttribute("Startdatum");
-				if (start instanceof String) {
-					startdatum = new LabelInput((String) start);
-				}
+				String label = Settings.getDateFormat().format(start);
+				startdatum = new LabelInput(label);
 			} catch (RemoteException e) {
 				throw new ApplicationException("Fehler beim Zugriff auf gewähltes Journal", e);
 			}
@@ -104,6 +103,9 @@ public class BuchenControl extends AbstractControl {
 
 /*
  *  $Log: BuchenControl.java,v $
+ *  Revision 1.2  2005/08/18 17:45:48  tbayen
+ *  generischer Wrapper für FiBu-Objekte
+ *
  *  Revision 1.1  2005/08/18 14:08:13  phormanns
  *  Buchungsdialog begonnen
  *
