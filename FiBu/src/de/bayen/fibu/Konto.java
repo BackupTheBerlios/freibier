@@ -1,5 +1,5 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.8 2005/08/21 17:08:55 tbayen Exp $
+ * $Id: Konto.java,v 1.9 2005/08/21 17:13:38 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -62,11 +62,8 @@ public class Konto extends AbstractObject implements Comparable {
 	protected Konto(Table table, String ktonr) throws SQL_DBException,
 			RecordNotExistsDBException {
 		this.table = table;
-		// TODO ist das nicht blöde?
-		Record rec;
 		try {
-			rec = table.getRecordByValue("Kontonummer", ktonr);
-			record = table.getRecordByPrimaryKey(rec.getPrimaryKey());
+			record = table.getRecordByValue("Kontonummer", ktonr);
 		} catch (TypeNotSupportedDBException e) {
 			throw new ImpossibleException(e, log);
 		} catch (ParseErrorDBException e) {
@@ -361,6 +358,9 @@ public class Konto extends AbstractObject implements Comparable {
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.9  2005/08/21 17:13:38  tbayen
+ * Konstruktor weniger umständlich
+ *
  * Revision 1.8  2005/08/21 17:08:55  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *
