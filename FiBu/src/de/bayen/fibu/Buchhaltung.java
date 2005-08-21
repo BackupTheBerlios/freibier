@@ -1,12 +1,15 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.10 2005/08/21 17:26:12 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.11 2005/08/21 20:32:03 tbayen Exp $
  */
 package de.bayen.fibu;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import de.bayen.database.Database;
@@ -67,14 +70,77 @@ public class Buchhaltung extends AbstractObject {
 	}
 
 	/**
-	 * Dieser Konstruktor öffnet die Datenbank mit Standard-Parametern
-	 * @throws UserSQL_DBException 
-	 * @throws DatabaseException 
-	 *
+	 * Dieser Konstruktor öffnet die Datenbank mit Standard-Parametern.
+	 * Dazu liest es zuerst die Datei <code>mysql.properties</code> im
+	 * Hauptverzeichnis der laufenden Applikation (nicht der Bibliothek).
+	 * Wenn diese nicht existiert, wird die properties-Datei aus der
+	 * Bibliothek geladen (Datenbank "fibu", User "fibu"). Wenn diese 
+	 * auch nicht zu einer Verbindung führt, wird die MySQL-Test-Datenbank 
+	 * genommen, die Debian standardmäßig installiert.
 	 */
 	public Buchhaltung() throws UserSQL_DBException {
-		// diese Parameter sind in einem Standard-Debian möglich:
-		db = new Database("test", "localhost", "test", null);
+		db = null;
+		openStandardDatabase();
+	}
+
+	/**
+	 * Dieser Konstruktor liest die angegebene Datei als Properties-Datei
+	 * ein und öffnet dann die beschriebene Datenbank. Sollte dies nicht
+	 * möglich sein, wird an den Standard-Orten nach der Datenbank gesucht
+	 * (s.o.). Übrigens kann man mit <code>System.getProperty("user.home")</code>
+	 * das Home-Verzeichnis als Anfang des Confignamens besorgen.
+	 * @see Buchhaltung#Buchhaltung()
+	 * @param configname
+	 * @throws UserSQL_DBException
+	 */
+	public Buchhaltung(String configname) throws UserSQL_DBException {
+		db = null;
+		try {
+			FileInputStream fileInputStream = new FileInputStream(configname);
+			if (fileInputStream!=null) {
+				Properties mysqlProps = new Properties();
+				mysqlProps.load(fileInputStream);
+				db = new Database(mysqlProps.getProperty("database"),
+						mysqlProps.getProperty("server"), mysqlProps
+								.getProperty("user"), mysqlProps
+								.getProperty("password"));
+			}
+		} catch (IOException e) {} catch (UserSQL_DBException e) {}
+		if (db == null) {
+			openStandardDatabase();
+		}
+	}
+
+	private void openStandardDatabase() throws UserSQL_DBException {
+		// Standardparameter lesen:
+		try {
+			InputStream systemResourceAsStream = ClassLoader
+					.getSystemResourceAsStream("mysql.properties");
+			if (systemResourceAsStream != null) {
+				Properties mysqlProps = new Properties();
+				mysqlProps.load(systemResourceAsStream);
+				db = new Database(mysqlProps.getProperty("database"),
+						mysqlProps.getProperty("server"), mysqlProps
+								.getProperty("user"), mysqlProps
+								.getProperty("password"));
+			}
+		} catch (IOException e) {} catch (UserSQL_DBException e) {}
+		if (db == null) {
+			try {
+				Properties mysqlProps = new Properties();
+				mysqlProps.load(getClass().getResourceAsStream(
+						"dbdefinition/mysql.properties"));
+				db = new Database(mysqlProps.getProperty("database"),
+						mysqlProps.getProperty("server"), mysqlProps
+								.getProperty("user"), mysqlProps
+								.getProperty("password"));
+			} catch (IOException e) {} catch (UserSQL_DBException e) {}
+		}
+		if (db == null) {
+			// erster Versuch nicht geklappt?
+			// diese Parameter sind in einem Standard-Debian möglich:
+			db = new Database("test", "localhost", "test", null);
+		}
 		db.setPropertyPath(getClass().getPackage().getName() + ".dbdefinition");
 	}
 
@@ -439,6 +505,9 @@ public class Buchhaltung extends AbstractObject {
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.11  2005/08/21 20:32:03  tbayen
+ * Datenbankparameter werden nacheinander an verschiedenen Quellen gesucht
+ *
  * Revision 1.10  2005/08/21 17:26:12  tbayen
  * doppelte Variable in fast allen von AbstractObject abgeleiteten Klassen
  *
