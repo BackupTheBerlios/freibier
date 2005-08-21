@@ -1,14 +1,14 @@
 /* Erzeugt am 09.10.2004 von phormanns
- * $Id: TypeDefinitionDateTime.java,v 1.2 2005/08/08 06:35:29 tbayen Exp $
+ * $Id: TypeDefinitionDateTime.java,v 1.3 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
-import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
-import de.bayen.database.exception.UserDatabaseException;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 
 /**
  * Datentyp z.B. für SQL-Daten vom Typ DATETIME
@@ -23,42 +23,45 @@ public class TypeDefinitionDateTime extends TypeDefinition {
 		defaultValue = null;
 		setDefaultShortFormat();
 	}
-	
-	protected void setDefaultShortFormat(){
-		shortFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+
+	protected void setDefaultShortFormat() {
+		shortFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
+				DateFormat.MEDIUM);
 	}
 
-	public Class getJavaType(){
+	public Class getJavaType() {
 		return Date.class;
 	}
-	
+
 	public Object getDefaultValue() {
 		Object value = super.getDefaultValue();
 		//if(value==null)
 		//	return new Date();
 		//else
-			return value;
+		return value;
 	}
 
-	public String format(Object date) throws SystemDatabaseException {
+	public String format(Object date) throws WrongTypeDBException {
 		if (date != null) {
 			if (date instanceof Date) {
 				return shortFormat.format((Date) date);
 			} else {
-				throw new SystemDatabaseException("Objekt vom Type Date erwartet.", log);
+				throw new SysDBEx.WrongTypeDBException(
+						"Objekt vom Type Date erwartet.", log);
 			}
 		} else {
 			return "";
 		}
 	}
 
-	public Object parse(String s) throws DatabaseException {
+	public Object parse(String s) throws ParseErrorDBException {
 		Date date = null;
 		try {
-			if(s != null && s.trim().length() > 0)
+			if (s != null && s.trim().length() > 0)
 				date = shortFormat.parse(s.trim());
 		} catch (ParseException e) {
-			throw new UserDatabaseException("Fehler im Datumsformat", log);
+			throw new SysDBEx.ParseErrorDBException("Fehler im Datumsformat",
+					log);
 		}
 		return date;
 	}
@@ -72,9 +75,11 @@ public class TypeDefinitionDateTime extends TypeDefinition {
 		}
 	}
 }
-
 /*
  * $Log: TypeDefinitionDateTime.java,v $
+ * Revision 1.3  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.2  2005/08/08 06:35:29  tbayen
  * Compiler-Warnings bereinigt
  *

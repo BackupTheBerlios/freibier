@@ -1,5 +1,5 @@
 /* Erzeugt am 11.10.2004 von tbayen
- * $Id: SQLPrinter.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: SQLPrinter.java,v 1.2 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -13,8 +13,9 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
-import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.SysDBEx.TypeNotSupportedDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 import de.bayen.database.typedefinition.BLOB;
 import de.bayen.database.typedefinition.TypeDefinitionBLOB;
 import de.bayen.database.typedefinition.TypeDefinitionBool;
@@ -38,7 +39,8 @@ public class SQLPrinter {
 	private static final NumberFormat floatFormat = new DecimalFormat("0.0###",
 			new DecimalFormatSymbols(Locale.US));
 
-	public static String print(Printable obj) throws DatabaseException {
+	public static String print(Printable obj)
+			throws TypeNotSupportedDBException, WrongTypeDBException {
 		if (obj.getValue() == null)
 			return "NULL";
 		String val;
@@ -61,7 +63,7 @@ public class SQLPrinter {
 		} else if (TypeDefinitionInteger.class.equals(obj.getType())) {
 			val = obj.format();
 		} else if (TypeDefinitionBool.class.equals(obj.getType())) {
-			val = ((Boolean)obj.getValue()).booleanValue()?"1":"0";
+			val = ((Boolean) obj.getValue()).booleanValue() ? "1" : "0";
 		} else if (TypeDefinitionBLOB.class.equals(obj.getType())) {
 			log.debug(obj.getValue().getClass().getName());
 			val = ((BLOB) obj.getValue()).toSQL();
@@ -70,7 +72,7 @@ public class SQLPrinter {
 			if (val.equals(""))
 				val = "null";
 		} else {
-			throw new SystemDatabaseException(
+			throw new SysDBEx.TypeNotSupportedDBException(
 					"Typ wird vom SQL-Printer nicht unterstützt.", log);
 		}
 		// damit könnte man auf Ableitungsbeziehungen testen: 
@@ -80,6 +82,9 @@ public class SQLPrinter {
 }
 /*
  * $Log: SQLPrinter.java,v $
+ * Revision 1.2  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

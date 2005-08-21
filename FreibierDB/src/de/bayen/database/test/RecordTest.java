@@ -1,5 +1,5 @@
 /* Erzeugt am 10.10.2004 von tbayen
- * $Id: RecordTest.java,v 1.2 2005/08/12 19:27:44 tbayen Exp $
+ * $Id: RecordTest.java,v 1.3 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database.test;
 
@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 import de.bayen.database.Database;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
+import de.bayen.database.exception.DBRuntimeException;
 import de.bayen.database.exception.DatabaseException;
 
 public class RecordTest extends TestCase {
@@ -34,8 +35,9 @@ public class RecordTest extends TestCase {
 			try {
 				rec.getField("schwubbeldibu").parse("bla");
 				fail("illegaler Feldname nicht erkannt");
-			} catch (DatabaseException e1) {
-				assertTrue(e1.getMessage().startsWith("Angefordertes Feld existiert nicht: schwubbeldibu"));
+			} catch (DBRuntimeException.IllegalFieldNameException e1) {
+				assertTrue(e1.getMessage().startsWith(
+						"Angefordertes Feld existiert nicht: schwubbeldibu"));
 			}
 			try {
 				String name = rec.getField("nachname").format();
@@ -58,6 +60,9 @@ public class RecordTest extends TestCase {
 }
 /*
  * $Log: RecordTest.java,v $
+ * Revision 1.3  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.2  2005/08/12 19:27:44  tbayen
  * Tests laufen wieder alle
  *

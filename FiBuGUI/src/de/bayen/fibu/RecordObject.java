@@ -1,4 +1,4 @@
-// $Id: RecordObject.java,v 1.1 2005/08/17 15:04:56 phormanns Exp $
+// $Id: RecordObject.java,v 1.2 2005/08/21 17:09:50 tbayen Exp $
 
 package de.bayen.fibu;
 
@@ -9,6 +9,7 @@ import java.util.List;
 import de.bayen.database.DataObject;
 import de.bayen.database.Record;
 import de.bayen.database.RecordDefinition;
+import de.bayen.database.exception.DBRuntimeException;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.typedefinition.TypeDefinition;
 import de.willuhn.datasource.GenericObject;
@@ -25,7 +26,7 @@ public class RecordObject implements GenericObject {
 		try {
 			DataObject field = data.getField(property);
 			return field.getValue();
-		} catch (DatabaseException e) {
+		} catch (DBRuntimeException e) {
 			throw new RemoteException("Fehler beim Datenzugriff", e);
 		}
 	}
@@ -79,6 +80,9 @@ public class RecordObject implements GenericObject {
 
 //
 // $Log: RecordObject.java,v $
+// Revision 1.2  2005/08/21 17:09:50  tbayen
+// Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+//
 // Revision 1.1  2005/08/17 15:04:56  phormanns
 // Start der Integration mit FiBu-Klassen (Firmenstammdaten)
 //

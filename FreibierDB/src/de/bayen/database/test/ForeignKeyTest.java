@@ -1,5 +1,5 @@
 /* Erzeugt am 18.10.2004 von tbayen
- * $Id: ForeignKeyTest.java,v 1.2 2005/08/12 19:27:41 tbayen Exp $
+ * $Id: ForeignKeyTest.java,v 1.3 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database.test;
 
@@ -10,103 +10,88 @@ import de.bayen.database.NicePrinter;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
+import de.bayen.database.exception.SysDBEx;
 
 public class ForeignKeyTest extends TestCase {
-	private Database db=null;
+	private Database db = null;
 
 	protected void setUp() throws Exception {
-        try {
-            db = new Database("test","localhost","test",null);
-    		db.setPropertyPath(ForeignKeyTest.class.getPackage().getName());
-            db.executeSqlFile("de/bayen/database/test/test.sql");
-        } catch (DatabaseException e) {
-            fail(e.getMessage());
-        }
+		try {
+			db = new Database("test", "localhost", "test", null);
+			db.setPropertyPath(ForeignKeyTest.class.getPackage().getName());
+			db.executeSqlFile("de/bayen/database/test/test.sql");
+		} catch (DatabaseException e) {
+			fail(e.getMessage());
+		}
 	}
 
 	protected void tearDown() throws Exception {
-	    db.close();
+		db.close();
 	}
-	
-	public void testReadForeignKey(){
+
+	public void testReadForeignKey() {
 		Table tab;
 		try {
 			tab = db.getTable("adressen");
-		} catch (SystemDatabaseException e) {
+		} catch (SysDBEx e) {
 			fail("Kann Tabelle nicht lesen");
 			return;
 		}
 		Record rec;
 		try {
-			rec=tab.getRecordByValue("nachname","Hormanns");
+			rec = tab.getRecordByValue("nachname", "Hormanns");
 		} catch (DatabaseException e1) {
 			fail("Kann Datensatz nicht lesen");
 			return;
 		}
 		DataObject obj;
+		obj = rec.getField("sprache");
 		try {
-			obj=rec.getField("sprache");
-		} catch (DatabaseException e2) {
-			fail("Kann Datenfeld mit Foreign Key nicht lesen");
-			return;
-		}
-		try {
-			assertEquals("5",obj.format());
+			assertEquals("5", obj.format());
 		} catch (DatabaseException e3) {
 			fail("Fehler beim Formatieren des Foreign Keys");
 		}
 	}
 
-	public void testReadProperties(){
+	public void testReadProperties() {
 		Table tab;
 		db.setPropertyPath(ForeignKeyTest.class.getPackage().getName());
 		try {
 			tab = db.getTable("adressen");
-		} catch (SystemDatabaseException e) {
+		} catch (SysDBEx e) {
 			fail("Kann Tabelle nicht lesen");
 			return;
 		}
 		Record rec;
 		try {
-			rec=tab.getRecordByValue("nachname","Hormanns");
+			rec = tab.getRecordByValue("nachname", "Hormanns");
 		} catch (DatabaseException e1) {
 			fail("Kann Datensatz nicht lesen");
 			return;
 		}
 		DataObject obj;
-		try {
-			obj=rec.getField("sprache");
-		} catch (DatabaseException e2) {
-			fail("Kann Datenfeld mit Foreign Key nicht lesen");
-			return;
-		}
+		obj = rec.getField("sprache");
 		// bis hierhin war das nichts neues
-		assertEquals("programmiersprachen",obj.getProperty("foreignkey.table"));
+		assertEquals("programmiersprachen", obj.getProperty("foreignkey.table"));
 	}
-	
-	public void testNicePrinter(){
+
+	public void testNicePrinter() {
 		Table tab;
 		try {
 			tab = db.getTable("adressen");
-		} catch (SystemDatabaseException e) {
+		} catch (SysDBEx e) {
 			fail("Kann Tabelle nicht lesen");
 			return;
 		}
 		Record rec;
 		try {
-			rec=tab.getRecordByValue("nachname","Hormanns");
+			rec = tab.getRecordByValue("nachname", "Hormanns");
 		} catch (DatabaseException e1) {
 			fail("Kann Datensatz nicht lesen");
 			return;
 		}
 		DataObject obj;
-		try {
-			obj=rec.getField("sprache");
-		} catch (DatabaseException e2) {
-			fail("Kann Datenfeld mit Foreign Key nicht lesen");
-			return;
-		}
+		obj = rec.getField("sprache");
 		// ab hier wirds aufregend:
 		try {
 			assertEquals("Java", NicePrinter.print(obj));
@@ -115,29 +100,24 @@ public class ForeignKeyTest extends TestCase {
 		}
 	}
 
-	public void testFormattedReference(){
+	public void testFormattedReference() {
 		// das referenzierte Feld ist ein Datum, also muss es ebenfalls formatiert werden
 		Table tab;
 		try {
 			tab = db.getTable("adressen");
-		} catch (SystemDatabaseException e) {
+		} catch (SysDBEx e) {
 			fail("Kann Tabelle nicht lesen");
 			return;
 		}
 		Record rec;
 		try {
-			rec=tab.getRecordByValue("nachname","Hormanns");
+			rec = tab.getRecordByValue("nachname", "Hormanns");
 		} catch (DatabaseException e1) {
 			fail("Kann Datensatz nicht lesen");
 			return;
 		}
 		DataObject obj;
-		try {
-			obj=rec.getField("lieblingstag");
-		} catch (DatabaseException e2) {
-			fail("Kann Datenfeld mit Foreign Key nicht lesen");
-			return;
-		}
+		obj = rec.getField("lieblingstag");
 		// ab hier wirds aufregend:
 		try {
 			assertEquals("24.12.2004", NicePrinter.print(obj));
@@ -146,9 +126,11 @@ public class ForeignKeyTest extends TestCase {
 		}
 	}
 }
-
 /*
  * $Log: ForeignKeyTest.java,v $
+ * Revision 1.3  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.2  2005/08/12 19:27:41  tbayen
  * Tests laufen wieder alle
  *

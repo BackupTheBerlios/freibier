@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.17 2005/08/18 06:45:40 tbayen Exp $
+ * $Id: Table.java,v 1.18 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -10,9 +10,15 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import de.bayen.database.exception.DBRuntimeException;
 import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
-import de.bayen.database.exception.UserDatabaseException;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.SysDBEx.IllegalQueryConditionDBException;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
+import de.bayen.database.exception.SysDBEx.TypeNotSupportedDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
+import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
 import de.bayen.database.typedefinition.TypeDefinition;
 
 /**
@@ -38,10 +44,10 @@ public class Table {
 	 * Anzahl von Datensätzen lesen. Es werden numberOfRecords Datensätze ab (ausschließlich)
 	 * previousRecord zurückgeliefert, aufsteigende oder absteigende Reihenfolge.
 	 * @return List of Record
-	 * @throws DatabaseException
+	 * @throws SQL_DBException 
 	 */
 	public List getMultipleRecords(int startRecordNr, int numberOfRecords,
-			String orderColumn, boolean ascending) throws DatabaseException {
+			String orderColumn, boolean ascending) throws SQL_DBException {
 		String selectRumpf = def.getSelectStatement(name);
 		List dbResult = db.executeSelectMultipleRows(selectRumpf + " GROUP BY "
 				+ name + "." + def.getPrimaryKey() + " ORDER BY " + name + "."
@@ -98,7 +104,7 @@ public class Table {
 
 		// Das macht das Leben einfacher:
 		public QueryCondition(String column, int operator, String value)
-				throws DatabaseException {
+				throws ParseErrorDBException {
 			this.column = column;
 			this.operator = operator;
 			this.value = getRecordDefinition().getFieldDef(column).parse(value);
@@ -108,7 +114,8 @@ public class Table {
 			next = cond;
 		}
 
-		public String expression() throws DatabaseException {
+		public String expression() throws IllegalQueryConditionDBException,
+				TypeNotSupportedDBException, WrongTypeDBException {
 			String erg = getName() + "." + column;
 			switch (operator) {
 			case EQUAL:
@@ -130,8 +137,9 @@ public class Table {
 				erg += " LIKE ";
 				break;
 			default:
-				throw new SystemDatabaseException("falsche QueryCondition: ("
-						+ column + "," + operator + "," + "value" + ")", log);
+				throw new SysDBEx.IllegalQueryConditionDBException(
+						"falsche QueryCondition: (" + column + "," + operator
+								+ "," + "value" + ")", log);
 			}
 			DataObject val = new DataObject(value, def.getFieldDef(column));
 			erg += SQLPrinter.print(val);
@@ -144,9 +152,12 @@ public class Table {
 	/**
 	 * Diese Methode erlaubt, Anfragen mit bestimmten Konditionen anzugeben.
 	 * Diese Konditionen werden in eine QueryCondition-Klasse verpackt.
+	 * @throws SQL_DBException 
+	 * @throws TypeNotSupportedDBException 
 	 */
 	public List getRecordsFromQuery(QueryCondition condition,
-			String orderColumn, boolean ascending) throws DatabaseException {
+			String orderColumn, boolean ascending) throws SQL_DBException,
+			TypeNotSupportedDBException {
 		return getRecords(condition, orderColumn, ascending, 0, 0);
 	}
 
@@ -161,10 +172,12 @@ public class Table {
 	 * Wenn Bestimmte Parameter nicht angegeben werden sollen, können diese
 	 * null bzw. 0 sein, insbesondere gilt dies für: 
 	 * condition, orderColumn, numberOfRecords
+	 * @throws SQL_DBException 
+	 * @throws TypeNotSupportedDBException 
 	 */
 	public List getRecords(QueryCondition condition, String orderColumn,
 			boolean ascending, int startRecordNr, int numberOfRecords)
-			throws DatabaseException {
+			throws SQL_DBException, TypeNotSupportedDBException {
 		String selectRumpf = def.getSelectStatement(name);
 		String sql = selectRumpf;
 		// Filtern
@@ -216,14 +229,17 @@ public class Table {
 	 * 
 	 * @param recordNr
 	 * @return Record
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
 	 * @throws DatabaseException
 	 */
-	public Record getRecordByNumber(int recordNr) throws DatabaseException {
+	public Record getRecordByNumber(int recordNr) throws SQL_DBException,
+			RecordNotExistsDBException {
 		return getRecordByNumber(recordNr, def.getPrimaryKey(), 1);
 	}
 
 	public Record getRecordByNumber(int recordNr, String orderColumn,
-			int direction) throws DatabaseException {
+			int direction) throws SQL_DBException, RecordNotExistsDBException {
 		// Ich sortiere nicht nur nach der orderColumn, sondern auch nach der
 		// Primärspalte, damit die Reihenfolge bei gleichen Daten immer 
 		// garantiert gleich ist.
@@ -242,9 +258,14 @@ public class Table {
 	/*
 	 * Ergibt die Anzahl Datensätze in der Tabelle (oder 0, wenn es keine gibt).
 	 */
-	public int getNumberOfRecords() throws DatabaseException {
-		Map hash = db.executeSelectSingleRow("SELECT COUNT(*) AS COUNT FROM "
-				+ name);
+	public int getNumberOfRecords() throws SQL_DBException{
+		Map hash;
+		try {
+			hash = db.executeSelectSingleRow("SELECT COUNT(*) AS COUNT FROM "
+					+ name);
+		} catch (RecordNotExistsDBException e) {
+			throw new DBRuntimeException.ImpossibleDBException(e,log);
+		}
 		return ((Integer) hash.get("COUNT")).intValue();
 	}
 
@@ -256,10 +277,14 @@ public class Table {
 	 * @param columnName
 	 * @param value
 	 * @return Record
-	 * @throws DatabaseException
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
+	 * @throws TypeNotSupportedDBException 
+	 * @throws ParseErrorDBException 
 	 */
 	public Record getRecordByValue(String columnName, Object value)
-			throws DatabaseException {
+			throws SQL_DBException, RecordNotExistsDBException,
+			TypeNotSupportedDBException, ParseErrorDBException {
 		if (value instanceof String) {
 			value = new DataObject(getRecordDefinition()
 					.getFieldDef(columnName).parse((String) value),
@@ -281,10 +306,14 @@ public class Table {
 	 * 
 	 * @param pkValue - Ein Datenwert (oder ein DataObject)
 	 * @return Record
-	 * @throws DatabaseException
+	 #	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
+	 * @throws TypeNotSupportedDBException 
+	 * @throws ParseErrorDBException 
 	 */
-	public Record getRecordByPrimaryKey(Object pkValue)
-			throws DatabaseException {
+	public Record getRecordByPrimaryKey(Object pkValue) throws SQL_DBException,
+			RecordNotExistsDBException, TypeNotSupportedDBException,
+			ParseErrorDBException {
 		TypeDefinition primdef = def.getFieldDef(def.getPrimaryKey());
 		if (pkValue instanceof String) {
 			// Wird ein String übergeben, so wird dieser automatisch umgewandelt
@@ -319,9 +348,10 @@ public class Table {
 	 * eindeutige und wiederholbare Reihenfolge vorliegt.
 	 * 
 	 * Wird als Limit 0 angegeben, werden alle Einträge ausgegeben.
+	 * @throws SQL_DBException 
 	 */
 	public List getGivenColumns(List colNames, int limit)
-			throws DatabaseException {
+			throws SQL_DBException {
 		List list = new ArrayList();
 		String statement = "";
 		Iterator i = colNames.iterator();
@@ -353,21 +383,25 @@ public class Table {
 	 * Speichert den Datensatz. INSERT, falls der Primärschlüssel
 	 * undefiniert ist, sonst UPDATE.
 	 * @param data
+	 * @throws TypeNotSupportedDBException 
+	 * @throws SQL_DBException 
 	 */
-	public void setRecord(Record data) throws DatabaseException {
-		try {
-			String sql = "REPLACE INTO `" + name + "` SET ";
-			for (int i = 0; i < def.getFieldsList().size(); i++) {
-				if (i != 0) {
-					sql += ", ";
-				}
-				String feldname = def.getFieldDef(i).getName();
-				sql += "`" + feldname + "` = "
-						+ SQLPrinter.print(data.getField(feldname));
+	public void setRecord(Record data) throws TypeNotSupportedDBException,
+			SQL_DBException {
+		//		try {
+		String sql = "REPLACE INTO `" + name + "` SET ";
+		for (int i = 0; i < def.getFieldsList().size(); i++) {
+			if (i != 0) {
+				sql += ", ";
 			}
+			String feldname = def.getFieldDef(i).getName();
+			sql += "`" + feldname + "` = "
+					+ SQLPrinter.print(data.getField(feldname));
+		}
+		try {
 			db.executeUpdate(sql);
-		} catch (DatabaseException e) {
-			throw new UserDatabaseException(
+		} catch (RecordNotExistsDBException e) {
+			throw new SysDBEx.CantSaveRecordDBException(
 					"Record kann nicht gespeichert werden", e, log);
 		}
 	}
@@ -375,12 +409,14 @@ public class Table {
 	/**
 	 * Diese Methode setzt einen Record genau wie "setRecord()", sie gibt
 	 * aber das Primärfeld eines neu angelegten Records zurück.
-	 * 
-	 * @throws DatabaseException 
-	 *
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
+	 * @throws TypeNotSupportedDBException 
+	 * @throws ParseErrorDBException 
 	 */
-	public DataObject setRecordAndReturnID(Record data)
-			throws DatabaseException {
+	public DataObject setRecordAndReturnID(Record data) throws SQL_DBException,
+			RecordNotExistsDBException, TypeNotSupportedDBException,
+			ParseErrorDBException {
 		setRecord(data);
 		DataObject id = data.getPrimaryKey();
 		TypeDefinition def = getRecordDefinition().getFieldDef(
@@ -396,11 +432,34 @@ public class Table {
 	}
 
 	/**
+	 * Diese Methode schreibt einen Record und gibt danach den gleichen
+	 * Record wieder zurück. Dieser ist dann jedoch neu aus der Datenbank
+	 * gelesen, d.h. auto_increment-Felder wie der Primärschlüssel sind
+	 * dann mit dem richtigen Wert belegt.
+	 * @throws ParseErrorDBException 
+	 * @throws TypeNotSupportedDBException 
+	 * @throws SQL_DBException 
+	 */
+	public Record setRecordAndGetRecord(Record data) throws SQL_DBException,
+			TypeNotSupportedDBException, ParseErrorDBException {
+		try {
+			DataObject id = setRecordAndReturnID(data);
+			return getRecordByPrimaryKey(id);
+		} catch (RecordNotExistsDBException e) {
+			throw new DBRuntimeException.ImpossibleDBException(e, log);
+		}
+	}
+
+	/**
 	 * Löscht den Datensatz.
 	 * @param data
-	 * @throws DatabaseException
+	 * @throws DatabaseException 
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
+	 * @throws TypeNotSupportedDBException 
 	 */
-	public void deleteRecord(Record data) throws DatabaseException {
+	public void deleteRecord(Record data) throws SQL_DBException,
+			RecordNotExistsDBException, TypeNotSupportedDBException {
 		db.executeUpdate("DELETE FROM "
 				+ name
 				+ " WHERE "
@@ -425,13 +484,7 @@ public class Table {
 	}
 
 	private String makeWhereExpression(TypeDefinition def, Object value)
-			throws DatabaseException {
-		// Änderung habe ich wieder verworfen
-		//		return (name + "." + def.getName() + "=" + 
-		//				(value.getClass()==String.class 
-		//					? value 
-		//					:SQLPrinter.print(new DataObject(value, def))
-		//				));
+			throws TypeNotSupportedDBException, WrongTypeDBException {
 		DataObject dataobject;
 		if (!(value instanceof DataObject)) {
 			dataobject = new DataObject(value, def);
@@ -443,6 +496,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.18  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.17  2005/08/18 06:45:40  tbayen
  * RegEx verbessert, um nach mehreren Spalten sortieren zu können
  *

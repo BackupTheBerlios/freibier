@@ -1,10 +1,10 @@
 /* Erzeugt am 18.08.2005 von tbayen
- * $Id: ObjectWrapper.java,v 1.1 2005/08/18 17:45:23 tbayen Exp $
+ * $Id: ObjectWrapper.java,v 1.2 2005/08/21 17:09:50 tbayen Exp $
  */
 package de.bayen.fibu;
 
 import java.rmi.RemoteException;
-import de.bayen.database.exception.DatabaseException;
+import de.bayen.database.exception.DBRuntimeException;
 import de.willuhn.datasource.GenericObject;
 
 public class ObjectWrapper implements GenericObject {
@@ -22,7 +22,7 @@ public class ObjectWrapper implements GenericObject {
 	public boolean equals(GenericObject arg) throws RemoteException {
 		try {
 			return gobject.equals(((ObjectWrapper) arg).getGObject());
-		} catch (DatabaseException e) {
+		} catch (DBRuntimeException e) {
 			throw new RemoteException("Fehler beim generischen Datenbankzugriff", e);
 		}
 	}
@@ -30,7 +30,7 @@ public class ObjectWrapper implements GenericObject {
 	public Object getAttribute(String arg) throws RemoteException {
 		try {
 			return gobject.getAttribute(arg);
-		} catch (DatabaseException e) {
+		} catch (DBRuntimeException e) {
 			throw new RemoteException("Fehler beim generischen Datenbankzugriff", e);
 		}
 	}
@@ -38,7 +38,7 @@ public class ObjectWrapper implements GenericObject {
 	public String[] getAttributeNames() throws RemoteException {
 		try {
 			return gobject.getAttributeNames();
-		} catch (DatabaseException e) {
+		} catch (DBRuntimeException e) {
 			throw new RemoteException("Fehler beim generischen Datenbankzugriff", e);
 		}
 	}
@@ -46,7 +46,7 @@ public class ObjectWrapper implements GenericObject {
 	public String getID() throws RemoteException {
 		try {
 			return gobject.getGOID();
-		} catch (DatabaseException e) {
+		} catch (DBRuntimeException e) {
 			throw new RemoteException("Fehler beim generischen Datenbankzugriff", e);
 		}
 	}
@@ -54,7 +54,7 @@ public class ObjectWrapper implements GenericObject {
 	public String getPrimaryAttribute() throws RemoteException {
 		try {
 			return gobject.getPrimaryAttribute();
-		} catch (DatabaseException e) {
+		} catch (DBRuntimeException e) {
 			throw new RemoteException("Fehler beim generischen Datenbankzugriff", e);
 		}
 	}
@@ -63,6 +63,9 @@ public class ObjectWrapper implements GenericObject {
 
 /*
  * $Log: ObjectWrapper.java,v $
+ * Revision 1.2  2005/08/21 17:09:50  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.1  2005/08/18 17:45:23  tbayen
  * generischer Wrapper für FiBu-Objekte
  *

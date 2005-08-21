@@ -1,0 +1,21 @@
+<html>
+<head><!-- Copyright Thomas Bayen --></head>
+<body>
+Exception-Klassen der FreibierDB-Datenbank. Für jeden Anlass, aus dem eine
+Ausnahmesituation auftreten kann, gibt es eine eigene Exception-Klasse. Um
+hier nicht inflationär die Dateien zu erzeugen und dann nicht mehr zu wissen,
+welche Exception wo im Klassenbaum aufgehängt sind, habe ich die meisten
+Exceptions als eingebettete Klassen in Ihren Oberklassen implementiert.
+<p>
+Die Basisklasse aller gewöhnlicher Exceptions ist 
+<@link>DatabaseException</@link>. Diese hat zwei Tocherklassen 
+<@link>SysDBEx</@link> für Exceptions, die innerhalb des Programms von der
+aufrufenden Klasse abgefangen werden sollten und <@link>UserDBEx</@link>
+für Exceptions, die höchstwahrscheinlich dem Benutzer mitgeteilt werden sollten.
+Daneben gibt es noch <@link>DBRunTimeException</@link>s, die von 
+<@code>RunTimeException</@code> abgeleitet sind und deshalb nicht mit "throws"
+deklariert werden. Hierbei handelt es sich um Fehler, die der Aufrufer zu
+verantworten hat und die deshalb auf einen Programmierfehler hinweisen.
+</p>
+</body>
+</html>

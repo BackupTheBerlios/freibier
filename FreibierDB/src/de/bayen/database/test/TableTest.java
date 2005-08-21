@@ -1,4 +1,4 @@
-//  $Id: TableTest.java,v 1.4 2005/08/12 19:39:47 tbayen Exp $
+//  $Id: TableTest.java,v 1.5 2005/08/21 17:06:59 tbayen Exp $
 package de.bayen.database.test;
 
 import java.util.List;
@@ -7,7 +7,7 @@ import de.bayen.database.Database;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
+import de.bayen.database.exception.SysDBEx;
 
 public class TableTest extends TestCase {
     
@@ -41,7 +41,7 @@ public class TableTest extends TestCase {
         try {
             data = tab.getRecordByValue("nachname", "Hormanns");
             assertEquals("Peter", data.getField("vorname").format());
-        } catch (SystemDatabaseException e) {
+        } catch (SysDBEx e) {
             fail("Exception bei Select");
         } catch (DatabaseException e) {
             fail("Exception bei Select");
@@ -53,7 +53,7 @@ public class TableTest extends TestCase {
         try {
             data = tab.getRecordByPrimaryKey(new Integer(1));
             assertEquals("Peter", data.getField("vorname").format());
-        } catch (SystemDatabaseException e) {
+        } catch (SysDBEx e) {
             fail("Exception bei Select");
         } catch (DatabaseException e) {
             fail("Exception bei Select");
@@ -97,6 +97,9 @@ public class TableTest extends TestCase {
 
 /*
  *  $Log: TableTest.java,v $
+ *  Revision 1.5  2005/08/21 17:06:59  tbayen
+ *  Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  *  Revision 1.4  2005/08/12 19:39:47  tbayen
  *  kleine Nachbesserung...
  *

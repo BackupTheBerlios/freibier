@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: TypeDefinition.java,v 1.4 2005/08/12 19:39:47 tbayen Exp $
+ * $Id: TypeDefinition.java,v 1.5 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -12,8 +12,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
 import de.bayen.database.Database;
-import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
+import de.bayen.database.exception.DBRuntimeException;
+import de.bayen.database.exception.SysDBEx.IllegalDefaultValueDBException;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 
 /**
  * @author tbayen
@@ -63,13 +65,12 @@ abstract public class TypeDefinition {
 	/**
 	 * virtueller Konstruktor / Factory-Methode
 	 * @param db
-	 * 
-	 * @throws SystemDatabaseException
-	 *  
+	 * @throws IllegalDefaultValueDBException 
+	 * @throws ParseErrorDBException 
 	 */
 	public static TypeDefinition create(String name, int type, int length,
 			ResourceBundle resource, Database db)
-			throws SystemDatabaseException {
+			throws IllegalDefaultValueDBException, ParseErrorDBException {
 		//log.trace("create: "+name+", "+type);
 		TypeDefinition typeDef = null;
 		Map propsMap = null;
@@ -100,17 +101,17 @@ abstract public class TypeDefinition {
 			if (def != null)
 				typeDef.setDefaultValue(typeDef.parse(def));
 		} catch (InstantiationException e) {
-			throw new SystemDatabaseException(
+			throw new DBRuntimeException.TypeNotFoundException(
 					"Spezialisierung von TypeDefinition fehlt (1)", e, log);
 		} catch (IllegalAccessException e) {
-			throw new SystemDatabaseException(
+			throw new DBRuntimeException.TypeNotFoundException(
 					"Spezialisierung von TypeDefinition fehlt (2)", e, log);
 		} catch (NullPointerException e) {
-			throw new SystemDatabaseException("unbekannter Datentyp " + type,
-					e, log);
-		} catch (DatabaseException e) {
-			throw new SystemDatabaseException(
-					"Fehler im Defaultwert des Datentyps " + type, e, log);
+			throw new DBRuntimeException.TypeNotFoundException(
+					"unbekannter Datentyp " + type, e, log);
+			//		} catch (DatabaseException e) {
+			//			throw new SysDBEx.IllegalDefaultValueDBException(
+			//					"Fehler im Defaultwert des Datentyps " + type, e, log);
 		}
 		return typeDef;
 	}
@@ -250,9 +251,9 @@ abstract public class TypeDefinition {
 	 * 
 	 * @param s
 	 * @return für Menschen formatierter String
-	 * @throws SystemDatabaseException
+	 * @throws WrongTypeDBException 
 	 */
-	public abstract String format(Object s) throws DatabaseException;
+	public abstract String format(Object s) throws WrongTypeDBException;
 
 	/**
 	 * Diese Methode parst den angegebenen String,der z.B. aus einem 
@@ -261,9 +262,9 @@ abstract public class TypeDefinition {
 	 * 
 	 * @param s
 	 * @return Objekt in der internen Repräsentation
-	 * @throws DatabaseException
+	 * @throws ParseErrorDBException 
 	 */
-	public abstract Object parse(String s) throws DatabaseException;
+	public abstract Object parse(String s) throws ParseErrorDBException;
 
 	/**
 	 * Diese Methode überprüft, ob der angegebene String ein gültiger Wert ist,
@@ -290,6 +291,9 @@ abstract public class TypeDefinition {
 }
 /*
  * $Log: TypeDefinition.java,v $
+ * Revision 1.5  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.4  2005/08/12 19:39:47  tbayen
  * kleine Nachbesserung...
  *

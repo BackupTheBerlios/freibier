@@ -1,14 +1,16 @@
 TODO
 
 Fibu:
-- Exceptions in Klassenhierarchie aufteilen
+- Todo erledigen, das bei der Exceptions-Wandlung aufgefallen ist
+- Peters Mail-Anfrage klären
+- Ausgaben von Test-Klassen nicht per println, sondern per Logging
 - Datenbank-Parameter aus Properties-Datei und aus Config im Home-Verzeichnis
+- Import von Kontenrahmen aus GnuCash
+- Import von Kontenrahmen/Konten aus diDurst
+- Beschreibung von Zielapplikationen ausführen
 
 
 FreibierDB:
-
-
-mit Peter absprechen:
 
 
 später:
@@ -18,6 +20,10 @@ später:
 
 
 Changes:
+- FiBuGUI an Exceptions anpassen
+- Dokumentation der Exceptions im Paket
+- FiBu an Exceptions anpassen
+- Exceptions in Klassenhierarchie aufteilen
 - automatische Installation von jar-Files
 - Doku mit Internet-Ressourcen zum Thema verlinken
 - Sortierung unterstützen (Interface Comparable)

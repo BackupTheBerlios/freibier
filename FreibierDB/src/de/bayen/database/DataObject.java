@@ -1,13 +1,17 @@
 /* Erzeugt am 09.10.2004 von tbayen
- * $Id: DataObject.java,v 1.5 2005/08/15 16:17:12 tbayen Exp $
+ * $Id: DataObject.java,v 1.6 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
-import de.bayen.database.exception.UserDatabaseException;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
+import de.bayen.database.exception.SysDBEx.SQL_getTableDBException;
+import de.bayen.database.exception.SysDBEx.TypeNotSupportedDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
+import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
 import de.bayen.database.typedefinition.TypeDefinition;
 
 /**
@@ -22,22 +26,22 @@ public class DataObject implements Printable {
 	private Object value;
 	private TypeDefinition def = null;
 
-	public DataObject(Object value, TypeDefinition def)
-			throws UserDatabaseException {
+	public DataObject(Object value, TypeDefinition def) {
 		super();
 		this.value = value;
 		this.def = def;
 	}
 
-	public String format() throws DatabaseException {
+	public String format() throws WrongTypeDBException {
 		return def.format(value);
 	}
-	
-	public String formatNice() throws DatabaseException{
-		return NicePrinter.print(this);	
+
+	public String formatNice() throws SQL_getTableDBException,
+			TypeNotSupportedDBException, WrongTypeDBException {
+		return NicePrinter.print(this);
 	}
 
-	public void parse(String value) throws DatabaseException {
+	public void parse(String value) throws ParseErrorDBException {
 		this.value = def.parse(value);
 	}
 
@@ -53,31 +57,37 @@ public class DataObject implements Printable {
 		return value;
 	}
 
-	public void setValue(Object value) throws SystemDatabaseException {
+	public void setValue(Object value) throws WrongTypeDBException {
 		if (!def.getJavaType().equals(value.getClass())) {
-			throw new SystemDatabaseException(
+			throw new SysDBEx.WrongTypeDBException(
 					"Falscher Datentyp bei Zuweisung an DataObject: "
 							+ value.getClass() + " statt " + def.getJavaType(),
 					log);
 		}
 		this.value = value;
 	}
-	
+
 	/**
 	 * Diese Methode kann aufgerufen werden, wenn es sich bei diesem Feld um
 	 * einen Foreign Key handelt. Sie ergibt den Record, auf den dieser 
 	 * Foreign Key verweist.
-	 * @throws DatabaseException 
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
+	 * @throws ParseErrorDBException 
+	 * @throws TypeNotSupportedDBException 
 	 *
 	 */
-	public Record getForeignRecord(Database db) throws DatabaseException{
-		if(!(getValue() instanceof ForeignKey)){
-			throw new SystemDatabaseException("Dies ist kein Foreign Key",log);
+	public Record getForeignRecord(Database db) throws SQL_DBException,
+			RecordNotExistsDBException, ParseErrorDBException,
+			TypeNotSupportedDBException {
+		if (!(getValue() instanceof ForeignKey)) {
+			throw new SysDBEx.NotAForeignKeyDBException(
+					"Dies ist kein Foreign Key", log);
 		}
-		ForeignKey fkey = ((ForeignKey)getValue());
-		if(fkey.getKey()==null)
+		ForeignKey fkey = ((ForeignKey) getValue());
+		if (fkey.getKey() == null)
 			return null;
-		String foreigntable=def.getProperty("foreignkey.table");
+		String foreigntable = def.getProperty("foreignkey.table");
 		Table ftable = db.getTable(foreigntable);
 		return ftable.getRecordByPrimaryKey(fkey.getKey());
 	}
@@ -89,22 +99,28 @@ public class DataObject implements Printable {
 	 * 
 	 * @param db
 	 * @return Zielwert
-	 * @throws DatabaseException
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
+	 * @throws ParseErrorDBException 
+	 * @throws TypeNotSupportedDBException 
 	 */
-	public String getForeignResultColumn(Database db) throws DatabaseException{
-		if(!(getValue() instanceof ForeignKey)){
-			throw new SystemDatabaseException("Dies ist kein Foreign Key",log);
+	public String getForeignResultColumn(Database db) throws SQL_DBException,
+			RecordNotExistsDBException, ParseErrorDBException,
+			TypeNotSupportedDBException {
+		if (!(getValue() instanceof ForeignKey)) {
+			throw new SysDBEx.NotAForeignKeyDBException(
+					"Dies ist kein Foreign Key", log);
 		}
-		ForeignKey fkey = ((ForeignKey)getValue());
-		if(fkey.getKey()==null)
+		ForeignKey fkey = ((ForeignKey) getValue());
+		if (fkey.getKey() == null)
 			return null;
-		String foreigntable=def.getProperty("foreignkey.table");
-		String resultcolumn=def.getProperty("foreignkey.resultcolumn");
+		String foreigntable = def.getProperty("foreignkey.table");
+		String resultcolumn = def.getProperty("foreignkey.resultcolumn");
 		Table ftable = db.getTable(foreigntable);
-		Record rec=ftable.getRecordByPrimaryKey(fkey.getKey());
+		Record rec = ftable.getRecordByPrimaryKey(fkey.getKey());
 		return rec.getFormatted(resultcolumn);
 	}
-	
+
 	public TypeDefinition getTypeDefinition() {
 		return def;
 	}
@@ -112,8 +128,7 @@ public class DataObject implements Printable {
 	/**
 	 * ergibt die maximale Länge des Objektes als String. Dies ist nicht die
 	 * wirkliche Länge des konkreten Objektes.
-	 */ 
-	 
+	 */
 	public int getLength() {
 		return def.getLength();
 	}
@@ -128,10 +143,10 @@ public class DataObject implements Printable {
 
 	public boolean getReadonly() {
 		// damit fuer sowas nicht getProperty() aufgerufen werden muss
-		String prop=def.getProperty("readonly");
-		if(prop != null && prop.equals("1")){
+		String prop = def.getProperty("readonly");
+		if (prop != null && prop.equals("1")) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
@@ -142,6 +157,9 @@ public class DataObject implements Printable {
 }
 /*
  * $Log: DataObject.java,v $
+ * Revision 1.6  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.5  2005/08/15 16:17:12  tbayen
  * Javadoc-Warnungen beseitigt
  *

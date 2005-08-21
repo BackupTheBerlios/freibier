@@ -1,10 +1,11 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.10 2005/08/15 16:17:12 tbayen Exp $
+ * $Id: Database.java,v 1.11 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,9 +25,17 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
+import de.bayen.database.exception.DBRuntimeException;
 import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
-import de.bayen.database.exception.UserDatabaseException;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.UserDBEx;
+import de.bayen.database.exception.SysDBEx.IllegalDefaultValueDBException;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
+import de.bayen.database.exception.SysDBEx.SQL_getTableDBException;
+import de.bayen.database.exception.SysDBEx.SQL_getTableListDBException;
+import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
+import de.bayen.database.exception.UserDBEx.UserSQL_DBException;
 import de.bayen.database.typedefinition.TypeDefinition;
 
 /**
@@ -45,9 +54,9 @@ public class Database {
 
 	/**
 	 * Konstruktor
+	 * @throws UserSQL_DBException 
 	 */
-	public Database(String name, String server, String user, String password)
-			throws DatabaseException {
+	public Database(String name, String server, String user, String password) throws UserSQL_DBException{
 		super();
 		log.trace("Konstruktor");
 		this.name = name;
@@ -64,7 +73,7 @@ public class Database {
 		}
 	}
 
-	private void openConnection() throws DatabaseException {
+	private void openConnection() throws UserSQL_DBException{
 		log.trace("openConnection");
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -76,15 +85,16 @@ public class Database {
 			 * werden. Dies geht bei Eclipse z.B. unter dem Menüpunkt
 			 * Project/Properties auf der Karte Java Build Path/Libraries.
 			 */
-			throw new SystemDatabaseException(
+			throw new DBRuntimeException.DriverNotFoundException(
 					"JDBC-Treiber für MySQL kann nicht geladen werden", e, log);
 		};
 		try {
 			conn = DriverManager.getConnection("jdbc:mysql://" + server + "/"
 					+ name, user, password);
 		} catch (SQLException e2) {
-			throw new UserDatabaseException("Verbindung zur SQL-Datenbank '"
-					+ name + "' kann nicht geöffnet werden", e2);
+			throw new UserDBEx.UserSQL_DBException(
+					"Verbindung zur SQL-Datenbank '" + name
+							+ "' kann nicht geöffnet werden", e2, log);
 		}
 	}
 
@@ -102,9 +112,9 @@ public class Database {
 	 * in der Datenbank angelegt sind.
 	 * 
 	 * @return List, die Strings enthält
-	 * @throws SystemDatabaseException
+	 * @throws SQL_getTableListDBException 
 	 */
-	public List getTableNamesList() throws SystemDatabaseException {
+	public List getTableNamesList() throws SQL_getTableListDBException {
 		List liste = new ArrayList();
 		try {
 			ResultSet rs = conn.getMetaData().getTables(null, null, "%", null);
@@ -113,8 +123,8 @@ public class Database {
 			}
 			rs.close();
 		} catch (SQLException e) {
-			throw new SystemDatabaseException("Kann Tabellenliste nicht lesen",
-					e, log);
+			throw new SysDBEx.SQL_getTableListDBException(
+					"Kann Tabellenliste nicht lesen", e, log);
 		}
 		return liste;
 	}
@@ -126,9 +136,12 @@ public class Database {
 	 *  
 	 * @param name
 	 * @return table
-	 * @throws SystemDatabaseException
+	 * @throws SQL_getTableDBException 
+	 * @throws IllegalDefaultValueDBException 
+	 * @throws ParseErrorDBException 
 	 */
-	public Table getTable(String name) throws SystemDatabaseException {
+	public Table getTable(String name) throws SQL_getTableDBException,
+			IllegalDefaultValueDBException, ParseErrorDBException {
 		try {
 			ResultSet columns = conn.getMetaData().getColumns(null, null, name,
 					"%");
@@ -151,12 +164,12 @@ public class Database {
 			if (primarykeys.next()) {
 				def.setPrimaryKey(primarykeys.getString("COLUMN_NAME"));
 				if (primarykeys.next()) {
-					throw new SystemDatabaseException(
+					throw new DBRuntimeException.WrongNumberOfPrimaryKeysException(
 							"Mehrere Primärschlüsselspalten sind nicht erlaubt",
 							log);
 				}
 			} else {
-				throw new SystemDatabaseException(
+				throw new DBRuntimeException.WrongNumberOfPrimaryKeysException(
 						"Keine Primärschlüsselspalte definiert", log);
 			}
 			primarykeys.close();
@@ -183,7 +196,7 @@ public class Database {
 			}
 			return new Table(this, name, def);
 		} catch (SQLException e) {
-			throw new SystemDatabaseException(
+			throw new SysDBEx.SQL_getTableDBException(
 					"Tabelle kann nicht angesprochen werden: '" + name + "'",
 					e, log);
 		}
@@ -191,25 +204,23 @@ public class Database {
 
 	/**
 	 * löscht eine gesamte Tabelle (Inhalt und Struktur) aus der Datenbank.
-	 * 
-	 * @throws UserDatabaseException
-	 *
+	 * @throws UserSQL_DBException 
 	 */
-	public void dropTable(String name) throws UserDatabaseException {
+	public void dropTable(String name) throws UserSQL_DBException{
 		try {
 			executeSql("DROP TABLE `" + name + "`;");
 		} catch (DatabaseException e) {
-			throw new UserDatabaseException(
+			throw new UserSQL_DBException(
 					"Tabelle kann nicht gelöscht werden", e, log);
 		}
 	}
 
 	/**
 	 * Löscht die gesamte Datenbank mit allen Tabellen. (GEFÄHRLICH!)
-	 * @throws SystemDatabaseException 
-	 * @throws DatabaseException 
+	 * @throws SQL_getTableListDBException 
 	 */
-	public void wipeOutDatabase() throws DatabaseException {
+	public void wipeOutDatabase() throws SQL_getTableListDBException,
+			UserDBEx.UserSQL_DBException {
 		List tables = getTableNamesList();
 		for (Iterator iter = tables.iterator(); iter.hasNext();) {
 			String element = (String) iter.next();
@@ -221,23 +232,31 @@ public class Database {
 	 * Führt einen String als SQL-Befehl (oder mehrere Befehle) aus.
 	 * 
 	 * @param sqltext
-	 * @throws SystemDatabaseException
+	 * @throws SQL_DBException 
 	 */
-	public void executeSql(String sqltext) throws SystemDatabaseException {
-		executeSqlFile(new ByteArrayInputStream(sqltext.getBytes()));
+	public void executeSql(String sqltext) throws SQL_DBException {
+		try {
+			executeSqlFile(new ByteArrayInputStream(sqltext.getBytes()));
+		} catch (IOException e) {
+			throw new DBRuntimeException(
+					"Lesefehler im Stream - kann nicht sein", log);
+		}
 	}
 
-	public void executeSqlFile(String filename) throws SystemDatabaseException {
+	public void executeSqlFile(String filename) throws IOException,
+			SQL_DBException {
 		InputStream datei = this.getClass().getClassLoader()
 				.getResourceAsStream(filename);
-		if (datei == null)
-			throw new SystemDatabaseException("Kann Datei nicht lesen: "
-					+ filename, log);
+		if (datei == null) {
+			String fehlermeldung = "Kann Datei nicht lesen: " + filename;
+			log.error(fehlermeldung);
+			throw new FileNotFoundException(fehlermeldung);
+		}
 		executeSqlFile(datei);
 	}
 
-	public void executeSqlFile(InputStream datei)
-			throws SystemDatabaseException {
+	public void executeSqlFile(InputStream datei) throws IOException,
+			SQL_DBException {
 		log.trace("executeSqlFile");
 		String sql = "";
 		String zeile;
@@ -262,20 +281,18 @@ public class Database {
 			};
 			st.executeBatch();
 			st.close();
-		} catch (IOException e) {
-			throw new SystemDatabaseException(
-					"SQL-Datei kann nicht gelesen werden", e, log);
 		} catch (SQLException e) {
-			throw new SystemDatabaseException("SQL-Exception", e, log);
+			throw new SysDBEx.SQL_DBException("SQL-Exception", e, log);
 		}
 		if (!sql.equals("")) {
-			throw new SystemDatabaseException(
+			throw new SysDBEx.SQL_DBException(
 					"Syntax-Fehler in der SQL-Datei (fehlendes Semikolon?):"
 							+ zeile, log);
 		}
 	}
 
-	public Map executeSelectSingleRow(String sql) throws DatabaseException {
+	public Map executeSelectSingleRow(String sql) throws SQL_DBException,
+			RecordNotExistsDBException {
 		log.trace("executeSelectSingleRow");
 		Map hash = new HashMap();
 		try {
@@ -290,19 +307,19 @@ public class Database {
 									.getObject(i + 1));
 				}
 			} else {
-				throw new UserDatabaseException(
+				throw new UserDBEx.RecordNotExistsDBException(
 						"angegebener Datensatz existiert nicht", log);
 			}
 			rs.close();
 			st.close();
 		} catch (SQLException e) {
-			throw new SystemDatabaseException(
+			throw new SysDBEx.SQL_DBException(
 					"SQL-Query kann die Datenbank nicht erreichen", e, log);
 		}
 		return hash;
 	}
 
-	public List executeSelectMultipleRows(String sql) throws DatabaseException {
+	public List executeSelectMultipleRows(String sql) throws SQL_DBException {
 		log.trace("executeSelectMultipleRows");
 		List resultList = new ArrayList();
 		Map hash = null;
@@ -323,7 +340,7 @@ public class Database {
 			rs.close();
 			st.close();
 		} catch (SQLException e) {
-			throw new SystemDatabaseException(
+			throw new SysDBEx.SQL_DBException(
 					"SQL-Query kann die Datenbank nicht erreichen", e, log);
 		}
 		return resultList;
@@ -333,39 +350,45 @@ public class Database {
 	 * Führt einen String als SQL-Befehl (oder mehrere) aus.
 	 * 
 	 * @param sql
-	 * @throws SystemDatabaseException
+	 * @throws SQL_DBException 
+	 * @throws RecordNotExistsDBException 
+	 * @throws SysDBEx
 	 */
-	public void executeUpdate(String sql) throws DatabaseException {
+	public void executeUpdate(String sql) throws SQL_DBException,
+			RecordNotExistsDBException {
 		log.trace("executeUpdate");
 		try {
 			Statement st = conn.createStatement();
 			log.debug("SQL UPDATE: " + sql);
 			int updateCount = st.executeUpdate(sql);
 			if (updateCount < 1) {
-				throw new UserDatabaseException(
+				throw new UserDBEx.RecordNotExistsDBException(
 						"angegebener Datensatz existiert nicht", log);
 			}
 			st.close();
 		} catch (SQLException e) {
-			throw new SystemDatabaseException(
+			throw new SysDBEx.SQL_DBException(
 					"SQL-Update kann die Datenbank nicht erreichen", e, log);
 		}
 	}
 
-	public void close() throws SystemDatabaseException {
+	public void close() throws SQL_DBException{
 		log.trace("close");
 		try {
 			if (conn != null) {
 				conn.close();
 			}
 		} catch (SQLException e) {
-			throw new SystemDatabaseException(
+			throw new SysDBEx.SQL_DBException(
 					"Fehler beim schliessen der Datenbank", e, log);
 		}
 	}
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.11  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.10  2005/08/15 16:17:12  tbayen
  * Javadoc-Warnungen beseitigt
  *

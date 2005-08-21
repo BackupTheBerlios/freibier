@@ -1,8 +1,9 @@
 /* Erzeugt am 06.10.2004 von tbayen
- * $Id: DatabaseConstructorTest.java,v 1.4 2005/08/15 16:17:12 tbayen Exp $
+ * $Id: DatabaseConstructorTest.java,v 1.5 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database.test;
 
+import java.io.IOException;
 import junit.framework.TestCase;
 import de.bayen.database.Database;
 import de.bayen.database.exception.DatabaseException;
@@ -33,7 +34,9 @@ public class DatabaseConstructorTest extends TestCase {
             db.executeSqlFile("de/bayen/database/test/test.sql");
         } catch (DatabaseException e) {
             fail(e.getMessage());
-        }
+        } catch (IOException e) {
+            fail(e.getMessage());
+		}
     }
 
     /**
@@ -50,6 +53,9 @@ public class DatabaseConstructorTest extends TestCase {
 
 /*
  * $Log: DatabaseConstructorTest.java,v $
+ * Revision 1.5  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.4  2005/08/15 16:17:12  tbayen
  * Javadoc-Warnungen beseitigt
  *

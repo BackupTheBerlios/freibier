@@ -1,12 +1,13 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: JournalTest.java,v 1.4 2005/08/17 20:28:04 tbayen Exp $
+ * $Id: JournalTest.java,v 1.5 2005/08/21 17:08:55 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
+import junit.framework.TestCase;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.fibu.Buchhaltung;
 import de.bayen.fibu.Journal;
-import junit.framework.TestCase;
+import de.bayen.fibu.exceptions.FiBuException;
 
 public class JournalTest extends TestCase {
 	Buchhaltung bh;
@@ -22,7 +23,7 @@ public class JournalTest extends TestCase {
 		super.tearDown();
 	}
 
-	public void testCreateJournal() throws DatabaseException {
+	public void testCreateJournal() throws DatabaseException, FiBuException {
 		Journal jou = bh.createJournal();
 		assertEquals("2005", jou.getBuchungsjahr());
 		assertEquals("01", jou.getBuchungsperiode());
@@ -39,7 +40,7 @@ public class JournalTest extends TestCase {
 				.getNumberOfRecords());
 	}
 
-	public void testOffeneJournale() throws DatabaseException {
+	public void testOffeneJournale() throws DatabaseException, FiBuException {
 		assertEquals(0, bh.getAlleJournale().size());
 		assertEquals(0, bh.getOffeneJournale().size());
 		bh.createJournal();
@@ -61,6 +62,9 @@ public class JournalTest extends TestCase {
 }
 /*
  * $Log: JournalTest.java,v $
+ * Revision 1.5  2005/08/21 17:08:55  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.4  2005/08/17 20:28:04  tbayen
  * zwei Methoden zum Auflisten von Objekten und alles, was dazu sonst noch nötig war
  *

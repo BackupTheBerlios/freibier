@@ -1,12 +1,12 @@
 /* Erzeugt am 09.10.2004 von tbayen
- * $Id: TypeDefinitionBLOB.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: TypeDefinitionBLOB.java,v 1.2 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
 import java.io.IOException;
-import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
-import de.bayen.database.exception.UserDatabaseException;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 
 /**
  * @author tbayen
@@ -23,26 +23,27 @@ public class TypeDefinitionBLOB extends TypeDefinition {
 		return BLOB.class;
 	}
 
-	public String format(Object s) throws SystemDatabaseException {
+	public String format(Object s) throws WrongTypeDBException {
 		if (s != null) {
 			if (s instanceof BLOB) {
 				return s.toString();
 			} else {
-				throw new SystemDatabaseException("BLOB-Objekt erwartet", log);
+				throw new SysDBEx.WrongTypeDBException("BLOB-Objekt erwartet",
+						log);
 			}
 		} else {
 			return "";
 		}
 	}
 
-	public Object parse(String s) throws DatabaseException {
+	public Object parse(String s) throws ParseErrorDBException {
 		BLOB blob = new BLOB();
-		log.debug("BLOB parsen: '"+s+"'");
+		log.debug("BLOB parsen: '" + s + "'");
 		if (s != null && s.length() > 0) {
 			try {
 				blob.parseString(s);
 			} catch (IOException e) {
-				throw new UserDatabaseException(
+				throw new SysDBEx.ParseErrorDBException(
 						"BLOB kann nicht geparst werden", e, log);
 			}
 		}
@@ -61,6 +62,9 @@ public class TypeDefinitionBLOB extends TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionBLOB.java,v $
+ * Revision 1.2  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

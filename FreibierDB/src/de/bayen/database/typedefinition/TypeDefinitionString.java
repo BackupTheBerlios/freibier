@@ -1,10 +1,10 @@
 /* Erzeugt am 09.10.2004 von tbayen
- * $Id: TypeDefinitionString.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: TypeDefinitionString.java,v 1.2 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
-import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 
 /**
  * Datentyp z.B. für SQL-Daten vom Typ char
@@ -12,29 +12,29 @@ import de.bayen.database.exception.SystemDatabaseException;
  * @author tbayen
  */
 public class TypeDefinitionString extends TypeDefinition {
-		
 	public TypeDefinitionString() {
 		super();
-		defaultValue="";
+		defaultValue = "";
 	}
 
-	public Class getJavaType(){
+	public Class getJavaType() {
 		return String.class;
 	}
 
-	public String format(Object s) throws SystemDatabaseException {
+	public String format(Object s) throws WrongTypeDBException {
 		if (s != null) {
 			if (s instanceof String) {
 				return ((String) s).trim();
 			} else {
-				throw new SystemDatabaseException("String-Objekt erwartet", log);
+				throw new SysDBEx.WrongTypeDBException(
+						"String-Objekt erwartet", log);
 			}
 		} else {
 			return "";
 		}
 	}
 
-	public Object parse(String s) throws DatabaseException {
+	public Object parse(String s) {
 		s = s.trim();
 		if (s.length() > length) {
 			s = s.substring(0, length);
@@ -48,6 +48,9 @@ public class TypeDefinitionString extends TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionString.java,v $
+ * Revision 1.2  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

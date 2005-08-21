@@ -1,11 +1,12 @@
 /* Erzeugt am 09.10.2004 von tbayen
- * $Id: TypeDefinitionInteger.java,v 1.3 2005/08/12 19:39:47 tbayen Exp $
+ * $Id: TypeDefinitionInteger.java,v 1.4 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
 import org.apache.oro.text.perl.Perl5Util;
-import de.bayen.database.exception.SystemDatabaseException;
-import de.bayen.database.exception.UserDatabaseException;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 
 /**
  * Datentyp z.B. für SQL-Daten vom Typ int
@@ -13,36 +14,37 @@ import de.bayen.database.exception.UserDatabaseException;
  * @author tbayen
  */
 public class TypeDefinitionInteger extends TypeDefinitionNumber {
-
 	public TypeDefinitionInteger() {
 		super();
 		defaultValue = new Long(0l);
 	}
 
-	public Class getJavaType(){
+	public Class getJavaType() {
 		return Long.class;
 	}
 
-	public String format(Object i) throws SystemDatabaseException {
+	public String format(Object i) throws WrongTypeDBException {
 		if (i != null && !i.equals("")) {
 			if (i instanceof Number) {
 				return i.toString();
 			} else {
-				throw new SystemDatabaseException("Number-Objekt erwartet", log);
+				throw new SysDBEx.WrongTypeDBException(
+						"Number-Objekt erwartet", log);
 			}
 		} else {
 			return "";
 		}
 	}
 
-	public Object parse(String s) throws UserDatabaseException {
-		if(s==null || s.equals("") || s.equals("null"))
+	public Object parse(String s) throws ParseErrorDBException {
+		if (s == null || s.equals("") || s.equals("null"))
 			return null;
 		Long l = null;
 		try {
 			l = Long.valueOf(s);
 		} catch (NumberFormatException e) {
-			throw new UserDatabaseException("Fehler im Zahlenformat: " + s, log);
+			throw new SysDBEx.ParseErrorDBException("Fehler im Zahlenformat: "
+					+ s, log);
 		}
 		return l;
 	}
@@ -55,6 +57,9 @@ public class TypeDefinitionInteger extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionInteger.java,v $
+ * Revision 1.4  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.3  2005/08/12 19:39:47  tbayen
  * kleine Nachbesserung...
  *

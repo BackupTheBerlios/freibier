@@ -1,5 +1,5 @@
 /* Erzeugt am 16.10.2004 von tbayen
- * $Id: NicePrinter.java,v 1.3 2005/08/12 19:39:47 tbayen Exp $
+ * $Id: NicePrinter.java,v 1.4 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -7,8 +7,11 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.SysDBEx.IllegalDefaultValueDBException;
+import de.bayen.database.exception.SysDBEx.SQL_getTableDBException;
+import de.bayen.database.exception.SysDBEx.TypeNotSupportedDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 import de.bayen.database.typedefinition.BLOB;
 import de.bayen.database.typedefinition.TypeDefinition;
 import de.bayen.database.typedefinition.TypeDefinitionBLOB;
@@ -35,9 +38,13 @@ public class NicePrinter {
 	 * 
 	 * @param obj
 	 * @return ausgabe
-	 * @throws DatabaseException
+	 * @throws IllegalDefaultValueDBException 
+	 * @throws SQL_getTableDBException 
+	 * @throws TypeNotSupportedDBException 
+	 * @throws WrongTypeDBException 
 	 */
-	public static String print(Printable obj) throws DatabaseException {
+	public static String print(Printable obj) throws SQL_getTableDBException,
+			TypeNotSupportedDBException, WrongTypeDBException {
 		if (obj.getValue() == null)
 			return "";
 		String val;
@@ -61,19 +68,26 @@ public class NicePrinter {
 		} else if (TypeDefinitionInteger.class.equals(obj.getType())) {
 			val = obj.format();
 		} else if (TypeDefinitionBool.class.equals(obj.getType())) {
-			val = ((Boolean)obj.getValue()).booleanValue()?"Ja":"Nein";
+			val = ((Boolean) obj.getValue()).booleanValue() ? "Ja" : "Nein";
 		} else if (TypeDefinitionBLOB.class.equals(obj.getType())) {
 			val = "Datei mit "
 					+ String.valueOf(((BLOB) obj.getValue()).length())
 					+ " Bytes";
 		} else if (TypeDefinitionForeignKey.class.equals(obj.getType())) {
-			TypeDefinition referenceType = ((TypeDefinitionForeignKey) ((DataObject) obj)
-					.getTypeDefinition()).getReferenceType();
-			val =
-			//	"(" + obj.format() + ") " + // besser weg damit!?
-			referenceType.format(((ForeignKey) obj.getValue()).getContent());
+			try {
+				TypeDefinition referenceType = ((TypeDefinitionForeignKey) ((DataObject) obj)
+						.getTypeDefinition()).getReferenceType();
+				val =
+				//	"(" + obj.format() + ") " + // besser weg damit!?
+				referenceType
+						.format(((ForeignKey) obj.getValue()).getContent());
+			} catch (Exception e) {
+				throw new SysDBEx.TypeNotSupportedDBException(
+						"Nice-Printer kann Typ mit falschem Default-Wert nicht ausgeben: "
+								+ obj.getType(), e, log);
+			}
 		} else {
-			throw new SystemDatabaseException(
+			throw new SysDBEx.TypeNotSupportedDBException(
 					"Typ wird vom Nice-Printer nicht unterstützt: "
 							+ obj.getType(), log);
 		}
@@ -84,6 +98,9 @@ public class NicePrinter {
 }
 /*
  * $Log: NicePrinter.java,v $
+ * Revision 1.4  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.3  2005/08/12 19:39:47  tbayen
  * kleine Nachbesserung...
  *

@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: DatabaseException.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: DatabaseException.java,v 1.2 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database.exception;
 
@@ -7,8 +7,8 @@ package de.bayen.database.exception;
  * @author tbayen
  *
  * Dies ist die Mutterklasse aller von den Klassen des "de.bayen.database"-Paketes geworfenen
- * Exceptions. Hiervon sind die beiden spezifischeren Klassen SystemDatabaseException
- * und UserDatabaseException abgeleitet.
+ * Exceptions. Hiervon sind die beiden spezifischeren Klassen SysDBEx
+ * und UserDBEx abgeleitet.
  */
 public class DatabaseException extends Exception {
     protected DatabaseException(String message) {
@@ -26,6 +26,9 @@ public class DatabaseException extends Exception {
 
 /*
  * $Log: DatabaseException.java,v $
+ * Revision 1.2  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

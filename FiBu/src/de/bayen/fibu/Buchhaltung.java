@@ -1,21 +1,32 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.8 2005/08/18 17:04:24 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.9 2005/08/21 17:08:55 tbayen Exp $
  */
 package de.bayen.fibu;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import de.bayen.database.DataObject;
 import de.bayen.database.Database;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.Table.QueryCondition;
 import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
-import de.bayen.database.exception.UserDatabaseException;
+import de.bayen.database.exception.UserDBEx;
+import de.bayen.database.exception.SysDBEx.IllegalDefaultValueDBException;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
+import de.bayen.database.exception.SysDBEx.SQL_getTableDBException;
+import de.bayen.database.exception.SysDBEx.TypeNotSupportedDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
+import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
+import de.bayen.database.exception.UserDBEx.UserSQL_DBException;
+import de.bayen.fibu.exceptions.FiBuException;
+import de.bayen.fibu.exceptions.FiBuRuntimeException;
+import de.bayen.fibu.exceptions.ImpossibleException;
+import de.bayen.fibu.exceptions.FiBuException.NotInitializedException;
 
 /**
  * Diese Klasse ist die Hauptklasse, die eine komplette Buchhaltung beschreibt.
@@ -48,26 +59,27 @@ public class Buchhaltung extends AbstractObject {
 	 * @param server
 	 * @param user
 	 * @param password
-	 * @throws DatabaseException
+	 * @throws UserSQL_DBException 
 	 */
 	public Buchhaltung(String name, String server, String user, String password)
-			throws DatabaseException {
+			throws UserSQL_DBException {
 		db = new Database(name, server, user, password);
 		db.setPropertyPath(getClass().getPackage().getName() + ".dbdefinition");
 	}
 
 	/**
 	 * Dieser Konstruktor öffnet die Datenbank mit Standard-Parametern
+	 * @throws UserSQL_DBException 
 	 * @throws DatabaseException 
 	 *
 	 */
-	public Buchhaltung() throws DatabaseException {
+	public Buchhaltung() throws UserSQL_DBException {
 		// diese Parameter sind in einem Standard-Debian möglich:
 		db = new Database("test", "localhost", "test", null);
 		db.setPropertyPath(getClass().getPackage().getName() + ".dbdefinition");
 	}
 
-	public void close() throws SystemDatabaseException {
+	public void close() throws SQL_DBException {
 		db.close();
 		db = null;
 	}
@@ -98,13 +110,15 @@ public class Buchhaltung extends AbstractObject {
 
 	/**
 	 * Arbeitet wie ok(), wirft aber eine Exception, falls etwas nicht ok ist.
-	 * @throws UserDatabaseException 
+	 * @throws NotInitializedException 
+	 * @throws UserDBEx 
 	 */
-	public void assertOk() throws UserDatabaseException {
+	public void assertOk() throws NotInitializedException {
 		if (ok())
 			return;
-		throw new UserDatabaseException(
-				"Buchhaltung nicht initialisiert (kein Zugriff auf Datenbank?)");
+		throw new FiBuException.NotInitializedException(
+				"Buchhaltung nicht initialisiert (kein Zugriff auf Datenbank?)",
+				log);
 	}
 
 	/**
@@ -116,7 +130,12 @@ public class Buchhaltung extends AbstractObject {
 	 */
 	public void firstTimeInit() throws DatabaseException {
 		db.wipeOutDatabase();
-		db.executeSqlFile("de/bayen/fibu/dbdefinition/db_definition.sql");
+		try {
+			db.executeSqlFile("de/bayen/fibu/dbdefinition/db_definition.sql");
+		} catch (IOException e) {
+			throw new FiBuRuntimeException(
+					"Kann Datendefinitionsdatei nicht lesen", e, log);
+		}
 	}
 
 	/**
@@ -125,12 +144,23 @@ public class Buchhaltung extends AbstractObject {
 	 * 
 	 * @param nr
 	 * @return Record, der die Firmenstammdaten enthält
-	 * @throws DatabaseException 
+	 * @throws NotInitializedException 
+	 * @throws SQL_DBException 
+	 * @throws RecordNotExistsDBException 
 	 */
-	public Record setFirmenstammdaten(int nr) throws DatabaseException {
+	public Record setFirmenstammdaten(int nr) throws NotInitializedException,
+			SQL_DBException, RecordNotExistsDBException {
 		assertOk();
-		record = db.getTable("Firmenstammdaten").getRecordByPrimaryKey(
-				String.valueOf(nr));
+		try {
+			record = db.getTable("Firmenstammdaten").getRecordByPrimaryKey(
+					String.valueOf(nr));
+		} catch (IllegalDefaultValueDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 		return record;
 	}
 
@@ -141,13 +171,21 @@ public class Buchhaltung extends AbstractObject {
 	 * 
 	 * @param stamm
 	 * @return Record, der die Firmenstammdaten enthält
-	 * @throws DatabaseException
+	 * @throws NotInitializedException 
+	 * @throws ParseErrorDBException 
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
 	 */
-	public Record setFirmenstammdaten(Record stamm) throws DatabaseException {
+	public Record setFirmenstammdaten(Record stamm)
+			throws NotInitializedException, SQL_DBException,
+			ParseErrorDBException {
 		assertOk();
-		Table table = db.getTable("Firmenstammdaten");
-		DataObject stammId = table.setRecordAndReturnID(stamm);
-		record = table.getRecordByPrimaryKey(stammId);
+		try {
+			Table table = db.getTable("Firmenstammdaten");
+			record = table.setRecordAndGetRecord(stamm);
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 		return record;
 	}
 
@@ -163,26 +201,32 @@ public class Buchhaltung extends AbstractObject {
 	 * diese API jedoch vorbereitet werden.
 	 * </p>
 	 * @return Record, der die Firmenstammdaten enthält
-	 * @throws UserDatabaseException 
+	 * @throws NotInitializedException 
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
 	 */
-	public Record getFirmenstammdaten() throws DatabaseException {
+	public Record getFirmenstammdaten() throws NotInitializedException,
+			SQL_DBException {
 		assertOk();
 		if (record == null) {
-			Table table = db.getTable("Firmenstammdaten");
+			Table table;
 			try {
-				record = table.getRecordByNumber(0);
-			} catch (UserDatabaseException e) {
-				if (e.getMessage().equals(
-						"angegebener Datensatz existiert nicht")) {
+				table = db.getTable("Firmenstammdaten");
+				try {
+					record = table.getRecordByNumber(0);
+				} catch (RecordNotExistsDBException e) {
 					record = table.getEmptyRecord();
 					record.setField("Firma", "Finanzbuchhaltung");
 					record.setField("PeriodeAktuell", "01");
 					record.setField("JahrAktuell", "2005");
 					return setFirmenstammdaten(record);
-				} else {
-					throw new SystemDatabaseException("unbekannte Exception",
-							e, log);
 				}
+			} catch (SQL_getTableDBException e1) {
+				throw new ImpossibleException(e1, log);
+			} catch (IllegalDefaultValueDBException e1) {
+				throw new ImpossibleException(e1, log);
+			} catch (ParseErrorDBException e1) {
+				throw new ImpossibleException(e1, log);
 			}
 		}
 		return record;
@@ -190,12 +234,15 @@ public class Buchhaltung extends AbstractObject {
 
 	/**
 	 * ergibt den aktuellen Firmennamen
-	 * 
-	 * @throws DatabaseException 
-	 *
+	 * @throws NotInitializedException 
+	 * @throws SQL_DBException 
 	 */
-	public String getFirma() throws DatabaseException {
-		return getFirmenstammdaten().getField("Firma").format();
+	public String getFirma() throws SQL_DBException, NotInitializedException {
+		try {
+			return getFirmenstammdaten().getField("Firma").format();
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
@@ -206,12 +253,20 @@ public class Buchhaltung extends AbstractObject {
 	 * Dennoch ist es möglich, auch in andere Jahre zu buchen, wenn man dies
 	 * bei der Buchung angibt.
 	 * </p>
+	 * @throws NotInitializedException 
+	 * @throws SQL_DBException 
 	 */
-	public String getJahrAktuell() throws DatabaseException {
-		return getFirmenstammdaten().getField("JahrAktuell").format();
+	public String getJahrAktuell() throws SQL_DBException,
+			NotInitializedException {
+		try {
+			return getFirmenstammdaten().getField("JahrAktuell").format();
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
-	public void setJahrAktuell(String jahr) throws DatabaseException {
+	public void setJahrAktuell(String jahr) throws DatabaseException,
+			NotInitializedException {
 		Record stamm = getFirmenstammdaten();
 		stamm.setField("JahrAktuell", jahr);
 		setFirmenstammdaten(stamm);
@@ -232,12 +287,20 @@ public class Buchhaltung extends AbstractObject {
 	 * Weicht das Geschäftsjahr vom Kalenderjahr ab, so sollte "01" für die
 	 * erste Periode stehen, nicht für Januar.
 	 * </p>
+	 * @throws NotInitializedException 
+	 * @throws SQL_DBException 
 	 */
-	public String getPeriodeAktuell() throws DatabaseException {
-		return getFirmenstammdaten().getField("PeriodeAktuell").format();
+	public String getPeriodeAktuell() throws SQL_DBException,
+			NotInitializedException {
+		try {
+			return getFirmenstammdaten().getField("PeriodeAktuell").format();
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
-	public void setPeriodeAktuell(String jahr) throws DatabaseException {
+	public void setPeriodeAktuell(String jahr) throws NotInitializedException,
+			SQL_DBException, ParseErrorDBException {
 		Record stamm = getFirmenstammdaten();
 		stamm.setField("PeriodeAktuell", jahr);
 		setFirmenstammdaten(stamm);
@@ -248,10 +311,17 @@ public class Buchhaltung extends AbstractObject {
 	 * initialisiert werden).
 	 * 
 	 * @return Konto
-	 * @throws DatabaseException
 	 */
-	public Konto createKonto() throws DatabaseException {
-		return new Konto(db.getTable("Konten"));
+	public Konto createKonto() {
+		try {
+			return new Konto(db.getTable("Konten"));
+		} catch (SQL_getTableDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (IllegalDefaultValueDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
@@ -260,10 +330,20 @@ public class Buchhaltung extends AbstractObject {
 	 * 
 	 * @param ktonr
 	 * @return Konto
-	 * @throws DatabaseException
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
 	 */
-	public Konto getKonto(String ktonr) throws DatabaseException {
-		return new Konto(db.getTable("Konten"), ktonr);
+	public Konto getKonto(String ktonr) throws SQL_DBException,
+			RecordNotExistsDBException {
+		try {
+			return new Konto(db.getTable("Konten"), ktonr);
+		} catch (SQL_getTableDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (IllegalDefaultValueDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
@@ -271,29 +351,59 @@ public class Buchhaltung extends AbstractObject {
 	 * Datenbank erzeugt, muss also nicht noch mit write() bestätigt werden.
 	 * 
 	 * @return Journal
-	 * @throws DatabaseException
+	 * @throws NotInitializedException 
+	 * @throws SQL_DBException 
 	 */
-	public Journal createJournal() throws DatabaseException {
-		return new Journal(db.getTable("Journale"), getJahrAktuell(),
-				getPeriodeAktuell());
+	public Journal createJournal() throws SQL_DBException,
+			NotInitializedException {
+		try {
+			return new Journal(db.getTable("Journale"), getJahrAktuell(),
+					getPeriodeAktuell());
+		} catch (SQL_getTableDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (IllegalDefaultValueDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
-	public Journal getJournal(Long nummer) throws DatabaseException {
-		return new Journal(db.getTable("Journale"), nummer);
+	public Journal getJournal(Long nummer) throws SQL_DBException,
+			RecordNotExistsDBException {
+		try {
+			return new Journal(db.getTable("Journale"), nummer);
+		} catch (SQL_getTableDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (IllegalDefaultValueDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
 	 * Ergibt eine Liste, die alle Journale der Buchhaltung enthält.
-	 * @throws DatabaseException 
+	 * @throws SQL_DBException 
 	 */
-	public List getAlleJournale() throws DatabaseException {
+	public List getAlleJournale() throws SQL_DBException {
 		List journale = new ArrayList();
-		Table table = db.getTable("Journale");
-		List records = table.getRecordsFromQuery(null, null, true);
-		for (Iterator iter = records.iterator(); iter.hasNext();) {
-			Record rec = (Record) iter.next();
-			journale
-					.add(new Journal(table, (Long) rec.getPrimaryKey().getValue()));
+		Table table;
+		try {
+			table = db.getTable("Journale");
+			List records = table.getRecordsFromQuery(null, null, true);
+			for (Iterator iter = records.iterator(); iter.hasNext();) {
+				Record rec = (Record) iter.next();
+				journale.add(new Journal(table, (Long) rec.getPrimaryKey()
+						.getValue()));
+			}
+		} catch (IllegalDefaultValueDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (RecordNotExistsDBException e) {
+			throw new ImpossibleException(e, log);
 		}
 		return journale;
 	}
@@ -302,25 +412,37 @@ public class Buchhaltung extends AbstractObject {
 	 * Ergibt eine Liste, die nur die nicht-abgeschlossenen Journale der 
 	 * Buchhaltung enthält. Die Liste ist nach Journalnummern sortiert.
 	 * Nicht abgeschlossene Journale werden auch Primanota genannt.
-	 * 
-	 * @throws DatabaseException 
+	 * @throws SQL_DBException 
 	 */
-	public List getOffeneJournale() throws DatabaseException {
+	public List getOffeneJournale() throws SQL_DBException {
 		List journale = new ArrayList();
-		Table table = db.getTable("Journale");
-		List records = table.getRecordsFromQuery(table.new QueryCondition(
-				"absummiert", QueryCondition.EQUAL, new Boolean(false)), "Journalnummer",
-				true);
-		for (Iterator iter = records.iterator(); iter.hasNext();) {
-			Record rec = (Record) iter.next();
-			journale
-					.add(new Journal(table, (Long) rec.getPrimaryKey().getValue()));
+		try {
+			Table table = db.getTable("Journale");
+			List records = table.getRecordsFromQuery(table.new QueryCondition(
+					"absummiert", QueryCondition.EQUAL, new Boolean(false)),
+					"Journalnummer", true);
+			for (Iterator iter = records.iterator(); iter.hasNext();) {
+				Record rec = (Record) iter.next();
+				journale.add(new Journal(table, (Long) rec.getPrimaryKey()
+						.getValue()));
+			}
+		} catch (IllegalDefaultValueDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (RecordNotExistsDBException e) {
+			throw new ImpossibleException(e, log);
 		}
 		return journale;
 	}
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.9  2005/08/21 17:08:55  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.8  2005/08/18 17:04:24  tbayen
  * Interface GenericObject für alle Business-Objekte eingeführt
  * durch Ableitung von AbstractObject

@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: BuchungTest.java,v 1.6 2005/08/18 14:14:04 tbayen Exp $
+ * $Id: BuchungTest.java,v 1.7 2005/08/21 17:08:55 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -12,6 +12,7 @@ import de.bayen.fibu.Buchung;
 import de.bayen.fibu.Buchungszeile;
 import de.bayen.fibu.Journal;
 import de.bayen.fibu.Konto;
+import de.bayen.fibu.exceptions.FiBuException;
 
 public class BuchungTest extends TestCase {
 	private Buchhaltung bh;
@@ -37,7 +38,7 @@ public class BuchungTest extends TestCase {
 		super.tearDown();
 	}
 
-	public void testBuchung() throws DatabaseException {
+	public void testBuchung() throws DatabaseException, FiBuException {
 		Journal j = bh.createJournal();
 		Buchung buch = j.createBuchung();
 		buch.setBelegnummer("10000");
@@ -46,7 +47,7 @@ public class BuchungTest extends TestCase {
 			System.out.println(buch);
 	}
 
-	public void testBuchungszeilen() throws DatabaseException {
+	public void testBuchungszeilen() throws DatabaseException, FiBuException {
 		Journal j = bh.createJournal();
 		assertEquals(0, j.getBuchungen().size());
 		// Vorbereitung: Konto erzeugen
@@ -85,16 +86,19 @@ public class BuchungTest extends TestCase {
 				.getBelegnummer());
 		assertEquals("10002", ((Buchung) j.getBuchungen().get(1))
 				.getBelegnummer());
-		if(TestConfig.print)
-			System.out.println(j+"\n");
+		if (TestConfig.print)
+			System.out.println(j + "\n");
 		// Sind die Buchungen auch auf dem Konto angekommen?
-		assertEquals(3,bh.getKonto("00001").getBuchungszeilen().size());
-		if(TestConfig.print)
-			System.out.println(bh.getKonto("00001")+"\n");
+		assertEquals(3, bh.getKonto("00001").getBuchungszeilen().size());
+		if (TestConfig.print)
+			System.out.println(bh.getKonto("00001") + "\n");
 	}
 }
 /*
  * $Log: BuchungTest.java,v $
+ * Revision 1.7  2005/08/21 17:08:55  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.6  2005/08/18 14:14:04  tbayen
  * diverse Erweiterungen, Konto kennt jetzt auch Buchungen
  *

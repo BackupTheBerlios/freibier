@@ -1,5 +1,5 @@
 /* Erzeugt am 15.08.2005 von tbayen
- * $Id: Journal.java,v 1.9 2005/08/18 17:04:23 tbayen Exp $
+ * $Id: Journal.java,v 1.10 2005/08/21 17:08:54 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -13,8 +13,13 @@ import de.bayen.database.DataObject;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.Table.QueryCondition;
-import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
+import de.bayen.database.exception.SysDBEx.IllegalDefaultValueDBException;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
+import de.bayen.database.exception.SysDBEx.TypeNotSupportedDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
+import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
+import de.bayen.fibu.exceptions.ImpossibleException;
 
 /**
  * Ein Journal entspricht dem Grundbuch der Buchhaltung. Im Grundbuch stehen
@@ -28,7 +33,7 @@ public class Journal extends AbstractObject implements Comparable {
 	private Table table;
 
 	protected Journal(Table table, String jahr, String periode)
-			throws DatabaseException {
+			throws ParseErrorDBException, SQL_DBException {
 		this.table = table;
 		record = table.getEmptyRecord();
 		record.setField("Buchungsjahr", jahr);
@@ -56,39 +61,64 @@ public class Journal extends AbstractObject implements Comparable {
 	 * 
 	 * @param table
 	 * @param nummer
-	 * @throws DatabaseException
+	 * @throws SQL_DBException 
+	 * @throws RecordNotExistsDBException 
 	 */
-	protected Journal(Table table, Long nummer) throws DatabaseException {
+	protected Journal(Table table, Long nummer) throws SQL_DBException,
+			RecordNotExistsDBException {
 		this.table = table;
-		Record rec = table.getRecordByValue("Journalnummer", nummer.toString());
-		record = table.getRecordByPrimaryKey(rec.getPrimaryKey());
+		Record rec;
+		try {
+			rec = table.getRecordByValue("Journalnummer", nummer.toString());
+			record = table.getRecordByPrimaryKey(rec.getPrimaryKey());
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
 	 * Änderungen werden erst hiermit endgültig in die Datenbank
 	 * geschrieben.
-	 * 
-	 * @throws DatabaseException
+	 * @throws SQL_DBException 
 	 */
-	public void write() throws DatabaseException {
-		DataObject id = table.setRecordAndReturnID(record);
-		record = table.getRecordByPrimaryKey(id);
+	public void write() throws SQL_DBException {
+		try {
+			record = table.setRecordAndGetRecord(record);
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
-	public Long getJournalnummer() throws DatabaseException {
+	public Long getJournalnummer() {
 		return (Long) record.getField("Journalnummer").getValue();
 	}
 
-	public String getStartdatum() throws DatabaseException {
-		return record.getField("Startdatum").format();
+	public String getStartdatum() {
+		try {
+			return record.getField("Startdatum").format();
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
-	public String getBuchungsjahr() throws DatabaseException {
-		return record.getField("Buchungsjahr").format();
+	public String getBuchungsjahr() {
+		try {
+			return record.getField("Buchungsjahr").format();
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
-	public String getBuchungsperiode() throws DatabaseException {
-		return record.getField("Buchungsperiode").format();
+	public String getBuchungsperiode() {
+		try {
+			return record.getField("Buchungsperiode").format();
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
@@ -96,10 +126,13 @@ public class Journal extends AbstractObject implements Comparable {
 	 * absummierten Journal kann nicht mehr weitergebucht werden.
 	 * 
 	 * @return boolean
-	 * @throws DatabaseException
 	 */
-	public boolean isAbsummiert() throws DatabaseException {
-		return record.getField("absummiert").format().equals("");
+	public boolean isAbsummiert() {
+		try {
+			return record.getField("absummiert").format().equals("");
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
@@ -107,40 +140,68 @@ public class Journal extends AbstractObject implements Comparable {
 	 * nicht mehr gebucht werden. Dieser Vorgang kann nicht mehr
 	 * rückgängig gemacht werden. Der Vorgang wird direkt in der Datenbank
 	 * vermerkt, braucht also nicht mehr mit write() bestätigt zu werden.
+	 * @throws SQL_DBException 
 	 */
-	public void absummieren() throws DatabaseException {
-		record.setField("absummiert", new Boolean(true));
+	public void absummieren() throws SQL_DBException {
+		try {
+			record.setField("absummiert", new Boolean(true));
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 		write();
 	}
 
 	// Umgang mit Buchungen
 	/**
 	 * Erzeugt eine ganz neue Buchung
-	 * 
-	 * @throws SystemDatabaseException 
+	 * @throws SQL_DBException 
 	 */
-	public Buchung createBuchung() throws DatabaseException {
-		if (isAbsummiert())
+	public Buchung createBuchung() throws SQL_DBException {
+		if (isAbsummiert()) {
 			return null;
-		return new Buchung(table.getDatabase().getTable("Buchungen"), this);
+		} else {
+			try {
+				return new Buchung(table.getDatabase().getTable("Buchungen"),
+						this);
+			} catch (IllegalDefaultValueDBException e) {
+				throw new ImpossibleException(e, log);
+			} catch (ParseErrorDBException e) {
+				throw new ImpossibleException(e, log);
+			}
+		}
 	}
 
 	/**
 	 * Ergibt eine Liste der Buchungen in diesem Journal. Die Liste ist 
 	 * nach Erfassungsdatum sortiert.
-	 * 
-	 * @throws DatabaseException 
+	 * @throws SQL_DBException 
 	 */
-	public List getBuchungen() throws DatabaseException {
+	public List getBuchungen() throws SQL_DBException {
 		List buchungen = new ArrayList();
-		Table table = this.table.getDatabase().getTable("Buchungen");
-		List records = table.getRecordsFromQuery(table.new QueryCondition(
-				"Journal", QueryCondition.EQUAL, getID()),
-				"Erfassungsdatum,id", true);
+		Table table;
+		try {
+			table = this.table.getDatabase().getTable("Buchungen");
+		} catch (IllegalDefaultValueDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
+		List records;
+		try {
+			records = table.getRecordsFromQuery(table.new QueryCondition(
+					"Journal", QueryCondition.EQUAL, getID()),
+					"Erfassungsdatum,id", true);
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 		for (Iterator iter = records.iterator(); iter.hasNext();) {
 			Record rec = (Record) iter.next();
-			buchungen.add(new Buchung(table, (Long) rec.getPrimaryKey()
-					.getValue()));
+			try {
+				buchungen.add(new Buchung(table, (Long) rec.getPrimaryKey()
+						.getValue()));
+			} catch (RecordNotExistsDBException e) {
+				throw new ImpossibleException(e, log);
+			}
 		}
 		return buchungen;
 	}
@@ -192,6 +253,9 @@ public class Journal extends AbstractObject implements Comparable {
 }
 /*
  * $Log: Journal.java,v $
+ * Revision 1.10  2005/08/21 17:08:54  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.9  2005/08/18 17:04:23  tbayen
  * Interface GenericObject für alle Business-Objekte eingeführt
  * durch Ableitung von AbstractObject

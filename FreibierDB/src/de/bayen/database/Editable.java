@@ -1,5 +1,5 @@
 /* Erzeugt am 11.10.2004 von tbayen
- * $Id: Editable.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: Editable.java,v 1.2 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -35,7 +35,7 @@ public interface Editable extends Printable {
 	 * @return String
 	 * @throws DatabaseException
 	 */
-	public abstract String parse(String s) throws DatabaseException;
+	public abstract String parse(String s);
 
 	/**
 	 * Diese Methode überprüft, ob der angegebene String ein gültiger Wert ist,
@@ -60,6 +60,9 @@ public interface Editable extends Printable {
 }
 /*
  * $Log: Editable.java,v $
+ * Revision 1.2  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

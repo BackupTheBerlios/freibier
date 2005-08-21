@@ -1,5 +1,5 @@
 /* Erzeugt am 21.10.2004 von tbayen
- * $Id: TypeDefinitionForeignKey.java,v 1.4 2005/08/14 20:06:21 tbayen Exp $
+ * $Id: TypeDefinitionForeignKey.java,v 1.5 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import de.bayen.database.Database;
 import de.bayen.database.ForeignKey;
-import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
+import de.bayen.database.exception.SysDBEx.IllegalDefaultValueDBException;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
+import de.bayen.database.exception.SysDBEx.SQL_getTableDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 
 /**
  * Definition für einen Wert, der ein Fremdschlüssel ist, d.h. er referenziert
@@ -22,7 +25,7 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 	private Database db;
 
 	public TypeDefinitionForeignKey(TypeDefinition indexType, Database db)
-			throws SystemDatabaseException {
+			throws ParseErrorDBException {
 		super();
 		log.trace("TypeDefinitionForeignKey Constructor");
 		// Die Datenbank merke ich mir, weil man die ggf. braucht, um auf die
@@ -35,13 +38,12 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 		// Default Value setzen:
 		String defaultProp = getProperty("default");
 		if (defaultProp != null) {
-			try {
-				defaultValue = new ForeignKey(indexType.parse(defaultProp),
-						null);
-			} catch (DatabaseException e1) {
-				log.error("Default Foreign Key kann nicht gelesen werden", e1);
-				defaultValue = null;
-			}
+			//			try {
+			defaultValue = new ForeignKey(indexType.parse(defaultProp), null);
+			//			} catch (DatabaseException e1) {
+			//				log.error("Default Foreign Key kann nicht gelesen werden", e1);
+			//				defaultValue = null;
+			//			}
 		} else {
 			List list = new ArrayList();
 			String indexColumn = indexType
@@ -55,7 +57,7 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 			//						indexType.getProperty("foreignkey.table"))
 			//						.getGivenColumns(list, 1);
 			//				if (ersterRecord.size() == 0) {
-			//					throw new SystemDatabaseException(
+			//					throw new SysDBEx(
 			//							"Fremdschlüsseltabelle leer", log);
 			//				}
 			//				Map hash = (Map) ersterRecord.get(0);
@@ -75,11 +77,11 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 		return ForeignKey.class;
 	}
 
-	public String format(Object s) throws DatabaseException {
+	public String format(Object s) throws WrongTypeDBException {
 		return indexType.format(((ForeignKey) s).getKey());
 	}
 
-	public Object parse(String s) throws DatabaseException {
+	public Object parse(String s) throws ParseErrorDBException {
 		return new ForeignKey(indexType.parse(s), null);
 	}
 
@@ -91,20 +93,17 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 		return indexType;
 	}
 
-	public TypeDefinition getReferenceType() {
+	public TypeDefinition getReferenceType() throws SQL_getTableDBException,
+			IllegalDefaultValueDBException, ParseErrorDBException {
 		if (db != null && referenceType == null) {
 			// Ich hole den Referenztyp erst, wenn er benutzt wird. 
 			// Am Anfang hatte ich den bei der Initialisierung geholt, was
 			// aber zu Endlosschleifen führt, wenn z.B. ein Konto auf ein 
 			// anderes Konto verweist.
-			try {
-				referenceType = db
-						.getTable(indexType.getProperty("foreignkey.table"))
-						.getRecordDefinition()
-						.getFieldDef(
-								indexType
-										.getProperty("foreignkey.resultcolumn"));
-			} catch (SystemDatabaseException e) {}
+			referenceType = db.getTable(
+					indexType.getProperty("foreignkey.table"))
+					.getRecordDefinition().getFieldDef(
+							indexType.getProperty("foreignkey.resultcolumn"));
 		}
 		return referenceType;
 	}
@@ -114,8 +113,14 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 	 * Einträge unter dem Namen der Indexspalte und der Resultspalte. Diese
 	 * enthalten die Werte aus der fremden Tabelle. So ergibt sich eine Liste
 	 * aller möglichen Werte für den Fremdschlüssel.
+	 * @throws SQL_DBException 
+	 * @throws IllegalDefaultValueDBException 
+	 * @throws SQL_getTableDBException 
+	 * @throws ParseErrorDBException 
 	 */
-	public List getPossibleValues() throws DatabaseException {
+	public List getPossibleValues() throws SQL_getTableDBException,
+			IllegalDefaultValueDBException, SQL_DBException,
+			ParseErrorDBException {
 		List list = new ArrayList();
 		list.add(getProperty("foreignkey.indexcolumn"));
 		list.add(getProperty("foreignkey.resultcolumn"));
@@ -126,6 +131,9 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.5  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.4  2005/08/14 20:06:21  tbayen
  * Verbesserungen an den ForeignKeys, die sich aus der FiBu ergeben haben
  *

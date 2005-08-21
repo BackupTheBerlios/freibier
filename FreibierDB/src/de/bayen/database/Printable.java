@@ -1,9 +1,10 @@
 /* Erzeugt am 11.10.2004 von tbayen
- * $Id: Printable.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: Printable.java,v 1.2 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database;
 
 import de.bayen.database.exception.DatabaseException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 
 /**
  * Ein "Printable"-Objekt besitzt bestimmte Funktionen, die man benötigt, um es
@@ -23,9 +24,10 @@ public interface Printable {
 	/**
 	 * Diese Methode ergibt eine möglichst für Menschen lesbare String-Version
 	 * des Wertes.
+	 * @throws WrongTypeDBException 
 	 * @throws DatabaseException
 	 */
-	public abstract String format() throws DatabaseException;
+	public abstract String format() throws WrongTypeDBException;
 
 	/**
 	 * Diese Funktion gibt den Typ des Objektes zurück (z.B. 
@@ -45,6 +47,9 @@ public interface Printable {
 }
 /*
  * $Log: Printable.java,v $
+ * Revision 1.2  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

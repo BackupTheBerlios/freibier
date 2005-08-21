@@ -1,5 +1,5 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.7 2005/08/18 17:04:24 tbayen Exp $
+ * $Id: Konto.java,v 1.8 2005/08/21 17:08:55 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -14,7 +14,13 @@ import de.bayen.database.ForeignKey;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.Table.QueryCondition;
-import de.bayen.database.exception.DatabaseException;
+import de.bayen.database.exception.SysDBEx.IllegalDefaultValueDBException;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
+import de.bayen.database.exception.SysDBEx.TypeNotSupportedDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
+import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
+import de.bayen.fibu.exceptions.ImpossibleException;
 
 /**
  * Klasse für ein einzelnes Konto unserer Buchhaltung. Ein Konto kann 
@@ -32,30 +38,48 @@ public class Konto extends AbstractObject implements Comparable {
 	 * 
 	 * @param table
 	 * @param id
-	 * @throws DatabaseException
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
 	 */
-	protected Konto(Table table, Long id) throws DatabaseException {
+	protected Konto(Table table, Long id) throws SQL_DBException,
+			RecordNotExistsDBException {
 		this.table = table;
-		record = table.getRecordByPrimaryKey(id.toString());
+		try {
+			record = table.getRecordByPrimaryKey(id.toString());
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
 	 * Dieser Konstruktor liest das Konto mit der angegebenen buchhalterischen
 	 * Kontonummer aus der Datenbank.
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
 	 */
-	protected Konto(Table table, String ktonr) throws DatabaseException {
+	protected Konto(Table table, String ktonr) throws SQL_DBException,
+			RecordNotExistsDBException {
 		this.table = table;
-		Record rec = table.getRecordByValue("Kontonummer", ktonr);
-		record = table.getRecordByPrimaryKey(rec.getPrimaryKey());
+		// TODO ist das nicht blöde?
+		Record rec;
+		try {
+			rec = table.getRecordByValue("Kontonummer", ktonr);
+			record = table.getRecordByPrimaryKey(rec.getPrimaryKey());
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
 	 * Dieser Konstruktor erzeugt ein neues Konto
 	 * 
 	 * @param table
-	 * @throws DatabaseException 
 	 */
-	protected Konto(Table table) throws DatabaseException {
+	protected Konto(Table table) {
 		this.table = table;
 		record = table.getEmptyRecord();
 		//		record.setField("MwSt","1");
@@ -68,135 +92,221 @@ public class Konto extends AbstractObject implements Comparable {
 	 * (Dies gilt nicht für Buchungen, die ja in eigenen Tabellen verwaltet 
 	 * werden.)
 	 * </p>
-	 * 
-	 * @throws DatabaseException
+	 * @throws SQL_DBException 
 	 */
-	public void write() throws DatabaseException {
-		DataObject id = table.setRecordAndReturnID(record);
-		record = table.getRecordByPrimaryKey(id);
+	public void write() throws SQL_DBException {
+		try {
+			record = table.setRecordAndGetRecord(record);
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
-	public Long getID() throws DatabaseException {
+	public Long getID() {
 		return (Long) record.getField("id").getValue();
 	}
 
-	public String getKontonummer() throws DatabaseException {
-		return record.getFormatted("Kontonummer");
+	public String getKontonummer() {
+		try {
+			return record.getFormatted("Kontonummer");
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
-	public String getBezeichnung() throws DatabaseException {
-		return record.getFormatted("Bezeichnung");
+	public String getBezeichnung() {
+		try {
+			return record.getFormatted("Bezeichnung");
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
 	 * ergibt den Mehrwertsteuersatz als String, also z.B. "16.0"
 	 * @return MwSt-Satz
-	 * @throws DatabaseException
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
 	 */
-	public String getMwSt() throws DatabaseException {
+	public String getMwSt() throws SQL_DBException, RecordNotExistsDBException {
 		DataObject field = record.getField("MwSt");
-		return field.getForeignResultColumn(table.getDatabase());
+		try {
+			return field.getForeignResultColumn(table.getDatabase());
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
 	 * ergibt die buchhalterische Kontonummer des Oberkontos (nicht die ID).
 	 * @return String, der die buchhalterische Kontonummer enthält
-	 * @throws DatabaseException
+	 * @throws SQL_DBException 
 	 */
-	public String getOberkontoNummer() throws DatabaseException {
+	public String getOberkontoNummer() throws SQL_DBException {
 		DataObject field = record.getField("Oberkonto");
-		return field.getForeignResultColumn(table.getDatabase());
+		try {
+			return field.getForeignResultColumn(table.getDatabase());
+		} catch (RecordNotExistsDBException e) {
+			return null;
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
-	public Konto getOberkonto() throws DatabaseException {
+	public Konto getOberkonto() throws SQL_DBException {
 		Object field = record.getField("Oberkonto").getValue();
 		Long ktoid = ((Long) ((ForeignKey) field).getKey());
 		if (ktoid == null)
 			return null;
-		return new Konto(table, ktoid);
+		try {
+			return new Konto(table, ktoid);
+		} catch (RecordNotExistsDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
-	public int getGewicht() throws DatabaseException {
-		return Integer.parseInt(record.getFormatted("Gewicht"));
+	public int getGewicht() {
+		try {
+			return Integer.parseInt(record.getFormatted("Gewicht"));
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (NumberFormatException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
-	public void setKontonummer(String ktonr) throws DatabaseException {
+	public void setKontonummer(String ktonr) throws ParseErrorDBException {
 		record.setField("Kontonummer", ktonr);
 	}
 
-	public void setBezeichnung(String bezeichnung) throws DatabaseException {
-		record.setField("Bezeichnung", bezeichnung);
+	public void setBezeichnung(String bezeichnung) {
+		try {
+			record.setField("Bezeichnung", bezeichnung);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
 	 * Hier wird ein ID-Wert als Parameter angegeben (kein MwSt-Satz oder sowas).
 	 * @param mwst
-	 * @throws DatabaseException
 	 */
-	public void setMwSt(Long mwst) throws DatabaseException {
-		record.setField("MwSt", mwst);
+	public void setMwSt(Long mwst) {
+		try {
+			record.setField("MwSt", mwst);
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
 	 * Hier wird ein ID-Wert als Parameter angegeben (keine Kontonummer).
-	 * 
-	 * @throws DatabaseException
 	 */
-	public void setOberkonto(Long kto) throws DatabaseException {
-		record.setField("Oberkonto", kto);
+	public void setOberkonto(Long kto) {
+		try {
+			record.setField("Oberkonto", kto);
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
 	 * Hier wird ein Konto-Objekt angegeben, um das Oberkonto festzulegen.
 	 */
-	public void setOberkonto(Konto kto) throws DatabaseException {
-		record.setField("Oberkonto", kto.getID());
+	public void setOberkonto(Konto kto) {
+		try {
+			record.setField("Oberkonto", kto.getID());
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
 	 * Das Oberkonto wird anhand der buchhalterischen Kontonummer gesetzt.
-	 * 
-	 * @throws DatabaseException
+	 * @throws ParseErrorDBException 
+	 * @throws RecordNotExistsDBException 
+	 * @throws SQL_DBException 
 	 */
-	public void setOberkontoNummer(String ktonr) throws DatabaseException {
-		Record rec = table.getRecordByValue("Kontonummer", ktonr);
+	public void setOberkontoNummer(String ktonr) throws SQL_DBException,
+			RecordNotExistsDBException, ParseErrorDBException {
+		Record rec;
+		try {
+			rec = table.getRecordByValue("Kontonummer", ktonr);
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 		record.setField("Oberkonto", rec.getPrimaryKey());
 	}
 
-	public void setGewicht(int gew) throws DatabaseException {
-		record.setField("Gewicht", String.valueOf(gew));
+	public void setGewicht(int gew) {
+		try {
+			record.setField("Gewicht", String.valueOf(gew));
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	/**
 	 * Ergibt eine Liste mit Konto-Objekten. Die aufgelisteten Konten sind die,
 	 * die dieses Konto als Oberkonto angegeben haben.
-	 * @throws DatabaseException 
-	 *
+	 * @throws SQL_DBException 
 	 */
-	public List getUnterkonten() throws DatabaseException {
+	public List getUnterkonten() throws SQL_DBException {
 		List konten = new ArrayList();
-		List records = table.getRecordsFromQuery(table.new QueryCondition(
-				"Oberkonto", QueryCondition.EQUAL, getID()), null, true);
+		List records;
+		try {
+			records = table.getRecordsFromQuery(table.new QueryCondition(
+					"Oberkonto", QueryCondition.EQUAL, getID()), null, true);
+		} catch (TypeNotSupportedDBException e1) {
+			throw new ImpossibleException(e1, log);
+		}
 		for (Iterator iter = records.iterator(); iter.hasNext();) {
 			Record rec = (Record) iter.next();
-			konten.add(new Konto(table, (Long) rec.getPrimaryKey().getValue()));
+			try {
+				konten.add(new Konto(table, (Long) rec.getPrimaryKey()
+						.getValue()));
+			} catch (RecordNotExistsDBException e) {
+				throw new ImpossibleException(e, log);
+			}
 		}
 		return konten;
 	}
 
 	/**
 	 * Ergibt alle Buchungszeilen auf diesem Konto.
-	 * @throws DatabaseException 
+	 * @throws SQL_DBException 
 	 */
-	public List getBuchungszeilen() throws DatabaseException {
+	public List getBuchungszeilen() throws SQL_DBException {
 		List zeilen = new ArrayList();
-		Table table = this.table.getDatabase().getTable("Buchungszeilen");
-		List records = table.getRecordsFromQuery(table.new QueryCondition(
-				"Konto", QueryCondition.EQUAL, getID()), null, true);
+		Table table;
+		try {
+			table = this.table.getDatabase().getTable("Buchungszeilen");
+		} catch (IllegalDefaultValueDBException e1) {
+			throw new ImpossibleException(e1, log);
+		} catch (ParseErrorDBException e1) {
+			throw new ImpossibleException(e1, log);
+		}
+		List records;
+		try {
+			records = table.getRecordsFromQuery(table.new QueryCondition(
+					"Konto", QueryCondition.EQUAL, getID()), null, true);
+		} catch (TypeNotSupportedDBException e1) {
+			throw new ImpossibleException(e1, log);
+		}
 		for (Iterator iter = records.iterator(); iter.hasNext();) {
 			Record zeile = (Record) iter.next();
-			zeilen.add(new Buchungszeile(table, (Long) zeile.getPrimaryKey()
-					.getValue()));
+			try {
+				zeilen.add(new Buchungszeile(table, (Long) zeile
+						.getPrimaryKey().getValue()));
+			} catch (RecordNotExistsDBException e) {
+				throw new ImpossibleException(e, log);
+			}
 		}
 		// Besser wäre, die Sortierung dem SQL-Server zu überlassen, aber bei
 		// dieser Datenstruktur ist das mit FreibierDB nicht so einfach. 
@@ -214,7 +324,7 @@ public class Konto extends AbstractObject implements Comparable {
 	 * @return -1: this<o; 1: this>o; 0:this=o
 	 * @throws Exception 
 	 */
-	public int compareTo(Object o){
+	public int compareTo(Object o) {
 		try {
 			Konto konto = (Konto) o;
 			int cmp = getKontonummer().compareTo(konto.getKontonummer());
@@ -251,6 +361,9 @@ public class Konto extends AbstractObject implements Comparable {
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.8  2005/08/21 17:08:55  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.7  2005/08/18 17:04:24  tbayen
  * Interface GenericObject für alle Business-Objekte eingeführt
  * durch Ableitung von AbstractObject

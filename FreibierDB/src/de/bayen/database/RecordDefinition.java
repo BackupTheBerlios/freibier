@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: RecordDefinition.java,v 1.7 2005/08/14 22:34:19 tbayen Exp $
+ * $Id: RecordDefinition.java,v 1.8 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -11,7 +11,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
-import de.bayen.database.exception.SystemDatabaseException;
+import de.bayen.database.exception.DBRuntimeException;
 import de.bayen.database.typedefinition.TypeDefinition;
 import de.bayen.database.typedefinition.TypeDefinitionForeignKey;
 
@@ -58,8 +58,7 @@ public class RecordDefinition {
 		return columnslist;
 	}
 
-	public TypeDefinition getFieldDef(String name)
-			throws SystemDatabaseException {
+	public TypeDefinition getFieldDef(String name) {
 		if (!columnshash.containsKey(name)) {
 			Perl5Util re = new Perl5Util();
 			if (re.match("/^[[:upper:]]+$/", name)) {
@@ -71,7 +70,7 @@ public class RecordDefinition {
 			}
 		}
 		if (!columnshash.containsKey(name)) {
-			throw new SystemDatabaseException(
+			throw new DBRuntimeException.IllegalFieldNameException(
 					"Angefordertes Feld existiert nicht: " + name + "("
 							+ columnshash.keySet().toString() + ")", log);
 		}
@@ -82,14 +81,14 @@ public class RecordDefinition {
 		return (TypeDefinition) columnslist.get(column);
 	}
 
-	public int fieldName2Int(String name) throws SystemDatabaseException {
+	public int fieldName2Int(String name) {
 		for (int i = 0; i < columnslist.size(); i++) {
 			if (((TypeDefinition) (columnslist.get(i))).getName().equals(name)) {
 				return i;
 			}
 		}
-		throw new SystemDatabaseException("Datensatz.get(): Feld '" + name
-				+ "' nicht vorhanden.", log);
+		throw new DBRuntimeException.IllegalFieldNameException(
+				"Datensatz.get(): Feld '" + name + "' nicht vorhanden.", log);
 	}
 
 	public Record getEmptyRecord() {
@@ -161,6 +160,9 @@ public class RecordDefinition {
 }
 /*
  * $Log: RecordDefinition.java,v $
+ * Revision 1.8  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.7  2005/08/14 22:34:19  tbayen
  * Foreign Keys können jetzt auch NULL sein
  *

@@ -1,0 +1,22 @@
+Dieses Verzeichnis enthält die Exception-Hierarchie der Datenbank-Klassen.
+
+
+Projekt: Umbau von bisher 2 verschiedenen Exceptions auf eine Hierarchie
+
+Suche der vorhandenen Exceptions:
+
+Ausgabe aller Dateien, die potentiell Exceptions erzeugen könnten:
+find de -name '*.java' -exec echo bla: {} \;
+
+Ausgabe aller Exceptions in einer Datei:
+perl -e 
+  '$file=@ARGV[0]; undef $/; $_=<>; 
+   print join"!\n",map {s/\s+/ /sg;"$file: $_"} /(new\s+\w*Exception(?:.*?);)/sg' 
+  de/bayen/database/Database.java
+
+zusammen:
+find de -name '*.java' -exec perl -e '$file=@ARGV[0]; undef $/; $_=<>; print join"!\n",map {s/\s+/ /sg;"$file: $_"} /(new\s+\w*Exception(?:.*?);)/sg' {} \;
+
+
+aktueller und besser:
+find de -name '*.java' -exec perl -e '$file=@ARGV[0]; undef $/; $_=<>; print map {s/\s+/ /sg;"$file: $_\n"} /(new\s+\w*(?:User|Sys)DBEx\s*\((?:.*?);)/sg' {} \;

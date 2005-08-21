@@ -1,13 +1,14 @@
 /* Erzeugt am 14.10.2004 von phormanns
- * $Id: TypeDefinitionDecimal.java,v 1.3 2005/08/16 12:21:06 tbayen Exp $
+ * $Id: TypeDefinitionDecimal.java,v 1.4 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
 import java.math.BigDecimal;
 import java.util.Map;
 import org.apache.oro.text.perl.Perl5Util;
-import de.bayen.database.exception.SystemDatabaseException;
-import de.bayen.database.exception.UserDatabaseException;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 
 /**
  * @author tbayen
@@ -16,7 +17,6 @@ import de.bayen.database.exception.UserDatabaseException;
  */
 public class TypeDefinitionDecimal extends TypeDefinitionNumber {
 	//private NumberFormat numFormat = new DecimalFormat("0.00");
-
 	public TypeDefinitionDecimal() {
 		super();
 		defaultValue = BigDecimal.valueOf(0);
@@ -35,12 +35,13 @@ public class TypeDefinitionDecimal extends TypeDefinitionNumber {
 		//}
 	}
 
-	public String format(Object d) throws SystemDatabaseException {
+	public String format(Object d) throws WrongTypeDBException {
 		if (d != null) {
 			if (d instanceof Number) {
 				return d.toString();
 			} else {
-				throw new SystemDatabaseException("Number-Objekt erwartet", log);
+				throw new SysDBEx.WrongTypeDBException(
+						"Number-Objekt erwartet", log);
 			}
 		} else {
 			return "0";
@@ -49,14 +50,15 @@ public class TypeDefinitionDecimal extends TypeDefinitionNumber {
 
 	static final Perl5Util regex = new Perl5Util();
 
-	public Object parse(String s) throws UserDatabaseException {
+	public Object parse(String s) throws ParseErrorDBException {
 		if (s != null && regex.match("/^(\\d+)(\\.|,)(\\d+)$/", s)) {
 			s = regex.group(1) + "." + regex.group(3);
 		}
 		try {
 			return new BigDecimal(s);
 		} catch (NumberFormatException e) {
-			throw new UserDatabaseException("Fehler im Zahlenformat: " + s, log);
+			throw new SysDBEx.ParseErrorDBException("Fehler im Zahlenformat: "
+					+ s, log);
 		}
 	}
 
@@ -74,6 +76,9 @@ public class TypeDefinitionDecimal extends TypeDefinitionNumber {
 }
 /*
  * $Log: TypeDefinitionDecimal.java,v $
+ * Revision 1.4  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.3  2005/08/16 12:21:06  tbayen
  * kleinere Ergänzungen und Bugfixes bei der Arbeit an der FiBu
  *

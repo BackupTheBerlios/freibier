@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Record.java,v 1.9 2005/08/16 12:21:06 tbayen Exp $
+ * $Id: Record.java,v 1.10 2005/08/21 17:06:59 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -8,8 +8,9 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
-import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 import de.bayen.database.typedefinition.BLOB;
 import de.bayen.database.typedefinition.TypeDefinition;
 import de.bayen.database.typedefinition.TypeDefinitionBLOB;
@@ -70,7 +71,7 @@ public class Record {
 		}
 	}
 
-	public DataObject getField(String name) throws DatabaseException {
+	public DataObject getField(String name) {
 		Object data = daten.get(name);
 		if (data == null) {
 			Perl5Util re = new Perl5Util();
@@ -86,11 +87,11 @@ public class Record {
 		return new DataObject(data, def.getFieldDef(name));
 	}
 
-	public String getFormatted(String name) throws DatabaseException {
+	public String getFormatted(String name) throws WrongTypeDBException {
 		return getField(name).format();
 	}
 
-	public DataObject getField(int col) throws DatabaseException {
+	public DataObject getField(int col) {
 		TypeDefinition typdef = def.getFieldDef(col);
 		return new DataObject(daten.get(typdef.getName()), typdef);
 	}
@@ -99,9 +100,8 @@ public class Record {
 	 * Besorgt den Wert des Primärschlüssels dieses Records.
 	 * 
 	 * @return schlüsselwert
-	 * @throws DatabaseException
 	 */
-	public DataObject getPrimaryKey() throws DatabaseException {
+	public DataObject getPrimaryKey() {
 		return getField(def.getPrimaryKey());
 	}
 
@@ -113,10 +113,8 @@ public class Record {
 	 * 
 	 * @param name
 	 * @param value
-	 * @throws DatabaseException
 	 */
-	public void setField(String name, DataObject value)
-			throws DatabaseException {
+	public void setField(String name, DataObject value) {
 		if (def.getFieldDef(name).getJavaType().equals(ForeignKey.class)
 				&& (!value.getValue().getClass().equals(ForeignKey.class))) {
 			daten.put(name, new ForeignKey(value.getValue(), null));
@@ -125,7 +123,7 @@ public class Record {
 		}
 	}
 
-	public void setField(int col, DataObject value) throws DatabaseException {
+	public void setField(int col, DataObject value) {
 		TypeDefinition typdef = def.getFieldDef(col);
 		daten.put(typdef.getName(), value.getValue());
 	}
@@ -136,13 +134,14 @@ public class Record {
 	 * 
 	 * @param name
 	 * @param value
-	 * @throws SystemDatabaseException
+	 * @throws ParseErrorDBException 
+	 * @throws SysDBEx
 	 */
-	public void setField(String name, String value) throws DatabaseException {
+	public void setField(String name, String value) throws ParseErrorDBException {
 		daten.put(name, def.getFieldDef(name).parse(value));
 	}
 
-	public void setField(int col, String value) throws DatabaseException {
+	public void setField(int col, String value) throws ParseErrorDBException {
 		TypeDefinition typdef = def.getFieldDef(col);
 		daten.put(typdef.getName(), typdef.parse(value));
 	}
@@ -151,19 +150,20 @@ public class Record {
 	 * Hiermit ist es möglich, in ein ForeignKey-Feld direkt einen Record
 	 * als Wert einzusetzen.
 	 */
-	public void setField(String name, Record value) throws DatabaseException {
+	public void setField(String name, Record value) {
 		daten.put(name, value.getPrimaryKey().getValue());
 	}
 
-	public void setField(int col, Record value) throws DatabaseException {
+	public void setField(int col, Record value) {
 		setField(def.getFieldDef(col).getName(), value);
 	}
 
 	/**
 	 * Hiermit ist es möglich, direkt ein Datenobjekt in ein Feld eines
 	 * Records zu setzen.
+	 * @throws WrongTypeDBException 
 	 */
-	public void setField(String name, Object value) throws DatabaseException {
+	public void setField(String name, Object value) throws WrongTypeDBException {
 		if (def.getFieldDef(name).getClass().equals(
 				TypeDefinitionForeignKey.class)) {
 			// Wer ein Objekt übergibt (also in dieser Methode hier landet),
@@ -172,14 +172,14 @@ public class Record {
 			value = new ForeignKey(value, null);
 		}
 		if (!def.getFieldDef(name).getJavaType().isInstance(value)) {
-			throw new SystemDatabaseException("Objekt '" + value
+			throw new SysDBEx.WrongTypeDBException("Objekt '" + value
 					+ "' ist nicht vom richtigen Typ '"
 					+ def.getFieldDef(name).getJavaType() + "'", log);
 		}
 		daten.put(name, value);
 	}
 
-	public void setField(int col, Object value) throws DatabaseException {
+	public void setField(int col, Object value) throws WrongTypeDBException {
 		setField(def.getFieldDef(col).getName(), value);
 	}
 
@@ -187,13 +187,15 @@ public class Record {
 		return def;
 	}
 
-	public TypeDefinition getFieldDef(String feldname)
-			throws SystemDatabaseException {
+	public TypeDefinition getFieldDef(String feldname) {
 		return def.getFieldDef(feldname);
 	}
 }
 /*
  * $Log: Record.java,v $
+ * Revision 1.10  2005/08/21 17:06:59  tbayen
+ * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  * Revision 1.9  2005/08/16 12:21:06  tbayen
  * kleinere Ergänzungen und Bugfixes bei der Arbeit an der FiBu
  *

@@ -1,4 +1,4 @@
-//  $Id: DatabaseTest.java,v 1.4 2005/08/14 22:34:19 tbayen Exp $
+//  $Id: DatabaseTest.java,v 1.5 2005/08/21 17:06:59 tbayen Exp $
 package de.bayen.database.test;
 
 import java.util.List;
@@ -6,53 +6,56 @@ import java.util.Map;
 import junit.framework.TestCase;
 import de.bayen.database.Database;
 import de.bayen.database.Table;
+import de.bayen.database.exception.DBRuntimeException;
 import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
+import de.bayen.database.exception.SysDBEx;
 
 public class DatabaseTest extends TestCase {
-    private Database db=null;
+	private Database db = null;
+
 	/*
 	 * @see TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
-        try {
-            db = new Database("test","localhost","test",null);
-            db.wipeOutDatabase();
-            db.executeSqlFile("de/bayen/database/test/test.sql");
-        } catch (DatabaseException e) {
-            fail(e.getMessage());
-        }
+		try {
+			db = new Database("test", "localhost", "test", null);
+			db.wipeOutDatabase();
+			db.executeSqlFile("de/bayen/database/test/test.sql");
+		} catch (DatabaseException e) {
+			fail(e.getMessage());
+		}
 	}
 
 	/*
 	 * @see TestCase#tearDown()
 	 */
 	protected void tearDown() throws Exception {
-	    db.close();
+		db.close();
 	}
 
-	public void testGetTablesList(){
-	    try {
-            List list = db.getTableNamesList();
-            assertEquals(4,list.size());
-        } catch (SystemDatabaseException e) {
-            fail(e.getMessage());
-        }
+	public void testGetTablesList() {
+		try {
+			List list = db.getTableNamesList();
+			assertEquals(4, list.size());
+		} catch (SysDBEx e) {
+			fail(e.getMessage());
+		}
 	}
 
-	public void testGetTable(){
-	    try {
-            Table tab=db.getTable("adressen");
-            assertEquals("adressen",tab.getName());
-        } catch (SystemDatabaseException e) {
-            fail(e.getMessage());
-        }
-	    try {
-            db.getTable("adressen2");
-            fail("Exception erwartet.");
-        } catch (SystemDatabaseException e) {
-            assertEquals("Keine Primärschlüsselspalte definiert",e.getMessage());
-        }
+	public void testGetTable() throws DatabaseException {
+		try {
+			Table tab = db.getTable("adressen");
+			assertEquals("adressen", tab.getName());
+		} catch (SysDBEx e) {
+			fail(e.getMessage());
+		}
+		try {
+			db.getTable("adressen2");
+			fail("Exception erwartet.");
+		} catch (DBRuntimeException.WrongNumberOfPrimaryKeysException e) {
+			assertEquals("Keine Primärschlüsselspalte definiert", e
+					.getMessage());
+		}
 	}
 
 	public void testExecuteSelectSingleRow() {
@@ -63,10 +66,11 @@ public class DatabaseTest extends TestCase {
 			fail("Select geht nicht");
 		}
 	}
-	
+
 	public void testExecuteSelectMultipleRows() {
 		try {
-			List result = db.executeSelectMultipleRows("select * from adressen");
+			List result = db
+					.executeSelectMultipleRows("select * from adressen");
 			assertEquals(2, result.size());
 			Map record = (Map) result.get(1);
 			assertEquals("Bayen", record.get("nachname"));
@@ -74,11 +78,12 @@ public class DatabaseTest extends TestCase {
 			fail("Select geht nicht");
 		}
 	}
-	
 }
-
 /*
  *  $Log: DatabaseTest.java,v $
+ *  Revision 1.5  2005/08/21 17:06:59  tbayen
+ *  Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ *
  *  Revision 1.4  2005/08/14 22:34:19  tbayen
  *  Foreign Keys können jetzt auch NULL sein
  *
