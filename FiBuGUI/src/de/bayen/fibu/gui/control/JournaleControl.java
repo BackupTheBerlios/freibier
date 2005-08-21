@@ -1,7 +1,6 @@
-// $Id: JournaleControl.java,v 1.3 2005/08/18 17:45:48 tbayen Exp $
+// $Id: JournaleControl.java,v 1.4 2005/08/21 20:18:56 phormanns Exp $
 package de.bayen.fibu.gui.control;
 
-import java.rmi.RemoteException;
 import java.util.List;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.fibu.Buchhaltung;
@@ -9,12 +8,11 @@ import de.bayen.fibu.FibuService;
 import de.bayen.fibu.Journal;
 import de.bayen.fibu.ObjectWrapper;
 import de.bayen.fibu.gui.FiBuPlugin;
+import de.bayen.fibu.gui.ListIterator;
 import de.bayen.fibu.gui.Settings;
 import de.bayen.fibu.gui.action.JournalBuchenAction;
 import de.bayen.fibu.gui.menu.AlleJournalMenu;
 import de.bayen.fibu.gui.menu.OffenesJournalMenu;
-import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.GenericObject;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -62,7 +60,7 @@ public class JournaleControl extends AbstractControl {
 		} catch (Exception e) {
 			throw new ApplicationException("FiBu-Service nicht gefunden", e);
 		}
-		TablePart journaleTable = new TablePart(new JournaleIterator(service.getFiBu(), alleJournale), new JournalBuchenAction());
+		TablePart journaleTable = new TablePart(new JournaleList(service.getFiBu(), alleJournale), new JournalBuchenAction());
 		journaleTable.addColumn("Journalnummer", "Journalnummer");
 		journaleTable.addColumn("Startdatum", "Startdatum", new DateFormatter(Settings.getDateFormat()));
 		journaleTable.addColumn("Buchungsjahr", "Buchungsjahr");
@@ -70,64 +68,38 @@ public class JournaleControl extends AbstractControl {
 		journaleTable.addColumn("absummiert", "absummiert");
 		return  journaleTable;
 	}
-	
-	private class JournaleIterator implements GenericIterator {
+
+	private class JournaleList extends ListIterator {
 
 		private Buchhaltung fibu;
 		private boolean alleJournale;
-		private List journaleList;
-		private int idx;
 		
-		public JournaleIterator(Buchhaltung fibu, boolean alleJournale) {
-			this.fibu = fibu;
+		public JournaleList(Buchhaltung fibu, boolean alleJournale) {
+			super();
 			this.alleJournale = alleJournale;
-			this.journaleList = null;
-			this.idx = 0;
+			this.fibu = fibu;
 		}
 		
-		public boolean hasNext() throws RemoteException {
-			return idx < size();
-		}
-
-		public GenericObject next() throws RemoteException {
-			GenericObject jrnl = new ObjectWrapper((Journal) journaleList.get(idx));
-			idx++;
-			return jrnl;
-		}
-
-		public GenericObject previous() throws RemoteException {
-			if (idx > 0) idx--;
-			return new ObjectWrapper((Journal) journaleList.get(idx));
-		}
-
-		public void begin() throws RemoteException {
+		public List reloadList() throws ApplicationException {
 			try {
 				if (alleJournale) {
-					journaleList = fibu.getAlleJournale();
+					return fibu.getAlleJournale();
 				} else {
-					journaleList = fibu.getOffeneJournale();
+					return fibu.getOffeneJournale();
 				}
-				idx = 0;
 			} catch (DatabaseException e) {
-				throw new RemoteException("Fehler beim Lesen der Journale", e);
+				throw new ApplicationException("Fehler beim Lesen der Journale", e);
 			}
-		}
-
-		public int size() throws RemoteException {
-			return journaleList != null ? journaleList.size() : 0;
-		}
-
-		public GenericObject contains(GenericObject arg0) throws RemoteException {
-			// TODO Auto-generated method stub
-			return null;
 		}
 		
 	}
-	
 }
 
 /*
  *  $Log: JournaleControl.java,v $
+ *  Revision 1.4  2005/08/21 20:18:56  phormanns
+ *  Erste Widgets für Buchen-Dialog
+ *
  *  Revision 1.3  2005/08/18 17:45:48  tbayen
  *  generischer Wrapper für FiBu-Objekte
  *

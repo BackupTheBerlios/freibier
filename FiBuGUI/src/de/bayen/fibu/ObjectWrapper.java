@@ -1,10 +1,9 @@
 /* Erzeugt am 18.08.2005 von tbayen
- * $Id: ObjectWrapper.java,v 1.2 2005/08/21 17:09:50 tbayen Exp $
+ * $Id: ObjectWrapper.java,v 1.3 2005/08/21 20:18:09 phormanns Exp $
  */
 package de.bayen.fibu;
 
 import java.rmi.RemoteException;
-import de.bayen.database.exception.DBRuntimeException;
 import de.willuhn.datasource.GenericObject;
 
 public class ObjectWrapper implements GenericObject {
@@ -19,52 +18,32 @@ public class ObjectWrapper implements GenericObject {
 		return gobject;
 	}
 	
-	public boolean equals(GenericObject arg) throws RemoteException {
-		try {
-			return gobject.equals(((ObjectWrapper) arg).getGObject());
-		} catch (DBRuntimeException e) {
-			throw new RemoteException("Fehler beim generischen Datenbankzugriff", e);
-		}
+	public boolean equals(GenericObject genObj) throws RemoteException {
+		return gobject.equals(((ObjectWrapper) genObj).getGObject());
 	}
 
-	public Object getAttribute(String arg) throws RemoteException {
-		try {
-			return gobject.getAttribute(arg);
-		} catch (DBRuntimeException e) {
-			throw new RemoteException("Fehler beim generischen Datenbankzugriff", e);
-		}
+	public Object getAttribute(String property) throws RemoteException {
+		return gobject.getAttribute(property);
 	}
 
 	public String[] getAttributeNames() throws RemoteException {
-		try {
-			return gobject.getAttributeNames();
-		} catch (DBRuntimeException e) {
-			throw new RemoteException("Fehler beim generischen Datenbankzugriff", e);
-		}
+		return gobject.getAttributeNames();
 	}
 
 	public String getID() throws RemoteException {
-		try {
-			return gobject.getGOID();
-		} catch (DBRuntimeException e) {
-			throw new RemoteException("Fehler beim generischen Datenbankzugriff", e);
-		}
+		return gobject.getGOID();
 	}
 
 	public String getPrimaryAttribute() throws RemoteException {
-		try {
-			return gobject.getPrimaryAttribute();
-		} catch (DBRuntimeException e) {
-			throw new RemoteException("Fehler beim generischen Datenbankzugriff", e);
-		}
+		return gobject.getPrimaryAttribute();
 	}
 	
 }
 
 /*
  * $Log: ObjectWrapper.java,v $
- * Revision 1.2  2005/08/21 17:09:50  tbayen
- * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+ * Revision 1.3  2005/08/21 20:18:09  phormanns
+ * Erste Widgets für Buchen-Dialog
  *
  * Revision 1.1  2005/08/18 17:45:23  tbayen
  * generischer Wrapper für FiBu-Objekte

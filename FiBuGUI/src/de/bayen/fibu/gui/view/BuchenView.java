@@ -1,4 +1,4 @@
-// $Id: BuchenView.java,v 1.3 2005/08/18 19:06:28 tbayen Exp $
+// $Id: BuchenView.java,v 1.4 2005/08/21 20:18:56 phormanns Exp $
 package de.bayen.fibu.gui.view;
 
 import de.bayen.fibu.gui.control.BuchenControl;
@@ -20,8 +20,8 @@ public class BuchenView extends AbstractView {
 		grpBuchung.addLabelPair("Buchungstext", control.getBuchungstext());
 		grpBuchung.addLabelPair("Erfassungsdatum", control.getErfassungsdatum());
 		grpBuchung.addLabelPair("Valutadatum", control.getValutadatum());
-//		LabelGroup grpZeile1 = new LabelGroup(getParent(), "Konto 1");
-//		grpZeile1.addLabelPair("Konto", control.getKonto1());
+		LabelGroup grpZeile1 = new LabelGroup(getParent(), "Konto 1");
+		grpZeile1.addLabelPair("Konto", control.getKonto1());
 //		grpZeile1.addLabelPair("Betrag", control.getBetrag1());
 //		LabelGroup grpZeile2 = new LabelGroup(getParent(), "Konto 2");
 //		grpZeile2.addLabelPair("Konto", control.getKonto2());
@@ -37,6 +37,9 @@ public class BuchenView extends AbstractView {
 
 /*
  *  $Log: BuchenView.java,v $
+ *  Revision 1.4  2005/08/21 20:18:56  phormanns
+ *  Erste Widgets für Buchen-Dialog
+ *
  *  Revision 1.3  2005/08/18 19:06:28  tbayen
  *  Buchungsfelder in Buchungsdialog
  *

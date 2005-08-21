@@ -1,4 +1,4 @@
-// $Id: FibuService.java,v 1.2 2005/08/21 17:09:50 tbayen Exp $
+// $Id: FibuService.java,v 1.3 2005/08/21 20:18:09 phormanns Exp $
 
 package de.bayen.fibu;
 
@@ -8,13 +8,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Properties;
-
 import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
+import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
+import de.bayen.fibu.exceptions.FiBuException.NotInitializedException;
 import de.bayen.fibu.gui.FiBuPlugin;
 import de.willuhn.datasource.Service;
 import de.willuhn.jameica.plugin.PluginResources;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.util.ApplicationException;
 
 public class FibuService implements Service {
 
@@ -55,7 +58,7 @@ public class FibuService implements Service {
 		try {
 			fibu.close();
 			fibu = null;
-		} catch (SysDBEx e) {
+		} catch (SQL_DBException e) {
 			throw new RemoteException("Fehler beim Schließen der Datenbank", e);
 		}
 	}
@@ -67,13 +70,28 @@ public class FibuService implements Service {
 	public Buchhaltung getFiBu() {
 		return fibu;
 	}
+	
+	public Konto getBilanzkonto() throws ApplicationException {
+		try {
+			String bilanz = fibu.getFirmenstammdaten().getFormatted("Bilanzkonto");
+			return fibu.getKonto(bilanz);
+		} catch (NotInitializedException e) {
+			throw new ApplicationException("Fehler beim Lesen des Bilanzkontos", e);
+		} catch (WrongTypeDBException e) {
+			throw new ApplicationException("Fehler beim Lesen des Bilanzkontos", e);
+		} catch (SQL_DBException e) {
+			throw new ApplicationException("Fehler beim Lesen des Bilanzkontos", e);
+		} catch (RecordNotExistsDBException e) {
+			throw new ApplicationException("Fehler beim Lesen des Bilanzkontos", e);
+		}
+	}
 }
 
 
 //
 // $Log: FibuService.java,v $
-// Revision 1.2  2005/08/21 17:09:50  tbayen
-// Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
+// Revision 1.3  2005/08/21 20:18:09  phormanns
+// Erste Widgets für Buchen-Dialog
 //
 // Revision 1.1  2005/08/17 15:04:56  phormanns
 // Start der Integration mit FiBu-Klassen (Firmenstammdaten)

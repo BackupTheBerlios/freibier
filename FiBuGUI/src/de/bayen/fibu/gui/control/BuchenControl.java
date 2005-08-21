@@ -1,15 +1,20 @@
-// $Id: BuchenControl.java,v 1.4 2005/08/21 17:11:11 tbayen Exp $
+// $Id: BuchenControl.java,v 1.5 2005/08/21 20:18:25 phormanns Exp $
 package de.bayen.fibu.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.List;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import de.bayen.database.exception.DatabaseException;
+import de.bayen.fibu.FibuService;
+import de.bayen.fibu.gui.ListIterator;
 import de.bayen.fibu.gui.Settings;
+import de.bayen.fibu.gui.widget.DateInput;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.dialogs.CalendarDialog;
+import de.willuhn.jameica.gui.dialogs.ListDialog;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
@@ -24,7 +29,8 @@ public class BuchenControl extends AbstractControl {
 	private TextInput belegnummer;
 	private TextInput buchungstext;
 	private LabelInput erfassungsdatum;
-	private DialogInput valutadatum;
+	private DateInput valutadatum;
+	private DialogInput konto1;
 	
 	public BuchenControl(AbstractView view) {
 		super(view);
@@ -82,25 +88,42 @@ public class BuchenControl extends AbstractControl {
 
 	public Input getValutadatum() {
 		if (valutadatum == null) {
-			String today = Settings.getDateFormat().format(new Date());
-			final CalendarDialog dialog = new CalendarDialog(CalendarDialog.POSITION_MOUSE);
-			dialog.setText(today);
-			dialog.addCloseListener(new Listener() {
-
-				public void handleEvent(Event event) {
-					// dialog.setValue(event.data);
-					valutadatum.setText(Settings.getDateFormat().format(event.data));
-				}
-				
-			});
-			valutadatum = new DialogInput(today, dialog);
+			valutadatum = new DateInput(new Date(), Settings.getDateFormat());
 		}
 		return valutadatum;
 	}
 
-	public Input getKonto1() {
-		// TODO Auto-generated method stub
-		return null;
+	public Input getKonto1() throws ApplicationException {
+		if (konto1 == null) {
+			try {
+				final FibuService fibuService = Settings.getFibuService();
+				ListDialog dialog = new ListDialog(new ListIterator() {
+					public List reloadList() throws ApplicationException {
+						try {
+							return fibuService.getBilanzkonto().getUnterkonten();
+						} catch (DatabaseException e) {
+							throw new ApplicationException("Fehler beim Lesen der Konten", e);
+						}
+					}}, ListDialog.POSITION_MOUSE);
+				dialog.setTitle("Bitte ein Konto auswählen");
+				dialog.addColumn("Kto.-Nr.", "Kontonummer");
+				dialog.addColumn("Bezeichnung", "Bezeichnung");
+				dialog.addCloseListener(new Listener() {
+
+					public void handleEvent(Event event) {
+						try {
+							konto1.setText((String) ((GenericObject) event.data).getAttribute("Kontonummer"));
+						} catch (RemoteException e) {
+						}
+					}
+					
+				});
+				konto1 = new DialogInput("0000", dialog);
+			} catch (Exception e) {
+				throw new ApplicationException(e.getMessage());
+			}
+		}
+		return konto1;
 	}
 
 	public Input getBetrag1() {
@@ -131,8 +154,8 @@ public class BuchenControl extends AbstractControl {
 
 /*
  *  $Log: BuchenControl.java,v $
- *  Revision 1.4  2005/08/21 17:11:11  tbayen
- *  kleinere Warnungen beseitigt
+ *  Revision 1.5  2005/08/21 20:18:25  phormanns
+ *  Erste Widgets für Buchen-Dialog
  *
  *  Revision 1.3  2005/08/18 19:06:06  tbayen
  *  Buchungsfelder in Buchungsdialog
