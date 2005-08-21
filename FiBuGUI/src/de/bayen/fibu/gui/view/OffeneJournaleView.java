@@ -1,7 +1,6 @@
-// $Id: OffeneJournaleView.java,v 1.2 2005/08/18 14:08:13 phormanns Exp $
+// $Id: OffeneJournaleView.java,v 1.3 2005/08/21 17:11:11 tbayen Exp $
 package de.bayen.fibu.gui.view;
 
-import de.bayen.fibu.gui.action.JournalBuchenAction;
 import de.bayen.fibu.gui.action.AlleJournaleAction;
 import de.bayen.fibu.gui.control.JournaleControl;
 import de.willuhn.jameica.gui.Action;
@@ -45,6 +44,9 @@ public class OffeneJournaleView extends JournaleView {
 
 /*
  *  $Log: OffeneJournaleView.java,v $
+ *  Revision 1.3  2005/08/21 17:11:11  tbayen
+ *  kleinere Warnungen beseitigt
+ *
  *  Revision 1.2  2005/08/18 14:08:13  phormanns
  *  Buchungsdialog begonnen
  *

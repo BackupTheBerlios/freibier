@@ -1,8 +1,7 @@
-// $Id: BuchenControl.java,v 1.3 2005/08/18 19:06:06 tbayen Exp $
+// $Id: BuchenControl.java,v 1.4 2005/08/21 17:11:11 tbayen Exp $
 package de.bayen.fibu.gui.control;
 
 import java.rmi.RemoteException;
-import java.util.Calendar;
 import java.util.Date;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -132,6 +131,9 @@ public class BuchenControl extends AbstractControl {
 
 /*
  *  $Log: BuchenControl.java,v $
+ *  Revision 1.4  2005/08/21 17:11:11  tbayen
+ *  kleinere Warnungen beseitigt
+ *
  *  Revision 1.3  2005/08/18 19:06:06  tbayen
  *  Buchungsfelder in Buchungsdialog
  *

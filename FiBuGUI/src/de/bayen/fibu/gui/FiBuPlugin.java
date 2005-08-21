@@ -1,4 +1,4 @@
-// $Id: FiBuPlugin.java,v 1.1 2005/08/17 15:04:56 phormanns Exp $
+// $Id: FiBuPlugin.java,v 1.2 2005/08/21 17:11:11 tbayen Exp $
 
 package de.bayen.fibu.gui;
 
@@ -6,9 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.Properties;
-
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.fibu.Buchhaltung;
 import de.willuhn.jameica.plugin.AbstractPlugin;
@@ -57,6 +55,9 @@ public class FiBuPlugin extends AbstractPlugin {
 
 //
 // $Log: FiBuPlugin.java,v $
+// Revision 1.2  2005/08/21 17:11:11  tbayen
+// kleinere Warnungen beseitigt
+//
 // Revision 1.1  2005/08/17 15:04:56  phormanns
 // Start der Integration mit FiBu-Klassen (Firmenstammdaten)
 //
