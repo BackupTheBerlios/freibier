@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchungszeile.java,v 1.8 2005/08/21 17:26:12 tbayen Exp $
+ * $Id: Buchungszeile.java,v 1.9 2005/08/21 17:35:22 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import de.bayen.database.ForeignKey;
-import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.exception.SysDBEx.IllegalDefaultValueDBException;
@@ -214,6 +213,9 @@ public class Buchungszeile extends AbstractObject implements Comparable {
 }
 /*
  * $Log: Buchungszeile.java,v $
+ * Revision 1.9  2005/08/21 17:35:22  tbayen
+ * kleinere Warnung beseitigt
+ *
  * Revision 1.8  2005/08/21 17:26:12  tbayen
  * doppelte Variable in fast allen von AbstractObject abgeleiteten Klassen
  *
