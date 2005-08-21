@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.9 2005/08/21 17:08:55 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.10 2005/08/21 17:26:12 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -41,7 +41,6 @@ import de.bayen.fibu.exceptions.FiBuException.NotInitializedException;
 public class Buchhaltung extends AbstractObject {
 	private static Log log = LogFactory.getLog(Buchhaltung.class);
 	private Database db = null;
-	private Record record = null;
 
 	/**
 	 * Dies main-Methode ist hier nur zu Testzwecken während der Entwicklung
@@ -440,6 +439,9 @@ public class Buchhaltung extends AbstractObject {
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.10  2005/08/21 17:26:12  tbayen
+ * doppelte Variable in fast allen von AbstractObject abgeleiteten Klassen
+ *
  * Revision 1.9  2005/08/21 17:08:55  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *

@@ -1,5 +1,5 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.9 2005/08/21 17:13:38 tbayen Exp $
+ * $Id: Konto.java,v 1.10 2005/08/21 17:26:12 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -31,7 +31,6 @@ import de.bayen.fibu.exceptions.ImpossibleException;
 public class Konto extends AbstractObject implements Comparable {
 	private static Log log = LogFactory.getLog(Konto.class);
 	private Table table;
-	private Record record;
 
 	/**
 	 * Dieser Konstruktor liest ein vorhandenes Konto aus der Tabelle
@@ -358,6 +357,9 @@ public class Konto extends AbstractObject implements Comparable {
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.10  2005/08/21 17:26:12  tbayen
+ * doppelte Variable in fast allen von AbstractObject abgeleiteten Klassen
+ *
  * Revision 1.9  2005/08/21 17:13:38  tbayen
  * Konstruktor weniger umständlich
  *

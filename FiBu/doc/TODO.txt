@@ -1,8 +1,6 @@
 TODO
 
 Fibu:
-- Todo erledigen, das bei der Exceptions-Wandlung aufgefallen ist
-- Peters Mail-Anfrage klären
 - Ausgaben von Test-Klassen nicht per println, sondern per Logging
 - Datenbank-Parameter aus Properties-Datei und aus Config im Home-Verzeichnis
 - Import von Kontenrahmen aus GnuCash
@@ -20,6 +18,8 @@ später:
 
 
 Changes:
+- Todo erledigen, das bei der Exceptions-Wandlung aufgefallen ist
+- Peters Mail-Anfrage klären
 - FiBuGUI an Exceptions anpassen
 - Dokumentation der Exceptions im Paket
 - FiBu an Exceptions anpassen

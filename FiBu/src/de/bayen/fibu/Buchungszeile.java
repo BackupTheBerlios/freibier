@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchungszeile.java,v 1.7 2005/08/21 17:08:55 tbayen Exp $
+ * $Id: Buchungszeile.java,v 1.8 2005/08/21 17:26:12 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -30,7 +30,6 @@ import de.bayen.fibu.exceptions.ImpossibleException;
 public class Buchungszeile extends AbstractObject implements Comparable {
 	private static Log log = LogFactory.getLog(Buchungszeile.class);
 	private Table table;
-	private Record record;
 	private Buchung buchung;
 
 	/**
@@ -215,6 +214,9 @@ public class Buchungszeile extends AbstractObject implements Comparable {
 }
 /*
  * $Log: Buchungszeile.java,v $
+ * Revision 1.8  2005/08/21 17:26:12  tbayen
+ * doppelte Variable in fast allen von AbstractObject abgeleiteten Klassen
+ *
  * Revision 1.7  2005/08/21 17:08:55  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *
