@@ -1,11 +1,15 @@
-// $Id: FibuService.java,v 1.4 2005/08/21 20:38:51 tbayen Exp $
+// $Id: FibuService.java,v 1.5 2005/08/21 20:39:55 tbayen Exp $
 
 package de.bayen.fibu;
 
 import java.rmi.RemoteException;
-import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
+import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
+import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
 import de.bayen.database.exception.UserDBEx.UserSQL_DBException;
+import de.bayen.fibu.exceptions.FiBuException.NotInitializedException;
 import de.willuhn.datasource.Service;
+import de.willuhn.util.ApplicationException;
 
 public class FibuService implements Service {
 
@@ -86,6 +90,9 @@ public class FibuService implements Service {
 
 //
 // $Log: FibuService.java,v $
+// Revision 1.5  2005/08/21 20:39:55  tbayen
+// Datenbankparameter werden nacheinander an verschiedenen Quellen gesucht
+//
 // Revision 1.4  2005/08/21 20:38:51  tbayen
 // Datenbankparameter werden nacheinander an verschiedenen Quellen gesucht
 //
