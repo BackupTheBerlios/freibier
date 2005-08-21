@@ -1,8 +1,10 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: JournalTest.java,v 1.5 2005/08/21 17:08:55 tbayen Exp $
+ * $Id: JournalTest.java,v 1.6 2005/08/21 17:42:23 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import junit.framework.TestCase;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.fibu.Buchhaltung;
@@ -10,6 +12,7 @@ import de.bayen.fibu.Journal;
 import de.bayen.fibu.exceptions.FiBuException;
 
 public class JournalTest extends TestCase {
+	private static Log log = LogFactory.getLog(JournalTest.class);
 	Buchhaltung bh;
 
 	protected void setUp() throws Exception {
@@ -27,8 +30,7 @@ public class JournalTest extends TestCase {
 		Journal jou = bh.createJournal();
 		assertEquals("2005", jou.getBuchungsjahr());
 		assertEquals("01", jou.getBuchungsperiode());
-		if (TestConfig.print)
-			System.out.println(jou);
+		log.info(jou);
 		Journal j2 = bh.createJournal();
 		Journal j3 = bh.createJournal();
 		assertEquals(new Long(2), j2.getJournalnummer());
@@ -62,6 +64,9 @@ public class JournalTest extends TestCase {
 }
 /*
  * $Log: JournalTest.java,v $
+ * Revision 1.6  2005/08/21 17:42:23  tbayen
+ * Ausgaben von Test-Klassen nicht per println, sondern per Logging
+ *
  * Revision 1.5  2005/08/21 17:08:55  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *

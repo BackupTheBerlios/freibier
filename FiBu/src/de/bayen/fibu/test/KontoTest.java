@@ -1,15 +1,18 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: KontoTest.java,v 1.2 2005/08/17 20:28:04 tbayen Exp $
+ * $Id: KontoTest.java,v 1.3 2005/08/21 17:42:23 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import junit.framework.TestCase;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.fibu.Buchhaltung;
 import de.bayen.fibu.Konto;
 
 public class KontoTest extends TestCase {
+	private static Log log = LogFactory.getLog(KontoTest.class);
 	boolean print = true;
 
 	public static void main(String[] args) {
@@ -43,15 +46,13 @@ public class KontoTest extends TestCase {
 			konto.write();
 			Konto bilanz = bh.getKonto("00001");
 			assertEquals("Bilanz", bilanz.getBezeichnung());
-			if (TestConfig.print)
-				System.out.println(bilanz);
+			log.info(bilanz);
 			Konto aktiva = bh.createKonto();
 			aktiva.setBezeichnung("Aktiva");
 			aktiva.setKontonummer("10000");
 			aktiva.setOberkontoNummer("00001");
 			aktiva.write();
-			if (TestConfig.print)
-				System.out.println(aktiva);
+			log.info(aktiva);
 			bh.close();
 		} catch (DatabaseException e) {
 			e.printStackTrace();
@@ -87,6 +88,9 @@ public class KontoTest extends TestCase {
 }
 /*
  * $Log: KontoTest.java,v $
+ * Revision 1.3  2005/08/21 17:42:23  tbayen
+ * Ausgaben von Test-Klassen nicht per println, sondern per Logging
+ *
  * Revision 1.2  2005/08/17 20:28:04  tbayen
  * zwei Methoden zum Auflisten von Objekten und alles, was dazu sonst noch nötig war
  *

@@ -1,7 +1,6 @@
 TODO
 
 Fibu:
-- Ausgaben von Test-Klassen nicht per println, sondern per Logging
 - Datenbank-Parameter aus Properties-Datei und aus Config im Home-Verzeichnis
 - Import von Kontenrahmen aus GnuCash
 - Import von Kontenrahmen/Konten aus diDurst
@@ -18,6 +17,7 @@ später:
 
 
 Changes:
+- Ausgaben von Test-Klassen nicht per println, sondern per Logging
 - Todo erledigen, das bei der Exceptions-Wandlung aufgefallen ist
 - Peters Mail-Anfrage klären
 - FiBuGUI an Exceptions anpassen

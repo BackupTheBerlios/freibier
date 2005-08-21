@@ -1,9 +1,11 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: BuchungTest.java,v 1.7 2005/08/21 17:08:55 tbayen Exp $
+ * $Id: BuchungTest.java,v 1.8 2005/08/21 17:42:23 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
 import java.math.BigDecimal;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import junit.framework.TestCase;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.fibu.Betrag;
@@ -15,6 +17,7 @@ import de.bayen.fibu.Konto;
 import de.bayen.fibu.exceptions.FiBuException;
 
 public class BuchungTest extends TestCase {
+	private static Log log = LogFactory.getLog(BuchungTest.class);
 	private Buchhaltung bh;
 
 	public BuchungTest(String arg0) {
@@ -43,8 +46,7 @@ public class BuchungTest extends TestCase {
 		Buchung buch = j.createBuchung();
 		buch.setBelegnummer("10000");
 		buch.setBuchungstext("Testbuchung 1");
-		if (TestConfig.print)
-			System.out.println(buch);
+		log.info(buch);
 	}
 
 	public void testBuchungszeilen() throws DatabaseException, FiBuException {
@@ -74,8 +76,7 @@ public class BuchungTest extends TestCase {
 		bz3.setKonto(bh.getKonto("00001"));
 		assertTrue("Saldo sollte Null sein", buch.isSaldoNull());
 		buch.write();
-		if (TestConfig.print)
-			System.out.println(buch);
+		log.info(buch);
 		// ein paar Tests zum Thema getBuchungen()
 		assertEquals(1, j.getBuchungen().size());
 		Buchung buch2 = j.createBuchung();
@@ -86,16 +87,17 @@ public class BuchungTest extends TestCase {
 				.getBelegnummer());
 		assertEquals("10002", ((Buchung) j.getBuchungen().get(1))
 				.getBelegnummer());
-		if (TestConfig.print)
-			System.out.println(j + "\n");
+		log.info(j+"\n");
 		// Sind die Buchungen auch auf dem Konto angekommen?
 		assertEquals(3, bh.getKonto("00001").getBuchungszeilen().size());
-		if (TestConfig.print)
-			System.out.println(bh.getKonto("00001") + "\n");
+		log.info(bh.getKonto("00001") + "\n");
 	}
 }
 /*
  * $Log: BuchungTest.java,v $
+ * Revision 1.8  2005/08/21 17:42:23  tbayen
+ * Ausgaben von Test-Klassen nicht per println, sondern per Logging
+ *
  * Revision 1.7  2005/08/21 17:08:55  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *
