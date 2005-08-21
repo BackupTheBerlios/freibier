@@ -1,23 +1,11 @@
-// $Id: FibuService.java,v 1.3 2005/08/21 20:18:09 phormanns Exp $
+// $Id: FibuService.java,v 1.4 2005/08/21 20:38:51 tbayen Exp $
 
 package de.bayen.fibu;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Properties;
-import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SysDBEx.SQL_DBException;
-import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
-import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
-import de.bayen.fibu.exceptions.FiBuException.NotInitializedException;
-import de.bayen.fibu.gui.FiBuPlugin;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.UserDBEx.UserSQL_DBException;
 import de.willuhn.datasource.Service;
-import de.willuhn.jameica.plugin.PluginResources;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.util.ApplicationException;
 
 public class FibuService implements Service {
 
@@ -28,20 +16,28 @@ public class FibuService implements Service {
 	}
 
 	public void start() throws RemoteException {
-		PluginResources resources = Application.getPluginLoader().getPlugin(FiBuPlugin.class).getResources();
-		Properties mysqlProps = new Properties();
+		// TODO: Ich habe das hier erstmal testweise ausser Gefecht gesetzt.
+		//       Wenn Peter die neue Methode gefällt, kann man den 
+		//       auskommentierten Teil glaube ich weglassen.
+//		PluginResources resources = Application.getPluginLoader().getPlugin(FiBuPlugin.class).getResources();
+//		Properties mysqlProps = new Properties();
+//		try {
+//			mysqlProps.load(new FileInputStream(new File(resources.getPath() + "/db/mysql.properties")));
+//			fibu = new Buchhaltung(
+//					mysqlProps.getProperty("database"), 
+//					mysqlProps.getProperty("server"), 
+//					mysqlProps.getProperty("user"), 
+//					mysqlProps.getProperty("password"));
+//		} catch (FileNotFoundException e) {
+//			throw new RemoteException("mysql.properties nicht gefunden", e);
+//		} catch (IOException e) {
+//			throw new RemoteException("mysql.properties nicht lesbar", e);
+//		} catch (DatabaseException e) {
+//			throw new RemoteException("Kein Zugriff auf die Datenbank", e);
+//		}
 		try {
-			mysqlProps.load(new FileInputStream(new File(resources.getPath() + "/db/mysql.properties")));
-			fibu = new Buchhaltung(
-					mysqlProps.getProperty("database"), 
-					mysqlProps.getProperty("server"), 
-					mysqlProps.getProperty("user"), 
-					mysqlProps.getProperty("password"));
-		} catch (FileNotFoundException e) {
-			throw new RemoteException("mysql.properties nicht gefunden", e);
-		} catch (IOException e) {
-			throw new RemoteException("mysql.properties nicht lesbar", e);
-		} catch (DatabaseException e) {
+			fibu=new Buchhaltung(System.getProperty("user.home")+"/.fibu.properties");
+		} catch (UserSQL_DBException e) {
 			throw new RemoteException("Kein Zugriff auf die Datenbank", e);
 		}
 	}
@@ -90,6 +86,9 @@ public class FibuService implements Service {
 
 //
 // $Log: FibuService.java,v $
+// Revision 1.4  2005/08/21 20:38:51  tbayen
+// Datenbankparameter werden nacheinander an verschiedenen Quellen gesucht
+//
 // Revision 1.3  2005/08/21 20:18:09  phormanns
 // Erste Widgets für Buchen-Dialog
 //
