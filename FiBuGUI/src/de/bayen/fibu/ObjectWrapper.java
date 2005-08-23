@@ -1,40 +1,38 @@
 /* Erzeugt am 18.08.2005 von tbayen
- * $Id: ObjectWrapper.java,v 1.3 2005/08/21 20:18:09 phormanns Exp $
+ * $Id: ObjectWrapper.java,v 1.4 2005/08/23 19:40:15 phormanns Exp $
  */
 package de.bayen.fibu;
 
-import java.rmi.RemoteException;
-import de.willuhn.datasource.GenericObject;
 
 public class ObjectWrapper implements GenericObject {
 	
-	private de.bayen.fibu.GenericObject gobject;
+	private GenericObject gobject;
 
-	public ObjectWrapper(de.bayen.fibu.GenericObject gobject){
+	public ObjectWrapper(GenericObject gobject){
 		this.gobject = gobject;
 	}
 
-	protected de.bayen.fibu.GenericObject getGObject() {
+	protected GenericObject getGObject() {
 		return gobject;
 	}
 	
-	public boolean equals(GenericObject genObj) throws RemoteException {
+	public boolean equals(GenericObject genObj) {
 		return gobject.equals(((ObjectWrapper) genObj).getGObject());
 	}
 
-	public Object getAttribute(String property) throws RemoteException {
+	public Object getAttribute(String property) {
 		return gobject.getAttribute(property);
 	}
 
-	public String[] getAttributeNames() throws RemoteException {
+	public String[] getAttributeNames() {
 		return gobject.getAttributeNames();
 	}
 
-	public String getID() throws RemoteException {
+	public String getGOID() {
 		return gobject.getGOID();
 	}
 
-	public String getPrimaryAttribute() throws RemoteException {
+	public String getPrimaryAttribute() {
 		return gobject.getPrimaryAttribute();
 	}
 	
@@ -42,6 +40,9 @@ public class ObjectWrapper implements GenericObject {
 
 /*
  * $Log: ObjectWrapper.java,v $
+ * Revision 1.4  2005/08/23 19:40:15  phormanns
+ * Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
+ *
  * Revision 1.3  2005/08/21 20:18:09  phormanns
  * Erste Widgets für Buchen-Dialog
  *

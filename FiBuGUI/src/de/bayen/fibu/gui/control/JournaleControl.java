@@ -1,4 +1,4 @@
-// $Id: JournaleControl.java,v 1.4 2005/08/21 20:18:56 phormanns Exp $
+// $Id: JournaleControl.java,v 1.5 2005/08/23 19:40:15 phormanns Exp $
 package de.bayen.fibu.gui.control;
 
 import java.util.List;
@@ -13,10 +13,10 @@ import de.bayen.fibu.gui.Settings;
 import de.bayen.fibu.gui.action.JournalBuchenAction;
 import de.bayen.fibu.gui.menu.AlleJournalMenu;
 import de.bayen.fibu.gui.menu.OffenesJournalMenu;
+import de.bayen.fibu.gui.widget.TablePart;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.util.ApplicationException;
 
@@ -97,6 +97,9 @@ public class JournaleControl extends AbstractControl {
 
 /*
  *  $Log: JournaleControl.java,v $
+ *  Revision 1.5  2005/08/23 19:40:15  phormanns
+ *  Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
+ *
  *  Revision 1.4  2005/08/21 20:18:56  phormanns
  *  Erste Widgets für Buchen-Dialog
  *

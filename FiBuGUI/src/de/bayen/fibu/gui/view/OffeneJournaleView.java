@@ -1,11 +1,11 @@
-// $Id: OffeneJournaleView.java,v 1.3 2005/08/21 17:11:11 tbayen Exp $
+// $Id: OffeneJournaleView.java,v 1.4 2005/08/23 19:40:14 phormanns Exp $
 package de.bayen.fibu.gui.view;
 
 import de.bayen.fibu.gui.action.AlleJournaleAction;
 import de.bayen.fibu.gui.control.JournaleControl;
+import de.bayen.fibu.gui.widget.TablePart;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.internal.action.Back;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.ButtonArea;
 import de.willuhn.util.ApplicationException;
 
@@ -44,6 +44,9 @@ public class OffeneJournaleView extends JournaleView {
 
 /*
  *  $Log: OffeneJournaleView.java,v $
+ *  Revision 1.4  2005/08/23 19:40:14  phormanns
+ *  Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
+ *
  *  Revision 1.3  2005/08/21 17:11:11  tbayen
  *  kleinere Warnungen beseitigt
  *

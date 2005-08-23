@@ -1,20 +1,19 @@
-// $Id: BuchenControl.java,v 1.5 2005/08/21 20:18:25 phormanns Exp $
+// $Id: BuchenControl.java,v 1.6 2005/08/23 19:40:14 phormanns Exp $
 package de.bayen.fibu.gui.control;
 
-import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import de.bayen.database.exception.DatabaseException;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
 import de.bayen.fibu.FibuService;
+import de.bayen.fibu.GenericObject;
 import de.bayen.fibu.gui.ListIterator;
 import de.bayen.fibu.gui.Settings;
 import de.bayen.fibu.gui.widget.DateInput;
-import de.willuhn.datasource.GenericObject;
+import de.bayen.fibu.gui.widget.ListDialog;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.dialogs.ListDialog;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
@@ -39,28 +38,20 @@ public class BuchenControl extends AbstractControl {
 
 	public Input getJournalnummer() throws ApplicationException {
 		if (journalnummer == null) {
-			try {
-				journalnummer = 
-					new LabelInput(
-							((GenericObject) view.getCurrentObject()).getAttribute("Journalnummer").toString()
-						);
-			} catch (RemoteException e) {
-				throw new ApplicationException("Fehler beim Zugriff auf gewähltes Journal", e);
-			}
+			journalnummer = 
+				new LabelInput(
+						((GenericObject) view.getCurrentObject()).getAttribute("Journalnummer").toString()
+					);
 		}
 		return journalnummer;
 	}
 
 	public Input getStartdatum() throws ApplicationException {
 		if (startdatum == null) {
-			try {
-				GenericObject go = ((GenericObject) view.getCurrentObject());
-				Object start = go.getAttribute("Startdatum");
-				String label = Settings.getDateFormat().format(start);
-				startdatum = new LabelInput(label);
-			} catch (RemoteException e) {
-				throw new ApplicationException("Fehler beim Zugriff auf gewähltes Journal", e);
-			}
+			GenericObject go = ((GenericObject) view.getCurrentObject());
+			Object start = go.getAttribute("Startdatum");
+			String label = Settings.getDateFormat().format(start);
+			startdatum = new LabelInput(label);
 		}
 		return startdatum;
 	}
@@ -101,8 +92,8 @@ public class BuchenControl extends AbstractControl {
 					public List reloadList() throws ApplicationException {
 						try {
 							return fibuService.getBilanzkonto().getUnterkonten();
-						} catch (DatabaseException e) {
-							throw new ApplicationException("Fehler beim Lesen der Konten", e);
+						} catch (SQL_DBException e) {
+							throw new ApplicationException("Fehler beim Lesen der Unterkonten", e);
 						}
 					}}, ListDialog.POSITION_MOUSE);
 				dialog.setTitle("Bitte ein Konto auswählen");
@@ -111,10 +102,7 @@ public class BuchenControl extends AbstractControl {
 				dialog.addCloseListener(new Listener() {
 
 					public void handleEvent(Event event) {
-						try {
-							konto1.setText((String) ((GenericObject) event.data).getAttribute("Kontonummer"));
-						} catch (RemoteException e) {
-						}
+						konto1.setText((String) ((GenericObject) event.data).getAttribute("Kontonummer"));
 					}
 					
 				});
@@ -154,6 +142,9 @@ public class BuchenControl extends AbstractControl {
 
 /*
  *  $Log: BuchenControl.java,v $
+ *  Revision 1.6  2005/08/23 19:40:14  phormanns
+ *  Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
+ *
  *  Revision 1.5  2005/08/21 20:18:25  phormanns
  *  Erste Widgets für Buchen-Dialog
  *

@@ -1,11 +1,10 @@
-// $Id: ListIterator.java,v 1.1 2005/08/21 20:18:56 phormanns Exp $
+// $Id: ListIterator.java,v 1.2 2005/08/23 19:40:14 phormanns Exp $
 package de.bayen.fibu.gui;
 
-import java.rmi.RemoteException;
 import java.util.List;
+import de.bayen.fibu.GenericIterator;
+import de.bayen.fibu.GenericObject;
 import de.bayen.fibu.ObjectWrapper;
-import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.GenericObject;
 import de.willuhn.util.ApplicationException;
 
 public abstract class ListIterator implements GenericIterator {
@@ -19,42 +18,41 @@ public abstract class ListIterator implements GenericIterator {
 
 	public abstract List reloadList() throws ApplicationException;
 
-	public boolean hasNext() throws RemoteException {
+	public boolean hasNext() {
 		return idx < size();
 	}
 
-	public GenericObject next() throws RemoteException {
+	public GenericObject next() {
 		GenericObject jrnl = new ObjectWrapper((de.bayen.fibu.GenericObject) genObjList.get(idx));
 		idx++;
 		return jrnl;
 	}
 
-	public GenericObject previous() throws RemoteException {
+	public GenericObject previous() {
 		if (idx > 0)
 			idx--;
 		return new ObjectWrapper((de.bayen.fibu.GenericObject) genObjList.get(idx));
 	}
 
-	public void begin() throws RemoteException {
-		try {
-			genObjList = reloadList();
-		} catch (ApplicationException e) {
-			throw new RemoteException("Fehler beim Laden der Tabelle", e);
-		}
+	public void begin() throws ApplicationException {
+		genObjList = reloadList();
 		idx = 0;
 	}
 
-	public int size() throws RemoteException {
+	public int size() {
 		return genObjList != null ? genObjList.size() : 0;
 	}
 
-	public GenericObject contains(GenericObject arg0) throws RemoteException {
+	public GenericObject contains(GenericObject gobj) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 }
 /*
  *  $Log: ListIterator.java,v $
+ *  Revision 1.2  2005/08/23 19:40:14  phormanns
+ *  Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
+ *
  *  Revision 1.1  2005/08/21 20:18:56  phormanns
  *  Erste Widgets für Buchen-Dialog
  *
