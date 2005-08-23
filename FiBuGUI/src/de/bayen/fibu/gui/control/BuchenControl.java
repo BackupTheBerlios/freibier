@@ -1,4 +1,4 @@
-// $Id: BuchenControl.java,v 1.6 2005/08/23 19:40:14 phormanns Exp $
+// $Id: BuchenControl.java,v 1.7 2005/08/23 19:56:05 phormanns Exp $
 package de.bayen.fibu.gui.control;
 
 import java.util.Date;
@@ -8,8 +8,8 @@ import org.eclipse.swt.widgets.Listener;
 import de.bayen.database.exception.SysDBEx.SQL_DBException;
 import de.bayen.fibu.FibuService;
 import de.bayen.fibu.GenericObject;
-import de.bayen.fibu.gui.ListIterator;
 import de.bayen.fibu.gui.Settings;
+import de.bayen.fibu.gui.data.ListIterator;
 import de.bayen.fibu.gui.widget.DateInput;
 import de.bayen.fibu.gui.widget.ListDialog;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -142,6 +142,9 @@ public class BuchenControl extends AbstractControl {
 
 /*
  *  $Log: BuchenControl.java,v $
+ *  Revision 1.7  2005/08/23 19:56:05  phormanns
+ *  Neues Paket data für Datenobjekte
+ *
  *  Revision 1.6  2005/08/23 19:40:14  phormanns
  *  Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
  *

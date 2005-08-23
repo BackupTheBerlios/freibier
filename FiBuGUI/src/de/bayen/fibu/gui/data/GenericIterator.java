@@ -1,6 +1,7 @@
-// $Id: GenericIterator.java,v 1.1 2005/08/23 19:40:15 phormanns Exp $
-package de.bayen.fibu;
+// $Id: GenericIterator.java,v 1.1 2005/08/23 19:56:05 phormanns Exp $
+package de.bayen.fibu.gui.data;
 
+import de.bayen.fibu.GenericObject;
 import de.willuhn.util.ApplicationException;
 
 public interface GenericIterator {
@@ -14,6 +15,9 @@ public interface GenericIterator {
 
 /*
  *  $Log: GenericIterator.java,v $
+ *  Revision 1.1  2005/08/23 19:56:05  phormanns
+ *  Neues Paket data für Datenobjekte
+ *
  *  Revision 1.1  2005/08/23 19:40:15  phormanns
  *  Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
  *

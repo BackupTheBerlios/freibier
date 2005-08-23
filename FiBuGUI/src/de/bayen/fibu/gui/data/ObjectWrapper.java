@@ -1,7 +1,9 @@
 /* Erzeugt am 18.08.2005 von tbayen
- * $Id: ObjectWrapper.java,v 1.4 2005/08/23 19:40:15 phormanns Exp $
+ * $Id: ObjectWrapper.java,v 1.1 2005/08/23 19:56:05 phormanns Exp $
  */
-package de.bayen.fibu;
+package de.bayen.fibu.gui.data;
+
+import de.bayen.fibu.GenericObject;
 
 
 public class ObjectWrapper implements GenericObject {
@@ -40,6 +42,9 @@ public class ObjectWrapper implements GenericObject {
 
 /*
  * $Log: ObjectWrapper.java,v $
+ * Revision 1.1  2005/08/23 19:56:05  phormanns
+ * Neues Paket data für Datenobjekte
+ *
  * Revision 1.4  2005/08/23 19:40:15  phormanns
  * Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
  *

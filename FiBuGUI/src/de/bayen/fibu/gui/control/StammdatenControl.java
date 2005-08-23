@@ -1,4 +1,4 @@
-// $Id: StammdatenControl.java,v 1.1 2005/08/17 15:04:56 phormanns Exp $
+// $Id: StammdatenControl.java,v 1.2 2005/08/23 19:56:05 phormanns Exp $
 
 package de.bayen.fibu.gui.control;
 
@@ -6,9 +6,9 @@ import java.rmi.RemoteException;
 
 import de.bayen.database.Record;
 import de.bayen.fibu.FibuService;
-import de.bayen.fibu.RecordObject;
 import de.bayen.fibu.gui.FiBuPlugin;
 import de.bayen.fibu.gui.Settings;
+import de.bayen.fibu.gui.data.RecordObject;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -109,6 +109,9 @@ public class StammdatenControl extends AbstractControl {
 
 //
 // $Log: StammdatenControl.java,v $
+// Revision 1.2  2005/08/23 19:56:05  phormanns
+// Neues Paket data für Datenobjekte
+//
 // Revision 1.1  2005/08/17 15:04:56  phormanns
 // Start der Integration mit FiBu-Klassen (Firmenstammdaten)
 //

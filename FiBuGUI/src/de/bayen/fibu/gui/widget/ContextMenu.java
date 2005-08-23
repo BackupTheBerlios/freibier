@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /home/xubuntu/berlios_backup/github/tmp-cvs/freibier/Repository/FiBuGUI/src/de/bayen/fibu/gui/widget/ContextMenu.java,v $
- * $Revision: 1.1 $
- * $Date: 2005/08/23 19:40:14 $
+ * $Revision: 1.2 $
+ * $Date: 2005/08/23 19:56:05 $
  * $Author: phormanns $
  * $Locker:  $
  * $State: Exp $
@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -135,6 +134,9 @@ public class ContextMenu implements Part
 
 /**********************************************************************
  * $Log: ContextMenu.java,v $
+ * Revision 1.2  2005/08/23 19:56:05  phormanns
+ * Neues Paket data für Datenobjekte
+ *
  * Revision 1.1  2005/08/23 19:40:14  phormanns
  * Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
  *

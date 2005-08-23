@@ -1,6 +1,6 @@
-// $Id: RecordObject.java,v 1.3 2005/08/21 20:18:09 phormanns Exp $
+// $Id: RecordObject.java,v 1.1 2005/08/23 19:56:05 phormanns Exp $
 
-package de.bayen.fibu;
+package de.bayen.fibu.gui.data;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -75,6 +75,9 @@ public class RecordObject implements GenericObject {
 
 //
 // $Log: RecordObject.java,v $
+// Revision 1.1  2005/08/23 19:56:05  phormanns
+// Neues Paket data für Datenobjekte
+//
 // Revision 1.3  2005/08/21 20:18:09  phormanns
 // Erste Widgets für Buchen-Dialog
 //

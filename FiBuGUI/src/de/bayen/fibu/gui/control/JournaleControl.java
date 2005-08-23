@@ -1,4 +1,4 @@
-// $Id: JournaleControl.java,v 1.5 2005/08/23 19:40:15 phormanns Exp $
+// $Id: JournaleControl.java,v 1.6 2005/08/23 19:56:05 phormanns Exp $
 package de.bayen.fibu.gui.control;
 
 import java.util.List;
@@ -6,11 +6,11 @@ import de.bayen.database.exception.DatabaseException;
 import de.bayen.fibu.Buchhaltung;
 import de.bayen.fibu.FibuService;
 import de.bayen.fibu.Journal;
-import de.bayen.fibu.ObjectWrapper;
 import de.bayen.fibu.gui.FiBuPlugin;
-import de.bayen.fibu.gui.ListIterator;
 import de.bayen.fibu.gui.Settings;
 import de.bayen.fibu.gui.action.JournalBuchenAction;
+import de.bayen.fibu.gui.data.ListIterator;
+import de.bayen.fibu.gui.data.ObjectWrapper;
 import de.bayen.fibu.gui.menu.AlleJournalMenu;
 import de.bayen.fibu.gui.menu.OffenesJournalMenu;
 import de.bayen.fibu.gui.widget.TablePart;
@@ -97,6 +97,9 @@ public class JournaleControl extends AbstractControl {
 
 /*
  *  $Log: JournaleControl.java,v $
+ *  Revision 1.6  2005/08/23 19:56:05  phormanns
+ *  Neues Paket data für Datenobjekte
+ *
  *  Revision 1.5  2005/08/23 19:40:15  phormanns
  *  Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
  *

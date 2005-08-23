@@ -1,13 +1,12 @@
-// $Id: ListIterator.java,v 1.2 2005/08/23 19:40:14 phormanns Exp $
-package de.bayen.fibu.gui;
+// $Id: ListIterator.java,v 1.1 2005/08/23 19:56:05 phormanns Exp $
+package de.bayen.fibu.gui.data;
 
 import java.util.List;
-import de.bayen.fibu.GenericIterator;
 import de.bayen.fibu.GenericObject;
-import de.bayen.fibu.ObjectWrapper;
 import de.willuhn.util.ApplicationException;
 
 public abstract class ListIterator implements GenericIterator {
+	
 	private List genObjList;
 	private int idx;
 
@@ -23,15 +22,9 @@ public abstract class ListIterator implements GenericIterator {
 	}
 
 	public GenericObject next() {
-		GenericObject jrnl = new ObjectWrapper((de.bayen.fibu.GenericObject) genObjList.get(idx));
+		GenericObject jrnl = new ObjectWrapper((GenericObject) genObjList.get(idx));
 		idx++;
 		return jrnl;
-	}
-
-	public GenericObject previous() {
-		if (idx > 0)
-			idx--;
-		return new ObjectWrapper((de.bayen.fibu.GenericObject) genObjList.get(idx));
 	}
 
 	public void begin() throws ApplicationException {
@@ -43,13 +36,12 @@ public abstract class ListIterator implements GenericIterator {
 		return genObjList != null ? genObjList.size() : 0;
 	}
 
-	public GenericObject contains(GenericObject gobj) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
 /*
  *  $Log: ListIterator.java,v $
+ *  Revision 1.1  2005/08/23 19:56:05  phormanns
+ *  Neues Paket data für Datenobjekte
+ *
  *  Revision 1.2  2005/08/23 19:40:14  phormanns
  *  Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
  *

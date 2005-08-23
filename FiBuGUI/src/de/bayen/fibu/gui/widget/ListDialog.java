@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /home/xubuntu/berlios_backup/github/tmp-cvs/freibier/Repository/FiBuGUI/src/de/bayen/fibu/gui/widget/ListDialog.java,v $
- * $Revision: 1.1 $
- * $Date: 2005/08/23 19:40:14 $
+ * $Revision: 1.2 $
+ * $Date: 2005/08/23 19:56:05 $
  * $Author: phormanns $
  * $Locker:  $
  * $State: Exp $
@@ -18,7 +18,7 @@ import java.util.Hashtable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
-import de.bayen.fibu.GenericIterator;
+import de.bayen.fibu.gui.data.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.formatter.Formatter;
@@ -116,6 +116,9 @@ public class ListDialog extends AbstractDialog
 
 /*********************************************************************
  * $Log: ListDialog.java,v $
+ * Revision 1.2  2005/08/23 19:56:05  phormanns
+ * Neues Paket data für Datenobjekte
+ *
  * Revision 1.1  2005/08/23 19:40:14  phormanns
  * Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
  *
