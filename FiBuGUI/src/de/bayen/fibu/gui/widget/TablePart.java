@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /home/xubuntu/berlios_backup/github/tmp-cvs/freibier/Repository/FiBuGUI/src/de/bayen/fibu/gui/widget/TablePart.java,v $
- * $Revision: 1.2 $
- * $Date: 2005/08/23 19:56:05 $
+ * $Revision: 1.3 $
+ * $Date: 2005/08/26 17:40:46 $
  * $Author: phormanns $
  * $Locker:  $
  * $State: Exp $
@@ -320,7 +320,8 @@ public class TablePart implements Part {
 	/**
 	 * @see de.willuhn.jameica.gui.Part#paint(org.eclipse.swt.widgets.Composite)
 	 */
-	public synchronized void paint(Composite parent) throws ApplicationException {
+	public synchronized void paint(Composite parent)
+			throws ApplicationException {
 		if (comp != null && !comp.isDisposed()) {
 			comp.dispose();
 		}
@@ -803,6 +804,9 @@ public class TablePart implements Part {
 }
 /*********************************************************************
  * $Log: TablePart.java,v $
+ * Revision 1.3  2005/08/26 17:40:46  phormanns
+ * Anzeige der Kontenhierarchie, Anlegen von Unterkonten
+ *
  * Revision 1.2  2005/08/23 19:56:05  phormanns
  * Neues Paket data für Datenobjekte
  *

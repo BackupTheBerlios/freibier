@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /home/xubuntu/berlios_backup/github/tmp-cvs/freibier/Repository/FiBuGUI/src/de/bayen/fibu/gui/widget/ListDialog.java,v $
- * $Revision: 1.2 $
- * $Date: 2005/08/23 19:56:05 $
+ * $Revision: 1.3 $
+ * $Date: 2005/08/26 17:40:46 $
  * $Author: phormanns $
  * $Locker:  $
  * $State: Exp $
@@ -14,10 +14,8 @@ package de.bayen.fibu.gui.widget;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-
 import de.bayen.fibu.gui.data.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -30,92 +28,83 @@ import de.willuhn.util.ApplicationException;
  * wird dann von <code>open()</code> zurueckgegeben.
  * @author willuhn
  */
-public class ListDialog extends AbstractDialog
-{
+public class ListDialog extends AbstractDialog {
+	private Object object = null;
+	private GenericIterator list = null;
+	private Hashtable fields = new Hashtable();
+	private Hashtable formatter = new Hashtable();
 
-  private Object object = null;
-  private GenericIterator list = null;
-  private Hashtable fields = new Hashtable();
-  private Hashtable formatter = new Hashtable();
+	/**
+	 * ct.
+	 * @param list anzuzeigende Liste.
+	 * @param position Position.
+	 * @see AbstractDialog#POSITION_CENTER
+	 * @see AbstractDialog#POSITION_MOUSE
+	 */
+	public ListDialog(GenericIterator list, int position) {
+		super(position);
+		setSize(SWT.DEFAULT, 250);
+		this.list = list;
+	}
 
-  /**
-   * ct.
-   * @param list anzuzeigende Liste.
-   * @param position Position.
-   * @see AbstractDialog#POSITION_CENTER
-   * @see AbstractDialog#POSITION_MOUSE
-   */
-  public ListDialog(GenericIterator list, int position)
-  {
-    super(position);
-    setSize(SWT.DEFAULT,250);
-    this.list = list;
+	/**
+	 * Fuegt der Tabelle eine weitere Spalte hinzu.
+	 * @param title Ueberschrift der Spalte.
+	 * @param field Feld fuer den anzuzeigenden Wert.
+	 */
+	public void addColumn(String title, String field) {
+		if (title == null || field == null)
+			return;
+		this.fields.put(title, field);
+	}
 
-  }
+	/**
+	 * Fuegt der Tabelle eine weitere Spalte hinzu.
+	 * @param title Ueberschrift der Spalte.
+	 * @param field Feld fuer den anzuzeigenden Wert.
+	 * @param f Formatierer.
+	 */
+	public void addColumn(String title, String field, Formatter f) {
+		addColumn(title, field);
+		if (title == null || f == null)
+			return;
+		this.formatter.put(title, f);
+	}
 
-  /**
-   * Fuegt der Tabelle eine weitere Spalte hinzu.
-   * @param title Ueberschrift der Spalte.
-   * @param field Feld fuer den anzuzeigenden Wert.
-   */
-  public void addColumn(String title, String field)
-  {
-    if (title == null || field == null)
-      return;
-    this.fields.put(title,field);
-  }
-
-  /**
-   * Fuegt der Tabelle eine weitere Spalte hinzu.
-   * @param title Ueberschrift der Spalte.
-   * @param field Feld fuer den anzuzeigenden Wert.
-   * @param f Formatierer.
-   */
-  public void addColumn(String title, String field, Formatter f)
-  {
-    addColumn(title,field);
-
-    if (title == null || f == null)
-      return;
-    this.formatter.put(title,f);
-  }
-
-  /**
-   * @see de.willuhn.jameica.gui.dialogs.AbstractDialog#paint(org.eclipse.swt.widgets.Composite)
-   */
-  protected void paint(Composite parent) throws Exception {
-
-    TablePart table = new TablePart(list,new Action()
-    {
-      public void handleAction(Object context) throws ApplicationException
-      {
+	/**
+	 * @see de.willuhn.jameica.gui.dialogs.AbstractDialog#paint(org.eclipse.swt.widgets.Composite)
+	 */
+	protected void paint(Composite parent) throws Exception {
+		TablePart table = new TablePart(list, new Action() {
+			public void handleAction(Object context)
+					throws ApplicationException {
 				object = context;
 				// Wir schliessen den Dialog bei Auswahl eines Objektes.
 				close();
-      }
-    });
+			}
+		});
+		Enumeration keys = this.fields.keys();
+		while (keys.hasMoreElements()) {
+			String title = (String) keys.nextElement();
+			String field = (String) this.fields.get(title);
+			Formatter f = (Formatter) this.formatter.get(title);
+			table.addColumn(title, field, f);
+		}
+		table.paint(parent);
+	}
 
-    Enumeration keys = this.fields.keys();
-    while (keys.hasMoreElements())
-    {
-      String title = (String) keys.nextElement();
-      String field = (String) this.fields.get(title);
-      Formatter f  = (Formatter) this.formatter.get(title);
-      table.addColumn(title,field,f);
-    }
-    table.paint(parent);
-  }
-
-  /**
-   * @see de.willuhn.jameica.gui.dialogs.AbstractDialog#getData()
-   */
-  protected Object getData() throws Exception {
-    return object;
-  }
+	/**
+	 * @see de.willuhn.jameica.gui.dialogs.AbstractDialog#getData()
+	 */
+	protected Object getData() throws Exception {
+		return object;
+	}
 }
-
 /*********************************************************************
  * $Log: ListDialog.java,v $
+ * Revision 1.3  2005/08/26 17:40:46  phormanns
+ * Anzeige der Kontenhierarchie, Anlegen von Unterkonten
+ *
  * Revision 1.2  2005/08/23 19:56:05  phormanns
  * Neues Paket data für Datenobjekte
  *

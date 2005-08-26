@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /home/xubuntu/berlios_backup/github/tmp-cvs/freibier/Repository/FiBuGUI/src/de/bayen/fibu/gui/widget/Part.java,v $
- * $Revision: 1.1 $
- * $Date: 2005/08/23 19:40:14 $
+ * $Revision: 1.2 $
+ * $Date: 2005/08/26 17:40:46 $
  * $Author: phormanns $
  * $Locker:  $
  * $State: Exp $
@@ -27,19 +27,18 @@ import de.willuhn.util.ApplicationException;
  * wenn dessen paint-Methode aufgerufen wird.
  */
 public interface Part {
-
 	/**
 	 * Malt die Komponente in das angegebene Composite.
-   * @param parent das Composite.
+	 * @param parent das Composite.
 	 * @throws RemoteException
-   */
-  public void paint(Composite parent) throws ApplicationException;
-
+	 */
+	public void paint(Composite parent) throws ApplicationException;
 }
-
-
 /**********************************************************************
  * $Log: Part.java,v $
+ * Revision 1.2  2005/08/26 17:40:46  phormanns
+ * Anzeige der Kontenhierarchie, Anlegen von Unterkonten
+ *
  * Revision 1.1  2005/08/23 19:40:14  phormanns
  * Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
  *

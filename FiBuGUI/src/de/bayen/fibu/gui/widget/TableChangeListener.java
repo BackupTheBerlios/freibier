@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /home/xubuntu/berlios_backup/github/tmp-cvs/freibier/Repository/FiBuGUI/src/de/bayen/fibu/gui/widget/TableChangeListener.java,v $
- * $Revision: 1.1 $
- * $Date: 2005/08/23 19:40:14 $
+ * $Revision: 1.2 $
+ * $Date: 2005/08/26 17:40:46 $
  * $Author: phormanns $
  * $Locker:  $
  * $State: Exp $
@@ -10,7 +10,6 @@
  * All rights reserved
  *
  **********************************************************************/
-
 package de.bayen.fibu.gui.widget;
 
 import de.bayen.fibu.GenericObject;
@@ -26,22 +25,22 @@ import de.willuhn.util.ApplicationException;
  * informiert. Es ist dann deren Aufgabe, den geaenderten Wert im Fachobjekt
  * zu uebernehmen.  
  */
-public interface TableChangeListener
-{
-  /**
-   * Wird aufgerufen, wenn der Wert eines Feldes geaendert wurde.
-   * @param object das zugehoerige Fachobjekt.
-   * @param attribute der Name des geaenderten Attributes.
-   * @param newValue der neue Wert des Attributes.
-   * @throws ApplicationException
-   */
-  public void itemChanged(GenericObject object, String attribute, String newValue) throws ApplicationException;
-  
+public interface TableChangeListener {
+	/**
+	 * Wird aufgerufen, wenn der Wert eines Feldes geaendert wurde.
+	 * @param object das zugehoerige Fachobjekt.
+	 * @param attribute der Name des geaenderten Attributes.
+	 * @param newValue der neue Wert des Attributes.
+	 * @throws ApplicationException
+	 */
+	public void itemChanged(GenericObject object, String attribute,
+			String newValue) throws ApplicationException;
 }
-
-
 /*********************************************************************
  * $Log: TableChangeListener.java,v $
+ * Revision 1.2  2005/08/26 17:40:46  phormanns
+ * Anzeige der Kontenhierarchie, Anlegen von Unterkonten
+ *
  * Revision 1.1  2005/08/23 19:40:14  phormanns
  * Abhängigkeiten vom Willuhn-Persistenzframework  durch Kopieren und Anpassen einiger Widgets entfernt
  *
