@@ -1,9 +1,10 @@
-// $Id: Settings.java,v 1.2 2005/08/18 11:24:12 phormanns Exp $
+// $Id: Settings.java,v 1.3 2005/08/26 20:48:47 phormanns Exp $
 
 package de.bayen.fibu.gui;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 
 import de.bayen.fibu.FibuService;
@@ -14,7 +15,7 @@ public class Settings {
 	private static FibuService fibu;
 	private static DecimalFormat jahr = new DecimalFormat("0000");
 	private static DecimalFormat konto = new DecimalFormat("0000");
-	private static DecimalFormat betrag = new DecimalFormat("#####0,00");
+	private static DecimalFormat betrag = new DecimalFormat("#####0.00", new DecimalFormatSymbols());
 	private static DateFormat datum = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM);
 	
 	public Settings() {
@@ -47,6 +48,9 @@ public class Settings {
 
 //
 // $Log: Settings.java,v $
+// Revision 1.3  2005/08/26 20:48:47  phormanns
+// Erste Buchung in der Datenbank
+//
 // Revision 1.2  2005/08/18 11:24:12  phormanns
 // Neue FiBu Version von Thomas
 // Anzeige Journal-Listen

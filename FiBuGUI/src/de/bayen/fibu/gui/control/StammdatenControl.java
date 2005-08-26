@@ -1,17 +1,14 @@
-// $Id: StammdatenControl.java,v 1.2 2005/08/23 19:56:05 phormanns Exp $
+// $Id: StammdatenControl.java,v 1.3 2005/08/26 20:48:47 phormanns Exp $
 
 package de.bayen.fibu.gui.control;
 
 import java.rmi.RemoteException;
-
 import de.bayen.database.Record;
 import de.bayen.fibu.FibuService;
 import de.bayen.fibu.gui.FiBuPlugin;
-import de.bayen.fibu.gui.Settings;
 import de.bayen.fibu.gui.data.RecordObject;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.system.Application;
@@ -20,7 +17,6 @@ import de.willuhn.util.ApplicationException;
 public class StammdatenControl extends AbstractControl {
 
 	private Input firma;
-	private Input bilanzkonto;
 	private Input jahr;
 	private Input periode;
 	private RecordObject stammdaten;
@@ -54,19 +50,6 @@ public class StammdatenControl extends AbstractControl {
 		return firma;
 	}
 	
-	public Input getBilanzkonto() throws ApplicationException {
-		if (bilanzkonto == null) {
-			try {
-				bilanzkonto = new DecimalInput(
-						((Long) getStammdaten().getAttribute("Bilanzkonto")).doubleValue(), 
-						Settings.getKontoFormat());
-			} catch (RemoteException e) {
-				throw new ApplicationException("Fehler beim Zugriff auf Firmenstammdaten", e);
-			}
-		}
-		return bilanzkonto;
-	}
-	
 	public Input getJahr() throws ApplicationException {
 		if (jahr == null) {
 			try {
@@ -95,7 +78,6 @@ public class StammdatenControl extends AbstractControl {
 		try {
 			FibuService service = (FibuService) Application.getServiceFactory().lookup(FiBuPlugin.class, "buchhaltung");
 			getStammdaten().setAttribute("Firma", (String) getFirma().getValue());
-			getStammdaten().setAttribute("Bilanzkonto", Settings.getKontoFormat().format(((Double) getBilanzkonto().getValue()).doubleValue()));
 			getStammdaten().setAttribute("JahrAktuell", (String) getJahr().getValue());
 			getStammdaten().setAttribute("PeriodeAktuell", (String) getPeriode().getValue());
 			service.getFiBu().setFirmenstammdaten(getStammdaten().getRecord());
@@ -109,6 +91,9 @@ public class StammdatenControl extends AbstractControl {
 
 //
 // $Log: StammdatenControl.java,v $
+// Revision 1.3  2005/08/26 20:48:47  phormanns
+// Erste Buchung in der Datenbank
+//
 // Revision 1.2  2005/08/23 19:56:05  phormanns
 // Neues Paket data für Datenobjekte
 //

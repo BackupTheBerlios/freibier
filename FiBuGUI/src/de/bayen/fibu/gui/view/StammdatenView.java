@@ -1,4 +1,4 @@
-// $Id: StammdatenView.java,v 1.2 2005/08/18 11:24:11 phormanns Exp $
+// $Id: StammdatenView.java,v 1.3 2005/08/26 20:48:47 phormanns Exp $
 
 package de.bayen.fibu.gui.view;
 
@@ -17,7 +17,6 @@ public class StammdatenView extends AbstractView {
 		GUI.getView().setTitle("Firma");
 		LabelGroup group = new LabelGroup(getParent(), "Stammdaten");
 		group.addLabelPair("Firma", control.getFirma());
-		group.addLabelPair("Bilanzkonto", control.getBilanzkonto());
 		group.addLabelPair("Jahr aktuell", control.getJahr());
 		group.addLabelPair("Periode aktuell", control.getPeriode());
 		ButtonArea buttons = new ButtonArea(getParent(), 1);
@@ -40,6 +39,9 @@ public class StammdatenView extends AbstractView {
 
 //
 // $Log: StammdatenView.java,v $
+// Revision 1.3  2005/08/26 20:48:47  phormanns
+// Erste Buchung in der Datenbank
+//
 // Revision 1.2  2005/08/18 11:24:11  phormanns
 // Neue FiBu Version von Thomas
 // Anzeige Journal-Listen

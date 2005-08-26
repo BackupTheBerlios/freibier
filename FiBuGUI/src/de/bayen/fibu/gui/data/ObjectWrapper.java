@@ -1,5 +1,5 @@
 /* Erzeugt am 18.08.2005 von tbayen
- * $Id: ObjectWrapper.java,v 1.2 2005/08/26 19:19:44 phormanns Exp $
+ * $Id: ObjectWrapper.java,v 1.3 2005/08/26 20:48:47 phormanns Exp $
  */
 package de.bayen.fibu.gui.data;
 
@@ -14,7 +14,7 @@ public class ObjectWrapper implements GenericObject {
 		this.gobject = gobject;
 	}
 
-	protected GenericObject getGObject() {
+	public GenericObject getGObject() {
 		return gobject;
 	}
 	
@@ -45,6 +45,9 @@ public class ObjectWrapper implements GenericObject {
 
 /*
  * $Log: ObjectWrapper.java,v $
+ * Revision 1.3  2005/08/26 20:48:47  phormanns
+ * Erste Buchung in der Datenbank
+ *
  * Revision 1.2  2005/08/26 19:19:44  phormanns
  * Hierarchie-Auswahl für erstes Konto im Buchungsdialog
  *

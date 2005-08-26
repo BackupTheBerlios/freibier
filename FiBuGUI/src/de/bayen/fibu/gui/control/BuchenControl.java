@@ -1,15 +1,25 @@
-// $Id: BuchenControl.java,v 1.9 2005/08/26 19:19:44 phormanns Exp $
+// $Id: BuchenControl.java,v 1.10 2005/08/26 20:48:47 phormanns Exp $
 package de.bayen.fibu.gui.control;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
+import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
+import de.bayen.fibu.Betrag;
+import de.bayen.fibu.Buchung;
+import de.bayen.fibu.Buchungszeile;
 import de.bayen.fibu.FibuService;
 import de.bayen.fibu.GenericObject;
+import de.bayen.fibu.Journal;
 import de.bayen.fibu.gui.Settings;
 import de.bayen.fibu.gui.data.KontoKnoten;
+import de.bayen.fibu.gui.data.ObjectWrapper;
 import de.bayen.fibu.gui.widget.DateInput;
 import de.bayen.fibu.gui.widget.TreeSelectInput;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -24,7 +34,12 @@ public class BuchenControl extends AbstractControl {
 	private TextInput buchungstext;
 	private LabelInput erfassungsdatum;
 	private DateInput valutadatum;
+	private DecimalInput betrag1;
+	private DecimalInput betrag2;
+	private DecimalInput betrag3;
 	private TreeSelectInput konto1;
+	private TreeSelectInput konto2;
+	private TreeSelectInput konto3;
 	
 	public BuchenControl(AbstractView view) {
 		super(view);
@@ -92,33 +107,100 @@ public class BuchenControl extends AbstractControl {
 	}
 
 	public Input getBetrag1() {
-		// TODO Auto-generated method stub
-		return null;
+		if (betrag1 == null) {
+			betrag1 = new DecimalInput(0.0d, Settings.getMoneyFormat());
+		}
+		return betrag1;
 	}
 
-	public Input getKonto2() {
-		// TODO Auto-generated method stub
-		return null;
+	public Input getKonto2() throws ApplicationException {
+		if (konto2 == null) {
+			try {
+				final FibuService fibuService = Settings.getFibuService();
+				konto2 = new TreeSelectInput(new KontoKnoten(fibuService.getBilanzkonto()));
+			} catch (Exception e) {
+				throw new ApplicationException(e.getMessage());
+			}
+		}
+		return konto2;
 	}
 
 	public Input getBetrag2() {
-		// TODO Auto-generated method stub
-		return null;
+		if (betrag2 == null) {
+			betrag2 = new DecimalInput(0.0d, Settings.getMoneyFormat());
+		}
+		return betrag2;
 	}
 
-	public Input getKonto3() {
-		// TODO Auto-generated method stub
-		return null;
+	public Input getKonto3() throws ApplicationException {
+		if (konto3 == null) {
+			try {
+				final FibuService fibuService = Settings.getFibuService();
+				konto3 = new TreeSelectInput(new KontoKnoten(fibuService.getBilanzkonto()));
+			} catch (Exception e) {
+				throw new ApplicationException(e.getMessage());
+			}
+		}
+		return konto3;
 	}
 
 	public Input getBetrag3() {
-		// TODO Auto-generated method stub
-		return null;
+		if (betrag3 == null) {
+			betrag3 = new DecimalInput(0.0d, Settings.getMoneyFormat());
+		}
+		return betrag3;
 	}
+
+	public void speichereBuchung() {
+		ObjectWrapper obj = (ObjectWrapper) view.getCurrentObject();
+		Journal journal = (Journal) obj.getGObject();
+		try {
+			Buchung buchung = journal.createBuchung();
+			buchung.setJournal(journal);
+			buchung.setBelegnummer((String) belegnummer.getValue());
+			buchung.setBuchungstext((String) buchungstext.getValue());
+			buchung.setValutadatum((Date) valutadatum.getValue());
+			Buchungszeile buchungszeile1 = buchung.createZeile();
+			buchungszeile1.setBuchung(buchung);
+			Double b1 = (Double) betrag1.getValue();
+			buchungszeile1.setBetrag(new Betrag(new BigDecimal(b1.doubleValue()), true));
+			String ktotxt1 = konto1.getText();
+			String ktonr1 = ktotxt1.substring(0, ktotxt1.indexOf(" "));
+			buchungszeile1.setKonto(
+						Settings.getFibuService().getFiBu().getKonto(ktonr1)
+					);
+			Buchungszeile buchungszeile2 = buchung.createZeile();
+			buchungszeile2.setBuchung(buchung);
+			Double b2 = (Double) betrag2.getValue();
+			buchungszeile2.setBetrag(new Betrag(new BigDecimal(b2.doubleValue()), false));
+			String ktotxt2 = konto2.getText();
+			String ktonr2 = ktotxt2.substring(0, ktotxt2.indexOf(" "));
+			buchungszeile2.setKonto(
+						Settings.getFibuService().getFiBu().getKonto(ktonr2)
+					);
+			buchung.write();
+		} catch (SQL_DBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseErrorDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RecordNotExistsDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }
 
 /*
  *  $Log: BuchenControl.java,v $
+ *  Revision 1.10  2005/08/26 20:48:47  phormanns
+ *  Erste Buchung in der Datenbank
+ *
  *  Revision 1.9  2005/08/26 19:19:44  phormanns
  *  Hierarchie-Auswahl für erstes Konto im Buchungsdialog
  *

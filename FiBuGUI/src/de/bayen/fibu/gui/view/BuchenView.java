@@ -1,9 +1,12 @@
-// $Id: BuchenView.java,v 1.4 2005/08/21 20:18:56 phormanns Exp $
+// $Id: BuchenView.java,v 1.5 2005/08/26 20:48:47 phormanns Exp $
 package de.bayen.fibu.gui.view;
 
 import de.bayen.fibu.gui.control.BuchenControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.internal.action.Back;
+import de.willuhn.jameica.gui.util.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
@@ -22,13 +25,20 @@ public class BuchenView extends AbstractView {
 		grpBuchung.addLabelPair("Valutadatum", control.getValutadatum());
 		LabelGroup grpZeile1 = new LabelGroup(getParent(), "Konto 1");
 		grpZeile1.addLabelPair("Konto", control.getKonto1());
-//		grpZeile1.addLabelPair("Betrag", control.getBetrag1());
-//		LabelGroup grpZeile2 = new LabelGroup(getParent(), "Konto 2");
-//		grpZeile2.addLabelPair("Konto", control.getKonto2());
-//		grpZeile2.addLabelPair("Betrag", control.getBetrag2());
-//		LabelGroup grpZeile3 = new LabelGroup(getParent(), "Konto 2");
-//		grpZeile3.addLabelPair("Konto", control.getKonto3());
-//		grpZeile3.addLabelPair("Betrag", control.getBetrag3());
+		grpZeile1.addLabelPair("Betrag", control.getBetrag1());
+		LabelGroup grpZeile2 = new LabelGroup(getParent(), "Konto 2");
+		grpZeile2.addLabelPair("Konto", control.getKonto2());
+		grpZeile2.addLabelPair("Betrag", control.getBetrag2());
+		LabelGroup grpZeile3 = new LabelGroup(getParent(), "Konto 3");
+		grpZeile3.addLabelPair("Konto", control.getKonto3());
+		grpZeile3.addLabelPair("Betrag", control.getBetrag3());
+		ButtonArea buttons = new ButtonArea(getParent(), 2);
+		buttons.addButton("zurück", new Back());
+		buttons.addButton("speichern", new Action() {
+
+			public void handleAction(Object context) throws ApplicationException {
+				control.speichereBuchung();
+			}});
 	}
 
 	public void unbind() throws ApplicationException {
@@ -37,6 +47,9 @@ public class BuchenView extends AbstractView {
 
 /*
  *  $Log: BuchenView.java,v $
+ *  Revision 1.5  2005/08/26 20:48:47  phormanns
+ *  Erste Buchung in der Datenbank
+ *
  *  Revision 1.4  2005/08/21 20:18:56  phormanns
  *  Erste Widgets für Buchen-Dialog
  *
