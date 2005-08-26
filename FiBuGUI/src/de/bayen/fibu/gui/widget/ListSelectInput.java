@@ -1,6 +1,6 @@
 /**********************************************************************
- * $Source: /home/xubuntu/berlios_backup/github/tmp-cvs/freibier/Repository/FiBuGUI/src/de/bayen/fibu/gui/widget/TreeSelectInput.java,v $
- * $Revision: 1.2 $
+ * $Source: /home/xubuntu/berlios_backup/github/tmp-cvs/freibier/Repository/FiBuGUI/src/de/bayen/fibu/gui/widget/ListSelectInput.java,v $
+ * $Revision: 1.1 $
  * $Date: 2005/08/26 19:19:44 $
  * $Author: phormanns $
  * $Locker:  $
@@ -17,32 +17,41 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import de.bayen.fibu.gui.data.GenericObjectNode;
+import de.bayen.fibu.GenericObject;
+import de.bayen.fibu.gui.data.ListIterator;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.ButtonInput;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Eingabe-Feld, das beim Klick auf den Button einen Dialog zur Auswahl
  * eines Datums oeffnet.
  */
-public class TreeSelectInput extends ButtonInput implements Listener {
+public class ListSelectInput extends ButtonInput implements Listener {
 	
 	private Text text;
-	private TreeDialog dialog;
+	private ListDialog dialog;
 	private Object choosen;
-	private GenericObjectNode rootNode;
+	private ListIterator iterator;
 
 	/**
 	 * Erzeugt ein neues Eingabefeld und schreibt den uebergebenen Wert rein.
 	 * @param defaultValue der initial einzufuegende Wert fuer das Eingabefeld.
 	 * @param d der Dialog.
+	 * @throws ApplicationException 
 	 */
-	public TreeSelectInput(GenericObjectNode rootNode) {
-		this.choosen = rootNode;
-		this.rootNode = rootNode;
-		this.value = (String) this.rootNode.getAttribute(this.rootNode.getPrimaryAttribute());
-		this.dialog = new TreeDialog(this.rootNode, TreeDialog.POSITION_MOUSE);
+	public ListSelectInput(ListIterator iterator) throws ApplicationException {
+		this.choosen = null;
+		this.iterator = iterator;
+		this.iterator.begin();
+		this.value = "";
+		if (iterator.hasNext()) {
+			GenericObject obj = iterator.next();
+			this.value = obj.toString();
+		}
+		this.dialog = new ListDialog(this.iterator, ListDialog.POSITION_MOUSE);
 		addButtonListener(new Listener() {
 			public void handleEvent(Event event) {
 				Logger.debug("starting dialog");
@@ -58,6 +67,14 @@ public class TreeSelectInput extends ButtonInput implements Listener {
 		dialog.addCloseListener(this);
 	}
 
+	public void addColumn(String text, String propertyName) {
+		dialog.addColumn(text, propertyName);
+	}
+	
+	public void addColumn(String text, String propertyName, Formatter formatter) {
+		dialog.addColumn(text, propertyName, formatter);
+	}
+	
 	/**
 	 * Liefert das Objekt, welches in dem Dialog ausgewaehlt wurde.
 	 * Fuer gewoehnlich ist das ein Fach-Objekt.
@@ -112,13 +129,13 @@ public class TreeSelectInput extends ButtonInput implements Listener {
 
 	public void handleEvent(Event event) {
 		this.choosen = event.data;
-		GenericObjectNode node = (GenericObjectNode) this.choosen;
-		this.text.setText((String) node.getAttribute(node.getPrimaryAttribute()));
+		GenericObject node = (GenericObject) this.choosen;
+		this.text.setText(node.toString());
 	}
 }
 /*********************************************************************
- * $Log: TreeSelectInput.java,v $
- * Revision 1.2  2005/08/26 19:19:44  phormanns
+ * $Log: ListSelectInput.java,v $
+ * Revision 1.1  2005/08/26 19:19:44  phormanns
  * Hierarchie-Auswahl für erstes Konto im Buchungsdialog
  *
  * Revision 1.1  2005/08/26 17:40:46  phormanns

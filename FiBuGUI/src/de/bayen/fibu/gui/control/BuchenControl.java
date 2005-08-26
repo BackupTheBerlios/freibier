@@ -1,18 +1,15 @@
-// $Id: BuchenControl.java,v 1.8 2005/08/26 17:40:46 phormanns Exp $
+// $Id: BuchenControl.java,v 1.9 2005/08/26 19:19:44 phormanns Exp $
 package de.bayen.fibu.gui.control;
 
 import java.util.Date;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import de.bayen.fibu.FibuService;
 import de.bayen.fibu.GenericObject;
 import de.bayen.fibu.gui.Settings;
 import de.bayen.fibu.gui.data.KontoKnoten;
 import de.bayen.fibu.gui.widget.DateInput;
-import de.bayen.fibu.gui.widget.TreeDialog;
+import de.bayen.fibu.gui.widget.TreeSelectInput;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -27,7 +24,7 @@ public class BuchenControl extends AbstractControl {
 	private TextInput buchungstext;
 	private LabelInput erfassungsdatum;
 	private DateInput valutadatum;
-	private DialogInput konto1;
+	private TreeSelectInput konto1;
 	
 	public BuchenControl(AbstractView view) {
 		super(view);
@@ -86,41 +83,7 @@ public class BuchenControl extends AbstractControl {
 		if (konto1 == null) {
 			try {
 				final FibuService fibuService = Settings.getFibuService();
-//				ListDialog dialog = new ListDialog(new ListIterator() {
-//					
-//					public List reloadList() throws ApplicationException {
-//						try {
-//							return fibuService.getBilanzkonto().getUnterkonten();
-//						} catch (SQL_DBException e) {
-//							throw new ApplicationException("Fehler beim Lesen der Unterkonten", e);
-//						}
-//					}}, ListDialog.POSITION_MOUSE);
-//				
-//				dialog.setTitle("Bitte ein Konto auswählen");
-//				dialog.addColumn("Bezeichnung", "Bezeichnung");
-//				dialog.addColumn("Kto.-Nr.", "Kontonummer", new Formatter(){
-//
-//					public String format(Object o) {
-//						int kto = Integer.parseInt((String) o);
-//						return Settings.getKontoFormat().format(kto);
-//					}
-//					
-//				});
-				TreeDialog dialog = new TreeDialog(
-						new KontoKnoten(fibuService.getBilanzkonto()), 
-						TreeDialog.POSITION_MOUSE);
-				dialog.setTitle("Bitte ein Konto auswählen");
-				dialog.addCloseListener(new Listener() {
-
-					public void handleEvent(Event event) {
-						int kto = Integer
-								.parseInt((String) ((GenericObject) event.data)
-										.getAttribute("Kontonummer"));
-						konto1.setText(Settings.getKontoFormat().format(kto));
-					}
-					
-				});
-				konto1 = new DialogInput("", dialog);
+				konto1 = new TreeSelectInput(new KontoKnoten(fibuService.getBilanzkonto()));
 			} catch (Exception e) {
 				throw new ApplicationException(e.getMessage());
 			}
@@ -156,6 +119,9 @@ public class BuchenControl extends AbstractControl {
 
 /*
  *  $Log: BuchenControl.java,v $
+ *  Revision 1.9  2005/08/26 19:19:44  phormanns
+ *  Hierarchie-Auswahl für erstes Konto im Buchungsdialog
+ *
  *  Revision 1.8  2005/08/26 17:40:46  phormanns
  *  Anzeige der Kontenhierarchie, Anlegen von Unterkonten
  *
