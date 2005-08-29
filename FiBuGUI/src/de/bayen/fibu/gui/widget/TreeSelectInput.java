@@ -1,7 +1,7 @@
 /**********************************************************************
  * $Source: /home/xubuntu/berlios_backup/github/tmp-cvs/freibier/Repository/FiBuGUI/src/de/bayen/fibu/gui/widget/TreeSelectInput.java,v $
- * $Revision: 1.2 $
- * $Date: 2005/08/26 19:19:44 $
+ * $Revision: 1.3 $
+ * $Date: 2005/08/29 16:23:20 $
  * $Author: phormanns $
  * $Locker:  $
  * $State: Exp $
@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Text;
 import de.bayen.fibu.gui.data.GenericObjectNode;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.ButtonInput;
-import de.willuhn.logging.Logger;
 
 /**
  * Eingabe-Feld, das beim Klick auf den Button einen Dialog zur Auswahl
@@ -45,13 +44,11 @@ public class TreeSelectInput extends ButtonInput implements Listener {
 		this.dialog = new TreeDialog(this.rootNode, TreeDialog.POSITION_MOUSE);
 		addButtonListener(new Listener() {
 			public void handleEvent(Event event) {
-				Logger.debug("starting dialog");
 				try {
 					choosen = dialog.open();
 					text.redraw();
 					text.forceFocus(); // das muessen wir machen, damit die Listener ausgeloest werden
 				} catch (Exception e1) {
-					Logger.error("error while opening dialog", e1);
 				}
 			}
 		});
@@ -118,6 +115,9 @@ public class TreeSelectInput extends ButtonInput implements Listener {
 }
 /*********************************************************************
  * $Log: TreeSelectInput.java,v $
+ * Revision 1.3  2005/08/29 16:23:20  phormanns
+ * Jameica JAR-Dateien eingecheckt
+ *
  * Revision 1.2  2005/08/26 19:19:44  phormanns
  * Hierarchie-Auswahl für erstes Konto im Buchungsdialog
  *
