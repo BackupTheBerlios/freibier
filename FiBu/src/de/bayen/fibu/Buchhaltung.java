@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.11 2005/08/21 20:32:03 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.12 2005/08/30 21:05:53 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -30,6 +30,7 @@ import de.bayen.fibu.exceptions.FiBuException;
 import de.bayen.fibu.exceptions.FiBuRuntimeException;
 import de.bayen.fibu.exceptions.ImpossibleException;
 import de.bayen.fibu.exceptions.FiBuException.NotInitializedException;
+import de.bayen.fibu.util.Drucktabelle;
 
 /**
  * Diese Klasse ist die Hauptklasse, die eine komplette Buchhaltung beschreibt.
@@ -97,7 +98,7 @@ public class Buchhaltung extends AbstractObject {
 		db = null;
 		try {
 			FileInputStream fileInputStream = new FileInputStream(configname);
-			if (fileInputStream!=null) {
+			if (fileInputStream != null) {
 				Properties mysqlProps = new Properties();
 				mysqlProps.load(fileInputStream);
 				db = new Database(mysqlProps.getProperty("database"),
@@ -137,7 +138,7 @@ public class Buchhaltung extends AbstractObject {
 			} catch (IOException e) {} catch (UserSQL_DBException e) {}
 		}
 		if (db == null) {
-			// erster Versuch nicht geklappt?
+			// bisherige Versuche nicht geklappt?
 			// diese Parameter sind in einem Standard-Debian möglich:
 			db = new Database("test", "localhost", "test", null);
 		}
@@ -190,10 +191,10 @@ public class Buchhaltung extends AbstractObject {
 	 * Diese Methode wird aufgerufen, um die Datenbank erstmalig zu 
 	 * initialisieren. ACHTUNG: Bestehende Daten werden ohne Rückfrage 
 	 * gelöscht!!!
-	 * 
-	 * @throws DatabaseException
+	 * @throws UserSQL_DBException 
+	 * @throws SQL_DBException 
 	 */
-	public void firstTimeInit() throws DatabaseException {
+	public void firstTimeInit() throws UserSQL_DBException, SQL_DBException {
 		db.wipeOutDatabase();
 		try {
 			db.executeSqlFile("de/bayen/fibu/dbdefinition/db_definition.sql");
@@ -412,6 +413,32 @@ public class Buchhaltung extends AbstractObject {
 	}
 
 	/**
+	 * Ergibt eine Liste der Konten (d.h. eine Liste von Strings mit 
+	 * Kontonummern)
+	 * 
+	 * @return Liste mit Kontonummer-Strings
+	 * @throws SQL_DBException 
+	 */
+	public List getKontenListe() throws SQL_DBException {
+		try {
+			List konten = getDatabase().getTable("Konten").getRecordsFromQuery(
+					null, "Kontonummer", true);
+			List ergebnis = new ArrayList(konten.size());
+			for (int i = 0; i < konten.size(); i++) {
+				ergebnis.add(i, ((Record) konten.get(i))
+						.getField("Kontonummer").format());
+			}
+			return ergebnis;
+		} catch (IllegalDefaultValueDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
+	}
+
+	/**
 	 * Erzeugt ein ganz neues Journal. Das Journal wird direkt in der
 	 * Datenbank erzeugt, muss also nicht noch mit write() bestätigt werden.
 	 * 
@@ -502,9 +529,41 @@ public class Buchhaltung extends AbstractObject {
 		}
 		return journale;
 	}
+
+	public String printSaldenliste() throws SQL_DBException {
+		String spalten[] = {
+				"Nr", "Bezeichnung", "Soll", "Haben"
+		};
+		int breiten[] = {
+				6, 40, 14, 14
+		};
+		int ausrichtung[] = {
+				Drucktabelle.RECHTSBUENDIG, Drucktabelle.LINKSBUENDIG,
+				Drucktabelle.RECHTSBUENDIG, Drucktabelle.RECHTSBUENDIG
+		};
+		Drucktabelle tab = new Drucktabelle(spalten, breiten, ausrichtung);
+		String erg = tab.printUeberschrift(true) + "\n";
+		List konten = getKontenListe();
+		for (Iterator iter = konten.iterator(); iter.hasNext();) {
+			String kontonummer = (String) iter.next();
+			Konto konto;
+			try {
+				konto = getKonto(kontonummer);
+			} catch (RecordNotExistsDBException e) {
+				throw new ImpossibleException(e, log);
+			}
+			erg += konto.printSaldenzeile(tab, 0) + "\n";
+		}
+		return erg;
+	}
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.12  2005/08/30 21:05:53  tbayen
+ * Kontenplanimport aus GNUCash
+ * Ausgabe von Auswertungen, Kontenübersicht, Bilanz, GuV, etc. als Tabelle
+ * Nutzung von Transaktionen
+ *
  * Revision 1.11  2005/08/21 20:32:03  tbayen
  * Datenbankparameter werden nacheinander an verschiedenen Quellen gesucht
  *

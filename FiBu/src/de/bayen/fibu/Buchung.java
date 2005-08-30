@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchung.java,v 1.9 2005/08/21 17:26:12 tbayen Exp $
+ * $Id: Buchung.java,v 1.10 2005/08/30 21:05:53 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import de.bayen.database.Database;
 import de.bayen.database.ForeignKey;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
@@ -122,36 +123,49 @@ public class Buchung extends AbstractObject implements Comparable {
 			throw new ImpossibleException(e, log);
 		}
 		if (isSaldoNull()) {
-			// TODO das hier ist ein Fall für eine Transaktion
-			// erstmal alle vorhandenen Buchungszeilen löschen:
-			Table zeilentab = table.getDatabase().getTable("Buchungszeilen");
-			List liste;
+			Database db = table.getDatabase();
 			try {
-				liste = zeilentab.getRecordsFromQuery(
-						zeilentab.new QueryCondition("Buchung",
-								Table.QueryCondition.EQUAL, String
-										.valueOf(getID())), null, true);
-			} catch (TypeNotSupportedDBException e1) {
-				throw new ImpossibleException(e1, log);
-			} catch (ParseErrorDBException e1) {
-				throw new ImpossibleException(e1, log);
-			}
-			for (Iterator iter = liste.iterator(); iter.hasNext();) {
-				Record rec = (Record) iter.next();
+				db.startTransaction();
+				// erstmal alle vorhandenen Buchungszeilen löschen:
+				Table zeilentab = db.getTable("Buchungszeilen");
+				List liste;
 				try {
-					table.deleteRecord(rec);
-				} catch (RecordNotExistsDBException e) {
-					throw new ImpossibleException(e, log);
-				} catch (TypeNotSupportedDBException e) {
-					throw new ImpossibleException(e, log);
+					liste = zeilentab.getRecordsFromQuery(
+							zeilentab.new QueryCondition("Buchung",
+									Table.QueryCondition.EQUAL, String
+											.valueOf(getID())), null, true);
+				} catch (TypeNotSupportedDBException e1) {
+					throw new ImpossibleException(e1, log);
+				} catch (ParseErrorDBException e1) {
+					throw new ImpossibleException(e1, log);
 				}
-			}
-			// und dann die neuen speichern.
-			// (Die, die ich ggf. am Anfang gelesen habe, haben schon eine ID,
-			// die wird dann praktischerweise wiederbenutzt)
-			for (Iterator iter = zeilen.iterator(); iter.hasNext();) {
-				Buchungszeile zeile = (Buchungszeile) iter.next();
-				zeile.write();
+				for (Iterator iter = liste.iterator(); iter.hasNext();) {
+					Record rec = (Record) iter.next();
+					try {
+						table.deleteRecord(rec);
+					} catch (RecordNotExistsDBException e) {
+						throw new ImpossibleException(e, log);
+					} catch (TypeNotSupportedDBException e) {
+						throw new ImpossibleException(e, log);
+					}
+				}
+				// und dann die neuen speichern.
+				// (Die, die ich ggf. am Anfang gelesen habe, haben schon eine ID,
+				// die wird dann praktischerweise wiederbenutzt)
+				for (Iterator iter = zeilen.iterator(); iter.hasNext();) {
+					Buchungszeile zeile = (Buchungszeile) iter.next();
+					zeile.write();
+				}
+				db.commitTransaction();
+			} catch (RuntimeException e) {
+				db.rollbackTransaction();
+				throw e;
+			} catch (SQL_DBException e) {
+				db.rollbackTransaction();
+				throw e;
+			} catch (ParseErrorDBException e) {
+				db.rollbackTransaction();
+				throw e;
 			}
 		}
 	}
@@ -316,6 +330,11 @@ public class Buchung extends AbstractObject implements Comparable {
 }
 /*
  * $Log: Buchung.java,v $
+ * Revision 1.10  2005/08/30 21:05:53  tbayen
+ * Kontenplanimport aus GNUCash
+ * Ausgabe von Auswertungen, Kontenübersicht, Bilanz, GuV, etc. als Tabelle
+ * Nutzung von Transaktionen
+ *
  * Revision 1.9  2005/08/21 17:26:12  tbayen
  * doppelte Variable in fast allen von AbstractObject abgeleiteten Klassen
  *

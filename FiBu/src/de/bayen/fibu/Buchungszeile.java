@@ -1,9 +1,11 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchungszeile.java,v 1.9 2005/08/21 17:35:22 tbayen Exp $
+ * $Id: Buchungszeile.java,v 1.10 2005/08/30 21:05:53 tbayen Exp $
  */
 package de.bayen.fibu;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import de.bayen.database.ForeignKey;
@@ -17,6 +19,8 @@ import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
 import de.bayen.fibu.exceptions.FiBuRuntimeException;
 import de.bayen.fibu.exceptions.ImpossibleException;
+import de.bayen.fibu.util.Drucktabelle;
+import de.bayen.fibu.util.StringUtil;
 
 /**
  * 
@@ -210,9 +214,28 @@ public class Buchungszeile extends AbstractObject implements Comparable {
 			return "EXCEPTION: " + e.getMessage();
 		}
 	}
+
+	public String ausgabe(Drucktabelle tab, int ebene) {
+		Map hash = new HashMap();
+		String bezeichnung = StringUtil.times("  ", ebene)
+				+ getBuchung().getBuchungstext();
+		hash.put("Bezeichnung", bezeichnung);
+		Betrag betrag = getBetrag();
+		if (betrag.isSoll()) {
+			hash.put("Soll", StringUtil.formatNumber(betrag.getWert()));
+		} else {
+			hash.put("Haben", StringUtil.formatNumber(betrag.getWert()));
+		}
+		return tab.printZeile(hash);
+	}
 }
 /*
  * $Log: Buchungszeile.java,v $
+ * Revision 1.10  2005/08/30 21:05:53  tbayen
+ * Kontenplanimport aus GNUCash
+ * Ausgabe von Auswertungen, Kontenübersicht, Bilanz, GuV, etc. als Tabelle
+ * Nutzung von Transaktionen
+ *
  * Revision 1.9  2005/08/21 17:35:22  tbayen
  * kleinere Warnung beseitigt
  *

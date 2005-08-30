@@ -1,12 +1,14 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.10 2005/08/21 17:26:12 tbayen Exp $
+ * $Id: Konto.java,v 1.11 2005/08/30 21:05:53 tbayen Exp $
  */
 package de.bayen.fibu;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import de.bayen.database.DataObject;
@@ -21,6 +23,8 @@ import de.bayen.database.exception.SysDBEx.TypeNotSupportedDBException;
 import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
 import de.bayen.fibu.exceptions.ImpossibleException;
+import de.bayen.fibu.util.Drucktabelle;
+import de.bayen.fibu.util.StringUtil;
 
 /**
  * Klasse für ein einzelnes Konto unserer Buchhaltung. Ein Konto kann 
@@ -177,8 +181,36 @@ public class Konto extends AbstractObject implements Comparable {
 		}
 	}
 
-	public void setKontonummer(String ktonr) throws ParseErrorDBException {
-		record.setField("Kontonummer", ktonr);
+	/**
+	 * ergibt, ob es sich bei diesem Konto um ein Soll-Konto oder ein Haben-Konto
+	 * handelt. Je nach Oberkonto heisst Soll soviel wie Aktiv, Gewinn oder 
+	 * Forderung und Haben soviel wie Passiv, Verlust oder Verbindlichkeit.
+	 * <p>
+	 * Dieser Wert kann bei der Ausgabe von Konten bzw. von Kontenlisten zur
+	 * besseren Übersicht genutzt werden. Echte Unterschiede zwischen den
+	 * Kontenarten gibt es nicht.
+	 * </p>
+	 * @return bool-Wert
+	 */
+	public boolean getSoll() {
+		try {
+			if (record.getFormatted("Soll").equals("true")) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		}
+	}
+
+	public void setKontonummer(String ktonr) {
+		try {
+			record.setField("Kontonummer", ktonr);
+		} catch (ParseErrorDBException e) {
+			// Kontonummer ist ein String, also kann es keinen Parserfehler geben
+			throw new ImpossibleException(e, log);
+		}
 	}
 
 	public void setBezeichnung(String bezeichnung) {
@@ -248,6 +280,14 @@ public class Konto extends AbstractObject implements Comparable {
 		}
 	}
 
+	public void setSoll(boolean soll) {
+		try {
+			record.setField("Soll", soll ? "1" : "0");
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
+	}
+
 	/**
 	 * Ergibt eine Liste mit Konto-Objekten. Die aufgelisteten Konten sind die,
 	 * die dieses Konto als Oberkonto angegeben haben.
@@ -290,10 +330,20 @@ public class Konto extends AbstractObject implements Comparable {
 		}
 		List records;
 		try {
-			records = table.getRecordsFromQuery(table.new QueryCondition(
-					"Konto", QueryCondition.EQUAL, getID()), null, true);
-		} catch (TypeNotSupportedDBException e1) {
-			throw new ImpossibleException(e1, log);
+			QueryCondition query = table.new QueryCondition("Konto",
+					QueryCondition.EQUAL, getID());
+			// TODO Auswahl nach Periode, absummiert, etc.
+			query.and(table.new QueryCondition("Buchungen, Journale",
+					QueryCondition.SQL,
+					"Buchungszeilen.Buchung=Buchungen.id AND "
+							+ "Buchungen.Journal=Journale.id AND "
+							+ "Journale.absummiert=0"));
+			records = table.getRecordsFromQuery(query, null, true);
+		} catch (TypeNotSupportedDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			// QueryCondition.SQL-Daten werden gar nicht geparst
+			throw new ImpossibleException(e, log);
 		}
 		for (Iterator iter = records.iterator(); iter.hasNext();) {
 			Record zeile = (Record) iter.next();
@@ -309,6 +359,31 @@ public class Konto extends AbstractObject implements Comparable {
 		// Dies hier ist aufwendiger, aber einstweilen funktioniert es:
 		Collections.sort(zeilen);
 		return zeilen;
+	}
+
+	/**
+	 * ergibt den Saldo dieses Kontos.
+	 * 
+	 * @return Saldo
+	 * @throws SQL_DBException 
+	 */
+	public Betrag getSaldo() throws SQL_DBException {
+		Betrag erg = new Betrag();
+		// Saldo von Buchungen, die direkt auf dieses Konto erfolgt sind:
+		for (Iterator iter = getBuchungszeilen().iterator(); iter.hasNext();) {
+			Buchungszeile zeile = (Buchungszeile) iter.next();
+			erg = erg.add(zeile.getBetrag());
+		}
+		// und dazu die Salden der Unterkonten dieses Kontos
+		for (Iterator iter = getUnterkonten().iterator(); iter.hasNext();) {
+			Konto konto = (Konto) iter.next();
+			erg = erg.add(konto.getSaldo());
+		}
+		if (erg.equals(new Betrag())) {
+			// Wenn der Wert gleich Null ist, setze ich Soll/Haben richtig
+			erg.setSoll(getSoll());
+		}
+		return erg;
 	}
 
 	/**
@@ -354,9 +429,93 @@ public class Konto extends AbstractObject implements Comparable {
 		}
 		return erg;
 	}
+
+	/**
+	 * Gibt ein Konto als Tabelle aus. Das maxgewicht gibt an, wie tief
+	 * dabei in die Kontenhierarchie hinabgestiegen wird. nursalden gibt an,
+	 * ob auch Buchungszeilen ausgegeben werden. keinnullsaldo gibt an, ob
+	 * Unterkonten, deren Saldo Null ist, weggelassen werden sollen.
+	 * 
+	 * @param maxgewicht
+	 * @param nursalden
+	 * @return Textstring, der eine Tabelle enthält
+	 * @throws SQL_DBException
+	 */
+	public String ausgabe(int maxgewicht, boolean nursalden,
+			boolean keinnullsaldo) throws SQL_DBException {
+		String spalten[] = {
+				"Nr", "Bezeichnung", "Soll", "Haben"
+		};
+		int breiten[] = {
+				6, 40, 14, 14
+		};
+		int ausrichtung[] = {
+				Drucktabelle.RECHTSBUENDIG, Drucktabelle.LINKSBUENDIG,
+				Drucktabelle.RECHTSBUENDIG, Drucktabelle.RECHTSBUENDIG
+		};
+		Drucktabelle tab = new Drucktabelle(spalten, breiten, ausrichtung);
+		return tab.printUeberschrift(true) + "\n"
+				+ ausgabe(tab, 0, maxgewicht, nursalden, keinnullsaldo);
+	}
+
+	private String ausgabe(Drucktabelle tab, int ebene, int maxgewicht,
+			boolean nursalden, boolean keinnullsaldo) throws SQL_DBException {
+		String erg = printSaldenzeile(tab, ebene) + "\n";
+		for (Iterator iter = getUnterkonten().iterator(); iter.hasNext();) {
+			Konto konto = (Konto) iter.next();
+			int gewicht = konto.getGewicht();
+			if (maxgewicht >= gewicht) {
+				if ((!keinnullsaldo)
+						|| (!konto.getSaldo().equals(new Betrag()))) {
+					erg += konto.ausgabe(tab, ebene + 1, maxgewicht - gewicht,
+							nursalden, keinnullsaldo);
+				}
+			}
+		}
+		if (maxgewicht > 0 && (!nursalden)) {
+			for (Iterator iter = getBuchungszeilen().iterator(); iter.hasNext();) {
+				Buchungszeile zeile = (Buchungszeile) iter.next();
+				erg += zeile.ausgabe(tab, ebene + 1) + "\n";
+			}
+		}
+		return erg;
+	}
+
+	/**
+	 * Gibt das Konto als eine Zeile in einen String aus (wie z.B. in einer 
+	 * Saldenliste). Es können die Spaltenbreiten angegeben werden sowie eine
+	 * Einrückungsebene.
+	 * 
+	 * @param spaltenbreiten
+	 * @param ebene
+	 * @return Textstring, der eine Tabellenzeile enthält
+	 * @throws SQL_DBException
+	 */
+	public String printSaldenzeile(Drucktabelle tab, int ebene)
+			throws SQL_DBException {
+		Map hash = new HashMap();
+		hash.put("Nr", getKontonummer());
+		String bezeichnung = "";
+		for (int i = 0; i < ebene; i++)
+			bezeichnung += "  ";
+		bezeichnung += getBezeichnung();
+		hash.put("Bezeichnung", bezeichnung);
+		Betrag betrag = getSaldo();
+		if (betrag.isSoll()) {
+			hash.put("Soll", StringUtil.formatNumber(betrag.getWert()));
+		} else {
+			hash.put("Haben", StringUtil.formatNumber(betrag.getWert()));
+		}
+		return tab.printZeile(hash);
+	}
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.11  2005/08/30 21:05:53  tbayen
+ * Kontenplanimport aus GNUCash
+ * Ausgabe von Auswertungen, Kontenübersicht, Bilanz, GuV, etc. als Tabelle
+ * Nutzung von Transaktionen
+ *
  * Revision 1.10  2005/08/21 17:26:12  tbayen
  * doppelte Variable in fast allen von AbstractObject abgeleiteten Klassen
  *

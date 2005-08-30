@@ -1,9 +1,21 @@
 TODO
 
 Fibu:
-- Import von Kontenrahmen aus GnuCash
+- in Auswertungen nur bestimmte Daten (absummiert, Periode, etc.)
+- typische Buchungen mit einem Befehl anlegen
+
+- Profiling/allgemeine Performanz
+
+- Testapplikation mit Menü für bestimmte Grundauswertungen (Bilanz, GuV, Debitoren)
 - Import von Kontenrahmen/Konten aus diDurst
-- Beschreibung von Zielapplikationen ausführen
+- Beschreibung von Zielapplikationen (Pflichtenheft) anfertigen
+- Kassenbuch
+- Bankbuch
+- Zinsrechnung
+- Darlehensauszüge
+- automatische Buchungen (Miete, fällige Raten, etc.)
+- Bankauszüge per HBCI
+- Bankeinzüge per HBCI
 
 
 FreibierDB:
@@ -16,6 +28,12 @@ später:
 
 
 Changes:
+- Buchung wird als Transaktion ausgeführt
+- Transaktionen in FreibierDB eingebaut
+- Tests für Auswertungen in Ordnung bringen
+- eigene Klasse für Ausgabe von Spaltendaten: Drucktabelle
+- Unterkonten mit in den Saldo einberechnen
+- Import von Kontenrahmen aus GnuCash
 - Datenbank-Parameter aus Properties-Datei und aus Config im Home-Verzeichnis
 - Ausgaben von Test-Klassen nicht per println, sondern per Logging
 - Todo erledigen, das bei der Exceptions-Wandlung aufgefallen ist

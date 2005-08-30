@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Betrag.java,v 1.2 2005/08/16 21:11:47 tbayen Exp $
+ * $Id: Betrag.java,v 1.3 2005/08/30 21:05:53 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -72,7 +72,7 @@ public class Betrag {
 	public void setWert(BigDecimal wert) {
 		this.wert = wert;
 	}
-
+	
 	public String toString() {
 		return getWert().toString() + getSollHaben();
 	}
@@ -106,6 +106,11 @@ public class Betrag {
 }
 /*
  * $Log: Betrag.java,v $
+ * Revision 1.3  2005/08/30 21:05:53  tbayen
+ * Kontenplanimport aus GNUCash
+ * Ausgabe von Auswertungen, Kontenübersicht, Bilanz, GuV, etc. als Tabelle
+ * Nutzung von Transaktionen
+ *
  * Revision 1.2  2005/08/16 21:11:47  tbayen
  * Buchungszeilen werden gespeichert
  *
