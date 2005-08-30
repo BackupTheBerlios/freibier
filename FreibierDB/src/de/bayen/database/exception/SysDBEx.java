@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: SysDBEx.java,v 1.1 2005/08/21 17:06:59 tbayen Exp $
+ * $Id: SysDBEx.java,v 1.2 2005/08/30 20:31:03 tbayen Exp $
  */
 package de.bayen.database.exception;
 
@@ -171,9 +171,27 @@ public class SysDBEx extends DatabaseException {
 			super(message, cause, log);
 		}
 	}
+	
+	/**
+	 * Ein Fehler ist bei der Behandlung einer Transaktion aufgetreten (z.B. 
+	 * beim Commit).
+	 */
+	public static class TransactionDBException extends SysDBEx.SQL_DBException {
+		public TransactionDBException(String message, Log log) {
+			super(message, log);
+		}
+
+		public TransactionDBException(String message, Throwable cause, Log log) {
+			super(message, cause, log);
+		}
+	}
+	
 }
 /*
  * $Log: SysDBEx.java,v $
+ * Revision 1.2  2005/08/30 20:31:03  tbayen
+ * erweiterte Querys mit direkter SQL-Syntax möglich
+ *
  * Revision 1.1  2005/08/21 17:06:59  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *

@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: RecordDefinition.java,v 1.8 2005/08/21 17:06:59 tbayen Exp $
+ * $Id: RecordDefinition.java,v 1.9 2005/08/30 20:31:03 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -105,8 +105,12 @@ public class RecordDefinition {
 	/**
 	 * Ergibt ein SQL-Select-Statement, das geeignet ist, alle Daten für diesen
 	 * Record einzulesen. Dabei werden auch durch Fremdschlüssel referenzierte
-	 * Werte miteingelesen. 
+	 * Werte miteingelesen.
 	 * <p>
+	 * Der fromtabellen-String kann angegeben werden, damit weitere Tabellen in
+	 * die FROM-Clause aufgenommen werden. Dies kann nützlich sein, wenn man
+	 * davon abhängig besondere Querys (mit dem SQL-operator) erstellt.
+	 * </p><p>
 	 * Das Statement enthält immer eine WHERE-Klausel am Ende, so daß mit 
 	 * "AND ..." weitere WHERE-Bedingungen angehängt werden können.
 	 * </p><p>
@@ -118,9 +122,11 @@ public class RecordDefinition {
 	 * Ergebnis-Datensatz.
 	 * </p>
 	 */
-	public String getSelectStatement(String myTable) {
+	protected String getSelectStatement(String myTable, String fromtabellen) {
 		String felder = "";
 		String tabellen = "`" + myTable + "`";
+		if(fromtabellen!=null && fromtabellen.length()>0)
+			tabellen+=","+fromtabellen;
 		String where = null;
 		Iterator i = columnslist.iterator();
 		TypeDefinition feldtyp;
@@ -157,9 +163,22 @@ public class RecordDefinition {
 		// SELECT adressen.vorname, adressen.nachname, adressen.lebensalter, adressen.sprache, programmiersprachen.name, 
 		// adressen.id FROM `adressen`,Programmiersprachen where programmiersprachen.id=adressen.sprache
 	}
+
+	/**
+	 * verkürzte Version der Methode ohne die Angabe von fromtabellen.
+	 * 
+	 * @param myTable
+	 * @return SQL-Statement
+	 */
+	protected String getSelectStatement(String myTable) {
+		return getSelectStatement(myTable,null);
+	}
 }
 /*
  * $Log: RecordDefinition.java,v $
+ * Revision 1.9  2005/08/30 20:31:03  tbayen
+ * erweiterte Querys mit direkter SQL-Syntax möglich
+ *
  * Revision 1.8  2005/08/21 17:06:59  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *

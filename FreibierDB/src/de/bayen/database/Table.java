@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.18 2005/08/21 17:06:59 tbayen Exp $
+ * $Id: Table.java,v 1.19 2005/08/30 20:31:03 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -83,7 +83,20 @@ public class Table {
 		public static final int LESS = 3;
 		public static final int LESS_OR_EQUAL = 4;
 		public static final int LIKE = 5;
+		public static final int SQL = 5; // SQL-Befehl in value, Tabelle(n) in column
 
+		/**
+		 * Diese Klasse erzeugt eine Datenbankabfrage, ohne daß man dafür SQL
+		 * beherrschen müsste.
+		 * <p>
+		 * Falls jemand dennoch lieber direkt SQL-Befehle schreibt, kann er
+		 * als Operator "SQL" wählen und in value dann einen kompletten 
+		 * SQL-Term schreiben. Der Term muss einen Wahrheitswert ergeben. In 
+		 * diesem Falle kann column leer bleiben oder eine (oder kommasepariert
+		 * mehrere) Tabelle(n) enthalten, die in die FROM-Clause aufgenommen 
+		 * werden.
+		 * </p>
+		 */
 		public QueryCondition(String column, int operator, Object value) {
 			this.column = column;
 			this.operator = operator;
@@ -107,44 +120,89 @@ public class Table {
 				throws ParseErrorDBException {
 			this.column = column;
 			this.operator = operator;
-			this.value = getRecordDefinition().getFieldDef(column).parse(value);
+			if (operator == SQL) {
+				// bei diesem Spezialoperator wird der String so gespeichert
+				// wie er ist:
+				this.value = value;
+			} else {
+				this.value = getRecordDefinition().getFieldDef(column).parse(
+						value);
+			}
 		}
 
 		public void and(QueryCondition cond) {
 			next = cond;
 		}
 
-		public String expression() throws IllegalQueryConditionDBException,
+		/**
+		 * Ergibt die SQL-WHERE-Clause, die dieser Anfrage entspricht.
+		 * 
+		 * @return SQL-Ausdruck als String
+		 * @throws IllegalQueryConditionDBException
+		 * @throws TypeNotSupportedDBException
+		 * @throws WrongTypeDBException
+		 */
+		protected String expression() throws IllegalQueryConditionDBException,
 				TypeNotSupportedDBException, WrongTypeDBException {
-			String erg = getName() + "." + column;
-			switch (operator) {
-			case EQUAL:
-				erg += " = ";
-				break;
-			case GREATER:
-				erg += " > ";
-				break;
-			case GREATER_OR_EQUAL:
-				erg += " >= ";
-				break;
-			case LESS:
-				erg += " < ";
-				break;
-			case LESS_OR_EQUAL:
-				erg += " <= ";
-				break;
-			case LIKE:
-				erg += " LIKE ";
-				break;
-			default:
-				throw new SysDBEx.IllegalQueryConditionDBException(
-						"falsche QueryCondition: (" + column + "," + operator
-								+ "," + "value" + ")", log);
+			String erg;
+			if (operator == SQL) {
+				erg = "(" + ((String) value) + ")";
+			} else {
+				erg = getName() + "." + column;
+				switch (operator) {
+				case EQUAL:
+					erg += " = ";
+					break;
+				case GREATER:
+					erg += " > ";
+					break;
+				case GREATER_OR_EQUAL:
+					erg += " >= ";
+					break;
+				case LESS:
+					erg += " < ";
+					break;
+				case LESS_OR_EQUAL:
+					erg += " <= ";
+					break;
+				case LIKE:
+					erg += " LIKE ";
+					break;
+				default:
+					throw new SysDBEx.IllegalQueryConditionDBException(
+							"falsche QueryCondition: (" + column + ","
+									+ operator + "," + "value" + ")", log);
+				}
+				DataObject val = new DataObject(value, def.getFieldDef(column));
+				erg += SQLPrinter.print(val);
 			}
-			DataObject val = new DataObject(value, def.getFieldDef(column));
-			erg += SQLPrinter.print(val);
 			if (next != null)
 				erg += " AND " + next.expression();
+			return erg;
+		}
+
+		/**
+		 * Ergibt die SQL-FROM-Clause, die zu diesem Query gehört. Dieser Wert kann
+		 * nur dann ungleich dem Leerstring sein, wenn ein SQL-Operator benutzt
+		 * wird und FROM-Tabellen angegeben sind.
+		 * 
+		 * @return SQL-Ausdruck als String
+		 */
+		protected String fromClause() {
+			String erg = "";
+			if (operator == SQL) {
+				erg = column;
+			}
+			if (next != null) {
+				String nextfrom = next.fromClause();
+				if (!nextfrom.equals("")) {
+					if (erg.equals("")) {
+						erg = nextfrom;
+					} else {
+						erg += "," + nextfrom;
+					}
+				}
+			}
 			return erg;
 		}
 	}
@@ -178,7 +236,10 @@ public class Table {
 	public List getRecords(QueryCondition condition, String orderColumn,
 			boolean ascending, int startRecordNr, int numberOfRecords)
 			throws SQL_DBException, TypeNotSupportedDBException {
-		String selectRumpf = def.getSelectStatement(name);
+		// FROM-Tabellen entstehen bei Spezial-Querys, die den SQL-Operator
+		// benutzen und zusätzliche Tabellen in der FROM-Clause brauchen.
+		String fromtabellen = condition == null ? null : condition.fromClause();
+		String selectRumpf = def.getSelectStatement(name, fromtabellen);
 		String sql = selectRumpf;
 		// Filtern
 		if (condition != null)
@@ -258,13 +319,13 @@ public class Table {
 	/*
 	 * Ergibt die Anzahl Datensätze in der Tabelle (oder 0, wenn es keine gibt).
 	 */
-	public int getNumberOfRecords() throws SQL_DBException{
+	public int getNumberOfRecords() throws SQL_DBException {
 		Map hash;
 		try {
 			hash = db.executeSelectSingleRow("SELECT COUNT(*) AS COUNT FROM "
 					+ name);
 		} catch (RecordNotExistsDBException e) {
-			throw new DBRuntimeException.ImpossibleDBException(e,log);
+			throw new DBRuntimeException.ImpossibleDBException(e, log);
 		}
 		return ((Integer) hash.get("COUNT")).intValue();
 	}
@@ -496,6 +557,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.19  2005/08/30 20:31:03  tbayen
+ * erweiterte Querys mit direkter SQL-Syntax möglich
+ *
  * Revision 1.18  2005/08/21 17:06:59  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *
