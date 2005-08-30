@@ -1,7 +1,6 @@
-// $Id: KontoControl.java,v 1.1 2005/08/26 17:40:46 phormanns Exp $
+// $Id: KontoControl.java,v 1.2 2005/08/30 21:11:14 tbayen Exp $
 package de.bayen.fibu.gui.control;
 
-import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
 import de.bayen.database.exception.SysDBEx.SQL_DBException;
 import de.bayen.fibu.Konto;
 import de.bayen.fibu.gui.Settings;
@@ -86,8 +85,6 @@ public class KontoControl extends AbstractControl {
 			konto.setGewicht(((Integer) gewicht.getValue()).intValue());
 			konto.write();
 			GUI.startView(KontenView.class, kto);
-		} catch (ParseErrorDBException e) {
-			throw new ApplicationException("Fehler in den eingegebenen Kontodaten",e );
 		} catch (SQL_DBException e) {
 			throw new ApplicationException("Fehler beim Speichern des Kontos",e );
 		}
@@ -110,6 +107,9 @@ public class KontoControl extends AbstractControl {
 }
 /*
  *  $Log: KontoControl.java,v $
+ *  Revision 1.2  2005/08/30 21:11:14  tbayen
+ *  Neue Version der FiBu-Bibliothek mit kleiner API-Änderung eingespielt
+ *
  *  Revision 1.1  2005/08/26 17:40:46  phormanns
  *  Anzeige der Kontenhierarchie, Anlegen von Unterkonten
  *
