@@ -1,5 +1,5 @@
 /* Erzeugt am 21.08.2005 von tbayen
- * $Id: PetersTest.java,v 1.2 2005/08/21 17:42:23 tbayen Exp $
+ * $Id: PetersTest.java,v 1.3 2005/08/30 20:13:02 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -19,7 +19,7 @@ public class PetersTest extends TestCase {
 
 	public static void testPetersMail050821() throws DatabaseException,
 			FiBuException {
-		Buchhaltung fibu = new Buchhaltung("test", "localhost", "test", "");
+		Buchhaltung fibu = new Buchhaltung();
 		Record firmenstammdaten = fibu.getFirmenstammdaten();
 		fibu.setFirmenstammdaten(firmenstammdaten);
 		fibu.setJahrAktuell("2005");
@@ -52,6 +52,9 @@ public class PetersTest extends TestCase {
 }
 /*
  * $Log: PetersTest.java,v $
+ * Revision 1.3  2005/08/30 20:13:02  tbayen
+ * Zugriff auf Standard-Datenbank, die auch alle anderen Tests benutzen
+ *
  * Revision 1.2  2005/08/21 17:42:23  tbayen
  * Ausgaben von Test-Klassen nicht per println, sondern per Logging
  *

@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: BuchhaltungTest.java,v 1.1 2005/08/17 20:28:04 tbayen Exp $
+ * $Id: BuchhaltungTest.java,v 1.2 2005/08/30 20:14:43 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -13,8 +13,8 @@ import de.bayen.fibu.Buchhaltung;
 public class BuchhaltungTest extends TestCase {
 	public void testNoDatabase() {
 		try {
-			Buchhaltung bh = new Buchhaltung("gibtsnicht",
-					"localhost", "keinuser", "password");
+			Buchhaltung bh = new Buchhaltung("gibtsnicht", "localhost",
+					"keinuser", "password");
 			bh.close();
 			fail("Nicht existierende Datenbank nicht erkannt");
 		} catch (Exception e) {
@@ -36,9 +36,11 @@ public class BuchhaltungTest extends TestCase {
 				int size = db.getTableNamesList().size();
 				// Dieser Test funktioniert nur, wenn die Datenbank "test"
 				// vorher entweder leer war oder diesen Test hier gemacht hat.
-				assertTrue("falsche Anzahl an Tabellen: "+size, size == DatabaseConstructorTest.numberOfTables()
-						|| size == DatabaseConstructorTest.numberOfTables()
-								+ numberOfTables());
+				assertTrue("falsche Anzahl an Tabellen: " + size,
+						size == DatabaseConstructorTest.numberOfTables()
+								|| size == DatabaseConstructorTest
+										.numberOfTables()
+										+ numberOfTables());
 				db.close();
 			}
 			// Jetzt erzeuge ich meine eigene Datenbank und prüfe, ob die
@@ -46,10 +48,9 @@ public class BuchhaltungTest extends TestCase {
 			{
 				Buchhaltung bh = new Buchhaltung();
 				bh.firstTimeInit();
-				bh.close();
-				Database db = new Database("test", "localhost", "test", null);
+				Database db = bh.getDatabase();
 				assertEquals(numberOfTables(), db.getTableNamesList().size());
-				db.close();
+				bh.close();
 			}
 		} catch (DatabaseException e) {
 			fail(e.getMessage());
@@ -68,12 +69,12 @@ public class BuchhaltungTest extends TestCase {
 	public static int numberOfTables() {
 		return 6;
 	}
-	
-	public void testGetFirmenstammdaten(){
+
+	public void testGetFirmenstammdaten() {
 		try {
 			Buchhaltung bh = new Buchhaltung();
-			Record stamm=bh.getFirmenstammdaten();
-			String firma=stamm.getFormatted("Firma");
+			Record stamm = bh.getFirmenstammdaten();
+			String firma = stamm.getFormatted("Firma");
 			assertEquals("Finanzbuchhaltung", firma);
 			bh.close();
 		} catch (Exception e) {
@@ -81,7 +82,7 @@ public class BuchhaltungTest extends TestCase {
 		}
 	}
 
-	public void testGetFirma(){
+	public void testGetFirma() {
 		try {
 			Buchhaltung bh = new Buchhaltung();
 			assertEquals("Finanzbuchhaltung", bh.getFirma());
@@ -90,10 +91,12 @@ public class BuchhaltungTest extends TestCase {
 			fail(e.getMessage());
 		}
 	}
-
 }
 /*
  * $Log: BuchhaltungTest.java,v $
+ * Revision 1.2  2005/08/30 20:14:43  tbayen
+ * Zugriff auf Standard-Datenbank, die auch alle anderen Tests benutzen
+ *
  * Revision 1.1  2005/08/17 20:28:04  tbayen
  * zwei Methoden zum Auflisten von Objekten und alles, was dazu sonst noch nötig war
  *
