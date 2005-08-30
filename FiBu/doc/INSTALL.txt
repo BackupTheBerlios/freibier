@@ -13,3 +13,17 @@ die Applikation selber.
 Java
 ----
 Ich benutze das Java-SDK 1.4 von Sun.
+
+
+
+Installation unter Eclipse zur Entwicklung
+------------------------------------------
+- Projekt FreibierDB installieren und die build.xml mit dem Target "dist" starten
+- Projekt FiBu installieren und ebenfalls Target "dist" starten
+
+Die im FiBu-Projekt enthaltenen Klassen (Tests etc.) können nun gestartet werden.
+
+Nun kann ein weiteres Projekt (z.B. FiBuGUI) installiert werden. Dort sollte man
+die erzeugten *.jar-Dateien (jeweils im "dist"-Verzeichnis) in der nun aktuell
+übersetzten Version hineinkopieren. Dies sollte ggf. in der build.xml dieses
+Projektes geschehen. Danach kann man das Projekt starten.
