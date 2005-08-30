@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.11 2005/08/21 17:06:59 tbayen Exp $
+ * $Id: Database.java,v 1.12 2005/08/30 19:48:32 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -34,6 +34,7 @@ import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
 import de.bayen.database.exception.SysDBEx.SQL_DBException;
 import de.bayen.database.exception.SysDBEx.SQL_getTableDBException;
 import de.bayen.database.exception.SysDBEx.SQL_getTableListDBException;
+import de.bayen.database.exception.SysDBEx.TransactionDBException;
 import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
 import de.bayen.database.exception.UserDBEx.UserSQL_DBException;
 import de.bayen.database.typedefinition.TypeDefinition;
@@ -56,7 +57,8 @@ public class Database {
 	 * Konstruktor
 	 * @throws UserSQL_DBException 
 	 */
-	public Database(String name, String server, String user, String password) throws UserSQL_DBException{
+	public Database(String name, String server, String user, String password)
+			throws UserSQL_DBException {
 		super();
 		log.trace("Konstruktor");
 		this.name = name;
@@ -73,7 +75,7 @@ public class Database {
 		}
 	}
 
-	private void openConnection() throws UserSQL_DBException{
+	private void openConnection() throws UserSQL_DBException {
 		log.trace("openConnection");
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -95,6 +97,63 @@ public class Database {
 			throw new UserDBEx.UserSQL_DBException(
 					"Verbindung zur SQL-Datenbank '" + name
 							+ "' kann nicht geöffnet werden", e2, log);
+		}
+	}
+
+	/**
+	 * Startet eine Transaktion. Alle schreibenden Zugriffe ab diesem Zeitpunkt
+	 * werden nicht in die Datenbank geschrieben, bis commitTransaction() 
+	 * aufgerufen wird.
+	 * 
+	 * @throws TransactionDBException
+	 */
+	public void startTransaction() throws TransactionDBException {
+		try {
+			conn.setAutoCommit(false);
+		} catch (SQLException e) {
+			throw new SysDBEx.TransactionDBException(
+					"Kann Transaktion nicht starten", e, log);
+		}
+	}
+
+	/**
+	 * Beendet eine Transaktion. Die Transaktion muss mit startTransaction() 
+	 * gestartet worden sein. Erst bei Aufruf dieser Methode hier werden alle 
+	 * Änderungen in die Datenbank geschrieben.
+	 * 
+	 * @throws TransactionDBException
+	 */
+	public void commitTransaction() throws TransactionDBException {
+		try {
+			conn.commit();
+		} catch (SQLException e) {
+			throw new SysDBEx.TransactionDBException(
+					"Kann Transaktion nicht ausführen", e, log);
+		}
+		try {
+			conn.setAutoCommit(true);
+		} catch (SQLException e) {
+			throw new DBRuntimeException.ImpossibleDBException(e, log);
+		}
+	}
+
+	/**
+	 * bricht eine Transaktion ab. Die Transaktion muss mit startTransaction() 
+	 * gestartet worden sein. Alle Änderungen an der Datenbank seit dem Start der
+	 * Transaktion werden nicht ausgeführt.
+	 * @throws TransactionDBException 
+	 */
+	public void rollbackTransaction() throws TransactionDBException {
+		try {
+			conn.rollback();
+		} catch (SQLException e) {
+			throw new SysDBEx.TransactionDBException(
+					"Kann Transaktion nicht abbrechen", e, log);
+		}
+		try {
+			conn.setAutoCommit(true);
+		} catch (SQLException e) {
+			throw new DBRuntimeException.ImpossibleDBException(e, log);
 		}
 	}
 
@@ -206,12 +265,12 @@ public class Database {
 	 * löscht eine gesamte Tabelle (Inhalt und Struktur) aus der Datenbank.
 	 * @throws UserSQL_DBException 
 	 */
-	public void dropTable(String name) throws UserSQL_DBException{
+	public void dropTable(String name) throws UserSQL_DBException {
 		try {
 			executeSql("DROP TABLE `" + name + "`;");
 		} catch (DatabaseException e) {
-			throw new UserSQL_DBException(
-					"Tabelle kann nicht gelöscht werden", e, log);
+			throw new UserSQL_DBException("Tabelle kann nicht gelöscht werden",
+					e, log);
 		}
 	}
 
@@ -372,7 +431,7 @@ public class Database {
 		}
 	}
 
-	public void close() throws SQL_DBException{
+	public void close() throws SQL_DBException {
 		log.trace("close");
 		try {
 			if (conn != null) {
@@ -386,6 +445,9 @@ public class Database {
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.12  2005/08/30 19:48:32  tbayen
+ * Transaktionen ermöglicht
+ *
  * Revision 1.11  2005/08/21 17:06:59  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *
