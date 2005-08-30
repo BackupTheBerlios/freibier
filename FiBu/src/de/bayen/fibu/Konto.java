@@ -1,5 +1,5 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.11 2005/08/30 21:05:53 tbayen Exp $
+ * $Id: Konto.java,v 1.12 2005/08/30 21:08:44 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -486,7 +486,7 @@ public class Konto extends AbstractObject implements Comparable {
 	 * Saldenliste). Es können die Spaltenbreiten angegeben werden sowie eine
 	 * Einrückungsebene.
 	 * 
-	 * @param spaltenbreiten
+	 * @param tab
 	 * @param ebene
 	 * @return Textstring, der eine Tabellenzeile enthält
 	 * @throws SQL_DBException
@@ -511,6 +511,9 @@ public class Konto extends AbstractObject implements Comparable {
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.12  2005/08/30 21:08:44  tbayen
+ * kleinere Warnung im Javadoc beseitigt
+ *
  * Revision 1.11  2005/08/30 21:05:53  tbayen
  * Kontenplanimport aus GNUCash
  * Ausgabe von Auswertungen, Kontenübersicht, Bilanz, GuV, etc. als Tabelle
