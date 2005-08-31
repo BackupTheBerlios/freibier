@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.19 2005/08/30 20:31:03 tbayen Exp $
+ * $Id: Table.java,v 1.20 2005/08/31 16:47:50 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -131,7 +131,11 @@ public class Table {
 		}
 
 		public void and(QueryCondition cond) {
-			next = cond;
+			if(next==null){
+				next = cond;
+			}else{
+				next.and(cond);
+			}
 		}
 
 		/**
@@ -557,6 +561,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.20  2005/08/31 16:47:50  tbayen
+ * Fehler beim Aneinanderhängen von Querys mit and() beseitigt
+ *
  * Revision 1.19  2005/08/30 20:31:03  tbayen
  * erweiterte Querys mit direkter SQL-Syntax möglich
  *
