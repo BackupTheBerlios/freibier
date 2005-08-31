@@ -1,5 +1,5 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.12 2005/08/30 21:08:44 tbayen Exp $
+ * $Id: Konto.java,v 1.13 2005/08/31 16:49:47 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -315,10 +315,22 @@ public class Konto extends AbstractObject implements Comparable {
 	}
 
 	/**
-	 * Ergibt alle Buchungszeilen auf diesem Konto.
-	 * @throws SQL_DBException 
+	 * Ergibt alle Buchungszeilen auf diesem Konto. Es kann ein Jahr und eine
+	 * Periode angegeben werden (oder null). Dann werden nur Buchungen aus dieser
+	 * Periode (<code>kumuliert=false</code>) oder aus diesem Jahr bis 
+	 * einschließlich dieser Periode (<code>kumuliert=true</code>) ausgegeben. 
+	 * Mit dem Wert für <code>nurabsummierte</code> kann angegeben werden, daß
+	 * auch noch nicht absummierte Journale in die Auswahl einbezogen werden.
+	 * 
+	 * @param jahr (optional)
+	 * @param periode (optional)
+	 * @param kumuliert (nur wichtig, wenn eine Periode angegeben ist)
+	 * @param nurabsummierte
+	 * @return Liste von Buchungszeilen
+	 * @throws SQL_DBException
 	 */
-	public List getBuchungszeilen() throws SQL_DBException {
+	public List getBuchungszeilen(String jahr, String periode,
+			boolean kumuliert, boolean nurabsummierte) throws SQL_DBException {
 		List zeilen = new ArrayList();
 		Table table;
 		try {
@@ -330,14 +342,41 @@ public class Konto extends AbstractObject implements Comparable {
 		}
 		List records;
 		try {
+			// TODO hier baue ich die Datenbankabfrage zusammen:
+			// Nur Buchungen des aktuellen Kontos
 			QueryCondition query = table.new QueryCondition("Konto",
 					QueryCondition.EQUAL, getID());
-			// TODO Auswahl nach Periode, absummiert, etc.
-			query.and(table.new QueryCondition("Buchungen, Journale",
-					QueryCondition.SQL,
-					"Buchungszeilen.Buchung=Buchungen.id AND "
-							+ "Buchungen.Journal=Journale.id AND "
-							+ "Journale.absummiert=0"));
+			if (jahr != null || nurabsummierte) {
+				// weitere Auswahlen, die den Blick ins Journal erfordern
+				query.and(table.new QueryCondition("Buchungen, Journale",
+						QueryCondition.SQL,
+						"Buchungszeilen.Buchung=Buchungen.id AND "
+								+ "Buchungen.Journal=Journale.id"));
+				if (jahr != null) {
+					// Auswahl eines Buchungsjahres
+					query.and(table.new QueryCondition("", QueryCondition.SQL,
+							"Journale.Buchungsjahr='" + jahr + "'"));
+					if (periode != null) {
+						// Auswahl einer Periode: Entweder einzeln oder kumuliert
+						if (kumuliert) {
+							query.and(table.new QueryCondition("",
+									QueryCondition.SQL,
+									"Journale.Buchungsperiode>='" + periode
+											+ "'"));
+						} else {
+							query.and(table.new QueryCondition("",
+									QueryCondition.SQL,
+									"Journale.Buchungsperiode='" + periode
+											+ "'"));
+						}
+					}
+				}
+				if (nurabsummierte) {
+					// Nur absummierte Journale
+					query.and(table.new QueryCondition("", QueryCondition.SQL,
+							"Journale.absummiert=1"));
+				}
+			}
 			records = table.getRecordsFromQuery(query, null, true);
 		} catch (TypeNotSupportedDBException e) {
 			throw new ImpossibleException(e, log);
@@ -362,28 +401,82 @@ public class Konto extends AbstractObject implements Comparable {
 	}
 
 	/**
-	 * ergibt den Saldo dieses Kontos.
+	 * Kurzform von getBuchungszeilen(), die immer nur absummierte Journale 
+	 * erfasst.
+	 * 
+	 * @param jahr
+	 * @param periode
+	 * @param kumuliert
+	 * @return Liste von Buchungszeilen
+	 * @throws SQL_DBException
+	 */
+	public List getBuchungszeilen(String jahr, String periode, boolean kumuliert)
+			throws SQL_DBException {
+		return getBuchungszeilen(jahr, periode, kumuliert, true);
+	}
+
+	/**
+	 * Kurzform von getBuchungszeilen(), die immer nur absummierte Journale 
+	 * erfasst und immer die kumulierten Werte bis zur angegebenen Buchungsperiode
+	 * ausgibt.
+	 * 
+	 * @param jahr
+	 * @param periode
+	 * @return Liste von Buchungszeilen
+	 * @throws SQL_DBException
+	 */
+	public List getBuchungszeilen(String jahr, String periode)
+			throws SQL_DBException {
+		return getBuchungszeilen(jahr, periode, true, true);
+	}
+
+	/**
+	 * Kurzform von getBuchungszeilen(), die immer alle Buchungen auf 
+	 * absummierten Journalen erfasst.
+	 * 
+	 * @return Liste von Buchungszeilen
+	 * @throws SQL_DBException
+	 */
+	public List getBuchungszeilen() throws SQL_DBException {
+		return getBuchungszeilen(null, null, true, true);
+	}
+
+	/**
+	 * ergibt den Saldo dieses Kontos zum Ende der angegebenen Periode. Ist die
+	 * Periode null, so ergibt sich der Saldo zum Ende des angegebenen Jahres; 
+	 * ist dieses auch null, so ergibt sich der Endsaldo.
 	 * 
 	 * @return Saldo
 	 * @throws SQL_DBException 
 	 */
-	public Betrag getSaldo() throws SQL_DBException {
+	public Betrag getSaldo(String jahr, String periode) throws SQL_DBException {
 		Betrag erg = new Betrag();
 		// Saldo von Buchungen, die direkt auf dieses Konto erfolgt sind:
-		for (Iterator iter = getBuchungszeilen().iterator(); iter.hasNext();) {
+		for (Iterator iter = getBuchungszeilen(jahr, periode).iterator(); iter
+				.hasNext();) {
 			Buchungszeile zeile = (Buchungszeile) iter.next();
 			erg = erg.add(zeile.getBetrag());
 		}
 		// und dazu die Salden der Unterkonten dieses Kontos
 		for (Iterator iter = getUnterkonten().iterator(); iter.hasNext();) {
 			Konto konto = (Konto) iter.next();
-			erg = erg.add(konto.getSaldo());
+			erg = erg.add(konto.getSaldo(jahr, periode));
 		}
 		if (erg.equals(new Betrag())) {
 			// Wenn der Wert gleich Null ist, setze ich Soll/Haben richtig
 			erg.setSoll(getSoll());
 		}
 		return erg;
+	}
+
+	/**
+	 * Kurzform von getSaldo(), die immer den absoluten Endsaldo ausgibt.
+	 * 
+	 * @return Betrag
+	 * @throws SQL_DBException
+	 */
+	public Betrag getSaldo() throws SQL_DBException {
+		return getSaldo(null, null);
 	}
 
 	/**
@@ -441,8 +534,8 @@ public class Konto extends AbstractObject implements Comparable {
 	 * @return Textstring, der eine Tabelle enthält
 	 * @throws SQL_DBException
 	 */
-	public String ausgabe(int maxgewicht, boolean nursalden,
-			boolean keinnullsaldo) throws SQL_DBException {
+	public String ausgabe(String jahr, String periode, int maxgewicht,
+			boolean nursalden, boolean keinnullsaldo) throws SQL_DBException {
 		String spalten[] = {
 				"Nr", "Bezeichnung", "Soll", "Haben"
 		};
@@ -454,12 +547,15 @@ public class Konto extends AbstractObject implements Comparable {
 				Drucktabelle.RECHTSBUENDIG, Drucktabelle.RECHTSBUENDIG
 		};
 		Drucktabelle tab = new Drucktabelle(spalten, breiten, ausrichtung);
-		return tab.printUeberschrift(true) + "\n"
-				+ ausgabe(tab, 0, maxgewicht, nursalden, keinnullsaldo);
+		return tab.printUeberschrift(true)
+				+ "\n"
+				+ ausgabe(jahr, periode, tab, 0, maxgewicht, nursalden,
+						keinnullsaldo);
 	}
 
-	private String ausgabe(Drucktabelle tab, int ebene, int maxgewicht,
-			boolean nursalden, boolean keinnullsaldo) throws SQL_DBException {
+	private String ausgabe(String jahr, String periode, Drucktabelle tab,
+			int ebene, int maxgewicht, boolean nursalden, boolean keinnullsaldo)
+			throws SQL_DBException {
 		String erg = printSaldenzeile(tab, ebene) + "\n";
 		for (Iterator iter = getUnterkonten().iterator(); iter.hasNext();) {
 			Konto konto = (Konto) iter.next();
@@ -467,13 +563,14 @@ public class Konto extends AbstractObject implements Comparable {
 			if (maxgewicht >= gewicht) {
 				if ((!keinnullsaldo)
 						|| (!konto.getSaldo().equals(new Betrag()))) {
-					erg += konto.ausgabe(tab, ebene + 1, maxgewicht - gewicht,
-							nursalden, keinnullsaldo);
+					erg += konto.ausgabe(jahr, periode, tab, ebene + 1,
+							maxgewicht - gewicht, nursalden, keinnullsaldo);
 				}
 			}
 		}
 		if (maxgewicht > 0 && (!nursalden)) {
-			for (Iterator iter = getBuchungszeilen().iterator(); iter.hasNext();) {
+			for (Iterator iter = getBuchungszeilen(jahr, periode).iterator(); iter
+					.hasNext();) {
 				Buchungszeile zeile = (Buchungszeile) iter.next();
 				erg += zeile.ausgabe(tab, ebene + 1) + "\n";
 			}
@@ -511,6 +608,9 @@ public class Konto extends AbstractObject implements Comparable {
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.13  2005/08/31 16:49:47  tbayen
+ * In Auswertungen nach best. Kriterien auswählen (Jahr, Periode, absummiert)
+ *
  * Revision 1.12  2005/08/30 21:08:44  tbayen
  * kleinere Warnung im Javadoc beseitigt
  *

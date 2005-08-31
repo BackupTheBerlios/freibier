@@ -1,7 +1,6 @@
 TODO
 
 Fibu:
-- in Auswertungen nur bestimmte Daten (absummiert, Periode, etc.)
 - typische Buchungen mit einem Befehl anlegen
 
 - Profiling/allgemeine Performanz
@@ -28,6 +27,10 @@ später:
 
 
 Changes:
+31.08.05
+- in Auswertungen nur bestimmte Daten (absummiert, Periode, etc.)
+30.8.05
+- Datum der Änderung in der History
 - Buchung wird als Transaktion ausgeführt
 - Transaktionen in FreibierDB eingebaut
 - Tests für Auswertungen in Ordnung bringen

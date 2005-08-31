@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: BuchungTest.java,v 1.8 2005/08/21 17:42:23 tbayen Exp $
+ * $Id: BuchungTest.java,v 1.9 2005/08/31 16:49:46 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -88,6 +88,7 @@ public class BuchungTest extends TestCase {
 		assertEquals("10002", ((Buchung) j.getBuchungen().get(1))
 				.getBelegnummer());
 		log.info(j+"\n");
+		j.absummieren();
 		// Sind die Buchungen auch auf dem Konto angekommen?
 		assertEquals(3, bh.getKonto("00001").getBuchungszeilen().size());
 		log.info(bh.getKonto("00001") + "\n");
@@ -95,6 +96,9 @@ public class BuchungTest extends TestCase {
 }
 /*
  * $Log: BuchungTest.java,v $
+ * Revision 1.9  2005/08/31 16:49:46  tbayen
+ * In Auswertungen nach best. Kriterien auswählen (Jahr, Periode, absummiert)
+ *
  * Revision 1.8  2005/08/21 17:42:23  tbayen
  * Ausgaben von Test-Klassen nicht per println, sondern per Logging
  *

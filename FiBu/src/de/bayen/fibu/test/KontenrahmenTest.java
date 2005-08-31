@@ -1,5 +1,5 @@
 /* Erzeugt am 29.08.2005 von tbayen
- * $Id: KontenrahmenTest.java,v 1.1 2005/08/30 21:05:53 tbayen Exp $
+ * $Id: KontenrahmenTest.java,v 1.2 2005/08/31 16:49:46 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -71,18 +71,22 @@ public class KontenrahmenTest extends TestCase {
 		zeile.setKonto(buch.getKonto("guv"));
 		zeile.setBetrag(new Betrag(new BigDecimal("1234567.89"), 'H'));
 		buchung.write();
+		j.absummieren();
 		//System.out.print(bilanz.ausgabe(20, true, true));
 		assertEquals(
 				"    Nr|Bezeichnung                             |          Soll|         Haben\n"
 						+ "------+----------------------------------------+--------------+--------------\n"
 						+ "bilanz|Bilanz                                  |          0,00|              \n"
 						+ "   guv|  Gewinn- und Verlustrechnung           |              |  1.234.567,89\n",
-				bilanz.ausgabe(20, true, true));
+				bilanz.ausgabe(null, null, 20, true, true));
 		//		List unterkonten = bilanz.getUnterkonten();
 	}
 }
 /*
  * $Log: KontenrahmenTest.java,v $
+ * Revision 1.2  2005/08/31 16:49:46  tbayen
+ * In Auswertungen nach best. Kriterien auswählen (Jahr, Periode, absummiert)
+ *
  * Revision 1.1  2005/08/30 21:05:53  tbayen
  * Kontenplanimport aus GNUCash
  * Ausgabe von Auswertungen, Kontenübersicht, Bilanz, GuV, etc. als Tabelle
