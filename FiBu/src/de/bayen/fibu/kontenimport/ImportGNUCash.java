@@ -1,5 +1,5 @@
 /* Erzeugt am 21.08.2005 von tbayen
- * $Id: ImportGNUCash.java,v 1.1 2005/08/30 21:05:53 tbayen Exp $
+ * $Id: ImportGNUCash.java,v 1.2 2005/09/08 06:27:44 tbayen Exp $
  */
 package de.bayen.fibu.kontenimport;
 
@@ -24,8 +24,8 @@ import de.bayen.database.exception.UserDBEx.UserSQL_DBException;
 import de.bayen.fibu.Buchhaltung;
 import de.bayen.fibu.Konto;
 import de.bayen.fibu.exceptions.FiBuException;
-import de.bayen.fibu.exceptions.FiBuRuntimeException;
 import de.bayen.fibu.exceptions.ImpossibleException;
+import de.bayen.fibu.exceptions.FiBuException.NotInitializedException;
 import de.bayen.fibu.exceptions.FiBuException.ParserException;
 
 /**
@@ -79,10 +79,11 @@ public class ImportGNUCash {
 	 * @throws SQL_DBException 
 	 * @throws UserSQL_DBException 
 	 * @throws ParserException 
+	 * @throws NotInitializedException 
 	 *
 	 */
 	private void getAccounts(Buchhaltung buch) throws UserSQL_DBException,
-			SQL_DBException, ParserException {
+			SQL_DBException, ParserException, NotInitializedException {
 		// Hilfsklasse, in der das Ergebnis gespeichert wird:
 		final class GNUAccount {
 			String name;
@@ -173,6 +174,7 @@ public class ImportGNUCash {
 		bilanz.setOberkonto((Long) null);
 		bilanz.setSoll(true);
 		bilanz.write();
+		buch.setBilanzkonto(bilanz);
 		Konto guv = buch.createKonto();
 		guv.setBezeichnung("Gewinn- und Verlustrechnung");
 		guv.setKontonummer("guv");
@@ -180,6 +182,7 @@ public class ImportGNUCash {
 		guv.setOberkonto(bilanz);
 		guv.setSoll(false);
 		guv.write();
+		buch.setGuVKonto(guv);
 		// und nun den Kontenrahmen ausgeben
 		for (int i = 0; i < accounts.length; i++) {
 			GNUAccount acc = accounts[i];
@@ -203,7 +206,8 @@ public class ImportGNUCash {
 		}
 	}
 
-	public static void importSKR04(Buchhaltung buch) throws UserSQL_DBException {
+	public static void importSKR04(Buchhaltung buch)
+			throws UserSQL_DBException, NotInitializedException {
 		try {
 			ImportGNUCash importer = new ImportGNUCash(
 					"bin/de/bayen/fibu/kontenimport/acctchrt_skr04.gnucash-xea",
@@ -218,19 +222,12 @@ public class ImportGNUCash {
 			throw new ImpossibleException(e, log);
 		}
 	}
-
-	public static void main(String[] args) {
-		Buchhaltung buch;
-		try {
-			buch = new Buchhaltung();
-			importSKR04(buch);
-		} catch (UserSQL_DBException e) {
-			throw new FiBuRuntimeException("Fehler beim GNUCash-Import", e);
-		}
-	}
 }
 /*
  * $Log: ImportGNUCash.java,v $
+ * Revision 1.2  2005/09/08 06:27:44  tbayen
+ * Buchhaltung.getBilanzkonto() überarbeitet
+ *
  * Revision 1.1  2005/08/30 21:05:53  tbayen
  * Kontenplanimport aus GNUCash
  * Ausgabe von Auswertungen, Kontenübersicht, Bilanz, GuV, etc. als Tabelle

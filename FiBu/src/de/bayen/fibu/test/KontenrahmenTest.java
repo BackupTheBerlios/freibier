@@ -1,5 +1,5 @@
 /* Erzeugt am 29.08.2005 von tbayen
- * $Id: KontenrahmenTest.java,v 1.2 2005/08/31 16:49:46 tbayen Exp $
+ * $Id: KontenrahmenTest.java,v 1.3 2005/09/08 06:27:44 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -53,6 +53,8 @@ public class KontenrahmenTest extends TestCase {
 		Konto bilanz;
 		try {
 			bilanz = buch.getKonto("bilanz");
+			Konto bilanz2=buch.getBilanzKonto();
+			assertEquals(bilanz,bilanz2);
 		} catch (RecordNotExistsDBException e) {
 			throw new NotInitializedException(
 					"Bilanzkonto kann nicht gefunden werden", e, log);
@@ -64,11 +66,11 @@ public class KontenrahmenTest extends TestCase {
 		Buchungszeile zeile;
 		// erste Zeile
 		zeile = buchung.createZeile();
-		zeile.setKonto(buch.getKonto("bilanz"));
+		zeile.setKonto(buch.getBilanzKonto());
 		zeile.setBetrag(new Betrag(new BigDecimal("1234567.89"), 'S'));
 		// zweite Zeile
 		zeile = buchung.createZeile();
-		zeile.setKonto(buch.getKonto("guv"));
+		zeile.setKonto(buch.getGuVKonto());
 		zeile.setBetrag(new Betrag(new BigDecimal("1234567.89"), 'H'));
 		buchung.write();
 		j.absummieren();
@@ -84,6 +86,9 @@ public class KontenrahmenTest extends TestCase {
 }
 /*
  * $Log: KontenrahmenTest.java,v $
+ * Revision 1.3  2005/09/08 06:27:44  tbayen
+ * Buchhaltung.getBilanzkonto() überarbeitet
+ *
  * Revision 1.2  2005/08/31 16:49:46  tbayen
  * In Auswertungen nach best. Kriterien auswählen (Jahr, Periode, absummiert)
  *

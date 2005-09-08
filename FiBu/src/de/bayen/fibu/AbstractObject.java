@@ -1,5 +1,5 @@
 /* Erzeugt am 18.08.2005 von tbayen
- * $Id: AbstractObject.java,v 1.2 2005/08/21 17:08:55 tbayen Exp $
+ * $Id: AbstractObject.java,v 1.3 2005/09/08 06:27:44 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -22,6 +22,16 @@ public abstract class AbstractObject implements GenericObject{
 	}
 
 	public boolean equals(GenericObject arg){
+		try {
+			if (!getClass().equals(arg.getClass()))
+				return false;
+			return getID().equals(((AbstractObject)arg).getID());
+		} catch (ClassCastException e) {
+			return false;
+		}
+	}
+
+	public boolean equals(Object arg){
 		try {
 			if (!getClass().equals(arg.getClass()))
 				return false;
@@ -61,6 +71,9 @@ public abstract class AbstractObject implements GenericObject{
 
 /*
  * $Log: AbstractObject.java,v $
+ * Revision 1.3  2005/09/08 06:27:44  tbayen
+ * Buchhaltung.getBilanzkonto() überarbeitet
+ *
  * Revision 1.2  2005/08/21 17:08:55  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *

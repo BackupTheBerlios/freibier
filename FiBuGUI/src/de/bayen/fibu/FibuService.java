@@ -1,13 +1,10 @@
-// $Id: FibuService.java,v 1.7 2005/08/26 20:48:47 phormanns Exp $
+// $Id: FibuService.java,v 1.8 2005/09/08 06:27:46 tbayen Exp $
 
 package de.bayen.fibu;
 
 import java.rmi.RemoteException;
-import de.bayen.database.DataObject;
-import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
 import de.bayen.database.exception.SysDBEx.SQL_DBException;
 import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
-import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
 import de.bayen.database.exception.UserDBEx.UserSQL_DBException;
 import de.bayen.fibu.exceptions.FiBuException.NotInitializedException;
 import de.willuhn.datasource.Service;
@@ -56,18 +53,20 @@ public class FibuService implements Service {
 	
 	public Konto getBilanzkonto() throws ApplicationException {
 		try {
-			DataObject bilanz = fibu.getFirmenstammdaten().getField("Bilanzkonto");
-			return new Konto(fibu.getDatabase().getTable("Konten"), (Long) bilanz.getValue());
+			// ersetzt durch Methode der Buchhaltung-Klasse
+			//DataObject bilanz = fibu.getFirmenstammdaten().getField("Bilanzkonto");
+			//return new Konto(fibu.getDatabase().getTable("Konten"), (Long) bilanz.getValue());
+			return fibu.getBilanzKonto();
 		} catch (WrongTypeDBException e) {
 			throw new ApplicationException("Kein Zugriff auf die Datenbank", e);
 		} catch (SQL_DBException e) {
 			throw new ApplicationException("Kein Zugriff auf die Datenbank", e);
-		} catch (RecordNotExistsDBException e) {
-			throw new ApplicationException("Kein Zugriff auf die Datenbank", e);
+//		} catch (RecordNotExistsDBException e) {
+//			throw new ApplicationException("Kein Zugriff auf die Datenbank", e);
 		} catch (NotInitializedException e) {
 			throw new ApplicationException("Kein Zugriff auf die Datenbank", e);
-		} catch (ParseErrorDBException e) {
-			throw new ApplicationException("Kein Zugriff auf die Datenbank", e);
+//		} catch (ParseErrorDBException e) {
+//			throw new ApplicationException("Kein Zugriff auf die Datenbank", e);
 		}
 	}
 }
@@ -75,6 +74,9 @@ public class FibuService implements Service {
 
 //
 // $Log: FibuService.java,v $
+// Revision 1.8  2005/09/08 06:27:46  tbayen
+// Buchhaltung.getBilanzkonto() überarbeitet
+//
 // Revision 1.7  2005/08/26 20:48:47  phormanns
 // Erste Buchung in der Datenbank
 //

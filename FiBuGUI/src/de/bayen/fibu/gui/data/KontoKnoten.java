@@ -1,4 +1,4 @@
-// $Id: KontoKnoten.java,v 1.1 2005/08/26 17:40:46 phormanns Exp $
+// $Id: KontoKnoten.java,v 1.2 2005/09/08 06:27:46 tbayen Exp $
 package de.bayen.fibu.gui.data;
 
 import java.util.List;
@@ -58,10 +58,12 @@ public class KontoKnoten implements GenericObjectNode {
 
 	public Object getAttribute(String attr) {
 		if ("Beschriftung".equals(attr)) {
-			return Settings.getKontoFormat().format(
-					Integer.parseInt((String) konto.getAttribute("Kontonummer"))
-				) 
-				+ " " + konto.getAttribute("Bezeichnung");
+			return konto.getAttribute("Kontonummer");
+			// TODO sollte man das trotzdem formatieren?
+//			return Settings.getKontoFormat().format(
+//					Integer.parseInt((String) konto.getAttribute("Kontonummer"))
+//				) 
+//				+ " " + konto.getAttribute("Bezeichnung");
 		}
 		return konto.getAttribute(attr);
 	}
@@ -91,6 +93,9 @@ public class KontoKnoten implements GenericObjectNode {
 
 /*
  *  $Log: KontoKnoten.java,v $
+ *  Revision 1.2  2005/09/08 06:27:46  tbayen
+ *  Buchhaltung.getBilanzkonto() überarbeitet
+ *
  *  Revision 1.1  2005/08/26 17:40:46  phormanns
  *  Anzeige der Kontenhierarchie, Anlegen von Unterkonten
  *

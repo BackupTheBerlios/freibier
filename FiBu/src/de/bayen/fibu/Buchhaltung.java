@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.12 2005/08/30 21:05:53 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.13 2005/09/08 06:27:44 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -413,6 +413,82 @@ public class Buchhaltung extends AbstractObject {
 	}
 
 	/**
+	 * ergibt das Bilanzkonto (also das Urkonto der gesamten Buchhaltung)
+	 * 
+	 * @throws NotInitializedException 
+	 * @throws SQL_DBException 
+	 */
+	public Konto getBilanzKonto() throws SQL_DBException,
+			NotInitializedException {
+		try {
+			return new Konto(db.getTable("Konten"), (Long)getFirmenstammdaten().getField("Bilanzkonto").getValue());
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (RecordNotExistsDBException e) {
+			throw new NotInitializedException("Bilanzkonto existiert nicht",
+					log);
+		} catch (SQL_getTableDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (IllegalDefaultValueDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (SQL_DBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
+	}
+	
+	public void setBilanzkonto(Konto kto) throws SQL_DBException, NotInitializedException{
+		try {
+			Record stamm = getFirmenstammdaten();
+			stamm.setField("Bilanzkonto", kto.getID());
+			setFirmenstammdaten(stamm);
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
+	}
+
+	/**
+	 * ergibt das Gewinn- und Verlustkonto
+	 * 
+	 * @throws NotInitializedException 
+	 * @throws SQL_DBException 
+	 */
+	public Konto getGuVKonto() throws SQL_DBException,
+			NotInitializedException {
+		try {
+			return new Konto(db.getTable("Konten"), (Long)getFirmenstammdaten().getField("GuVKonto").getValue());
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (RecordNotExistsDBException e) {
+			throw new NotInitializedException("Gewinn- und Verlustkonto existiert nicht",
+					log);
+		} catch (SQL_getTableDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (IllegalDefaultValueDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (SQL_DBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
+	}
+
+	public void setGuVKonto(Konto kto) throws SQL_DBException, NotInitializedException{
+		try {
+			Record stamm = getFirmenstammdaten();
+			stamm.setField("GuVKonto", kto.getID());
+			setFirmenstammdaten(stamm);
+		} catch (WrongTypeDBException e) {
+			throw new ImpossibleException(e, log);
+		} catch (ParseErrorDBException e) {
+			throw new ImpossibleException(e, log);
+		}
+	}
+
+	/**
 	 * Ergibt eine Liste der Konten (d.h. eine Liste von Strings mit 
 	 * Kontonummern)
 	 * 
@@ -559,6 +635,9 @@ public class Buchhaltung extends AbstractObject {
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.13  2005/09/08 06:27:44  tbayen
+ * Buchhaltung.getBilanzkonto() überarbeitet
+ *
  * Revision 1.12  2005/08/30 21:05:53  tbayen
  * Kontenplanimport aus GNUCash
  * Ausgabe von Auswertungen, Kontenübersicht, Bilanz, GuV, etc. als Tabelle

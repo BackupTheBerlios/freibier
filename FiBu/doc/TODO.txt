@@ -1,11 +1,13 @@
 TODO
 
 Fibu:
-- typische Buchungen mit einem Befehl anlegen
+- Testapplikation mit Menü für bestimmte Grundauswertungen (Bilanz, GuV, Debitoren)
+- typische Buchungen mit kurzem Befehl anlegen
+
+- Brief an Peter
 
 - Profiling/allgemeine Performanz
 
-- Testapplikation mit Menü für bestimmte Grundauswertungen (Bilanz, GuV, Debitoren)
 - Import von Kontenrahmen/Konten aus diDurst
 - Beschreibung von Zielapplikationen (Pflichtenheft) anfertigen
 - Kassenbuch
@@ -27,6 +29,9 @@ später:
 
 
 Changes:
+07.09.05
+- Einarbeitung in Jameica
+- Buchhaltung.getBilanzkonto() (Angabe Bilanz/GuV-Konto in Stammdaten)
 31.08.05
 - in Auswertungen nur bestimmte Daten (absummiert, Periode, etc.)
 30.8.05

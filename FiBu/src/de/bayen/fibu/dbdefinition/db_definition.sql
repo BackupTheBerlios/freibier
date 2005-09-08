@@ -1,4 +1,4 @@
--- $Id: db_definition.sql,v 1.6 2005/08/30 20:16:20 tbayen Exp $
+-- $Id: db_definition.sql,v 1.7 2005/09/08 06:27:44 tbayen Exp $
 --
 -- phpMyAdmin SQL Dump
 -- version 2.6.2
@@ -129,6 +129,7 @@ CREATE TABLE `Firmenstammdaten` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `Firma` varchar(30) NOT NULL default '',
   `Bilanzkonto` int(10) unsigned NOT NULL default '0',
+  `GuVKonto` int(10) unsigned NOT NULL default '0',
   `JahrAktuell` char(4) NOT NULL default '2005',
   `PeriodeAktuell` char(2) NOT NULL default '01',
   PRIMARY KEY  (`id`)
@@ -139,6 +140,9 @@ CREATE TABLE `Firmenstammdaten` (
 -- 
 
 -- $Log: db_definition.sql,v $
+-- Revision 1.7  2005/09/08 06:27:44  tbayen
+-- Buchhaltung.getBilanzkonto() überarbeitet
+--
 -- Revision 1.6  2005/08/30 20:16:20  tbayen
 -- einige Textfelder verbreitert
 --
