@@ -1,5 +1,5 @@
 /* Erzeugt am 13.08.2005 von tbayen
- * $Id: Konto.java,v 1.13 2005/08/31 16:49:47 tbayen Exp $
+ * $Id: Konto.java,v 1.14 2005/09/09 10:51:40 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -342,7 +342,7 @@ public class Konto extends AbstractObject implements Comparable {
 		}
 		List records;
 		try {
-			// TODO hier baue ich die Datenbankabfrage zusammen:
+			// hier baue ich die Datenbankabfrage zusammen:
 			// Nur Buchungen des aktuellen Kontos
 			QueryCondition query = table.new QueryCondition("Konto",
 					QueryCondition.EQUAL, getID());
@@ -608,6 +608,9 @@ public class Konto extends AbstractObject implements Comparable {
 }
 /*
  * $Log: Konto.java,v $
+ * Revision 1.14  2005/09/09 10:51:40  tbayen
+ * nicht mehr relevantes to do entfernt
+ *
  * Revision 1.13  2005/08/31 16:49:47  tbayen
  * In Auswertungen nach best. Kriterien auswählen (Jahr, Periode, absummiert)
  *
