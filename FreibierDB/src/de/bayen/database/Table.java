@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.20 2005/08/31 16:47:50 tbayen Exp $
+ * $Id: Table.java,v 1.21 2005/09/11 16:39:57 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -38,6 +38,7 @@ public class Table {
 		this.db = db;
 		this.name = name;
 		this.def = def;
+		def.setTable(this);
 	}
 
 	/**
@@ -131,9 +132,9 @@ public class Table {
 		}
 
 		public void and(QueryCondition cond) {
-			if(next==null){
+			if (next == null) {
 				next = cond;
-			}else{
+			} else {
 				next.and(cond);
 			}
 		}
@@ -451,8 +452,7 @@ public class Table {
 	 * @throws TypeNotSupportedDBException 
 	 * @throws SQL_DBException 
 	 */
-	public void setRecord(Record data) throws TypeNotSupportedDBException,
-			SQL_DBException {
+	public void setRecord(Record data) throws SQL_DBException {
 		//		try {
 		String sql = "REPLACE INTO `" + name + "` SET ";
 		for (int i = 0; i < def.getFieldsList().size(); i++) {
@@ -460,8 +460,12 @@ public class Table {
 				sql += ", ";
 			}
 			String feldname = def.getFieldDef(i).getName();
-			sql += "`" + feldname + "` = "
-					+ SQLPrinter.print(data.getField(feldname));
+			try {
+				sql += "`" + feldname + "` = "
+						+ SQLPrinter.print(data.getField(feldname));
+			} catch (TypeNotSupportedDBException e) {
+				throw new DBRuntimeException.ImpossibleDBException(e, log);
+			}
 		}
 		try {
 			db.executeUpdate(sql);
@@ -561,6 +565,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.21  2005/09/11 16:39:57  tbayen
+ * RecordDefinition enthält auch name und ggf. table
+ *
  * Revision 1.20  2005/08/31 16:47:50  tbayen
  * Fehler beim Aneinanderhängen von Querys mit and() beseitigt
  *

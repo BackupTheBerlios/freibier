@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.12 2005/08/30 19:48:32 tbayen Exp $
+ * $Id: Database.java,v 1.13 2005/09/11 16:39:57 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -211,6 +211,8 @@ public class Database {
 				resource = ResourceBundle.getBundle(propertyPath + name);
 				//log.debug("Resource: "+resource);
 			} catch (MissingResourceException e) {}
+			String recordname = name;
+			def.setName(recordname);
 			while (columns.next()) {
 				TypeDefinition typ = TypeDefinition.create(columns
 						.getString("COLUMN_NAME"), columns.getInt("DATA_TYPE"),
@@ -232,8 +234,12 @@ public class Database {
 						"Keine Primärschlüsselspalte definiert", log);
 			}
 			primarykeys.close();
-			// Zugriff auf Informationen über Unterlisten
 			if (resource != null) {
+				// Datensatzname (ist z.B. die Einzahl des Tabellennamens)
+				try {
+					recordname = resource.getString("recordname");
+				} catch (MissingResourceException e) {}
+				// Zugriff auf Informationen über Unterlisten
 				try {
 					String liste = resource.getString("_lists");
 					String listennamen[] = liste.split("\\s*,\\s*");
@@ -445,6 +451,9 @@ public class Database {
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.13  2005/09/11 16:39:57  tbayen
+ * RecordDefinition enthält auch name und ggf. table
+ *
  * Revision 1.12  2005/08/30 19:48:32  tbayen
  * Transaktionen ermöglicht
  *

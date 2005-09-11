@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: RecordDefinition.java,v 1.9 2005/08/30 20:31:03 tbayen Exp $
+ * $Id: RecordDefinition.java,v 1.10 2005/09/11 16:39:56 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -23,10 +23,12 @@ import de.bayen.database.typedefinition.TypeDefinitionForeignKey;
  */
 public class RecordDefinition {
 	protected static Log log = LogFactory.getLog(RecordDefinition.class);
+	private String name=null;
 	private Map columnshash = null;
 	private List columnslist = null;
 	private String primaryKey = null;
 	private List sublists = null;
+	private Table table;  // wird nirgendwo benötigt, ist nur für Anwender interessant
 
 	public RecordDefinition() {
 		columnshash = new HashMap();
@@ -36,6 +38,14 @@ public class RecordDefinition {
 	public void addColumn(TypeDefinition typ) {
 		columnshash.put(typ.getName(), typ);
 		columnslist.add(typ);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getPrimaryKey() {
@@ -100,6 +110,30 @@ public class RecordDefinition {
 			mrbean.put(typdef.getName(), typdef.getDefaultValue());
 		}
 		return new Record(this, mrbean);
+	}
+
+	/**
+	 * Ermittelt das zugehörige Table-Objekt. Ist diese Definition
+	 * beim Öffnen einer Tabelle benutzt worden, ist dieser Wert 
+	 * hier abgelegt worden. Der Wert wird intern nicht benötigt 
+	 * und kann deshalb ggf. auch null sein.
+	 * 
+	 * @return Tabelle, in die dieser Record gehört
+	 */
+	public Table getTable() {
+		return table;
+	}
+
+	/**
+	 * Eine Applikation kann hier eine zugehörige Tabelle 
+	 * speichern. Wird der Record aus der Table-Klasse heraus 
+	 * erzeugt, geschieht das automatisch. Der Wert wird intern 
+	 * nicht benötigt, muss also nicht gesetzt sein.
+	 * 
+	 * @param table
+	 */
+	public void setTable(Table table) {
+		this.table = table;
 	}
 
 	/**
@@ -176,6 +210,9 @@ public class RecordDefinition {
 }
 /*
  * $Log: RecordDefinition.java,v $
+ * Revision 1.10  2005/09/11 16:39:56  tbayen
+ * RecordDefinition enthält auch name und ggf. table
+ *
  * Revision 1.9  2005/08/30 20:31:03  tbayen
  * erweiterte Querys mit direkter SQL-Syntax möglich
  *
