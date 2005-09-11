@@ -10,4 +10,7 @@ public class ImpossibleException extends FiBuRuntimeException {
 	public ImpossibleException(Throwable cause, Log log) {
 		super("", cause, log);
 	}
+	public ImpossibleException(Throwable cause) {
+		super("", cause);
+	}
 }
