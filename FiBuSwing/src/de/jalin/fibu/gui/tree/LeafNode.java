@@ -1,21 +1,22 @@
-// $Id: LeafNode.java,v 1.1 2005/11/09 22:28:33 phormanns Exp $
+// $Id: LeafNode.java,v 1.2 2005/11/10 12:22:27 phormanns Exp $
 
 package de.jalin.fibu.gui.tree;
 
 import java.awt.Component;
 import java.util.Enumeration;
-
-import javax.swing.JButton;
 import javax.swing.tree.TreeNode;
+import de.jalin.fibu.gui.FiBuException;
 
 public class LeafNode implements TreeNode, Adoptable, Editable {
 
 	private TreeNode parent;
 	private String title;
+	private Editable editor;
 	
-	public LeafNode(String title) {
+	public LeafNode(String title, Editable editor) {
 		this.parent = null;
 		this.title = title;
+		this.editor = editor;
 	}
 	
 	public int getChildCount() {
@@ -54,13 +55,12 @@ public class LeafNode implements TreeNode, Adoptable, Editable {
 		this.parent = parent;
 	}
 
-	public boolean validateAndSave() {
-		return true;
+	public boolean validateAndSave() throws FiBuException {
+		return editor.validateAndSave();
 	}
 	
-	public Component getEditor() {
-		// TODO Auto-generated method stub
-		return new JButton(title);
+	public Component getEditor() throws FiBuException {
+		return editor.getEditor();
 	}
 
 }
@@ -68,6 +68,9 @@ public class LeafNode implements TreeNode, Adoptable, Editable {
 
 //
 // $Log: LeafNode.java,v $
+// Revision 1.2  2005/11/10 12:22:27  phormanns
+// Erste Form tut was
+//
 // Revision 1.1  2005/11/09 22:28:33  phormanns
 // erster Import
 //

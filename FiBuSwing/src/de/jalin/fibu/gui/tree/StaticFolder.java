@@ -1,23 +1,24 @@
-// $Id: StaticFolder.java,v 1.1 2005/11/09 22:28:33 phormanns Exp $
+// $Id: StaticFolder.java,v 1.2 2005/11/10 12:22:27 phormanns Exp $
 
 package de.jalin.fibu.gui.tree;
 
 import java.awt.Component;
 import java.util.Enumeration;
 import java.util.Vector;
-
-import javax.swing.JLabel;
 import javax.swing.tree.TreeNode;
+import de.jalin.fibu.gui.FiBuException;
 
 public class StaticFolder implements TreeNode, Adoptable, Editable {
 
 	private TreeNode parent;
 	private Vector nodeList;
 	private String title;
+	private Editable editor;
 	
-	public StaticFolder(String title) {
+	public StaticFolder(String title, Editable editor) {
 		this.parent = null;
 		this.title = title;
+		this.editor = editor;
 		this.nodeList = new Vector();
 	}
 	
@@ -62,13 +63,12 @@ public class StaticFolder implements TreeNode, Adoptable, Editable {
 		return title;
 	}
 
-	public boolean validateAndSave() {
-		return true;
+	public boolean validateAndSave() throws FiBuException {
+		return editor.validateAndSave();
 	}
 
-	public Component getEditor() {
-		// TODO Auto-generated method stub
-		return new JLabel(title);
+	public Component getEditor() throws FiBuException {
+		return editor.getEditor();
 	}
 
 }
@@ -76,6 +76,9 @@ public class StaticFolder implements TreeNode, Adoptable, Editable {
 
 //
 // $Log: StaticFolder.java,v $
+// Revision 1.2  2005/11/10 12:22:27  phormanns
+// Erste Form tut was
+//
 // Revision 1.1  2005/11/09 22:28:33  phormanns
 // erster Import
 //

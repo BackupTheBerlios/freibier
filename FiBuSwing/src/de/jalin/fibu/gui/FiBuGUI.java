@@ -1,4 +1,4 @@
-// $Id: FiBuGUI.java,v 1.2 2005/11/09 23:01:35 phormanns Exp $
+// $Id: FiBuGUI.java,v 1.3 2005/11/10 12:22:27 phormanns Exp $
 
 package de.jalin.fibu.gui;
 
@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Enumeration;
 import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,6 +28,9 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import com.jgoodies.looks.LookUtils;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
+import de.bayen.fibu.Journal;
+import de.jalin.fibu.gui.forms.DummyForm;
+import de.jalin.fibu.gui.forms.StammdatenForm;
 import de.jalin.fibu.gui.tree.DynamicFolder;
 import de.jalin.fibu.gui.tree.Editable;
 import de.jalin.fibu.gui.tree.LeafNode;
@@ -37,56 +41,72 @@ public class FiBuGUI {
 	private JFrame frame;
 	private JPanel workArea;
 	private JTree treeMenu;
+	private FiBuFacade fibu;
 
 	public FiBuGUI() {
-		frame = new JFrame("Freibier - Buchhaltung");
-		frame.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				exitFiBu();
-			}
-		});
-		frame.setJMenuBar(initMenuBar());
-		treeMenu = new JTree(initTreeMenu());
-		treeMenu.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		treeMenu.addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
-				// TODO Auto-generated method stub
-				boolean canLeaveOldNode = false;
-				TreePath oldPath = e.getOldLeadSelectionPath();
-				if (oldPath != null) {
-					Editable oldNode = (Editable) oldPath.getLastPathComponent();
-					System.out.println("old:" + oldNode);
-					canLeaveOldNode = oldNode.validateAndSave();
-				} else {
-					canLeaveOldNode = true;
+		try {
+			fibu = new FiBuFacade();
+			frame = new JFrame("Freibier - Buchhaltung");
+			frame.addWindowListener(new WindowAdapter() {
+				public void windowClosing(WindowEvent e) {
+					exitFiBu();
 				}
-				TreePath newPath = e.getNewLeadSelectionPath();
-				if (newPath != null && canLeaveOldNode) {
-					Editable newNode = (Editable) newPath.getLastPathComponent();
-					System.out.println("new:" + newNode);
-					workArea.removeAll();
-					workArea.add(newNode.getEditor());
-					workArea.revalidate();
-					workArea.repaint();
-				} else {
-					treeMenu.setSelectionPath(oldPath);
+			});
+			frame.setJMenuBar(initMenuBar());
+			treeMenu = new JTree(initTreeMenu());
+			treeMenu.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+			treeMenu.addTreeSelectionListener(new TreeSelectionListener() {
+				public void valueChanged(TreeSelectionEvent e) {
+					boolean canLeaveOldNode = false;
+					TreePath oldPath = e.getOldLeadSelectionPath();
+					if (oldPath != null) {
+						Editable oldNode = (Editable) oldPath.getLastPathComponent();
+						System.out.println("old:" + oldNode);
+						try {
+							canLeaveOldNode = oldNode.validateAndSave();
+						} catch (FiBuException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					} else {
+						canLeaveOldNode = true;
+					}
+					TreePath newPath = e.getNewLeadSelectionPath();
+					if (newPath != null && canLeaveOldNode) {
+						Editable newNode = (Editable) newPath.getLastPathComponent();
+						System.out.println("new:" + newNode);
+						workArea.removeAll();
+						try {
+							workArea.add(newNode.getEditor());
+						} catch (FiBuException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						workArea.revalidate();
+						workArea.repaint();
+					} else {
+						treeMenu.setSelectionPath(oldPath);
+					}
 				}
-			}
-		});
-		JScrollPane treePane = new JScrollPane(treeMenu);
-		treePane.setPreferredSize(new Dimension(200, 600));
-		workArea = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		JScrollPane formPane = new JScrollPane(workArea);
-		workArea.add(new JLabel("<html><h1>Freibier - FiBu</h1>" +
-				"<p>Eine einfache Finanzbuchhaltung</p>" +
-				"<p>&copy; &nbsp; Thomas Bayen</p>" +
-				"<p>&copy; &nbsp; Peter Hormanns</p>" +
-				"<p>&copy; &nbsp; Susanne Wenz</p>" +
-				"</html>"));
-		formPane.setPreferredSize(new Dimension(600, 600));
-		frame.getContentPane().add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treePane, formPane));
-		frame.pack();
-		frame.setVisible(true);
+			});
+			JScrollPane treePane = new JScrollPane(treeMenu);
+			treePane.setPreferredSize(new Dimension(200, 600));
+			workArea = new JPanel(new FlowLayout(FlowLayout.LEFT));
+			JScrollPane formPane = new JScrollPane(workArea);
+			workArea.add(new JLabel("<html><h1>Freibier - FiBu</h1>" +
+					"<p>Eine einfache Finanzbuchhaltung</p>" +
+					"<p>&copy; &nbsp; Thomas Bayen</p>" +
+					"<p>&copy; &nbsp; Peter Hormanns</p>" +
+					"<p>&copy; &nbsp; Susanne Wenz</p>" +
+					"</html>"));
+			formPane.setPreferredSize(new Dimension(600, 600));
+			frame.getContentPane().add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treePane, formPane));
+			frame.pack();
+			frame.setVisible(true);
+		} catch (FiBuException e) {
+			System.err.println(e.getMessage());
+			System.exit(1);
+		}
 	}
 
 	private JMenuBar initMenuBar() {
@@ -106,19 +126,40 @@ public class FiBuGUI {
 		return mainMenu;
 	}
 
-	private TreeNode initTreeMenu() {
-		StaticFolder root = new StaticFolder("FiBu");
-		StaticFolder journals = new StaticFolder("Journale");
+	private TreeNode initTreeMenu() throws FiBuException {
+		StaticFolder root = new StaticFolder("FiBu", new StammdatenForm(fibu));
+		StaticFolder journals = new StaticFolder("Journale", new DummyForm("Journale Form"));
 		journals.addFolder(new DynamicFolder("Offene Journale") {
 			public Vector readChildren() {
+				Vector offeneJournale = new Vector();
+				try {
+					offeneJournale = fibu.getOffeneJournale();
+				} catch (FiBuException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				Vector children = new Vector();
-				children.addElement(new LeafNode("Kasse 11/2005"));
+				Enumeration jourEnum = offeneJournale.elements();
+				Journal jour = null;
+				while (jourEnum.hasMoreElements()) {
+					jour = (Journal) jourEnum.nextElement();
+					children.addElement(
+							new LeafNode(
+									jour.getBuchungsperiode() 
+										+ "/" + jour.getBuchungsjahr() 
+										+ " ab: " + jour.getStartdatum(),
+									new DummyForm("Journal Form "
+											+ jour.getBuchungsperiode() 
+											+ "/" + jour.getBuchungsjahr() 
+											+ " ab: " + jour.getStartdatum())
+							));
+				}
 				return children;
 			}
 		});
 		root.addFolder(journals);
-		root.addFolder(new StaticFolder("Konten"));
-		root.addFolder(new StaticFolder("Auswertungen"));
+		root.addFolder(new StaticFolder("Konten", new DummyForm("Konten Form")));
+		root.addFolder(new StaticFolder("Auswertungen", new DummyForm("Auswertungen Form")));
 		return root;
 	}
 
@@ -127,8 +168,13 @@ public class FiBuGUI {
 		if (selectionPath != null) {
 			Object leafNode = selectionPath.getLastPathComponent();
 			if (leafNode != null) {
-				if (((Editable) leafNode).validateAndSave()) {
-					System.exit(0);
+				try {
+					if (((Editable) leafNode).validateAndSave()) {
+						System.exit(0);
+					}
+				} catch (FiBuException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		} else {
@@ -152,6 +198,9 @@ public class FiBuGUI {
 
 //
 // $Log: FiBuGUI.java,v $
+// Revision 1.3  2005/11/10 12:22:27  phormanns
+// Erste Form tut was
+//
 // Revision 1.2  2005/11/09 23:01:35  phormanns
 // Menubar hinzugefügt
 //
