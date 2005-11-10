@@ -1,4 +1,4 @@
-// $Id: StammdatenForm.java,v 1.1 2005/11/10 12:22:27 phormanns Exp $
+// $Id: StammdatenForm.java,v 1.2 2005/11/10 21:19:26 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.Component;
@@ -39,22 +39,24 @@ public class StammdatenForm implements Editable {
 		tfPeriodeAktuell = new JTextField(fibu.getPeriodeAktuell());
 		tfFirma = new JTextField(fibu.getFirma());
 		FormLayout layout = new FormLayout(
-				"right:pref, 4dlu, 24dlu, 4dlu, 240dlu",
-				"pref, 2dlu, pref");
-		layout.setRowGroups(new int[][] {{ 1, 3 }});
+				"4dlu, right:pref, 4dlu, 24dlu, 4dlu, pref:grow, 4dlu",
+				"4dlu, pref, 2dlu, pref");
 		JPanel editor = new JPanel(layout);
 		CellConstraints constraints = new CellConstraints();
-		editor.add(new JLabel("Firma:"), constraints.xy(1, 1));
-		editor.add(tfFirma, constraints.xyw(3, 1, 3));
-		editor.add(new JLabel("Periode/Jahr:"), constraints.xy(1, 3));
-		editor.add(tfPeriodeAktuell, constraints.xy(3, 3));
-		editor.add(tfJahrAktuell, constraints.xy(5, 3));
+		editor.add(new JLabel("Firma:"), constraints.xy(2, 2));
+		editor.add(tfFirma, constraints.xyw(4, 2, 3));
+		editor.add(new JLabel("Periode/Jahr:"), constraints.xy(2, 4));
+		editor.add(tfPeriodeAktuell, constraints.xy(4, 4));
+		editor.add(tfJahrAktuell, constraints.xy(6, 4));
 		return editor;
 	}
 }
 
 /*
  *  $Log: StammdatenForm.java,v $
+ *  Revision 1.2  2005/11/10 21:19:26  phormanns
+ *  Buchungsdialog begonnen
+ *
  *  Revision 1.1  2005/11/10 12:22:27  phormanns
  *  Erste Form tut was
  *

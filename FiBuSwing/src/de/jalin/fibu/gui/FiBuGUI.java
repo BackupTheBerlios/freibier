@@ -1,9 +1,9 @@
-// $Id: FiBuGUI.java,v 1.3 2005/11/10 12:22:27 phormanns Exp $
+// $Id: FiBuGUI.java,v 1.4 2005/11/10 21:19:26 phormanns Exp $
 
 package de.jalin.fibu.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -29,10 +29,14 @@ import javax.swing.tree.TreeSelectionModel;
 import com.jgoodies.looks.LookUtils;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import de.bayen.fibu.Journal;
+import de.jalin.fibu.gui.forms.BuchungsForm;
 import de.jalin.fibu.gui.forms.DummyForm;
+import de.jalin.fibu.gui.forms.JournaleForm;
+import de.jalin.fibu.gui.forms.KontenTreeForm;
 import de.jalin.fibu.gui.forms.StammdatenForm;
 import de.jalin.fibu.gui.tree.DynamicFolder;
 import de.jalin.fibu.gui.tree.Editable;
+import de.jalin.fibu.gui.tree.KontoNode;
 import de.jalin.fibu.gui.tree.LeafNode;
 import de.jalin.fibu.gui.tree.StaticFolder;
 
@@ -56,31 +60,31 @@ public class FiBuGUI {
 			treeMenu = new JTree(initTreeMenu());
 			treeMenu.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			treeMenu.addTreeSelectionListener(new TreeSelectionListener() {
-				public void valueChanged(TreeSelectionEvent e) {
+				public void valueChanged(TreeSelectionEvent selectionEvent) {
 					boolean canLeaveOldNode = false;
-					TreePath oldPath = e.getOldLeadSelectionPath();
+					TreePath oldPath = selectionEvent.getOldLeadSelectionPath();
 					if (oldPath != null) {
 						Editable oldNode = (Editable) oldPath.getLastPathComponent();
 						System.out.println("old:" + oldNode);
 						try {
 							canLeaveOldNode = oldNode.validateAndSave();
-						} catch (FiBuException e1) {
+						} catch (FiBuException e) {
 							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							e.printStackTrace();
 						}
 					} else {
 						canLeaveOldNode = true;
 					}
-					TreePath newPath = e.getNewLeadSelectionPath();
+					TreePath newPath = selectionEvent.getNewLeadSelectionPath();
 					if (newPath != null && canLeaveOldNode) {
 						Editable newNode = (Editable) newPath.getLastPathComponent();
 						System.out.println("new:" + newNode);
 						workArea.removeAll();
 						try {
 							workArea.add(newNode.getEditor());
-						} catch (FiBuException e1) {
+						} catch (FiBuException e) {
 							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							e.printStackTrace();
 						}
 						workArea.revalidate();
 						workArea.repaint();
@@ -91,16 +95,15 @@ public class FiBuGUI {
 			});
 			JScrollPane treePane = new JScrollPane(treeMenu);
 			treePane.setPreferredSize(new Dimension(200, 600));
-			workArea = new JPanel(new FlowLayout(FlowLayout.LEFT));
-			JScrollPane formPane = new JScrollPane(workArea);
-			workArea.add(new JLabel("<html><h1>Freibier - FiBu</h1>" +
+			workArea = new JPanel(new BorderLayout());
+			workArea.add(new JLabel("<html><body><h1>Freibier - FiBu</h1>" +
 					"<p>Eine einfache Finanzbuchhaltung</p>" +
 					"<p>&copy; &nbsp; Thomas Bayen</p>" +
 					"<p>&copy; &nbsp; Peter Hormanns</p>" +
 					"<p>&copy; &nbsp; Susanne Wenz</p>" +
-					"</html>"));
-			formPane.setPreferredSize(new Dimension(600, 600));
-			frame.getContentPane().add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treePane, formPane));
+					"</body></html>"), BorderLayout.NORTH);
+			workArea.setPreferredSize(new Dimension(600, 600));
+			frame.getContentPane().add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treePane, workArea));
 			frame.pack();
 			frame.setVisible(true);
 		} catch (FiBuException e) {
@@ -129,7 +132,7 @@ public class FiBuGUI {
 	private TreeNode initTreeMenu() throws FiBuException {
 		StaticFolder root = new StaticFolder("FiBu", new StammdatenForm(fibu));
 		StaticFolder journals = new StaticFolder("Journale", new DummyForm("Journale Form"));
-		journals.addFolder(new DynamicFolder("Offene Journale") {
+		journals.addFolder(new DynamicFolder("Offene Journale", new JournaleForm(fibu, true)) {
 			public Vector readChildren() {
 				Vector offeneJournale = new Vector();
 				try {
@@ -148,17 +151,41 @@ public class FiBuGUI {
 									jour.getBuchungsperiode() 
 										+ "/" + jour.getBuchungsjahr() 
 										+ " ab: " + jour.getStartdatum(),
-									new DummyForm("Journal Form "
-											+ jour.getBuchungsperiode() 
-											+ "/" + jour.getBuchungsjahr() 
-											+ " ab: " + jour.getStartdatum())
+									new BuchungsForm(fibu, jour)
+							));
+				}
+				return children;
+			}
+		});
+		journals.addFolder(new DynamicFolder("Alle Journale", new JournaleForm(fibu, false)) {
+			public Vector readChildren() {
+				Vector offeneJournale = new Vector();
+				try {
+					offeneJournale = fibu.getAlleJournale();
+				} catch (FiBuException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Vector children = new Vector();
+				Enumeration jourEnum = offeneJournale.elements();
+				Journal jour = null;
+				while (jourEnum.hasMoreElements()) {
+					jour = (Journal) jourEnum.nextElement();
+					children.addElement(
+							new LeafNode(
+									jour.getBuchungsperiode() 
+										+ "/" + jour.getBuchungsjahr() 
+										+ " ab: " + jour.getStartdatum(),
+									new DummyForm("Journal Form")
 							));
 				}
 				return children;
 			}
 		});
 		root.addFolder(journals);
-		root.addFolder(new StaticFolder("Konten", new DummyForm("Konten Form")));
+		StaticFolder kontoRoot = new StaticFolder("Konten-Hierarchie", new KontenTreeForm(fibu));
+		kontoRoot.addFolder(new KontoNode(null, fibu.getBilanzKonto()));
+		root.addFolder(kontoRoot);
 		root.addFolder(new StaticFolder("Auswertungen", new DummyForm("Auswertungen Form")));
 		return root;
 	}
@@ -198,6 +225,9 @@ public class FiBuGUI {
 
 //
 // $Log: FiBuGUI.java,v $
+// Revision 1.4  2005/11/10 21:19:26  phormanns
+// Buchungsdialog begonnen
+//
 // Revision 1.3  2005/11/10 12:22:27  phormanns
 // Erste Form tut was
 //
