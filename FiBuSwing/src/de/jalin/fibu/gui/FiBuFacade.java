@@ -1,4 +1,4 @@
-// $Id: FiBuFacade.java,v 1.4 2005/11/11 19:46:26 phormanns Exp $
+// $Id: FiBuFacade.java,v 1.5 2005/11/11 21:40:35 phormanns Exp $
 package de.jalin.fibu.gui;
 
 import java.math.BigDecimal;
@@ -120,6 +120,40 @@ public class FiBuFacade {
 		} catch (SQL_DBException e) {
 			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
 		} catch (NotInitializedException e) {
+			return null;
+		}
+	}
+	
+	public void setBilanzKonto(String ktoNr) throws FiBuException {
+		try {
+			fibu.setBilanzkonto(fibu.getKonto(ktoNr));
+		} catch (SQL_DBException e) {
+			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+		} catch (RecordNotExistsDBException e) {
+			throw new FiBuUserException("Konto nicht vorhanden.");
+		} catch (NotInitializedException e) {
+			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+		}
+	}
+	
+	public Konto getGuVKonto() throws FiBuException {
+		try {
+			return fibu.getGuVKonto();
+		} catch (SQL_DBException e) {
+			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+		} catch (NotInitializedException e) {
+			return null;
+		}
+	}
+	
+	public void setGuVKonto(String ktoNr) throws FiBuException {
+		try {
+			fibu.setGuVKonto(fibu.getKonto(ktoNr));
+		} catch (SQL_DBException e) {
+			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+		} catch (RecordNotExistsDBException e) {
+			throw new FiBuUserException("Konto nicht vorhanden.");
+		} catch (NotInitializedException e) {
 			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
 		}
 	}
@@ -176,10 +210,14 @@ public class FiBuFacade {
 			throw new FiBuUserException("Fehler in der Konto-Angabe.");
 		}
 	}
+
 }
 
 /*
  *  $Log: FiBuFacade.java,v $
+ *  Revision 1.5  2005/11/11 21:40:35  phormanns
+ *  Einstiegskonten im Stammdaten-Form
+ *
  *  Revision 1.4  2005/11/11 19:46:26  phormanns
  *  MWSt-Berechnung im Buchungsdialog
  *

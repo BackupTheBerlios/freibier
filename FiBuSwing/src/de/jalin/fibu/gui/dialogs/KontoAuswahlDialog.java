@@ -1,4 +1,4 @@
-// $Id: KontoAuswahlDialog.java,v 1.2 2005/11/11 13:25:55 phormanns Exp $
+// $Id: KontoAuswahlDialog.java,v 1.3 2005/11/11 21:40:35 phormanns Exp $
 package de.jalin.fibu.gui.dialogs;
 
 import java.awt.Dimension;
@@ -54,8 +54,12 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 		Konto kto = node.getKonto();
 		try {
 			tfKontoNr.setText(kto.getKontonummer());
-			tfKontoText.setText(kto.getBezeichnung());
-			tfKontoMWSt.setText(kto.getMwSt());
+			if (tfKontoText != null) {
+				tfKontoText.setText(kto.getBezeichnung());
+			}
+			if (tfKontoMWSt != null) {
+				tfKontoMWSt.setText(kto.getMwSt());
+			}
 		} catch (SQL_DBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -70,6 +74,9 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 
 /*
  *  $Log: KontoAuswahlDialog.java,v $
+ *  Revision 1.3  2005/11/11 21:40:35  phormanns
+ *  Einstiegskonten im Stammdaten-Form
+ *
  *  Revision 1.2  2005/11/11 13:25:55  phormanns
  *  Kontoauswahl im Buchungsdialog
  *
