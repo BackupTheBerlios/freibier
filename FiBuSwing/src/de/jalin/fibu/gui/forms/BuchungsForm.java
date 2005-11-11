@@ -1,12 +1,14 @@
-// $Id: BuchungsForm.java,v 1.1 2005/11/10 21:19:26 phormanns Exp $
+// $Id: BuchungsForm.java,v 1.2 2005/11/11 13:25:55 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.Component;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.text.DateFormat;
 import java.util.Date;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JTextField;
+import com.jgoodies.forms.builder.AbstractFormBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -37,8 +39,12 @@ public class BuchungsForm implements Editable {
 		JTextField tfBelegNummer = new JTextField("");
 		JTextField tfBuchungsText = new JTextField("");
 		JTextField tfValutaDatum = new JTextField(dateFormatter.format(new Date()));
-		JTextField tfSollKonto = new JTextField(""); 
-		JTextField tfHabenKonto = new JTextField("");
+		JTextField tfSollKontoNr = new JTextField(""); 
+		JTextField tfHabenKontoNr = new JTextField("");
+		JTextField tfSollKontoText = new JTextField(""); 
+		tfSollKontoText.setEditable(false);
+		JTextField tfHabenKontoText = new JTextField("");
+		tfHabenKontoText.setEditable(false);
 		JTextField tfSollMWStSatz = new JTextField("0");
 		tfSollMWStSatz.setEditable(false);
 		tfSollMWStSatz.setHorizontalAlignment(JTextField.RIGHT);
@@ -53,13 +59,19 @@ public class BuchungsForm implements Editable {
 		tfSollMWSt.setHorizontalAlignment(JTextField.RIGHT);
 		JTextField tfHabenMWSt = new JTextField("0,00");
 		tfHabenMWSt.setHorizontalAlignment(JTextField.RIGHT);
+		tfSollKontoNr.addFocusListener(
+				new KontoNrListener(fibu, tfSollKontoNr, tfSollKontoText, tfSollMWStSatz));
+		tfHabenKontoNr.addFocusListener(
+				new KontoNrListener(fibu, tfHabenKontoNr, tfHabenKontoText, tfHabenMWStSatz));
 		JButton btSelSollKto = new JButton("...");
-		btSelSollKto.addActionListener(new KontoAuswahlDialog(fibu, tfSollKonto));
+		btSelSollKto.addActionListener(
+				new KontoAuswahlDialog(fibu, tfSollKontoNr, tfSollKontoText, tfSollMWStSatz));
 		JButton btSelHabenKto = new JButton("...");
-		btSelHabenKto.addActionListener(new KontoAuswahlDialog(fibu, tfHabenKonto));
+		btSelHabenKto.addActionListener(
+				new KontoAuswahlDialog(fibu, tfHabenKontoNr, tfHabenKontoText, tfHabenMWStSatz));
 		FormLayout layout = new FormLayout(
-				"4dlu, right:48dlu, 4dlu, pref:grow, 4dlu, 16dlu, 4dlu, 8dlu, " +
-				"4dlu, right:48dlu, 4dlu, pref:grow, 4dlu, 16dlu, 4dlu",
+				"4dlu, 48dlu, 4dlu, pref:grow, 4dlu, 16dlu, 4dlu, 8dlu, " +
+				"4dlu, 48dlu, 4dlu, pref:grow, 4dlu, 16dlu, 4dlu",
 				"4dlu, pref, 2dlu, pref, 2dlu, pref, 8dlu, " +
 				"pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu");
 		PanelBuilder builder = new PanelBuilder(layout);
@@ -73,9 +85,11 @@ public class BuchungsForm implements Editable {
 		builder.add(tfBuchungsText,                     cc.xyw(4, 6, 11));
 		builder.addSeparator("Soll-Konto",              cc.xyw(2, 8, 5));
 		builder.addSeparator("Haben-Konto",             cc.xyw(10, 8, 5));
-		builder.add(tfSollKonto,                        cc.xyw(2, 10, 3));
+		builder.add(tfSollKontoNr,                      cc.xy(2, 10));
+		builder.add(tfSollKontoText,                    cc.xy(4, 10));
 		builder.add(btSelSollKto,                       cc.xy(6, 10));
-		builder.add(tfHabenKonto,                       cc.xyw(10, 10, 3));
+		builder.add(tfHabenKontoNr,                     cc.xy(10, 10));
+		builder.add(tfHabenKontoText,                   cc.xy(12, 10));
 		builder.add(btSelHabenKto,                      cc.xy(14, 10));
 		builder.addLabel("MWSt.-Satz:",                 cc.xy(2, 12));
 		builder.add(tfSollMWStSatz,                     cc.xy(4, 12));
@@ -101,6 +115,9 @@ public class BuchungsForm implements Editable {
 
 /*
  *  $Log: BuchungsForm.java,v $
+ *  Revision 1.2  2005/11/11 13:25:55  phormanns
+ *  Kontoauswahl im Buchungsdialog
+ *
  *  Revision 1.1  2005/11/10 21:19:26  phormanns
  *  Buchungsdialog begonnen
  *

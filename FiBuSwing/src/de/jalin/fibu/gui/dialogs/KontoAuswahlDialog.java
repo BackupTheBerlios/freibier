@@ -1,16 +1,17 @@
-// $Id: KontoAuswahlDialog.java,v 1.1 2005/11/10 21:19:26 phormanns Exp $
+// $Id: KontoAuswahlDialog.java,v 1.2 2005/11/11 13:25:55 phormanns Exp $
 package de.jalin.fibu.gui.dialogs;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeSelectionModel;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
+import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
 import de.bayen.fibu.Konto;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
@@ -20,11 +21,15 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 	
 	private FiBuFacade fibu;
 	private JDialog dialog;
-	private JTextField tfKonto;
+	private JTextField tfKontoNr;
+	private JTextField tfKontoText;
+	private JTextField tfKontoMWSt;
 
-	public KontoAuswahlDialog(FiBuFacade fibu, JTextField tfKonto) {
+	public KontoAuswahlDialog(FiBuFacade fibu, JTextField tfKontoNr, JTextField tfKontoText, JTextField tfKontoMWSt) {
 		this.fibu = fibu;
-		this.tfKonto = tfKonto;
+		this.tfKontoNr = tfKontoNr;
+		this.tfKontoText = tfKontoText;
+		this.tfKontoMWSt = tfKontoMWSt;
 		this.dialog = new JDialog();
 		this.dialog.setSize(new Dimension(300, 200));
 	}
@@ -47,15 +52,27 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 	public void valueChanged(TreeSelectionEvent treeSelection) {
 		KontoNode node = (KontoNode) treeSelection.getNewLeadSelectionPath().getLastPathComponent();
 		Konto kto = node.getKonto();
-		tfKonto.setText(kto.getKontonummer() + " - " + kto.getBezeichnung());
+		try {
+			tfKontoNr.setText(kto.getKontonummer());
+			tfKontoText.setText(kto.getBezeichnung());
+			tfKontoMWSt.setText(kto.getMwSt());
+		} catch (SQL_DBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RecordNotExistsDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		dialog.hide();
 	}
-	
 	
 }
 
 /*
  *  $Log: KontoAuswahlDialog.java,v $
+ *  Revision 1.2  2005/11/11 13:25:55  phormanns
+ *  Kontoauswahl im Buchungsdialog
+ *
  *  Revision 1.1  2005/11/10 21:19:26  phormanns
  *  Buchungsdialog begonnen
  *
