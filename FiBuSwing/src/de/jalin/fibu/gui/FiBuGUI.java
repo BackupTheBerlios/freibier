@@ -1,4 +1,4 @@
-// $Id: FiBuGUI.java,v 1.4 2005/11/10 21:19:26 phormanns Exp $
+// $Id: FiBuGUI.java,v 1.5 2005/11/11 19:46:26 phormanns Exp $
 
 package de.jalin.fibu.gui;
 
@@ -31,6 +31,7 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import de.bayen.fibu.Journal;
 import de.jalin.fibu.gui.forms.BuchungsForm;
 import de.jalin.fibu.gui.forms.DummyForm;
+import de.jalin.fibu.gui.forms.JournalTable;
 import de.jalin.fibu.gui.forms.JournaleForm;
 import de.jalin.fibu.gui.forms.KontenTreeForm;
 import de.jalin.fibu.gui.forms.StammdatenForm;
@@ -176,7 +177,7 @@ public class FiBuGUI {
 									jour.getBuchungsperiode() 
 										+ "/" + jour.getBuchungsjahr() 
 										+ " ab: " + jour.getStartdatum(),
-									new DummyForm("Journal Form")
+									new JournalTable(jour)
 							));
 				}
 				return children;
@@ -225,6 +226,9 @@ public class FiBuGUI {
 
 //
 // $Log: FiBuGUI.java,v $
+// Revision 1.5  2005/11/11 19:46:26  phormanns
+// MWSt-Berechnung im Buchungsdialog
+//
 // Revision 1.4  2005/11/10 21:19:26  phormanns
 // Buchungsdialog begonnen
 //

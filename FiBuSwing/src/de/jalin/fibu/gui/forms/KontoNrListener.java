@@ -1,4 +1,4 @@
-// $Id: KontoNrListener.java,v 1.1 2005/11/11 13:25:55 phormanns Exp $
+// $Id: KontoNrListener.java,v 1.2 2005/11/11 19:46:26 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.event.FocusEvent;
@@ -25,7 +25,8 @@ public class KontoNrListener implements FocusListener {
 	}
 
 	public void focusGained(FocusEvent gotFocus) {
-		// TODO Auto-generated method stub
+		tfKontoText.setText("");
+		tfMWStSatz.setText("0");
 	}
 
 	public void focusLost(FocusEvent lostFocus) {
@@ -56,6 +57,9 @@ public class KontoNrListener implements FocusListener {
 
 /*
  *  $Log: KontoNrListener.java,v $
+ *  Revision 1.2  2005/11/11 19:46:26  phormanns
+ *  MWSt-Berechnung im Buchungsdialog
+ *
  *  Revision 1.1  2005/11/11 13:25:55  phormanns
  *  Kontoauswahl im Buchungsdialog
  *

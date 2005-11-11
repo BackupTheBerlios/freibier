@@ -1,18 +1,26 @@
-// $Id: FiBuFacade.java,v 1.3 2005/11/11 13:25:55 phormanns Exp $
+// $Id: FiBuFacade.java,v 1.4 2005/11/11 19:46:26 phormanns Exp $
 package de.jalin.fibu.gui;
 
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Vector;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
 import de.bayen.database.exception.SysDBEx.SQL_DBException;
 import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
 import de.bayen.database.exception.UserDBEx.UserSQL_DBException;
+import de.bayen.fibu.Betrag;
 import de.bayen.fibu.Buchhaltung;
+import de.bayen.fibu.Buchung;
+import de.bayen.fibu.Buchungszeile;
 import de.bayen.fibu.Journal;
 import de.bayen.fibu.Konto;
 import de.bayen.fibu.exceptions.FiBuException.NotInitializedException;
 
 public class FiBuFacade {
+	
+	private static final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM);
 	
 	private Buchhaltung fibu;
 	
@@ -144,10 +152,37 @@ public class FiBuFacade {
 		}
 	}
 
+	public void buchen(Journal journal, String belegNr, String buchungstext, String valutaDatum, 
+			String sollKtoNr, String habenKtoNr, String betrag) throws FiBuException {
+		try {
+			Buchung buchung = journal.createBuchung();
+			buchung.setBelegnummer(belegNr);
+			buchung.setBuchungstext(buchungstext);
+			buchung.setValutadatum(dateFormatter.parse(valutaDatum));
+			Buchungszeile sollBuchung = buchung.createZeile();
+			sollBuchung.setBetrag(new Betrag(new BigDecimal(betrag), true));
+			sollBuchung.setKonto(fibu.getKonto(sollKtoNr));
+			Buchungszeile habenBuchung = buchung.createZeile();
+			habenBuchung.setBetrag(new Betrag(new BigDecimal(betrag), false));
+			habenBuchung.setKonto(fibu.getKonto(habenKtoNr));
+			buchung.write();
+		} catch (SQL_DBException e) {
+			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+		} catch (ParseErrorDBException e) {
+			throw new FiBuUserException("Fehler im Eingabeformat.");
+		} catch (ParseException e) {
+			throw new FiBuUserException("Fehler im Eingabeformat.");
+		} catch (RecordNotExistsDBException e) {
+			throw new FiBuUserException("Fehler in der Konto-Angabe.");
+		}
+	}
 }
 
 /*
  *  $Log: FiBuFacade.java,v $
+ *  Revision 1.4  2005/11/11 19:46:26  phormanns
+ *  MWSt-Berechnung im Buchungsdialog
+ *
  *  Revision 1.3  2005/11/11 13:25:55  phormanns
  *  Kontoauswahl im Buchungsdialog
  *

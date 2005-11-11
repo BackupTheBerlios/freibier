@@ -1,10 +1,9 @@
-// $Id: StammdatenForm.java,v 1.2 2005/11/10 21:19:26 phormanns Exp $
+// $Id: StammdatenForm.java,v 1.3 2005/11/11 19:46:26 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.Component;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
+import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import de.jalin.fibu.gui.FiBuException;
@@ -40,20 +39,25 @@ public class StammdatenForm implements Editable {
 		tfFirma = new JTextField(fibu.getFirma());
 		FormLayout layout = new FormLayout(
 				"4dlu, right:pref, 4dlu, 24dlu, 4dlu, pref:grow, 4dlu",
-				"4dlu, pref, 2dlu, pref");
-		JPanel editor = new JPanel(layout);
+				"4dlu, pref, 4dlu, pref, 2dlu, pref, 2dlu");
 		CellConstraints constraints = new CellConstraints();
-		editor.add(new JLabel("Firma:"), constraints.xy(2, 2));
-		editor.add(tfFirma, constraints.xyw(4, 2, 3));
-		editor.add(new JLabel("Periode/Jahr:"), constraints.xy(2, 4));
-		editor.add(tfPeriodeAktuell, constraints.xy(4, 4));
-		editor.add(tfJahrAktuell, constraints.xy(6, 4));
-		return editor;
+		PanelBuilder builder = new PanelBuilder(layout);
+		builder.setDefaultDialogBorder();
+		builder.addSeparator("Stammdaten", constraints.xyw(2, 2, 5));
+		builder.addLabel("Firma:", constraints.xy(2, 4));
+		builder.add(tfFirma, constraints.xyw(4, 4, 3));
+		builder.addLabel("Periode/Jahr:", constraints.xy(2, 6));
+		builder.add(tfPeriodeAktuell, constraints.xy(4, 6));
+		builder.add(tfJahrAktuell, constraints.xy(6, 6));
+		return builder.getPanel();
 	}
 }
 
 /*
  *  $Log: StammdatenForm.java,v $
+ *  Revision 1.3  2005/11/11 19:46:26  phormanns
+ *  MWSt-Berechnung im Buchungsdialog
+ *
  *  Revision 1.2  2005/11/10 21:19:26  phormanns
  *  Buchungsdialog begonnen
  *
