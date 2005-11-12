@@ -1,21 +1,22 @@
-// $Id: KontoNode.java,v 1.1 2005/11/10 21:19:26 phormanns Exp $
+// $Id: KontoNode.java,v 1.2 2005/11/12 11:44:46 phormanns Exp $
 package de.jalin.fibu.gui.tree;
 
 import java.awt.Component;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
-import javax.swing.JLabel;
 import javax.swing.tree.TreeNode;
 import de.bayen.database.exception.SysDBEx.SQL_DBException;
 import de.bayen.fibu.Konto;
 import de.jalin.fibu.gui.FiBuException;
+import de.jalin.fibu.gui.forms.KontoTable;
 
 public class KontoNode implements TreeNode, Adoptable, Editable {
 
 	private TreeNode parent;
 	private Konto kto;
 	private Vector children;
+	private KontoTable ktoTable;
 	
 	public KontoNode(TreeNode parent, Konto konto) {
 		this.parent = parent;
@@ -32,6 +33,7 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		this.ktoTable = new KontoTable(kto);
 	}
 
 	public int getChildCount() {
@@ -71,13 +73,11 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 	}
 
 	public boolean validateAndSave() throws FiBuException {
-		// TODO Auto-generated method stub
-		return true;
+		return ktoTable.validateAndSave();
 	}
 
 	public Component getEditor() throws FiBuException {
-		// TODO Auto-generated method stub
-		return new JLabel("Konto Dummy");
+		return ktoTable.getEditor();
 	}
 	
 	public Konto getKonto() {
@@ -87,6 +87,9 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 
 /*
  *  $Log: KontoNode.java,v $
+ *  Revision 1.2  2005/11/12 11:44:46  phormanns
+ *  KontoTabelle zeigt Buchungen zum Konto
+ *
  *  Revision 1.1  2005/11/10 21:19:26  phormanns
  *  Buchungsdialog begonnen
  *
