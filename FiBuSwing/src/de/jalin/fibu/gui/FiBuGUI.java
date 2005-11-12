@@ -1,4 +1,4 @@
-// $Id: FiBuGUI.java,v 1.5 2005/11/11 19:46:26 phormanns Exp $
+// $Id: FiBuGUI.java,v 1.6 2005/11/12 11:52:23 phormanns Exp $
 
 package de.jalin.fibu.gui;
 
@@ -160,15 +160,15 @@ public class FiBuGUI {
 		});
 		journals.addFolder(new DynamicFolder("Alle Journale", new JournaleForm(fibu, false)) {
 			public Vector readChildren() {
-				Vector offeneJournale = new Vector();
+				Vector alleJournale = new Vector();
 				try {
-					offeneJournale = fibu.getAlleJournale();
+					alleJournale = fibu.getAlleJournale();
 				} catch (FiBuException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				Vector children = new Vector();
-				Enumeration jourEnum = offeneJournale.elements();
+				Enumeration jourEnum = alleJournale.elements();
 				Journal jour = null;
 				while (jourEnum.hasMoreElements()) {
 					jour = (Journal) jourEnum.nextElement();
@@ -226,6 +226,9 @@ public class FiBuGUI {
 
 //
 // $Log: FiBuGUI.java,v $
+// Revision 1.6  2005/11/12 11:52:23  phormanns
+// Vector in alleJournale unbenannt
+//
 // Revision 1.5  2005/11/11 19:46:26  phormanns
 // MWSt-Berechnung im Buchungsdialog
 //
