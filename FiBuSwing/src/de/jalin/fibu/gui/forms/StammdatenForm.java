@@ -1,4 +1,4 @@
-// $Id: StammdatenForm.java,v 1.4 2005/11/11 21:40:35 phormanns Exp $
+// $Id: StammdatenForm.java,v 1.5 2005/11/15 21:20:36 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.Component;
@@ -64,8 +64,10 @@ public class StammdatenForm implements Editable {
 		}
 		tfBilanzKtoNr.addFocusListener(new KontoNrListener(fibu, tfBilanzKtoNr, tfBilanzKtoBez, null));
 		tfBilanzKtoBez.setEditable(false);
+		tfBilanzKtoBez.setFocusable(false);
 		tfGuVKtoNr.addFocusListener(new KontoNrListener(fibu, tfGuVKtoNr, tfGuVKtoBez, null));
 		tfGuVKtoBez.setEditable(false);
+		tfGuVKtoBez.setFocusable(false);
 		JButton btBilanzKto = new JButton("...");
 		btBilanzKto.addActionListener(new KontoAuswahlDialog(fibu, tfBilanzKtoNr, tfBilanzKtoBez, null));
 		JButton btGuVKto = new JButton("...");
@@ -78,17 +80,22 @@ public class StammdatenForm implements Editable {
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setDefaultDialogBorder();
 		builder.addSeparator("Stammdaten", constraints.xyw(2, 2, 7));
-		builder.addLabel("Firma:", constraints.xy(2, 4));
+		builder.addLabel("&Firma:", constraints.xy(2, 4));
+		tfFirma.setFocusAccelerator('f');
 		builder.add(tfFirma, constraints.xyw(4, 4, 5));
-		builder.addLabel("Periode/Jahr:", constraints.xy(2, 6));
+		builder.addLabel("&Periode/Jahr:", constraints.xy(2, 6));
+		tfPeriodeAktuell.setFocusAccelerator('p');
 		builder.add(tfPeriodeAktuell, constraints.xy(4, 6));
+		tfJahrAktuell.setFocusAccelerator('j');
 		builder.add(tfJahrAktuell, constraints.xyw(6, 6, 3));
 		builder.addSeparator("Einstiegskonten", constraints.xyw(2, 8, 7));
-		builder.addLabel("Bilanzkonto:", constraints.xy(2, 10));
+		builder.addLabel("&Bilanzkonto:", constraints.xy(2, 10));
+		tfBilanzKtoNr.setFocusAccelerator('b');
 		builder.add(tfBilanzKtoNr, constraints.xy(4, 10));
 		builder.add(tfBilanzKtoBez, constraints.xy(6, 10));
 		builder.add(btBilanzKto, constraints.xy(8, 10));
-		builder.addLabel("GuV-Konto:", constraints.xy(2, 12));
+		builder.addLabel("&GuV-Konto:", constraints.xy(2, 12));
+		tfGuVKtoNr.setFocusAccelerator('g');
 		builder.add(tfGuVKtoNr, constraints.xy(4, 12));
 		builder.add(tfGuVKtoBez, constraints.xy(6, 12));
 		builder.add(btGuVKto, constraints.xy(8,12));
@@ -98,6 +105,10 @@ public class StammdatenForm implements Editable {
 
 /*
  *  $Log: StammdatenForm.java,v $
+ *  Revision 1.5  2005/11/15 21:20:36  phormanns
+ *  Refactorings in FiBuGUI
+ *  Focus und Shortcuts in BuchungsForm und StammdatenForm
+ *
  *  Revision 1.4  2005/11/11 21:40:35  phormanns
  *  Einstiegskonten im Stammdaten-Form
  *

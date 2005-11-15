@@ -1,4 +1,4 @@
-// $Id: FiBuGUI.java,v 1.6 2005/11/12 11:52:23 phormanns Exp $
+// $Id: FiBuGUI.java,v 1.7 2005/11/15 21:20:36 phormanns Exp $
 
 package de.jalin.fibu.gui;
 
@@ -35,6 +35,7 @@ import de.jalin.fibu.gui.forms.JournalTable;
 import de.jalin.fibu.gui.forms.JournaleForm;
 import de.jalin.fibu.gui.forms.KontenTreeForm;
 import de.jalin.fibu.gui.forms.StammdatenForm;
+import de.jalin.fibu.gui.tree.Adoptable;
 import de.jalin.fibu.gui.tree.DynamicFolder;
 import de.jalin.fibu.gui.tree.Editable;
 import de.jalin.fibu.gui.tree.KontoNode;
@@ -50,7 +51,7 @@ public class FiBuGUI {
 
 	public FiBuGUI() {
 		try {
-			fibu = new FiBuFacade();
+			fibu = new FiBuFacade(this);
 			frame = new JFrame("Freibier - Buchhaltung");
 			frame.addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent e) {
@@ -60,40 +61,7 @@ public class FiBuGUI {
 			frame.setJMenuBar(initMenuBar());
 			treeMenu = new JTree(initTreeMenu());
 			treeMenu.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			treeMenu.addTreeSelectionListener(new TreeSelectionListener() {
-				public void valueChanged(TreeSelectionEvent selectionEvent) {
-					boolean canLeaveOldNode = false;
-					TreePath oldPath = selectionEvent.getOldLeadSelectionPath();
-					if (oldPath != null) {
-						Editable oldNode = (Editable) oldPath.getLastPathComponent();
-						System.out.println("old:" + oldNode);
-						try {
-							canLeaveOldNode = oldNode.validateAndSave();
-						} catch (FiBuException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					} else {
-						canLeaveOldNode = true;
-					}
-					TreePath newPath = selectionEvent.getNewLeadSelectionPath();
-					if (newPath != null && canLeaveOldNode) {
-						Editable newNode = (Editable) newPath.getLastPathComponent();
-						System.out.println("new:" + newNode);
-						workArea.removeAll();
-						try {
-							workArea.add(newNode.getEditor());
-						} catch (FiBuException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						workArea.revalidate();
-						workArea.repaint();
-					} else {
-						treeMenu.setSelectionPath(oldPath);
-					}
-				}
-			});
+			treeMenu.addTreeSelectionListener(new MenuTreeSelectionListener());
 			JScrollPane treePane = new JScrollPane(treeMenu);
 			treePane.setPreferredSize(new Dimension(200, 600));
 			workArea = new JPanel(new BorderLayout());
@@ -133,62 +101,23 @@ public class FiBuGUI {
 	private TreeNode initTreeMenu() throws FiBuException {
 		StaticFolder root = new StaticFolder("FiBu", new StammdatenForm(fibu));
 		StaticFolder journals = new StaticFolder("Journale", new DummyForm("Journale Form"));
-		journals.addFolder(new DynamicFolder("Offene Journale", new JournaleForm(fibu, true)) {
-			public Vector readChildren() {
-				Vector offeneJournale = new Vector();
-				try {
-					offeneJournale = fibu.getOffeneJournale();
-				} catch (FiBuException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				Vector children = new Vector();
-				Enumeration jourEnum = offeneJournale.elements();
-				Journal jour = null;
-				while (jourEnum.hasMoreElements()) {
-					jour = (Journal) jourEnum.nextElement();
-					children.addElement(
-							new LeafNode(
-									jour.getBuchungsperiode() 
-										+ "/" + jour.getBuchungsjahr() 
-										+ " ab: " + jour.getStartdatum(),
-									new BuchungsForm(fibu, jour)
-							));
-				}
-				return children;
-			}
-		});
-		journals.addFolder(new DynamicFolder("Alle Journale", new JournaleForm(fibu, false)) {
-			public Vector readChildren() {
-				Vector alleJournale = new Vector();
-				try {
-					alleJournale = fibu.getAlleJournale();
-				} catch (FiBuException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				Vector children = new Vector();
-				Enumeration jourEnum = alleJournale.elements();
-				Journal jour = null;
-				while (jourEnum.hasMoreElements()) {
-					jour = (Journal) jourEnum.nextElement();
-					children.addElement(
-							new LeafNode(
-									jour.getBuchungsperiode() 
-										+ "/" + jour.getBuchungsjahr() 
-										+ " ab: " + jour.getStartdatum(),
-									new JournalTable(jour)
-							));
-				}
-				return children;
-			}
-		});
+		journals.addFolder(new JournaleFolder(fibu, "Offene Journale", true));
+		journals.addFolder(new JournaleFolder(fibu, "Alle Journale", false));
 		root.addFolder(journals);
 		StaticFolder kontoRoot = new StaticFolder("Konten-Hierarchie", new KontenTreeForm(fibu));
 		kontoRoot.addFolder(new KontoNode(null, fibu.getBilanzKonto()));
 		root.addFolder(kontoRoot);
 		root.addFolder(new StaticFolder("Auswertungen", new DummyForm("Auswertungen Form")));
 		return root;
+	}
+
+	public void refresh() {
+		// TODO Funktioniert nicht!
+		System.out.println("GUI.refresh()");
+		Adoptable root = (Adoptable) treeMenu.getModel().getRoot();
+		root.refresh();
+		treeMenu.revalidate();
+		treeMenu.repaint();
 	}
 
 	private void exitFiBu() {
@@ -221,11 +150,92 @@ public class FiBuGUI {
 		new FiBuGUI();
 	}
 
+	private final class JournaleFolder extends DynamicFolder {
+		
+		private boolean nurOffene;
+		
+		private JournaleFolder(FiBuFacade fibu, String title, boolean nurOffene) {
+			super(title, new JournaleForm(fibu, nurOffene));
+			this.nurOffene = nurOffene;
+		}
+
+		public Vector readChildren() {
+			Vector journale = new Vector();
+			try {
+				if (nurOffene) {
+					journale = fibu.getOffeneJournale();
+				} else {
+					journale = fibu.getAlleJournale();
+				}
+			} catch (FiBuException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Vector children = new Vector();
+			Enumeration jourEnum = journale.elements();
+			Journal jour = null;
+			Editable jourForm = null;
+			while (jourEnum.hasMoreElements()) {
+				jour = (Journal) jourEnum.nextElement();
+				if (nurOffene) {
+					jourForm = new BuchungsForm(fibu, jour);
+				} else {
+					jourForm = new JournalTable(jour);
+				}
+				children.addElement(
+						new LeafNode(
+								jour.getBuchungsperiode() 
+									+ "/" + jour.getBuchungsjahr() 
+									+ " ab: " + jour.getStartdatum(),
+								jourForm
+						));
+			}
+			return children;
+		}
+	}
+
+	private class MenuTreeSelectionListener implements TreeSelectionListener {
+		public void valueChanged(TreeSelectionEvent selectionEvent) {
+			boolean canLeaveOldNode = false;
+			TreePath oldPath = selectionEvent.getOldLeadSelectionPath();
+			if (oldPath != null) {
+				Editable oldNode = (Editable) oldPath.getLastPathComponent();
+				try {
+					canLeaveOldNode = oldNode.validateAndSave();
+				} catch (FiBuException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				canLeaveOldNode = true;
+			}
+			TreePath newPath = selectionEvent.getNewLeadSelectionPath();
+			if (newPath != null && canLeaveOldNode) {
+				Editable newNode = (Editable) newPath.getLastPathComponent();
+				workArea.removeAll();
+				try {
+					workArea.add(newNode.getEditor());
+				} catch (FiBuException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				workArea.revalidate();
+				workArea.repaint();
+			} else {
+				treeMenu.setSelectionPath(oldPath);
+			}
+		}
+	}
+
 }
 
 
 //
 // $Log: FiBuGUI.java,v $
+// Revision 1.7  2005/11/15 21:20:36  phormanns
+// Refactorings in FiBuGUI
+// Focus und Shortcuts in BuchungsForm und StammdatenForm
+//
 // Revision 1.6  2005/11/12 11:52:23  phormanns
 // Vector in alleJournale unbenannt
 //

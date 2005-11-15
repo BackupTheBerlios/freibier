@@ -1,4 +1,4 @@
-// $Id: FiBuFacade.java,v 1.5 2005/11/11 21:40:35 phormanns Exp $
+// $Id: FiBuFacade.java,v 1.6 2005/11/15 21:20:36 phormanns Exp $
 package de.jalin.fibu.gui;
 
 import java.math.BigDecimal;
@@ -23,9 +23,11 @@ public class FiBuFacade {
 	private static final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM);
 	
 	private Buchhaltung fibu;
+	private FiBuGUI gui;
 	
-	public FiBuFacade() throws FiBuException {
+	public FiBuFacade(FiBuGUI gui) throws FiBuException {
 		try {
+			this.gui = gui;
 			fibu = new Buchhaltung();
 		} catch (UserSQL_DBException e) {
 			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
@@ -161,6 +163,7 @@ public class FiBuFacade {
 	public void absummieren(Journal j) throws FiBuException {
 		try {
 			j.absummieren();
+			gui.refresh();
 		} catch (SQL_DBException e) {
 			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
 		}
@@ -168,7 +171,9 @@ public class FiBuFacade {
 	
 	public Journal neuesJournal() throws FiBuException {
 		try {
-			return fibu.createJournal();
+			Journal journal = fibu.createJournal();
+			gui.refresh();
+			return journal;
 		} catch (SQL_DBException e) {
 			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
 		} catch (NotInitializedException e) {
@@ -215,6 +220,10 @@ public class FiBuFacade {
 
 /*
  *  $Log: FiBuFacade.java,v $
+ *  Revision 1.6  2005/11/15 21:20:36  phormanns
+ *  Refactorings in FiBuGUI
+ *  Focus und Shortcuts in BuchungsForm und StammdatenForm
+ *
  *  Revision 1.5  2005/11/11 21:40:35  phormanns
  *  Einstiegskonten im Stammdaten-Form
  *

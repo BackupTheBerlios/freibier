@@ -1,4 +1,4 @@
-// $Id: KontoNode.java,v 1.2 2005/11/12 11:44:46 phormanns Exp $
+// $Id: KontoNode.java,v 1.3 2005/11/15 21:20:36 phormanns Exp $
 package de.jalin.fibu.gui.tree;
 
 import java.awt.Component;
@@ -21,18 +21,7 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 	public KontoNode(TreeNode parent, Konto konto) {
 		this.parent = parent;
 		this.kto = konto;
-		this.children = new Vector();
-		try {
-			Iterator unterkonten = this.kto.getUnterkonten().iterator();
-			Konto unterKto = null;
-			while (unterkonten.hasNext()) {
-				unterKto = (Konto) unterkonten.next();
-				children.addElement(new KontoNode(this, unterKto));
-			}
-		} catch (SQL_DBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		readChildren();
 		this.ktoTable = new KontoTable(kto);
 	}
 
@@ -83,10 +72,34 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 	public Konto getKonto() {
 		return kto;
 	}
+
+	public void refresh() {
+		readChildren();
+	}
+
+	private void readChildren() {
+		this.children = new Vector();
+		try {
+			Iterator unterkonten = this.kto.getUnterkonten().iterator();
+			Konto unterKto = null;
+			while (unterkonten.hasNext()) {
+				unterKto = (Konto) unterkonten.next();
+				children.addElement(new KontoNode(this, unterKto));
+			}
+		} catch (SQL_DBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }
 
 /*
  *  $Log: KontoNode.java,v $
+ *  Revision 1.3  2005/11/15 21:20:36  phormanns
+ *  Refactorings in FiBuGUI
+ *  Focus und Shortcuts in BuchungsForm und StammdatenForm
+ *
  *  Revision 1.2  2005/11/12 11:44:46  phormanns
  *  KontoTabelle zeigt Buchungen zum Konto
  *

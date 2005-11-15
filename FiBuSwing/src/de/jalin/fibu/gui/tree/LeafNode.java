@@ -1,4 +1,4 @@
-// $Id: LeafNode.java,v 1.2 2005/11/10 12:22:27 phormanns Exp $
+// $Id: LeafNode.java,v 1.3 2005/11/15 21:20:36 phormanns Exp $
 
 package de.jalin.fibu.gui.tree;
 
@@ -63,11 +63,18 @@ public class LeafNode implements TreeNode, Adoptable, Editable {
 		return editor.getEditor();
 	}
 
+	public void refresh() {
+	}
+
 }
 
 
 //
 // $Log: LeafNode.java,v $
+// Revision 1.3  2005/11/15 21:20:36  phormanns
+// Refactorings in FiBuGUI
+// Focus und Shortcuts in BuchungsForm und StammdatenForm
+//
 // Revision 1.2  2005/11/10 12:22:27  phormanns
 // Erste Form tut was
 //

@@ -1,4 +1,4 @@
-// $Id: BuchungsForm.java,v 1.3 2005/11/11 19:46:26 phormanns Exp $
+// $Id: BuchungsForm.java,v 1.4 2005/11/15 21:20:36 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.Component;
@@ -38,30 +38,37 @@ public class BuchungsForm implements Editable {
 	public Component getEditor() throws FiBuException {
 		JTextField tfBelegNummer = new JTextField("");
 		JTextField tfBuchungsText = new JTextField("");
-		JTextField tfValutaDatum = new JTextField(dateFormatter
-				.format(new Date()));
+		JTextField tfValutaDatum = 
+			new JTextField(dateFormatter.format(new Date()));
 		JTextField tfSollKontoNr = new JTextField("");
 		JTextField tfHabenKontoNr = new JTextField("");
 		JTextField tfSollKontoText = new JTextField("");
 		tfSollKontoText.setEditable(false);
+		tfSollKontoText.setFocusable(false);
 		JTextField tfHabenKontoText = new JTextField("");
 		tfHabenKontoText.setEditable(false);
+		tfHabenKontoText.setFocusable(false);
 		JTextField tfSollMWStSatz = new JTextField("0");
 		tfSollMWStSatz.setEditable(false);
+		tfSollMWStSatz.setFocusable(false);
 		tfSollMWStSatz.setHorizontalAlignment(JTextField.RIGHT);
 		JTextField tfHabenMWStSatz = new JTextField("0");
 		tfHabenMWStSatz.setEditable(false);
+		tfHabenMWStSatz.setFocusable(false);
 		tfHabenMWStSatz.setHorizontalAlignment(JTextField.RIGHT);
 		JTextField tfSollBetrag = new JTextField("0.00");
 		tfSollBetrag.setHorizontalAlignment(JTextField.RIGHT);
 		JTextField tfHabenBetrag = new JTextField("0.00");
 		tfHabenBetrag.setEditable(false);
+		tfHabenBetrag.setFocusable(false);
 		tfHabenBetrag.setHorizontalAlignment(JTextField.RIGHT);
 		JTextField tfSollMWSt = new JTextField("0.00");
 		tfSollMWSt.setHorizontalAlignment(JTextField.RIGHT);
 		tfSollMWSt.setEditable(false);
+		tfSollMWSt.setFocusable(false);
 		JTextField tfHabenMWSt = new JTextField("0.00");
 		tfHabenMWSt.setEditable(false);
+		tfHabenMWSt.setFocusable(false);
 		tfHabenMWSt.setHorizontalAlignment(JTextField.RIGHT);
 		tfSollKontoNr.addFocusListener(new KontoNrListener(fibu, tfSollKontoNr,
 				tfSollKontoText, tfSollMWStSatz));
@@ -70,9 +77,11 @@ public class BuchungsForm implements Editable {
 		tfSollBetrag.addFocusListener(new BetragListener(tfSollBetrag, 
 				tfHabenBetrag, tfSollMWStSatz, tfHabenMWStSatz, tfSollMWSt, tfHabenMWSt));
 		JButton btSelSollKto = new JButton("...");
+		btSelSollKto.setFocusable(false);
 		btSelSollKto.addActionListener(new KontoAuswahlDialog(fibu,
 				tfSollKontoNr, tfSollKontoText, tfSollMWStSatz));
 		JButton btSelHabenKto = new JButton("...");
+		btSelHabenKto.setFocusable(false);
 		btSelHabenKto.addActionListener(new KontoAuswahlDialog(fibu,
 				tfHabenKontoNr, tfHabenKontoText, tfHabenMWStSatz));
 		JButton save = new JButton("Buchen");
@@ -87,23 +96,29 @@ public class BuchungsForm implements Editable {
 		builder.setDefaultDialogBorder();
 		CellConstraints cc = new CellConstraints();
 		builder.addSeparator("Buchung", cc.xyw(2, 2, 13));
-		builder.addLabel("Beleg/Datum:", cc.xy(2, 4));
+		builder.addLabel("&Beleg/Datum:", cc.xy(2, 4));
+		tfBelegNummer.setFocusAccelerator('b');
 		builder.add(tfBelegNummer, cc.xy(4, 4));
+		tfValutaDatum.setFocusAccelerator('d');
 		builder.add(tfValutaDatum, cc.xyw(6, 4, 9));
-		builder.addLabel("Buchungstext:", cc.xy(2, 6));
+		builder.addLabel("Buchungs&text:", cc.xy(2, 6));
 		builder.add(tfBuchungsText, cc.xyw(4, 6, 11));
-		builder.addSeparator("Soll-Konto", cc.xyw(2, 8, 5));
-		builder.addSeparator("Haben-Konto", cc.xyw(10, 8, 5));
+		tfBuchungsText.setFocusAccelerator('t');
+		builder.addSeparator("&Soll-Konto", cc.xyw(2, 8, 5));
+		builder.addSeparator("&Haben-Konto", cc.xyw(10, 8, 5));
+		tfSollKontoNr.setFocusAccelerator('s');
 		builder.add(tfSollKontoNr, cc.xy(2, 10));
 		builder.add(tfSollKontoText, cc.xy(4, 10));
 		builder.add(btSelSollKto, cc.xy(6, 10));
+		tfHabenKontoNr.setFocusAccelerator('h');
 		builder.add(tfHabenKontoNr, cc.xy(10, 10));
 		builder.add(tfHabenKontoText, cc.xy(12, 10));
 		builder.add(btSelHabenKto, cc.xy(14, 10));
 		builder.addLabel("MWSt.-Satz:", cc.xy(2, 12));
 		builder.add(tfSollMWStSatz, cc.xy(4, 12));
 		builder.addLabel("%", cc.xy(6, 12));
-		builder.addLabel("(Netto-)Betrag:", cc.xy(2, 14));
+		builder.addLabel("(Netto-)Betra&g:", cc.xy(2, 14));
+		tfSollBetrag.setFocusAccelerator('g');
 		builder.add(tfSollBetrag, cc.xy(4, 14));
 		builder.addLabel("¤", cc.xy(6, 14));
 		builder.addLabel("MWSt.:", cc.xy(2, 16));
@@ -160,6 +175,10 @@ public class BuchungsForm implements Editable {
 }
 /*
  *  $Log: BuchungsForm.java,v $
+ *  Revision 1.4  2005/11/15 21:20:36  phormanns
+ *  Refactorings in FiBuGUI
+ *  Focus und Shortcuts in BuchungsForm und StammdatenForm
+ *
  *  Revision 1.3  2005/11/11 19:46:26  phormanns
  *  MWSt-Berechnung im Buchungsdialog
  *

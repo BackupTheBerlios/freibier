@@ -1,4 +1,4 @@
-// $Id: DynamicFolder.java,v 1.2 2005/11/10 21:19:26 phormanns Exp $
+// $Id: DynamicFolder.java,v 1.3 2005/11/15 21:20:36 phormanns Exp $
 
 package de.jalin.fibu.gui.tree;
 
@@ -74,6 +74,10 @@ public abstract class DynamicFolder implements TreeNode, Adoptable, Editable {
 			nodeListCreationTime = now;
 		}
 	}
+	
+	public void refresh() {
+		updateNodeList();
+	}
 
 	public boolean validateAndSave() throws FiBuException {
 		return editor.validateAndSave();
@@ -88,6 +92,10 @@ public abstract class DynamicFolder implements TreeNode, Adoptable, Editable {
 
 //
 // $Log: DynamicFolder.java,v $
+// Revision 1.3  2005/11/15 21:20:36  phormanns
+// Refactorings in FiBuGUI
+// Focus und Shortcuts in BuchungsForm und StammdatenForm
+//
 // Revision 1.2  2005/11/10 21:19:26  phormanns
 // Buchungsdialog begonnen
 //
