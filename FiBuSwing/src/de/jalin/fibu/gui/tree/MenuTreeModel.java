@@ -1,0 +1,161 @@
+// $Id: MenuTreeModel.java,v 1.1 2005/11/16 18:24:11 phormanns Exp $
+
+package de.jalin.fibu.gui.tree;
+
+import java.util.Enumeration;
+import java.util.EventListener;
+import java.util.Vector;
+
+import javax.swing.event.EventListenerList;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+import de.bayen.fibu.Journal;
+import de.jalin.fibu.gui.FiBuException;
+import de.jalin.fibu.gui.FiBuFacade;
+import de.jalin.fibu.gui.FiBuGUI;
+import de.jalin.fibu.gui.forms.BuchungsForm;
+import de.jalin.fibu.gui.forms.DummyForm;
+import de.jalin.fibu.gui.forms.JournalTable;
+import de.jalin.fibu.gui.forms.JournaleForm;
+import de.jalin.fibu.gui.forms.KontenTreeForm;
+import de.jalin.fibu.gui.forms.StammdatenForm;
+
+public class MenuTreeModel implements TreeModel {
+
+	private FiBuGUI gui;
+	private StaticFolder rootFolder;
+	private StaticFolder journaleFolder;
+	private EventListenerList modelListeners;
+	
+	public MenuTreeModel(FiBuGUI gui) {
+		modelListeners = new EventListenerList();
+		rootFolder = new StaticFolder("FiBu", new StammdatenForm(gui));
+		this.gui = gui;
+		try {
+			journaleFolder = new StaticFolder("Journale", new DummyForm("Journale"));
+			journaleFolder.addFolder(new JournaleFolder(gui, "Offene Journale", true));
+			journaleFolder.addFolder(new JournaleFolder(gui, "Alle Journale", false));
+			rootFolder.addFolder(journaleFolder);
+			StaticFolder kontenFolder = new StaticFolder("Konten-Hierarchie", new KontenTreeForm(gui));
+			kontenFolder.addFolder(new KontoNode(gui, kontenFolder, gui.getFiBuFacade().getBilanzKonto()));
+			rootFolder.addFolder(kontenFolder);
+			StaticFolder auswertungenFolder = new StaticFolder("Auswertungen", new DummyForm("Auswertungen"));
+			rootFolder.addFolder(auswertungenFolder);
+		} catch (FiBuException e) {
+			gui.handleException(e);
+		}
+	}
+
+	public int getChildCount(Object parent) {
+		return ((TreeNode) parent).getChildCount();
+	}
+
+	public boolean isLeaf(Object node) {
+		return ((TreeNode) node).isLeaf();
+	}
+
+	public Object getChild(Object parent, int index) {
+		return ((TreeNode) parent).getChildAt(index);
+	}
+
+	public int getIndexOfChild(Object parent, Object child) {
+		return ((TreeNode) parent).getIndex((TreeNode) child);
+	}
+
+	public void refreshJournale() {
+		journaleFolder.removeFolders();
+		JournaleFolder offeneJournaleFolder = new JournaleFolder(gui, "Offene Journale", true);
+		journaleFolder.addFolder(offeneJournaleFolder);
+		JournaleFolder alleJournaleFolder = new JournaleFolder(gui, "Alle Journale", false);
+		journaleFolder.addFolder(alleJournaleFolder);
+		EventListener[] listeners = modelListeners.getListeners(TreeModelListener.class);
+		TreeModelListener modelListener = null;
+		for (int i=0; i<listeners.length; i++) {
+			modelListener = (TreeModelListener) listeners[i];
+			modelListener.treeStructureChanged(
+					new TreeModelEvent(
+							journaleFolder, 
+							new Object[] { rootFolder, journaleFolder, offeneJournaleFolder } ));
+			modelListener.treeStructureChanged(
+					new TreeModelEvent(
+							journaleFolder, 
+							new Object[] { rootFolder, journaleFolder, alleJournaleFolder } ));
+		}
+	}
+
+	public Object getRoot() {
+		return rootFolder;
+	}
+
+	public void addTreeModelListener(TreeModelListener l) {
+		modelListeners.add(TreeModelListener.class, l);
+	}
+
+	public void removeTreeModelListener(TreeModelListener l) {
+		modelListeners.remove(TreeModelListener.class, l);
+	}
+
+	public void valueForPathChanged(TreePath path, Object newValue) {
+	}
+
+	
+	private final class JournaleFolder extends DynamicFolder {
+		
+		private FiBuGUI gui;
+		private boolean nurOffene;
+		
+		private JournaleFolder(FiBuGUI gui, String title, boolean nurOffene) {
+			super(title, new JournaleForm(gui, nurOffene));
+			this.gui = gui;
+			this.nurOffene = nurOffene;
+		}
+
+		public Vector readChildren() {
+			Vector journale = new Vector();
+			FiBuFacade fibu = gui.getFiBuFacade();
+			try {
+				if (nurOffene) {
+					journale = fibu.getOffeneJournale();
+				} else {
+					journale = fibu.getAlleJournale();
+				}
+			} catch (FiBuException e) {
+				gui.handleException(e);
+			}
+			Vector children = new Vector();
+			Enumeration jourEnum = journale.elements();
+			Journal jour = null;
+			Editable jourForm = null;
+			while (jourEnum.hasMoreElements()) {
+				jour = (Journal) jourEnum.nextElement();
+				if (nurOffene) {
+					jourForm = new BuchungsForm(gui, jour);
+				} else {
+					jourForm = new JournalTable(gui, jour);
+				}
+				children.addElement(
+						new LeafNode(
+								jour.getBuchungsperiode() 
+									+ "/" + jour.getBuchungsjahr() 
+									+ " ab: " + jour.getStartdatum(),
+								jourForm
+						));
+			}
+			return children;
+		}
+	}
+
+}
+
+
+//
+// $Log: MenuTreeModel.java,v $
+// Revision 1.1  2005/11/16 18:24:11  phormanns
+// Exception Handling in GUI
+// Refactorings, Focus-Steuerung
+//
+//

@@ -1,4 +1,4 @@
-// $Id: KontoTable.java,v 1.1 2005/11/12 11:44:46 phormanns Exp $
+// $Id: KontoTable.java,v 1.2 2005/11/16 18:24:11 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
@@ -16,6 +16,7 @@ import de.bayen.fibu.Buchung;
 import de.bayen.fibu.Buchungszeile;
 import de.bayen.fibu.Konto;
 import de.jalin.fibu.gui.FiBuException;
+import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.FiBuSystemException;
 import de.jalin.fibu.gui.tree.Editable;
 
@@ -24,10 +25,12 @@ public class KontoTable implements Editable {
 	private static final DateFormat dateFormatter = 
 		DateFormat.getDateInstance(DateFormat.MEDIUM);
 	
+	private FiBuGUI gui;
 	private Konto kto;
 	private Vector columnTitles;
 
-	public KontoTable(Konto kto) {
+	public KontoTable(FiBuGUI gui, Konto kto) {
+		this.gui = gui;
 		this.kto = kto;
 		columnTitles = new Vector();
 		columnTitles.addElement("Beleg");
@@ -37,20 +40,26 @@ public class KontoTable implements Editable {
 		columnTitles.addElement("Haben");
 	}
 
-	public boolean validateAndSave() throws FiBuException {
+	public boolean validateAndSave() {
 		return true;
 	}
 
-	public Component getEditor() throws FiBuException {
+	public Component getEditor() {
 		JPanel panel = new JPanel(new BorderLayout());
-		JTable journalLog = new JTable(readJournal(), columnTitles);
-		journalLog.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		JScrollPane scroll = new JScrollPane(journalLog);
-		panel.add(scroll, BorderLayout.CENTER);
+		try {
+			JTable kontoLog = new JTable(readKonto(), columnTitles);
+			// kontoLog.setEnabled(false);
+			kontoLog.setCellSelectionEnabled(false);
+			kontoLog.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			JScrollPane scroll = new JScrollPane(kontoLog);
+			panel.add(scroll, BorderLayout.CENTER);
+		} catch (FiBuException e) {
+			gui.handleException(e);
+		}
 		return panel;
 	}
 	
-	private Vector readJournal() throws FiBuException {
+	private Vector readKonto() throws FiBuException {
 		Vector ktoList = new Vector();
 		try {
 			Iterator buchungsZeilen = kto.getBuchungszeilen().iterator();
@@ -88,6 +97,10 @@ public class KontoTable implements Editable {
 
 /*
  *  $Log: KontoTable.java,v $
+ *  Revision 1.2  2005/11/16 18:24:11  phormanns
+ *  Exception Handling in GUI
+ *  Refactorings, Focus-Steuerung
+ *
  *  Revision 1.1  2005/11/12 11:44:46  phormanns
  *  KontoTabelle zeigt Buchungen zum Konto
  *

@@ -1,4 +1,4 @@
-// $Id: JournaleForm.java,v 1.1 2005/11/10 21:19:26 phormanns Exp $
+// $Id: JournaleForm.java,v 1.2 2005/11/16 18:24:11 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
@@ -16,29 +16,36 @@ import javax.swing.table.AbstractTableModel;
 import de.bayen.fibu.Journal;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
+import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.tree.Editable;
 
 public class JournaleForm implements Editable {
 	
+	private FiBuGUI gui;
 	private FiBuFacade fibu;
 	private JTable table;
 	private boolean nurOffene;
 	
-	public JournaleForm(FiBuFacade fibu, boolean nurOffene) {
-		this.fibu = fibu;
+	public JournaleForm(FiBuGUI gui, boolean nurOffene) {
+		this.gui = gui;
+		this.fibu = gui.getFiBuFacade();
 		this.nurOffene = nurOffene;
 	}
 
-	public boolean validateAndSave() throws FiBuException {
+	public boolean validateAndSave() {
 		return true;
 	}
 
-	public Component getEditor() throws FiBuException {
+	public Component getEditor() {
 		final Vector journaleVector = new Vector();
-		if (nurOffene) {
-			journaleVector.addAll(fibu.getOffeneJournale());
-		} else {
-			journaleVector.addAll(fibu.getAlleJournale());
+		try {
+			if (nurOffene) {
+				journaleVector.addAll(fibu.getOffeneJournale());
+			} else {
+				journaleVector.addAll(fibu.getAlleJournale());
+			}
+		} catch (FiBuException e) {
+			gui.handleException(e);
 		}
 		JPanel panel = new JPanel(new BorderLayout());
 		JournalTableModel tableModel = new JournalTableModel(journaleVector);
@@ -57,8 +64,7 @@ public class JournaleForm implements Editable {
 						table.revalidate();
 						table.repaint();
 					} catch (FiBuException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						gui.handleException(e);
 					}
 				}
 			});
@@ -66,15 +72,14 @@ public class JournaleForm implements Editable {
 				public void actionPerformed(ActionEvent pressedClose) {
 					int selRow = table.getSelectedRow();
 					if (selRow >= 0) {
-						Journal jour = (Journal) journaleVector.get(selRow);
+						Journal jour = (Journal) journaleVector.get(journaleVector.size() - 1 - selRow);
 						try {
 							fibu.absummieren(jour);
 							journaleVector.remove(jour);
 							table.revalidate();
 							table.repaint();
 						} catch (FiBuException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							gui.handleException(e);
 						}
 					}
 				}
@@ -105,24 +110,14 @@ public class JournaleForm implements Editable {
 		}
 
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			Journal journ = (Journal) journaleVector.get(rowIndex);
+			Journal journ = (Journal) journaleVector.get(getRowCount() - 1 - rowIndex);
 			Object value = "";
 			switch (columnIndex) {
-				case 0:
-					value = journ.getJournalnummer().toString();
-					break;
-				case 1:
-					value = journ.getBuchungsperiode();
-					break;
-				case 2:
-					value = journ.getBuchungsjahr();
-					break;
-				case 3:
-					value = journ.getStartdatum();
-					break;
-				default:
-					value = "";
-					break;
+				case 0: value = journ.getJournalnummer().toString(); break;
+				case 1: value = journ.getBuchungsperiode(); break;
+				case 2: value = journ.getBuchungsjahr(); break;
+				case 3: value = journ.getStartdatum(); break;
+				default: value = ""; break;
 			}
 			return value;
 		}
@@ -130,21 +125,11 @@ public class JournaleForm implements Editable {
 		public String getColumnName(int columnIndex) {
 			String value = "";
 			switch (columnIndex) {
-				case 0:
-					value = "Nr.";
-					break;
-				case 1:
-					value = "Periode";
-					break;
-				case 2:
-					value = "Jahr";
-					break;
-				case 3:
-					value = "ab";
-					break;
-				default:
-					value = "";
-					break;
+				case 0: value = "Nr."; break;
+				case 1: value = "Periode"; break;
+				case 2: value = "Jahr"; break;
+				case 3: value = "ab"; break;
+				default: value = ""; break;
 			}
 			return value;
 		}
@@ -154,6 +139,10 @@ public class JournaleForm implements Editable {
 
 /*
  *  $Log: JournaleForm.java,v $
+ *  Revision 1.2  2005/11/16 18:24:11  phormanns
+ *  Exception Handling in GUI
+ *  Refactorings, Focus-Steuerung
+ *
  *  Revision 1.1  2005/11/10 21:19:26  phormanns
  *  Buchungsdialog begonnen
  *

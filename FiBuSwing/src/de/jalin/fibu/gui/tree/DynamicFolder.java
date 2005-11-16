@@ -1,4 +1,4 @@
-// $Id: DynamicFolder.java,v 1.3 2005/11/15 21:20:36 phormanns Exp $
+// $Id: DynamicFolder.java,v 1.4 2005/11/16 18:24:11 phormanns Exp $
 
 package de.jalin.fibu.gui.tree;
 
@@ -6,8 +6,8 @@ import java.awt.Component;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
+
 import javax.swing.tree.TreeNode;
-import de.jalin.fibu.gui.FiBuException;
 
 public abstract class DynamicFolder implements TreeNode, Adoptable, Editable {
 
@@ -79,11 +79,11 @@ public abstract class DynamicFolder implements TreeNode, Adoptable, Editable {
 		updateNodeList();
 	}
 
-	public boolean validateAndSave() throws FiBuException {
+	public boolean validateAndSave() {
 		return editor.validateAndSave();
 	}
 	
-	public Component getEditor() throws FiBuException {
+	public Component getEditor() {
 		return editor.getEditor();
 	}
 
@@ -92,6 +92,10 @@ public abstract class DynamicFolder implements TreeNode, Adoptable, Editable {
 
 //
 // $Log: DynamicFolder.java,v $
+// Revision 1.4  2005/11/16 18:24:11  phormanns
+// Exception Handling in GUI
+// Refactorings, Focus-Steuerung
+//
 // Revision 1.3  2005/11/15 21:20:36  phormanns
 // Refactorings in FiBuGUI
 // Focus und Shortcuts in BuchungsForm und StammdatenForm

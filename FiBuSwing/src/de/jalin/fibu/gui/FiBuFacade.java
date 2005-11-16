@@ -1,10 +1,12 @@
-// $Id: FiBuFacade.java,v 1.6 2005/11/15 21:20:36 phormanns Exp $
+// $Id: FiBuFacade.java,v 1.7 2005/11/16 18:24:11 phormanns Exp $
 package de.jalin.fibu.gui;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Vector;
+
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
 import de.bayen.database.exception.SysDBEx.SQL_DBException;
@@ -48,7 +50,7 @@ public class FiBuFacade {
 		try {
 			fibu.getFirmenstammdaten().setField("Firma", firma);
 		} catch (ParseErrorDBException e) {
-			throw new FiBuUserException("Fehler in der Firmanbezeichnung.");
+			throw new FiBuUserException("Fehler in der Firmenbezeichnung.");
 		} catch (SQL_DBException e) {
 			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
 		} catch (NotInitializedException e) {
@@ -163,7 +165,7 @@ public class FiBuFacade {
 	public void absummieren(Journal j) throws FiBuException {
 		try {
 			j.absummieren();
-			gui.refresh();
+			gui.refreshJournale();
 		} catch (SQL_DBException e) {
 			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
 		}
@@ -172,7 +174,7 @@ public class FiBuFacade {
 	public Journal neuesJournal() throws FiBuException {
 		try {
 			Journal journal = fibu.createJournal();
-			gui.refresh();
+			gui.refreshJournale();
 			return journal;
 		} catch (SQL_DBException e) {
 			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
@@ -216,10 +218,32 @@ public class FiBuFacade {
 		}
 	}
 
+	public String getMWSt(Konto kto) throws FiBuException {
+		try {
+			return kto.getMwSt();
+		} catch (SQL_DBException e) {
+			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+		} catch (RecordNotExistsDBException e) {
+			throw new FiBuUserException("Fehler in der Konto-Angabe (kein MWSt-Satz).");
+		}
+	}
+
+	public List getUnterkonten(Konto kto) throws FiBuException {
+		try {
+			return kto.getUnterkonten();
+		} catch (SQL_DBException e) {
+			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+		}
+	}
+
 }
 
 /*
  *  $Log: FiBuFacade.java,v $
+ *  Revision 1.7  2005/11/16 18:24:11  phormanns
+ *  Exception Handling in GUI
+ *  Refactorings, Focus-Steuerung
+ *
  *  Revision 1.6  2005/11/15 21:20:36  phormanns
  *  Refactorings in FiBuGUI
  *  Focus und Shortcuts in BuchungsForm und StammdatenForm

@@ -1,71 +1,73 @@
-// $Id: KontoAuswahlDialog.java,v 1.3 2005/11/11 21:40:35 phormanns Exp $
+// $Id: KontoAuswahlDialog.java,v 1.4 2005/11/16 18:24:11 phormanns Exp $
 package de.jalin.fibu.gui.dialogs;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeSelectionModel;
-import de.bayen.database.exception.SysDBEx.SQL_DBException;
-import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
+
 import de.bayen.fibu.Konto;
 import de.jalin.fibu.gui.FiBuException;
-import de.jalin.fibu.gui.FiBuFacade;
+import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.tree.KontoNode;
 
 public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener {
 	
-	private FiBuFacade fibu;
+	private FiBuGUI gui;
 	private JDialog dialog;
 	private JTextField tfKontoNr;
 	private JTextField tfKontoText;
 	private JTextField tfKontoMWSt;
 
-	public KontoAuswahlDialog(FiBuFacade fibu, JTextField tfKontoNr, JTextField tfKontoText, JTextField tfKontoMWSt) {
-		this.fibu = fibu;
+	public KontoAuswahlDialog(FiBuGUI gui, 
+			JTextField tfKontoNr, JTextField tfKontoText, JTextField tfKontoMWSt) {
+		this.gui = gui;
 		this.tfKontoNr = tfKontoNr;
 		this.tfKontoText = tfKontoText;
 		this.tfKontoMWSt = tfKontoMWSt;
-		this.dialog = new JDialog();
-		this.dialog.setSize(new Dimension(300, 200));
+		JFrame mainWindow = gui.getFrame();
+		Point locationOnScreen = mainWindow.getLocation();
+		this.dialog = new JDialog(mainWindow, "Kontoauswahl Dialog", true);
+		locationOnScreen.move(200, 150);
+		this.dialog.setLocation(locationOnScreen);
+		this.dialog.setSize(new Dimension(400, 300));
 	}
 
 	public void actionPerformed(ActionEvent selectKonto) {
 		Konto bilanzKonto;
 		try {
-			bilanzKonto = fibu.getBilanzKonto();
-			JTree tree = new JTree(new KontoNode(null, bilanzKonto));
+			bilanzKonto = gui.getFiBuFacade().getBilanzKonto();
+			JTree tree = new JTree(new KontoNode(gui, null, bilanzKonto));
 			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			tree.addTreeSelectionListener(this);
 			dialog.getContentPane().add(tree);
 			dialog.show();
 		} catch (FiBuException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			gui.handleException(e);
 		}
 	}
 
 	public void valueChanged(TreeSelectionEvent treeSelection) {
 		KontoNode node = (KontoNode) treeSelection.getNewLeadSelectionPath().getLastPathComponent();
 		Konto kto = node.getKonto();
-		try {
-			tfKontoNr.setText(kto.getKontonummer());
-			if (tfKontoText != null) {
-				tfKontoText.setText(kto.getBezeichnung());
+		tfKontoNr.setText(kto.getKontonummer());
+		if (tfKontoText != null) {
+			tfKontoText.setText(kto.getBezeichnung());
+		}
+		if (tfKontoMWSt != null) {
+			try {
+				tfKontoMWSt.setText(gui.getFiBuFacade().getMWSt(kto));
+			} catch (FiBuException e) {
+				gui.handleException(e);
 			}
-			if (tfKontoMWSt != null) {
-				tfKontoMWSt.setText(kto.getMwSt());
-			}
-		} catch (SQL_DBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RecordNotExistsDBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		dialog.hide();
 	}
@@ -74,6 +76,10 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 
 /*
  *  $Log: KontoAuswahlDialog.java,v $
+ *  Revision 1.4  2005/11/16 18:24:11  phormanns
+ *  Exception Handling in GUI
+ *  Refactorings, Focus-Steuerung
+ *
  *  Revision 1.3  2005/11/11 21:40:35  phormanns
  *  Einstiegskonten im Stammdaten-Form
  *

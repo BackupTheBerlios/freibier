@@ -1,10 +1,12 @@
-// $Id: BuchungsForm.java,v 1.4 2005/11/15 21:20:36 phormanns Exp $
+// $Id: BuchungsForm.java,v 1.5 2005/11/16 18:24:11 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JTextField;
@@ -14,79 +16,107 @@ import com.jgoodies.forms.layout.FormLayout;
 import de.bayen.fibu.Journal;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
+import de.jalin.fibu.gui.FiBuGUI;
+import de.jalin.fibu.gui.FiBuUserException;
 import de.jalin.fibu.gui.dialogs.KontoAuswahlDialog;
-import de.jalin.fibu.gui.tree.Editable;
 
-public class BuchungsForm implements Editable {
+
+public class BuchungsForm extends AbstractForm {
 	
 	private static final DateFormat dateFormatter = 
 		DateFormat.getDateInstance(DateFormat.MEDIUM);
 	
-	private FiBuFacade fibu;
+	private FiBuGUI gui;
 	private Journal journal;
+	private JTextField tfBelegNr;
+	private JTextField tfValutaDatum;
+	private JTextField tfSollKontoNr;
+	private JTextField tfHabenKontoNr;
+	private JTextField tfBuchungstext;
+	private JTextField tfSollKontoText;
+	private JTextField tfHabenKontoText;
+	private JTextField tfSollMWStSatz;
+	private JTextField tfHabenMWStSatz;
+	private JTextField tfSollBetrag;
+	private JTextField tfHabenBetrag;
+	private JTextField tfSollMWSt;
+	private JTextField tfHabenMWSt;
 
-	public BuchungsForm(FiBuFacade fibu, Journal jour) {
-		this.fibu = fibu;
+	public BuchungsForm(FiBuGUI gui, Journal jour) {
+		this.gui = gui;
 		this.journal = jour;
 	}
 
-	public boolean validateAndSave() throws FiBuException {
-		// TODO Auto-generated method stub
-		return true;
+	public boolean save() {
+		try {
+			String belegNr = tfBelegNr.getText().trim();
+			if (belegNr.length() < 1) {
+				throw new FiBuUserException("Kein Beleg angegeben.");
+			}
+			String valutaDatum = tfValutaDatum.getText();
+			try {
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(dateFormatter.parse(valutaDatum));
+				if (cal.get(Calendar.YEAR) < 100) cal.add(Calendar.YEAR, 2000);
+				tfValutaDatum.setText(dateFormatter.format(cal.getTime()));
+			} catch (ParseException e) {
+				throw new FiBuUserException("Kein gültiges Datum angegeben.");
+			}
+			String buchungstext = tfBuchungstext.getText();
+			if (buchungstext.length() < 1) {
+				throw new FiBuUserException("Kein Buchungstext angegeben.");
+			}
+			gui.getFiBuFacade().buchen(journal, belegNr, 
+					buchungstext, valutaDatum, 
+					tfSollKontoNr.getText(), tfHabenKontoNr.getText(), 
+					tfSollBetrag.getText());
+			return true;
+		} catch (FiBuException e) {
+			gui.handleException(e);
+			return false;
+		}
 	}
 
-	public Component getEditor() throws FiBuException {
-		JTextField tfBelegNummer = new JTextField("");
-		JTextField tfBuchungsText = new JTextField("");
-		JTextField tfValutaDatum = 
-			new JTextField(dateFormatter.format(new Date()));
-		JTextField tfSollKontoNr = new JTextField("");
-		JTextField tfHabenKontoNr = new JTextField("");
-		JTextField tfSollKontoText = new JTextField("");
-		tfSollKontoText.setEditable(false);
-		tfSollKontoText.setFocusable(false);
-		JTextField tfHabenKontoText = new JTextField("");
-		tfHabenKontoText.setEditable(false);
-		tfHabenKontoText.setFocusable(false);
-		JTextField tfSollMWStSatz = new JTextField("0");
-		tfSollMWStSatz.setEditable(false);
-		tfSollMWStSatz.setFocusable(false);
+	public Component getEditor() {
+		FiBuFacade fibu = gui.getFiBuFacade();
+		tfBelegNr = createTextField("", true);
+		tfBuchungstext = createTextField("", true);
+		tfValutaDatum = createTextField(dateFormatter.format(new Date()), true);
+		tfSollKontoNr = createTextField("", true);
+		tfHabenKontoNr = createTextField("", true);
+		tfSollKontoText = createTextField("", false);
+		tfHabenKontoText = createTextField("", false);
+		tfSollMWStSatz = createTextField("0", false);
 		tfSollMWStSatz.setHorizontalAlignment(JTextField.RIGHT);
-		JTextField tfHabenMWStSatz = new JTextField("0");
-		tfHabenMWStSatz.setEditable(false);
-		tfHabenMWStSatz.setFocusable(false);
+		tfHabenMWStSatz = createTextField("0", false);
 		tfHabenMWStSatz.setHorizontalAlignment(JTextField.RIGHT);
-		JTextField tfSollBetrag = new JTextField("0.00");
+		tfSollBetrag = createTextField("0.00", true);
 		tfSollBetrag.setHorizontalAlignment(JTextField.RIGHT);
-		JTextField tfHabenBetrag = new JTextField("0.00");
-		tfHabenBetrag.setEditable(false);
-		tfHabenBetrag.setFocusable(false);
+		tfHabenBetrag = createTextField("0.00", false);
 		tfHabenBetrag.setHorizontalAlignment(JTextField.RIGHT);
-		JTextField tfSollMWSt = new JTextField("0.00");
+		tfSollMWSt = createTextField("0.00", false);
 		tfSollMWSt.setHorizontalAlignment(JTextField.RIGHT);
-		tfSollMWSt.setEditable(false);
-		tfSollMWSt.setFocusable(false);
-		JTextField tfHabenMWSt = new JTextField("0.00");
-		tfHabenMWSt.setEditable(false);
-		tfHabenMWSt.setFocusable(false);
+		tfHabenMWSt = createTextField("0.00", false);
 		tfHabenMWSt.setHorizontalAlignment(JTextField.RIGHT);
-		tfSollKontoNr.addFocusListener(new KontoNrListener(fibu, tfSollKontoNr,
-				tfSollKontoText, tfSollMWStSatz));
-		tfHabenKontoNr.addFocusListener(new KontoNrListener(fibu,
-				tfHabenKontoNr, tfHabenKontoText, tfHabenMWStSatz));
-		tfSollBetrag.addFocusListener(new BetragListener(tfSollBetrag, 
-				tfHabenBetrag, tfSollMWStSatz, tfHabenMWStSatz, tfSollMWSt, tfHabenMWSt));
+		tfSollKontoNr.addFocusListener(
+				new KontoNrListener(fibu, tfSollKontoNr, tfSollKontoText, tfSollMWStSatz));
+		tfHabenKontoNr.addFocusListener(
+				new KontoNrListener(fibu, tfHabenKontoNr, tfHabenKontoText, tfHabenMWStSatz));
+		tfSollBetrag.addFocusListener(
+				new BetragListener(gui, 
+						tfSollBetrag, tfHabenBetrag, 
+						tfSollMWStSatz, tfHabenMWStSatz, 
+						tfSollMWSt, tfHabenMWSt));
 		JButton btSelSollKto = new JButton("...");
 		btSelSollKto.setFocusable(false);
-		btSelSollKto.addActionListener(new KontoAuswahlDialog(fibu,
-				tfSollKontoNr, tfSollKontoText, tfSollMWStSatz));
+		btSelSollKto.addActionListener(
+				new KontoAuswahlDialog(gui, tfSollKontoNr, tfSollKontoText, tfSollMWStSatz));
 		JButton btSelHabenKto = new JButton("...");
 		btSelHabenKto.setFocusable(false);
-		btSelHabenKto.addActionListener(new KontoAuswahlDialog(fibu,
-				tfHabenKontoNr, tfHabenKontoText, tfHabenMWStSatz));
+		btSelHabenKto.addActionListener(
+				new KontoAuswahlDialog(gui, tfHabenKontoNr, tfHabenKontoText, tfHabenMWStSatz));
 		JButton save = new JButton("Buchen");
-		save.addActionListener(new BuchungsAction(fibu, journal, tfBelegNummer, tfBuchungsText,
-				tfValutaDatum, tfSollKontoNr, tfHabenKontoNr,tfSollBetrag));
+		save.addActionListener(new BuchungsAction(this));
 		FormLayout layout = new FormLayout(
 				"4dlu, 48dlu, 4dlu, pref:grow, 4dlu, 16dlu, 4dlu, 8dlu, "
 						+ "4dlu, 48dlu, 4dlu, pref:grow, 4dlu, 16dlu, 4dlu",
@@ -97,13 +127,13 @@ public class BuchungsForm implements Editable {
 		CellConstraints cc = new CellConstraints();
 		builder.addSeparator("Buchung", cc.xyw(2, 2, 13));
 		builder.addLabel("&Beleg/Datum:", cc.xy(2, 4));
-		tfBelegNummer.setFocusAccelerator('b');
-		builder.add(tfBelegNummer, cc.xy(4, 4));
+		tfBelegNr.setFocusAccelerator('b');
+		builder.add(tfBelegNr, cc.xy(4, 4));
 		tfValutaDatum.setFocusAccelerator('d');
 		builder.add(tfValutaDatum, cc.xyw(6, 4, 9));
 		builder.addLabel("Buchungs&text:", cc.xy(2, 6));
-		builder.add(tfBuchungsText, cc.xyw(4, 6, 11));
-		tfBuchungsText.setFocusAccelerator('t');
+		builder.add(tfBuchungstext, cc.xyw(4, 6, 11));
+		tfBuchungstext.setFocusAccelerator('t');
 		builder.addSeparator("&Soll-Konto", cc.xyw(2, 8, 5));
 		builder.addSeparator("&Haben-Konto", cc.xyw(10, 8, 5));
 		tfSollKontoNr.setFocusAccelerator('s');
@@ -139,42 +169,23 @@ public class BuchungsForm implements Editable {
 
 	class BuchungsAction implements ActionListener {
 		
-		private FiBuFacade fibu;
-		private Journal journal;
-		private JTextField tfBelegNr;
-		private JTextField tfBuchungstext;
-		private JTextField tfValutaDatum;
-		private JTextField tfSollKtoNr;
-		private JTextField tfHabenKtoNr;
-		private JTextField tfBetrag;
+		private BuchungsForm form;
 
-		public BuchungsAction(FiBuFacade fibu, Journal journal, JTextField tfBelegNr, JTextField tfBuchungstext,
-				JTextField tfValutaDatum, JTextField tfSollKtoNr, JTextField tfHabenKtoNr, JTextField tfBetrag) {
-			this.fibu = fibu;
-			this.journal = journal;
-			this.tfBelegNr = tfBelegNr;
-			this.tfBuchungstext = tfBuchungstext;
-			this.tfValutaDatum = tfValutaDatum;
-			this.tfSollKtoNr = tfSollKtoNr;
-			this.tfHabenKtoNr = tfHabenKtoNr;
-			this.tfBetrag = tfBetrag;
+		public BuchungsAction(BuchungsForm form) {
+			this.form = form;
 		}
 		
-		public void actionPerformed(ActionEvent save) {
-			try {
-				fibu.buchen(journal, tfBelegNr.getText(), 
-						tfBuchungstext.getText(), tfValutaDatum.getText(), 
-						tfSollKtoNr.getText(), tfHabenKtoNr.getText(), 
-						tfBetrag.getText());
-			} catch (FiBuException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		public void actionPerformed(ActionEvent buchen) {
+			form.save();
 		}
 	}
 }
 /*
  *  $Log: BuchungsForm.java,v $
+ *  Revision 1.5  2005/11/16 18:24:11  phormanns
+ *  Exception Handling in GUI
+ *  Refactorings, Focus-Steuerung
+ *
  *  Revision 1.4  2005/11/15 21:20:36  phormanns
  *  Refactorings in FiBuGUI
  *  Focus und Shortcuts in BuchungsForm und StammdatenForm

@@ -1,28 +1,32 @@
-// $Id: KontoNode.java,v 1.3 2005/11/15 21:20:36 phormanns Exp $
+// $Id: KontoNode.java,v 1.4 2005/11/16 18:24:11 phormanns Exp $
 package de.jalin.fibu.gui.tree;
 
 import java.awt.Component;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
+
 import javax.swing.tree.TreeNode;
-import de.bayen.database.exception.SysDBEx.SQL_DBException;
+
 import de.bayen.fibu.Konto;
 import de.jalin.fibu.gui.FiBuException;
+import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.forms.KontoTable;
 
 public class KontoNode implements TreeNode, Adoptable, Editable {
 
+	private FiBuGUI gui;
 	private TreeNode parent;
 	private Konto kto;
 	private Vector children;
 	private KontoTable ktoTable;
 	
-	public KontoNode(TreeNode parent, Konto konto) {
+	public KontoNode(FiBuGUI gui, TreeNode parent, Konto konto) {
+		this.gui = gui;
 		this.parent = parent;
 		this.kto = konto;
 		readChildren();
-		this.ktoTable = new KontoTable(kto);
+		this.ktoTable = new KontoTable(gui, kto);
 	}
 
 	public int getChildCount() {
@@ -61,11 +65,11 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 		this.parent = parent;
 	}
 
-	public boolean validateAndSave() throws FiBuException {
+	public boolean validateAndSave() {
 		return ktoTable.validateAndSave();
 	}
 
-	public Component getEditor() throws FiBuException {
+	public Component getEditor() {
 		return ktoTable.getEditor();
 	}
 	
@@ -78,17 +82,16 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 	}
 
 	private void readChildren() {
-		this.children = new Vector();
+		children = new Vector();
 		try {
-			Iterator unterkonten = this.kto.getUnterkonten().iterator();
+			Iterator unterkonten = gui.getFiBuFacade().getUnterkonten(kto).iterator();
 			Konto unterKto = null;
 			while (unterkonten.hasNext()) {
 				unterKto = (Konto) unterkonten.next();
-				children.addElement(new KontoNode(this, unterKto));
+				children.addElement(new KontoNode(gui, this, unterKto));
 			}
-		} catch (SQL_DBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (FiBuException e) {
+			gui.handleException(e);
 		}
 	}
 
@@ -96,6 +99,10 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 
 /*
  *  $Log: KontoNode.java,v $
+ *  Revision 1.4  2005/11/16 18:24:11  phormanns
+ *  Exception Handling in GUI
+ *  Refactorings, Focus-Steuerung
+ *
  *  Revision 1.3  2005/11/15 21:20:36  phormanns
  *  Refactorings in FiBuGUI
  *  Focus und Shortcuts in BuchungsForm und StammdatenForm

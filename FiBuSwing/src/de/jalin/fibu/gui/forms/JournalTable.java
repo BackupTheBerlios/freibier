@@ -1,4 +1,4 @@
-// $Id: JournalTable.java,v 1.1 2005/11/11 19:46:26 phormanns Exp $
+// $Id: JournalTable.java,v 1.2 2005/11/16 18:24:11 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
@@ -17,6 +17,7 @@ import de.bayen.fibu.Buchungszeile;
 import de.bayen.fibu.Journal;
 import de.bayen.fibu.Konto;
 import de.jalin.fibu.gui.FiBuException;
+import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.FiBuSystemException;
 import de.jalin.fibu.gui.tree.Editable;
 
@@ -25,10 +26,12 @@ public class JournalTable implements Editable {
 	private static final DateFormat dateFormatter = 
 		DateFormat.getDateInstance(DateFormat.MEDIUM);
 	
+	private FiBuGUI gui;
 	private Journal journal;
 	private Vector columnTitles;
 
-	public JournalTable(Journal journal) {
+	public JournalTable(FiBuGUI gui, Journal journal) {
+		this.gui = gui;
 		this.journal = journal;
 		columnTitles = new Vector();
 		columnTitles.addElement("Beleg");
@@ -40,16 +43,22 @@ public class JournalTable implements Editable {
 		columnTitles.addElement("Kto.-Bezeichnung");
 	}
 
-	public boolean validateAndSave() throws FiBuException {
+	public boolean validateAndSave() {
 		return true;
 	}
 
-	public Component getEditor() throws FiBuException {
+	public Component getEditor() {
 		JPanel panel = new JPanel(new BorderLayout());
-		JTable journalLog = new JTable(readJournal(), columnTitles);
-		journalLog.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		JScrollPane scroll = new JScrollPane(journalLog);
-		panel.add(scroll, BorderLayout.CENTER);
+		try {
+			JTable journalLog = new JTable(readJournal(), columnTitles);
+			// journalLog.setEnabled(false);
+			journalLog.setCellSelectionEnabled(false);
+			journalLog.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			JScrollPane scroll = new JScrollPane(journalLog);
+			panel.add(scroll, BorderLayout.CENTER);
+		} catch (FiBuException e) {
+			gui.handleException(e);
+		}
 		return panel;
 	}
 	
@@ -108,6 +117,10 @@ public class JournalTable implements Editable {
 
 /*
  *  $Log: JournalTable.java,v $
+ *  Revision 1.2  2005/11/16 18:24:11  phormanns
+ *  Exception Handling in GUI
+ *  Refactorings, Focus-Steuerung
+ *
  *  Revision 1.1  2005/11/11 19:46:26  phormanns
  *  MWSt-Berechnung im Buchungsdialog
  *

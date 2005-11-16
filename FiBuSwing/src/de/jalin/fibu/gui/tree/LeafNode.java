@@ -1,11 +1,11 @@
-// $Id: LeafNode.java,v 1.3 2005/11/15 21:20:36 phormanns Exp $
+// $Id: LeafNode.java,v 1.4 2005/11/16 18:24:11 phormanns Exp $
 
 package de.jalin.fibu.gui.tree;
 
 import java.awt.Component;
 import java.util.Enumeration;
+
 import javax.swing.tree.TreeNode;
-import de.jalin.fibu.gui.FiBuException;
 
 public class LeafNode implements TreeNode, Adoptable, Editable {
 
@@ -55,11 +55,11 @@ public class LeafNode implements TreeNode, Adoptable, Editable {
 		this.parent = parent;
 	}
 
-	public boolean validateAndSave() throws FiBuException {
+	public boolean validateAndSave() {
 		return editor.validateAndSave();
 	}
 	
-	public Component getEditor() throws FiBuException {
+	public Component getEditor() {
 		return editor.getEditor();
 	}
 
@@ -71,6 +71,10 @@ public class LeafNode implements TreeNode, Adoptable, Editable {
 
 //
 // $Log: LeafNode.java,v $
+// Revision 1.4  2005/11/16 18:24:11  phormanns
+// Exception Handling in GUI
+// Refactorings, Focus-Steuerung
+//
 // Revision 1.3  2005/11/15 21:20:36  phormanns
 // Refactorings in FiBuGUI
 // Focus und Shortcuts in BuchungsForm und StammdatenForm
