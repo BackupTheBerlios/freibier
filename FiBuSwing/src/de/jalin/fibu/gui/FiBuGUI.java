@@ -1,4 +1,4 @@
-// $Id: FiBuGUI.java,v 1.8 2005/11/16 18:24:11 phormanns Exp $
+// $Id: FiBuGUI.java,v 1.9 2005/11/20 21:29:10 phormanns Exp $
 
 package de.jalin.fibu.gui;
 
@@ -42,7 +42,7 @@ public class FiBuGUI {
 
 	public FiBuGUI() {
 		try {
-			fibu = new FiBuFacade(this);
+			fibu = new FiBuFacade();
 			frame = new JFrame("Freibier - Buchhaltung");
 			frame.addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent e) {
@@ -161,6 +161,9 @@ public class FiBuGUI {
 
 //
 // $Log: FiBuGUI.java,v $
+// Revision 1.9  2005/11/20 21:29:10  phormanns
+// Umstellung auf XMLRPC Server
+//
 // Revision 1.8  2005/11/16 18:24:11  phormanns
 // Exception Handling in GUI
 // Refactorings, Focus-Steuerung

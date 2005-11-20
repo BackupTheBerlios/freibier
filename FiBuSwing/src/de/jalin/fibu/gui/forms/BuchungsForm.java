@@ -1,4 +1,4 @@
-// $Id: BuchungsForm.java,v 1.5 2005/11/16 18:24:11 phormanns Exp $
+// $Id: BuchungsForm.java,v 1.6 2005/11/20 21:29:10 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.Component;
@@ -13,12 +13,12 @@ import javax.swing.JTextField;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import de.bayen.fibu.Journal;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.FiBuUserException;
 import de.jalin.fibu.gui.dialogs.KontoAuswahlDialog;
+import de.jalin.fibu.server.journal.JournalData;
 
 
 public class BuchungsForm extends AbstractForm {
@@ -27,7 +27,7 @@ public class BuchungsForm extends AbstractForm {
 		DateFormat.getDateInstance(DateFormat.MEDIUM);
 	
 	private FiBuGUI gui;
-	private Journal journal;
+	private JournalData journal;
 	private JTextField tfBelegNr;
 	private JTextField tfValutaDatum;
 	private JTextField tfSollKontoNr;
@@ -41,8 +41,9 @@ public class BuchungsForm extends AbstractForm {
 	private JTextField tfHabenBetrag;
 	private JTextField tfSollMWSt;
 	private JTextField tfHabenMWSt;
+	private JournalTable tabJournal;
 
-	public BuchungsForm(FiBuGUI gui, Journal jour) {
+	public BuchungsForm(FiBuGUI gui, JournalData jour) {
 		this.gui = gui;
 		this.journal = jour;
 	}
@@ -90,13 +91,13 @@ public class BuchungsForm extends AbstractForm {
 		tfSollMWStSatz.setHorizontalAlignment(JTextField.RIGHT);
 		tfHabenMWStSatz = createTextField("0", false);
 		tfHabenMWStSatz.setHorizontalAlignment(JTextField.RIGHT);
-		tfSollBetrag = createTextField("0.00", true);
+		tfSollBetrag = createTextField("0,00", true);
 		tfSollBetrag.setHorizontalAlignment(JTextField.RIGHT);
-		tfHabenBetrag = createTextField("0.00", false);
+		tfHabenBetrag = createTextField("0,00", false);
 		tfHabenBetrag.setHorizontalAlignment(JTextField.RIGHT);
-		tfSollMWSt = createTextField("0.00", false);
+		tfSollMWSt = createTextField("0,00", false);
 		tfSollMWSt.setHorizontalAlignment(JTextField.RIGHT);
-		tfHabenMWSt = createTextField("0.00", false);
+		tfHabenMWSt = createTextField("0,00", false);
 		tfHabenMWSt.setHorizontalAlignment(JTextField.RIGHT);
 		tfSollKontoNr.addFocusListener(
 				new KontoNrListener(fibu, tfSollKontoNr, tfSollKontoText, tfSollMWStSatz));
@@ -121,7 +122,8 @@ public class BuchungsForm extends AbstractForm {
 				"4dlu, 48dlu, 4dlu, pref:grow, 4dlu, 16dlu, 4dlu, 8dlu, "
 						+ "4dlu, 48dlu, 4dlu, pref:grow, 4dlu, 16dlu, 4dlu",
 				"4dlu, pref, 4dlu, pref, 2dlu, pref, 8dlu, "
-						+ "pref, 4dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 8dlu, pref, 2dlu");
+						+ "pref, 4dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 8dlu, pref, 8dlu, "
+						+ "pref, 4dlu, fill:16dlu:grow, 4dlu");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setDefaultDialogBorder();
 		CellConstraints cc = new CellConstraints();
@@ -164,6 +166,9 @@ public class BuchungsForm extends AbstractForm {
 		builder.add(tfHabenMWSt, cc.xy(12, 16));
 		builder.addLabel("¤", cc.xy(14, 16));
 		builder.add(save, cc.xy(2, 18));
+		builder.addSeparator("Buchungen", cc.xyw(2, 20, 13));
+		tabJournal = new JournalTable(gui, journal);
+		builder.add(tabJournal.getEditor(), cc.xyw(2, 22, 13));
 		return builder.getPanel();
 	}
 
@@ -177,11 +182,15 @@ public class BuchungsForm extends AbstractForm {
 		
 		public void actionPerformed(ActionEvent buchen) {
 			form.save();
+			tabJournal.reload();
 		}
 	}
 }
 /*
  *  $Log: BuchungsForm.java,v $
+ *  Revision 1.6  2005/11/20 21:29:10  phormanns
+ *  Umstellung auf XMLRPC Server
+ *
  *  Revision 1.5  2005/11/16 18:24:11  phormanns
  *  Exception Handling in GUI
  *  Refactorings, Focus-Steuerung

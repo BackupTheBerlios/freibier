@@ -1,38 +1,43 @@
-// $Id: JournalTable.java,v 1.2 2005/11/16 18:24:11 phormanns Exp $
+// $Id: JournalTable.java,v 1.3 2005/11/20 21:29:10 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import de.bayen.database.exception.SysDBEx.SQL_DBException;
-import de.bayen.fibu.Betrag;
-import de.bayen.fibu.Buchung;
-import de.bayen.fibu.Buchungszeile;
-import de.bayen.fibu.Journal;
-import de.bayen.fibu.Konto;
 import de.jalin.fibu.gui.FiBuException;
+import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.gui.FiBuGUI;
-import de.jalin.fibu.gui.FiBuSystemException;
 import de.jalin.fibu.gui.tree.Editable;
+import de.jalin.fibu.server.buchung.BuchungData;
+import de.jalin.fibu.server.buchungszeile.BuchungszeileData;
+import de.jalin.fibu.server.journal.JournalData;
+import de.jalin.fibu.server.konto.KontoData;
 
 public class JournalTable implements Editable {
 	
 	private static final DateFormat dateFormatter = 
 		DateFormat.getDateInstance(DateFormat.MEDIUM);
+	private static final NumberFormat currencyFormatter = new DecimalFormat("0.00");
 	
 	private FiBuGUI gui;
-	private Journal journal;
+	private JournalData journal;
 	private Vector columnTitles;
+	private JTable journalLog;
+	private JPanel panel;
+	private Vector readJournal;
 
-	public JournalTable(FiBuGUI gui, Journal journal) {
+	public JournalTable(FiBuGUI gui, JournalData journal) {
 		this.gui = gui;
 		this.journal = journal;
+		this.journalLog = null;
 		columnTitles = new Vector();
 		columnTitles.addElement("Beleg");
 		columnTitles.addElement("Buchungstext");
@@ -48,75 +53,88 @@ public class JournalTable implements Editable {
 	}
 
 	public Component getEditor() {
-		JPanel panel = new JPanel(new BorderLayout());
+		panel = new JPanel(new BorderLayout());
 		try {
-			JTable journalLog = new JTable(readJournal(), columnTitles);
-			// journalLog.setEnabled(false);
+			readJournal = readJournal();
+			journalLog = new JTable(readJournal, columnTitles);
 			journalLog.setCellSelectionEnabled(false);
 			journalLog.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			JScrollPane scroll = new JScrollPane(journalLog);
+			panel.removeAll();
 			panel.add(scroll, BorderLayout.CENTER);
 		} catch (FiBuException e) {
 			gui.handleException(e);
 		}
 		return panel;
 	}
+
+	public void reload() {
+		try {
+			readJournal.removeAllElements();
+			readJournal.addAll(readJournal());
+			journalLog.revalidate();
+			journalLog.repaint();
+		} catch (FiBuException e) {
+			gui.handleException(e);
+		}
+	}
 	
 	private Vector readJournal() throws FiBuException {
 		Vector journalList = new Vector();
-		try {
-			Iterator buchungen = journal.getBuchungen().iterator();
-			Buchung buchung = null;
-			String belegNr = null;
-			String buchungstext = null;
-			String valutaDatum = null;
-			Buchungszeile buchungsZeile = null;
-			Betrag betrag = null;
-			String betragSoll = null;
-			String betragHaben = null;
-			Konto kto = null;
-			String ktoNr = null;
-			String ktoBez = null;
-			Vector tableRow = null;
-			while (buchungen.hasNext()) {
-				buchung = (Buchung) buchungen.next();
-				belegNr = buchung.getBelegnummer();
-				buchungstext = buchung.getBuchungstext();
-				valutaDatum = dateFormatter.format(buchung.getValutadatum());
-				Iterator buchungsZeilen = buchung.getBuchungszeilen().iterator();  // Hier kommen keine Zeilen!
-				while (buchungsZeilen.hasNext()) {
-					tableRow = new Vector();
-					tableRow.addElement(belegNr);
-					tableRow.addElement(buchungstext);
-					tableRow.addElement(valutaDatum);
-					buchungsZeile = (Buchungszeile) buchungsZeilen.next();
-					betrag = buchungsZeile.getBetrag();
-					if (betrag.isSoll()) {
-						betragHaben = "0.00";
-						betragSoll = betrag.getWert().toString();
-					} else {
-						betragSoll = "0.00";
-						betragHaben = betrag.getWert().toString();
-					}
-					tableRow.addElement(betragSoll);
-					tableRow.addElement(betragHaben);
-					kto = buchungsZeile.getKonto();
-					ktoNr = kto.getKontonummer();
-					ktoBez = kto.getBezeichnung();
-					tableRow.addElement(ktoNr);
-					tableRow.addElement(ktoBez);
-					journalList.addElement(tableRow);
+		FiBuFacade fiBuFacade = gui.getFiBuFacade();
+		Iterator buchungen = fiBuFacade.getBuchungen(journal).iterator();
+		BuchungData buchung = null;
+		String belegNr = null;
+		String buchungstext = null;
+		String valutaDatum = null;
+		BuchungszeileData buchungsZeile = null;
+		Integer betrag = null;
+		String betragSoll = null;
+		String betragHaben = null;
+		KontoData kto = null;
+		String ktoNr = null;
+		String ktoBez = null;
+		Vector tableRow = null;
+		while (buchungen.hasNext()) {
+			buchung = (BuchungData) buchungen.next();
+			belegNr = buchung.getBelegnr();
+			buchungstext = buchung.getBuchungstext();
+			valutaDatum = dateFormatter.format(buchung.getValuta());
+			Iterator buchungsZeilen = fiBuFacade.getBuchungszeilen(buchung).iterator();  // Hier kommen keine Zeilen!
+			while (buchungsZeilen.hasNext()) {
+				tableRow = new Vector();
+				tableRow.addElement(belegNr);
+				tableRow.addElement(buchungstext);
+				tableRow.addElement(valutaDatum);
+				buchungsZeile = (BuchungszeileData) buchungsZeilen.next();
+				betrag = buchungsZeile.getBetrag();
+				if (buchungsZeile.getSoll().booleanValue()) {
+					betragHaben = "0,00";
+					betragSoll = currencyFormatter.format(betrag.floatValue() / 100.0);
+				} else {
+					betragSoll = "0,00";
+					betragHaben = currencyFormatter.format(betrag.floatValue() / 100.0);
 				}
+				tableRow.addElement(betragSoll);
+				tableRow.addElement(betragHaben);
+				kto = fiBuFacade.getKonto(buchungsZeile);
+				ktoNr = kto.getKontonr();
+				ktoBez = kto.getBezeichnung();
+				tableRow.addElement(ktoNr);
+				tableRow.addElement(ktoBez);
+				journalList.addElement(tableRow);
 			}
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht lesen.");
 		}
 		return journalList;
 	}
+
 }
 
 /*
  *  $Log: JournalTable.java,v $
+ *  Revision 1.3  2005/11/20 21:29:10  phormanns
+ *  Umstellung auf XMLRPC Server
+ *
  *  Revision 1.2  2005/11/16 18:24:11  phormanns
  *  Exception Handling in GUI
  *  Refactorings, Focus-Steuerung

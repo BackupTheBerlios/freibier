@@ -1,15 +1,21 @@
-// $Id: BetragListener.java,v 1.2 2005/11/16 18:24:11 phormanns Exp $
+// $Id: BetragListener.java,v 1.3 2005/11/20 21:29:10 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import javax.swing.JTextField;
 
 import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.FiBuUserException;
 
 public class BetragListener implements FocusListener {
+
+	private static final NumberFormat currencyFormatter = new DecimalFormat("0.00");
+	private static final NumberFormat percentFormatter = new DecimalFormat("0.0");
 
 	private FiBuGUI gui;
 	private JTextField tfSollBetrag;
@@ -39,6 +45,29 @@ public class BetragListener implements FocusListener {
 	}
 
 	public void focusLost(FocusEvent lostFocus) {
+		double sollNetto = 0.0d;
+		double sollMWstSatz = 0.0d;
+		double habenMWStSatz = 0.0d;
+		try {
+			sollNetto = currencyFormatter.parse(tfSollBetrag.getText().trim()).doubleValue();
+			sollMWstSatz = percentFormatter.parse(tfSollMWStSatz.getText().trim()).doubleValue();
+			habenMWStSatz = percentFormatter.parse(tfHabenMWStSatz.getText().trim()).doubleValue();
+		} catch (NumberFormatException e) {
+			gui.handleException(new FiBuUserException("Kein gültiger Betrag angegeben."));
+		} catch (ParseException e) {
+			gui.handleException(new FiBuUserException("Kein gültiger Betrag angegeben."));
+		}
+		double sollMWSt = sollNetto * sollMWstSatz / 100.0d;
+		double brutto = sollNetto + sollMWSt;
+		double habenNetto = brutto * 100.0d / (100.0d + habenMWStSatz);
+		double habenMWSt = brutto - habenNetto;
+		tfSollBetrag.setText(currencyFormatter.format(sollNetto));
+		tfHabenBetrag.setText(currencyFormatter.format(habenNetto));
+		tfSollMWSt.setText(currencyFormatter.format(sollMWSt));
+		tfHabenMWSt.setText(currencyFormatter.format(habenMWSt));
+	}
+	
+	public void focusLost2(FocusEvent lostFocus) {
 		BigDecimal sollNetto = new BigDecimal(0.00d);
 		try {
 			sollNetto = new BigDecimal(tfSollBetrag.getText().trim());
@@ -61,6 +90,9 @@ public class BetragListener implements FocusListener {
 }
 /*
  *  $Log: BetragListener.java,v $
+ *  Revision 1.3  2005/11/20 21:29:10  phormanns
+ *  Umstellung auf XMLRPC Server
+ *
  *  Revision 1.2  2005/11/16 18:24:11  phormanns
  *  Exception Handling in GUI
  *  Refactorings, Focus-Steuerung

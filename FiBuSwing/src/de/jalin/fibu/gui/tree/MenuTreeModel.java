@@ -1,19 +1,17 @@
-// $Id: MenuTreeModel.java,v 1.1 2005/11/16 18:24:11 phormanns Exp $
+// $Id: MenuTreeModel.java,v 1.2 2005/11/20 21:29:10 phormanns Exp $
 
 package de.jalin.fibu.gui.tree;
 
+import java.text.DateFormat;
 import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.Vector;
-
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-
-import de.bayen.fibu.Journal;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.gui.FiBuGUI;
@@ -23,9 +21,12 @@ import de.jalin.fibu.gui.forms.JournalTable;
 import de.jalin.fibu.gui.forms.JournaleForm;
 import de.jalin.fibu.gui.forms.KontenTreeForm;
 import de.jalin.fibu.gui.forms.StammdatenForm;
+import de.jalin.fibu.server.journal.JournalData;
 
 public class MenuTreeModel implements TreeModel {
 
+	private static final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM);
+	
 	private FiBuGUI gui;
 	private StaticFolder rootFolder;
 	private StaticFolder journaleFolder;
@@ -128,10 +129,10 @@ public class MenuTreeModel implements TreeModel {
 			}
 			Vector children = new Vector();
 			Enumeration jourEnum = journale.elements();
-			Journal jour = null;
+			JournalData jour = null;
 			Editable jourForm = null;
 			while (jourEnum.hasMoreElements()) {
-				jour = (Journal) jourEnum.nextElement();
+				jour = (JournalData) jourEnum.nextElement();
 				if (nurOffene) {
 					jourForm = new BuchungsForm(gui, jour);
 				} else {
@@ -139,9 +140,9 @@ public class MenuTreeModel implements TreeModel {
 				}
 				children.addElement(
 						new LeafNode(
-								jour.getBuchungsperiode() 
-									+ "/" + jour.getBuchungsjahr() 
-									+ " ab: " + jour.getStartdatum(),
+								jour.getPeriode() 
+									+ "/" + jour.getJahr() 
+									+ " ab: " + dateFormatter.format(jour.getSince()),
 								jourForm
 						));
 			}
@@ -154,6 +155,9 @@ public class MenuTreeModel implements TreeModel {
 
 //
 // $Log: MenuTreeModel.java,v $
+// Revision 1.2  2005/11/20 21:29:10  phormanns
+// Umstellung auf XMLRPC Server
+//
 // Revision 1.1  2005/11/16 18:24:11  phormanns
 // Exception Handling in GUI
 // Refactorings, Focus-Steuerung

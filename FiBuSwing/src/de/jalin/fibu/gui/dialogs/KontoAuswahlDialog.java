@@ -1,11 +1,10 @@
-// $Id: KontoAuswahlDialog.java,v 1.4 2005/11/16 18:24:11 phormanns Exp $
+// $Id: KontoAuswahlDialog.java,v 1.5 2005/11/20 21:29:10 phormanns Exp $
 package de.jalin.fibu.gui.dialogs;
 
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
@@ -13,11 +12,10 @@ import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeSelectionModel;
-
-import de.bayen.fibu.Konto;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.tree.KontoNode;
+import de.jalin.fibu.server.konto.KontoData;
 
 public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener {
 	
@@ -42,7 +40,7 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 	}
 
 	public void actionPerformed(ActionEvent selectKonto) {
-		Konto bilanzKonto;
+		KontoData bilanzKonto;
 		try {
 			bilanzKonto = gui.getFiBuFacade().getBilanzKonto();
 			JTree tree = new JTree(new KontoNode(gui, null, bilanzKonto));
@@ -57,8 +55,8 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 
 	public void valueChanged(TreeSelectionEvent treeSelection) {
 		KontoNode node = (KontoNode) treeSelection.getNewLeadSelectionPath().getLastPathComponent();
-		Konto kto = node.getKonto();
-		tfKontoNr.setText(kto.getKontonummer());
+		KontoData kto = node.getKonto();
+		tfKontoNr.setText(kto.getKontonr());
 		if (tfKontoText != null) {
 			tfKontoText.setText(kto.getBezeichnung());
 		}
@@ -76,6 +74,9 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 
 /*
  *  $Log: KontoAuswahlDialog.java,v $
+ *  Revision 1.5  2005/11/20 21:29:10  phormanns
+ *  Umstellung auf XMLRPC Server
+ *
  *  Revision 1.4  2005/11/16 18:24:11  phormanns
  *  Exception Handling in GUI
  *  Refactorings, Focus-Steuerung

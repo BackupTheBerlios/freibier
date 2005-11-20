@@ -1,14 +1,12 @@
-// $Id: KontoNrListener.java,v 1.4 2005/11/16 18:24:11 phormanns Exp $
+// $Id: KontoNrListener.java,v 1.5 2005/11/20 21:29:10 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-
 import javax.swing.JTextField;
-
-import de.bayen.fibu.Konto;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
+import de.jalin.fibu.server.konto.KontoData;
 
 public class KontoNrListener implements FocusListener {
 	private FiBuFacade fibu;
@@ -31,9 +29,9 @@ public class KontoNrListener implements FocusListener {
 
 	public void focusLost(FocusEvent lostFocus) {
 		try {
-			Konto kto = fibu.getKonto(tfKontoNr.getText().trim());
+			KontoData kto = fibu.getKonto(tfKontoNr.getText().trim());
 			if (kto != null) {
-				tfKontoNr.setText(kto.getKontonummer());
+				tfKontoNr.setText(kto.getKontonr());
 				writeKontoText(kto.getBezeichnung());
 				writeMWStSatz(fibu.getMWSt(kto));
 			} else {
@@ -63,6 +61,9 @@ public class KontoNrListener implements FocusListener {
 }
 /*
  *  $Log: KontoNrListener.java,v $
+ *  Revision 1.5  2005/11/20 21:29:10  phormanns
+ *  Umstellung auf XMLRPC Server
+ *
  *  Revision 1.4  2005/11/16 18:24:11  phormanns
  *  Exception Handling in GUI
  *  Refactorings, Focus-Steuerung

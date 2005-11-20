@@ -1,35 +1,35 @@
-// $Id: KontoTable.java,v 1.2 2005/11/16 18:24:11 phormanns Exp $
+// $Id: KontoTable.java,v 1.3 2005/11/20 21:29:10 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import de.bayen.database.exception.SysDBEx.SQL_DBException;
-import de.bayen.fibu.Betrag;
-import de.bayen.fibu.Buchung;
-import de.bayen.fibu.Buchungszeile;
-import de.bayen.fibu.Konto;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuGUI;
-import de.jalin.fibu.gui.FiBuSystemException;
 import de.jalin.fibu.gui.tree.Editable;
+import de.jalin.fibu.server.buchung.BuchungData;
+import de.jalin.fibu.server.buchungszeile.BuchungszeileData;
+import de.jalin.fibu.server.konto.KontoData;
 
 public class KontoTable implements Editable {
 	
 	private static final DateFormat dateFormatter = 
 		DateFormat.getDateInstance(DateFormat.MEDIUM);
+	private static final NumberFormat currencyFormatter = new DecimalFormat("0.00");
 	
 	private FiBuGUI gui;
-	private Konto kto;
+	private KontoData kto;
 	private Vector columnTitles;
 
-	public KontoTable(FiBuGUI gui, Konto kto) {
+	public KontoTable(FiBuGUI gui, KontoData kto) {
 		this.gui = gui;
 		this.kto = kto;
 		columnTitles = new Vector();
@@ -61,35 +61,31 @@ public class KontoTable implements Editable {
 	
 	private Vector readKonto() throws FiBuException {
 		Vector ktoList = new Vector();
-		try {
-			Iterator buchungsZeilen = kto.getBuchungszeilen().iterator();
-			Buchungszeile buchungsZeile = null;
-			Buchung buchung = null;
-			Betrag betrag = null;
-			String betragSoll = null;
-			String betragHaben = null;
-			Vector tableRow = null;
-			while (buchungsZeilen.hasNext()) {
-				buchungsZeile = (Buchungszeile) buchungsZeilen.next();
-				buchung = buchungsZeile.getBuchung();
-				tableRow = new Vector();
-				tableRow.addElement(buchung.getBelegnummer());
-				tableRow.addElement(buchung.getBuchungstext());
-				tableRow.addElement(dateFormatter.format(buchung.getValutadatum()));
-				betrag = buchungsZeile.getBetrag();
-				if (betrag.isSoll()) {
-					betragHaben = "0.00";
-					betragSoll = betrag.getWert().toString();
-				} else {
-					betragSoll = "0.00";
-					betragHaben = betrag.getWert().toString();
-				}
-				tableRow.addElement(betragSoll);
-				tableRow.addElement(betragHaben);
-				ktoList.addElement(tableRow);
+		Iterator buchungsZeilen = gui.getFiBuFacade().getBuchungszeilen(kto).iterator();
+		BuchungszeileData buchungsZeile = null;
+		BuchungData buchung = null;
+		Integer betrag = null;
+		String betragSoll = null;
+		String betragHaben = null;
+		Vector tableRow = null;
+		while (buchungsZeilen.hasNext()) {
+			buchungsZeile = (BuchungszeileData) buchungsZeilen.next();
+			buchung = gui.getFiBuFacade().getBuchung(buchungsZeile);
+			tableRow = new Vector();
+			tableRow.addElement(buchung.getBelegnr());
+			tableRow.addElement(buchung.getBuchungstext());
+			tableRow.addElement(dateFormatter.format(buchung.getValuta()));
+			betrag = buchungsZeile.getBetrag();
+			if (buchungsZeile.getSoll().booleanValue()) {
+				betragHaben = "0,00";
+				betragSoll = currencyFormatter.format(betrag.floatValue() / 100.0);
+			} else {
+				betragSoll = "0,00";
+				betragHaben = currencyFormatter.format(betrag.floatValue() / 100.0);
 			}
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht lesen.");
+			tableRow.addElement(betragSoll);
+			tableRow.addElement(betragHaben);
+			ktoList.addElement(tableRow);
 		}
 		return ktoList;
 	}
@@ -97,6 +93,9 @@ public class KontoTable implements Editable {
 
 /*
  *  $Log: KontoTable.java,v $
+ *  Revision 1.3  2005/11/20 21:29:10  phormanns
+ *  Umstellung auf XMLRPC Server
+ *
  *  Revision 1.2  2005/11/16 18:24:11  phormanns
  *  Exception Handling in GUI
  *  Refactorings, Focus-Steuerung

@@ -1,4 +1,4 @@
-// $Id: JournaleForm.java,v 1.2 2005/11/16 18:24:11 phormanns Exp $
+// $Id: JournaleForm.java,v 1.3 2005/11/20 21:29:10 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
 import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -13,14 +14,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
-import de.bayen.fibu.Journal;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.tree.Editable;
+import de.jalin.fibu.server.journal.JournalData;
 
 public class JournaleForm implements Editable {
-	
+
+	private static final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM);
+
 	private FiBuGUI gui;
 	private FiBuFacade fibu;
 	private JTable table;
@@ -63,6 +66,7 @@ public class JournaleForm implements Editable {
 						journaleVector.addElement(fibu.neuesJournal());
 						table.revalidate();
 						table.repaint();
+						gui.refreshJournale();
 					} catch (FiBuException e) {
 						gui.handleException(e);
 					}
@@ -72,12 +76,13 @@ public class JournaleForm implements Editable {
 				public void actionPerformed(ActionEvent pressedClose) {
 					int selRow = table.getSelectedRow();
 					if (selRow >= 0) {
-						Journal jour = (Journal) journaleVector.get(journaleVector.size() - 1 - selRow);
+						JournalData jour = (JournalData) journaleVector.get(journaleVector.size() - 1 - selRow);
 						try {
 							fibu.absummieren(jour);
 							journaleVector.remove(jour);
 							table.revalidate();
 							table.repaint();
+							gui.refreshJournale();
 						} catch (FiBuException e) {
 							gui.handleException(e);
 						}
@@ -110,13 +115,13 @@ public class JournaleForm implements Editable {
 		}
 
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			Journal journ = (Journal) journaleVector.get(getRowCount() - 1 - rowIndex);
+			JournalData journ = (JournalData) journaleVector.get(getRowCount() - 1 - rowIndex);
 			Object value = "";
 			switch (columnIndex) {
-				case 0: value = journ.getJournalnummer().toString(); break;
-				case 1: value = journ.getBuchungsperiode(); break;
-				case 2: value = journ.getBuchungsjahr(); break;
-				case 3: value = journ.getStartdatum(); break;
+				case 0: value = journ.getJournr().toString(); break;
+				case 1: value = journ.getPeriode(); break;
+				case 2: value = journ.getJahr(); break;
+				case 3: value = dateFormatter.format(journ.getSince()); break;
 				default: value = ""; break;
 			}
 			return value;
@@ -139,6 +144,9 @@ public class JournaleForm implements Editable {
 
 /*
  *  $Log: JournaleForm.java,v $
+ *  Revision 1.3  2005/11/20 21:29:10  phormanns
+ *  Umstellung auf XMLRPC Server
+ *
  *  Revision 1.2  2005/11/16 18:24:11  phormanns
  *  Exception Handling in GUI
  *  Refactorings, Focus-Steuerung

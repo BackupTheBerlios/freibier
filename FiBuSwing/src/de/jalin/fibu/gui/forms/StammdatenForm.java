@@ -1,21 +1,18 @@
-// $Id: StammdatenForm.java,v 1.6 2005/11/16 18:24:11 phormanns Exp $
+// $Id: StammdatenForm.java,v 1.7 2005/11/20 21:29:10 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.Component;
-
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
-import de.bayen.fibu.Konto;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.dialogs.KontoAuswahlDialog;
+import de.jalin.fibu.server.konto.KontoData;
 
 public class StammdatenForm extends AbstractForm {
 
@@ -54,17 +51,17 @@ public class StammdatenForm extends AbstractForm {
 			tfJahrAktuell = createTextField(fibu.getJahrAktuell(), true);
 			tfPeriodeAktuell = createTextField(fibu.getPeriodeAktuell(), true);
 			tfFirma = createTextField(fibu.getFirma(), true);
-			Konto bilanzKto = fibu.getBilanzKonto();
+			KontoData bilanzKto = fibu.getBilanzKonto();
 			if (bilanzKto != null) {
-				tfBilanzKtoNr = createTextField(bilanzKto.getKontonummer(), true);
+				tfBilanzKtoNr = createTextField(bilanzKto.getKontonr(), true);
 				tfBilanzKtoBez = createTextField(bilanzKto.getBezeichnung(), false);
 			} else {
 				tfBilanzKtoNr = createTextField("", true);
 				tfBilanzKtoBez = createTextField("", false);
 			}
-			Konto guvKto = fibu.getGuVKonto();
+			KontoData guvKto = fibu.getGuVKonto();
 			if (guvKto != null) {
-				tfGuVKtoNr = createTextField(guvKto.getKontonummer(), true);
+				tfGuVKtoNr = createTextField(guvKto.getKontonr(), true);
 				tfGuVKtoBez = createTextField(guvKto.getBezeichnung(), false);
 			} else {
 				tfGuVKtoNr = createTextField("", true);
@@ -117,6 +114,9 @@ public class StammdatenForm extends AbstractForm {
 
 /*
  *  $Log: StammdatenForm.java,v $
+ *  Revision 1.7  2005/11/20 21:29:10  phormanns
+ *  Umstellung auf XMLRPC Server
+ *
  *  Revision 1.6  2005/11/16 18:24:11  phormanns
  *  Exception Handling in GUI
  *  Refactorings, Focus-Steuerung

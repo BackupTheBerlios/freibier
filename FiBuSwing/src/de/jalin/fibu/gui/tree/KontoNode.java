@@ -1,27 +1,25 @@
-// $Id: KontoNode.java,v 1.4 2005/11/16 18:24:11 phormanns Exp $
+// $Id: KontoNode.java,v 1.5 2005/11/20 21:29:10 phormanns Exp $
 package de.jalin.fibu.gui.tree;
 
 import java.awt.Component;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
-
 import javax.swing.tree.TreeNode;
-
-import de.bayen.fibu.Konto;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.forms.KontoTable;
+import de.jalin.fibu.server.konto.KontoData;
 
 public class KontoNode implements TreeNode, Adoptable, Editable {
 
 	private FiBuGUI gui;
 	private TreeNode parent;
-	private Konto kto;
+	private KontoData kto;
 	private Vector children;
 	private KontoTable ktoTable;
 	
-	public KontoNode(FiBuGUI gui, TreeNode parent, Konto konto) {
+	public KontoNode(FiBuGUI gui, TreeNode parent, KontoData konto) {
 		this.gui = gui;
 		this.parent = parent;
 		this.kto = konto;
@@ -58,7 +56,7 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 	}
 	
 	public String toString() {
-		return kto.getKontonummer() + " - " + kto.getBezeichnung();
+		return kto.getKontonr() + " - " + kto.getBezeichnung();
 	}
 
 	public void setParent(TreeNode parent) {
@@ -73,7 +71,7 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 		return ktoTable.getEditor();
 	}
 	
-	public Konto getKonto() {
+	public KontoData getKonto() {
 		return kto;
 	}
 
@@ -85,9 +83,9 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 		children = new Vector();
 		try {
 			Iterator unterkonten = gui.getFiBuFacade().getUnterkonten(kto).iterator();
-			Konto unterKto = null;
+			KontoData unterKto = null;
 			while (unterkonten.hasNext()) {
-				unterKto = (Konto) unterkonten.next();
+				unterKto = (KontoData) unterkonten.next();
 				children.addElement(new KontoNode(gui, this, unterKto));
 			}
 		} catch (FiBuException e) {
@@ -99,6 +97,9 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 
 /*
  *  $Log: KontoNode.java,v $
+ *  Revision 1.5  2005/11/20 21:29:10  phormanns
+ *  Umstellung auf XMLRPC Server
+ *
  *  Revision 1.4  2005/11/16 18:24:11  phormanns
  *  Exception Handling in GUI
  *  Refactorings, Focus-Steuerung

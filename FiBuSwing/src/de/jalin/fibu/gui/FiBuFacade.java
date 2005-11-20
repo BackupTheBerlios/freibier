@@ -1,245 +1,492 @@
-// $Id: FiBuFacade.java,v 1.7 2005/11/16 18:24:11 phormanns Exp $
+// $Id: FiBuFacade.java,v 1.8 2005/11/20 21:29:10 phormanns Exp $
 package de.jalin.fibu.gui;
 
-import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
-
-import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
-import de.bayen.database.exception.SysDBEx.SQL_DBException;
-import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
-import de.bayen.database.exception.UserDBEx.UserSQL_DBException;
-import de.bayen.fibu.Betrag;
-import de.bayen.fibu.Buchhaltung;
-import de.bayen.fibu.Buchung;
-import de.bayen.fibu.Buchungszeile;
-import de.bayen.fibu.Journal;
-import de.bayen.fibu.Konto;
-import de.bayen.fibu.exceptions.FiBuException.NotInitializedException;
+import net.hostsharing.admin.client.XmlRpcClientException;
+import net.hostsharing.admin.client.XmlRpcClientTransaction;
+import net.hostsharing.admin.client.XmlRpcTransactionClient;
+import net.hostsharing.admin.runtime.ResultVector;
+import net.hostsharing.admin.runtime.XmlRpcTransactionException;
+import de.jalin.fibu.server.buchung.BuchungAddCall;
+import de.jalin.fibu.server.buchung.BuchungData;
+import de.jalin.fibu.server.buchung.BuchungListCall;
+import de.jalin.fibu.server.buchungszeile.BuchungszeileAddCall;
+import de.jalin.fibu.server.buchungszeile.BuchungszeileData;
+import de.jalin.fibu.server.buchungszeile.BuchungszeileListCall;
+import de.jalin.fibu.server.customer.CustomerData;
+import de.jalin.fibu.server.customer.CustomerListCall;
+import de.jalin.fibu.server.customer.CustomerUpdateCall;
+import de.jalin.fibu.server.journal.JournalAddCall;
+import de.jalin.fibu.server.journal.JournalData;
+import de.jalin.fibu.server.journal.JournalListCall;
+import de.jalin.fibu.server.journal.JournalUpdateCall;
+import de.jalin.fibu.server.konto.KontoData;
+import de.jalin.fibu.server.konto.KontoListCall;
+import de.jalin.fibu.server.mwst.MwstData;
+import de.jalin.fibu.server.mwst.MwstListCall;
 
 public class FiBuFacade {
 	
 	private static final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM);
+	private static final NumberFormat percentFormatter = new DecimalFormat("0.0");
+	private static final NumberFormat currencyFormatter = new DecimalFormat("0.00");
 	
-	private Buchhaltung fibu;
-	private FiBuGUI gui;
+	private XmlRpcTransactionClient client;
 	
-	public FiBuFacade(FiBuGUI gui) throws FiBuException {
+	public FiBuFacade() throws FiBuException {
 		try {
-			this.gui = gui;
-			fibu = new Buchhaltung();
-		} catch (UserSQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+			client = new XmlRpcTransactionClient();
+		} catch (MalformedURLException e) {
+			new FiBuSystemException("Fehler in Server-URL", e);
 		}
 	}
 	
 	public String getFirma() throws FiBuException {
-		try {
-			return fibu.getFirma();
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (NotInitializedException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		}
+		return getCustAttribute("firma");
 	}
-	
-	public void setFirma(String firma) throws FiBuException {
-		try {
-			fibu.getFirmenstammdaten().setField("Firma", firma);
-		} catch (ParseErrorDBException e) {
-			throw new FiBuUserException("Fehler in der Firmenbezeichnung.");
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (NotInitializedException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		}
+
+	public void setFirma(String value) throws FiBuException {
+		setCustAttribute("firma", value);
 	}
-	
+
 	public String getJahrAktuell() throws FiBuException {
-		try {
-			return fibu.getJahrAktuell();
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (NotInitializedException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		}
+		return getCustAttribute("jahr");
 	}
 	
 	public void setJahrAktuell(String gjAktuell) throws FiBuException {
-		try {
-			fibu.setJahrAktuell(gjAktuell);
-		} catch (DatabaseException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (NotInitializedException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		}
+		setCustAttribute("jahr", gjAktuell);
 	}
 	
 	public String getPeriodeAktuell() throws FiBuException {
-		try {
-			return fibu.getPeriodeAktuell();
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (NotInitializedException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		}
+		return getCustAttribute("periode");
 	}
 	
 	public void setPeriodeAktuell(String periodeAktuell) throws FiBuException {
-		try {
-			fibu.setPeriodeAktuell(periodeAktuell);
-		} catch (DatabaseException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (NotInitializedException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		}
+		setCustAttribute("periode", periodeAktuell);
 	}
 	
 	public Vector getOffeneJournale() throws FiBuException {
-		Vector offeneJournale = new Vector();
 		try {
-			offeneJournale.addAll(fibu.getOffeneJournale());
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			JournalData queryJournal = new JournalData();
+			queryJournal.setAbsummiert(Boolean.FALSE);
+			tx.addCall(new JournalListCall(queryJournal));
+			ResultVector result = new ResultVector((Vector) tx.perform().get(0));
+			Vector offeneJournale = new Vector();
+			JournalData jour = null;
+			for (int i=0; i<result.size(); i++) {
+				jour = new JournalData();
+				jour.readFromResult(result, i);
+				offeneJournale.addElement(jour);
+			}
+			return offeneJournale;
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
 		}
-		return offeneJournale;
 	}
 
 	public Vector getAlleJournale() throws FiBuException {
-		Vector alleJournale = new Vector();
 		try {
-			alleJournale.addAll(fibu.getAlleJournale());
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			JournalData queryJournal = new JournalData();
+			tx.addCall(new JournalListCall(queryJournal));
+			ResultVector result = new ResultVector((Vector) tx.perform().get(0));
+			Vector alleJournale = new Vector();
+			JournalData jour = null;
+			for (int i=0; i<result.size(); i++) {
+				jour = new JournalData();
+				jour.readFromResult(result, i);
+				alleJournale.addElement(jour);
+			}
+			return alleJournale;
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
 		}
-		return alleJournale;
 	}
 
-	public Konto getBilanzKonto() throws FiBuException {
+	public KontoData getBilanzKonto() throws FiBuException {
 		try {
-			return fibu.getBilanzKonto();
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (NotInitializedException e) {
-			return null;
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			CustomerData queryCust = new CustomerData();
+			tx.addCall(new CustomerListCall(queryCust));
+			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			CustomerData cust = new CustomerData();
+			cust.readFromResult(resultVector, 0);
+			KontoData queryKto = new KontoData();
+			queryKto.setKontoid(cust.getBilanzkonto());
+			tx = new XmlRpcClientTransaction(client, "xxx");
+			tx.addCall(new KontoListCall(queryKto));
+			resultVector = new ResultVector((Vector) tx.perform().get(0));
+			KontoData bilanzKto = new KontoData();
+			bilanzKto.readFromResult(resultVector, 0);
+			return bilanzKto;
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
 		}
 	}
 	
 	public void setBilanzKonto(String ktoNr) throws FiBuException {
 		try {
-			fibu.setBilanzkonto(fibu.getKonto(ktoNr));
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (RecordNotExistsDBException e) {
-			throw new FiBuUserException("Konto nicht vorhanden.");
-		} catch (NotInitializedException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			KontoData queryKto = new KontoData();
+			queryKto.setKontonr(ktoNr);
+			tx.addCall(new KontoListCall(queryKto));
+			ResultVector result = new ResultVector((Vector) tx.perform().get(0));
+			KontoData bilanzKto = new KontoData();
+			bilanzKto.readFromResult(result, 0);
+			tx = new XmlRpcClientTransaction(client, "xxx");
+			CustomerData firma = new CustomerData();
+			firma.setBilanzkonto(bilanzKto.getKontoid());
+			tx.addCall(new CustomerUpdateCall(firma, new CustomerData()));
+			tx.perform();
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
 		}
 	}
 	
-	public Konto getGuVKonto() throws FiBuException {
+	public KontoData getGuVKonto() throws FiBuException {
 		try {
-			return fibu.getGuVKonto();
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (NotInitializedException e) {
-			return null;
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			CustomerData queryCust = new CustomerData();
+			tx.addCall(new CustomerListCall(queryCust));
+			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			CustomerData cust = new CustomerData();
+			cust.readFromResult(resultVector, 0);
+			KontoData queryKto = new KontoData();
+			queryKto.setKontoid(cust.getGuvkonto());
+			tx = new XmlRpcClientTransaction(client, "xxx");
+			tx.addCall(new KontoListCall(queryKto));
+			resultVector = new ResultVector((Vector) tx.perform().get(0));
+			KontoData guvKto = new KontoData();
+			guvKto.readFromResult(resultVector, 0);
+			return guvKto;
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
 		}
 	}
 	
 	public void setGuVKonto(String ktoNr) throws FiBuException {
 		try {
-			fibu.setGuVKonto(fibu.getKonto(ktoNr));
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (RecordNotExistsDBException e) {
-			throw new FiBuUserException("Konto nicht vorhanden.");
-		} catch (NotInitializedException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			KontoData queryKto = new KontoData();
+			queryKto.setKontonr(ktoNr);
+			tx.addCall(new KontoListCall(queryKto));
+			ResultVector result = new ResultVector((Vector) tx.perform().get(0));
+			KontoData guvKto = new KontoData();
+			guvKto.readFromResult(result, 0);
+			tx = new XmlRpcClientTransaction(client, "xxx");
+			CustomerData firma = new CustomerData();
+			firma.setGuvkonto(guvKto.getKontoid());
+			tx.addCall(new CustomerUpdateCall(firma, new CustomerData()));
+			tx.perform();
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
 		}
 	}
 	
-	public void absummieren(Journal j) throws FiBuException {
+	public void absummieren(JournalData whereJournal) throws FiBuException {
 		try {
-			j.absummieren();
-			gui.refreshJournale();
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			JournalData setJournal = (JournalData) whereJournal.cloneData();
+			setJournal.setAbsummiert(Boolean.TRUE);
+			tx.addCall(new JournalUpdateCall(setJournal, whereJournal));
+			tx.perform();
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
 		}
 	}
 	
-	public Journal neuesJournal() throws FiBuException {
+	public JournalData neuesJournal() throws FiBuException {
 		try {
-			Journal journal = fibu.createJournal();
-			gui.refreshJournale();
-			return journal;
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (NotInitializedException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			CustomerData whereCust = new CustomerData();
+			tx.addCall(new CustomerListCall(whereCust));
+			Vector functionsResults = (Vector) tx.perform().get(0);
+			ResultVector resultVector = new ResultVector(functionsResults);
+			CustomerData cust = new CustomerData();
+			cust.readFromResult(resultVector, 0);
+			tx = new XmlRpcClientTransaction(client, "xxx");
+			JournalData addJournal = new JournalData();
+			addJournal.setAbsummiert(Boolean.FALSE);
+			addJournal.setJahr(cust.getJahr());
+			addJournal.setPeriode(cust.getPeriode());
+			addJournal.setSince(new Date());
+			tx.addCall(new JournalAddCall(addJournal));
+			functionsResults = (Vector) tx.perform().get(0);
+			resultVector = new ResultVector(functionsResults);
+			JournalData newJournal = new JournalData();
+			newJournal.readFromResult(resultVector, 0);
+			return newJournal;
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
 		}
 	}
 
-	public Konto getKonto(String ktoNr) throws FiBuException {
+	public KontoData getKonto(String ktoNr) throws FiBuException {
 		try {
-			return fibu.getKonto(ktoNr);
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (RecordNotExistsDBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			KontoData whereKto = new KontoData();
+			whereKto.setKontonr(ktoNr);
+			tx.addCall(new KontoListCall(whereKto));
+			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			KontoData kto = new KontoData();
+			kto.readFromResult(resultVector, 0);
+			return kto;
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
 		}
 	}
 
-	public void buchen(Journal journal, String belegNr, String buchungstext, String valutaDatum, 
+	public void buchen(JournalData journal, String belegNr, String buchungstext, String valutaDatum, 
 			String sollKtoNr, String habenKtoNr, String betrag) throws FiBuException {
 		try {
-			Buchung buchung = journal.createBuchung();
-			buchung.setBelegnummer(belegNr);
-			buchung.setBuchungstext(buchungstext);
-			buchung.setValutadatum(dateFormatter.parse(valutaDatum));
-			Buchungszeile sollBuchung = buchung.createZeile();
-			sollBuchung.setBetrag(new Betrag(new BigDecimal(betrag), true));
-			sollBuchung.setKonto(fibu.getKonto(sollKtoNr));
-			Buchungszeile habenBuchung = buchung.createZeile();
-			habenBuchung.setBetrag(new Betrag(new BigDecimal(betrag), false));
-			habenBuchung.setKonto(fibu.getKonto(habenKtoNr));
-			buchung.write();
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (ParseErrorDBException e) {
-			throw new FiBuUserException("Fehler im Eingabeformat.");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			BuchungData addBuchung = new BuchungData();
+			addBuchung.setBelegnr(belegNr);
+			addBuchung.setBuchungstext(buchungstext);
+			addBuchung.setValuta(dateFormatter.parse(valutaDatum));
+			addBuchung.setJourid(journal.getJourid());
+			tx.addCall(new BuchungAddCall(addBuchung));
+			tx.addCall(new BuchungListCall(addBuchung));
+			KontoData sollKto = new KontoData();
+			KontoData habenKto = new KontoData();
+			sollKto.setKontonr(sollKtoNr);
+			habenKto.setKontonr(habenKtoNr);
+			tx.addCall(new KontoListCall(sollKto));
+			tx.addCall(new KontoListCall(habenKto));
+			Vector functResults = tx.perform();
+			BuchungData buchung = new BuchungData();
+			buchung.readFromResult(new ResultVector((Vector) functResults.get(1)), 0);
+			tx = new XmlRpcClientTransaction(client, "xxx");
+			sollKto.readFromResult(new ResultVector((Vector) functResults.get(2)), 0);
+			habenKto.readFromResult(new ResultVector((Vector) functResults.get(3)), 0);
+			BuchungszeileData zeileSoll = new BuchungszeileData();
+			BuchungszeileData zeileHaben = new BuchungszeileData();
+			zeileSoll.setKontoid(sollKto.getKontoid());
+			zeileSoll.setBuchid(buchung.getBuchid());
+			zeileHaben.setKontoid(habenKto.getKontoid());
+			zeileHaben.setBuchid(buchung.getBuchid());
+			float betragFloat = currencyFormatter.parse(betrag).floatValue() * 100.0f;
+			Integer betragInt = new Integer((new Float(betragFloat)).intValue());
+			zeileSoll.setBetrag(betragInt);
+			zeileHaben.setBetrag(betragInt);
+			zeileSoll.setHaben(Boolean.FALSE);
+			zeileSoll.setSoll(Boolean.TRUE);
+			zeileHaben.setHaben(Boolean.TRUE);
+			zeileHaben.setSoll(Boolean.FALSE);
+			tx.addCall(new BuchungszeileAddCall(zeileSoll));
+			tx.addCall(new BuchungszeileAddCall(zeileHaben));
+			tx.perform();
+		} catch (NumberFormatException e) {
+			throw new FiBuUserException(e.getMessage());
 		} catch (ParseException e) {
-			throw new FiBuUserException("Fehler im Eingabeformat.");
-		} catch (RecordNotExistsDBException e) {
-			throw new FiBuUserException("Fehler in der Konto-Angabe.");
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
 		}
 	}
 
-	public String getMWSt(Konto kto) throws FiBuException {
+	public String getMWSt(KontoData kto) throws FiBuException {
 		try {
-			return kto.getMwSt();
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
-		} catch (RecordNotExistsDBException e) {
-			throw new FiBuUserException("Fehler in der Konto-Angabe (kein MWSt-Satz).");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			MwstData mwst = new MwstData();
+			mwst.setMwstid(kto.getMwstid());
+			tx.addCall(new MwstListCall(mwst));
+			mwst = new MwstData();
+			mwst.readFromResult(new ResultVector((Vector) tx.perform().get(0)), 0);
+			double mwstFloat = mwst.getMwstsatz().floatValue() / 100.0;
+			return percentFormatter.format(mwstFloat);
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
 		}
 	}
 
-	public List getUnterkonten(Konto kto) throws FiBuException {
+	public List getUnterkonten(KontoData oberKto) throws FiBuException {
 		try {
-			return kto.getUnterkonten();
-		} catch (SQL_DBException e) {
-			throw new FiBuSystemException("Konnte Datenbank nicht öffnen.");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			KontoData sampleKto = new KontoData();
+			sampleKto.setOberkonto(oberKto.getKontoid());
+			tx.addCall(new KontoListCall(sampleKto));
+			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			List ktoList = new ArrayList();
+			KontoData unterKto = null;
+			for (int i=0; i<resultVector.size(); i++) {
+				unterKto = new KontoData();
+				unterKto.readFromResult(resultVector, i);
+				ktoList.add(unterKto);
+			}
+			return ktoList;
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
 		}
 	}
 
+	private void setCustAttribute(String property, String value) throws FiBuUserException {
+		try {
+			CustomerData whereCust = new CustomerData();
+			CustomerData writeCust = new CustomerData();
+			writeCust.setAttributeValue(property, value);
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			tx.addCall(new CustomerUpdateCall(writeCust, whereCust));
+			tx.perform();
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
+		}
+	}
+	
+	private String getCustAttribute(String property) throws FiBuUserException {
+		try {
+			CustomerData cust = new CustomerData();
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			tx.addCall(new CustomerListCall(cust));
+			ResultVector result = new ResultVector((Vector) tx.perform().get(0));
+			return (String) result.get(0, property);
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		}
+	}
+
+	public List getBuchungszeilen(KontoData kto) throws FiBuException {
+		try {
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			BuchungszeileData sampleZeile = new BuchungszeileData();
+			sampleZeile.setKontoid(kto.getKontoid());
+			tx.addCall(new BuchungszeileListCall(sampleZeile));
+			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			List zeilenList = new ArrayList();
+			BuchungszeileData zeile = null;
+			for (int i=0; i<resultVector.size(); i++) {
+				zeile = new BuchungszeileData();
+				zeile.readFromResult(resultVector, i);
+				zeilenList.add(zeile);
+			}
+			return zeilenList;
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
+		}
+	}
+
+	public List getBuchungen(JournalData journal) throws FiBuException {
+		try {
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			BuchungData sampleBuchung = new BuchungData();
+			sampleBuchung.setJourid(journal.getJourid());
+			tx.addCall(new BuchungListCall(sampleBuchung));
+			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			List buchungsList = new ArrayList();
+			BuchungData buchung = null;
+			for (int i=0; i<resultVector.size(); i++) {
+				buchung = new BuchungData();
+				buchung.readFromResult(resultVector, i);
+				buchungsList.add(buchung);
+			}
+			return buchungsList;
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
+		}
+	}
+
+	public List getBuchungszeilen(BuchungData buchung) throws FiBuException {
+		try {
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			BuchungszeileData sampleZeile = new BuchungszeileData();
+			sampleZeile.setBuchid(buchung.getBuchid());
+			tx.addCall(new BuchungszeileListCall(sampleZeile));
+			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			List zeilenList = new ArrayList();
+			BuchungszeileData zeile = null;
+			for (int i=0; i<resultVector.size(); i++) {
+				zeile = new BuchungszeileData();
+				zeile.readFromResult(resultVector, i);
+				zeilenList.add(zeile);
+			}
+			return zeilenList;
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
+		}
+	}
+
+	public KontoData getKonto(BuchungszeileData buchungsZeile) throws FiBuException {
+		try {
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			KontoData whereKto = new KontoData();
+			whereKto.setKontoid(buchungsZeile.getKontoid());
+			tx.addCall(new KontoListCall(whereKto));
+			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			KontoData kto = new KontoData();
+			kto.readFromResult(resultVector, 0);
+			return kto;
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		}
+	}
+
+	public BuchungData getBuchung(BuchungszeileData buchungsZeile) throws FiBuException {
+		try {
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			BuchungData whereBuchung = new BuchungData();
+			whereBuchung.setBuchid(buchungsZeile.getBuchid());
+			tx.addCall(new BuchungListCall(whereBuchung));
+			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			BuchungData buchung = new BuchungData();
+			buchung.readFromResult(resultVector, 0);
+			return buchung;
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
+		}
+	}
+	
 }
 
 /*
  *  $Log: FiBuFacade.java,v $
+ *  Revision 1.8  2005/11/20 21:29:10  phormanns
+ *  Umstellung auf XMLRPC Server
+ *
  *  Revision 1.7  2005/11/16 18:24:11  phormanns
  *  Exception Handling in GUI
  *  Refactorings, Focus-Steuerung
