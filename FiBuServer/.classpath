@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/commons-httpclient-2.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/xmlrpc.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/commons-codec.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/commons-collections.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/jdom.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/junit.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/logkit.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/oro.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/postgresql-jdbc3.jar"/>
+	<classpathentry sourcepath="/xmlrpcgen/src" kind="lib" path="lib/xmlrpcgen.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/servlet-2.3.jar"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

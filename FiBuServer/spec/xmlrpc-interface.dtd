@@ -1,0 +1,64 @@
+<!ELEMENT interface (description,error*,module+)>
+<!ATTLIST interface name CDATA #REQUIRED>
+
+<!ELEMENT description (#PCDATA)>
+
+<!ELEMENT error (#PCDATA)>
+<!ATTLIST error code    CDATA #REQUIRED>
+<!ATTLIST error comment CDATA #IMPLIED> 
+
+<!ELEMENT module (description,properties,error*,function+)>
+<!ATTLIST module name CDATA #REQUIRED>
+
+<!ELEMENT properties ((bool|int|date|string|base64)+)>
+<!ATTLIST properties objectid CDATA #REQUIRED>
+
+<!ELEMENT bool EMPTY>
+<!ATTLIST bool name    CDATA                     #REQUIRED>
+<!ATTLIST bool read    (explicit|implicit|no)    #REQUIRED>
+<!ATTLIST bool query   (yes|no)                  #REQUIRED>
+<!ATTLIST bool write   (yes|once|no)             #REQUIRED>
+<!ATTLIST bool value   (optional|mandatory|auto) #REQUIRED>
+<!ATTLIST bool comment CDATA                     #IMPLIED>
+
+<!ELEMENT int EMPTY>
+<!ATTLIST int name    CDATA                     #REQUIRED>
+<!ATTLIST int read    (explicit|implicit|no)    #REQUIRED>
+<!ATTLIST int query   (yes|no)                  #REQUIRED>
+<!ATTLIST int write   (yes|once|no)             #REQUIRED>
+<!ATTLIST int value   (optional|mandatory|auto) #REQUIRED>
+<!ATTLIST int comment CDATA                     #IMPLIED>
+
+<!ELEMENT date EMPTY>
+<!ATTLIST date name    CDATA                     #REQUIRED>
+<!ATTLIST date read    (explicit|implicit|no)    #REQUIRED>
+<!ATTLIST date query   (yes|no)                  #REQUIRED>
+<!ATTLIST date write   (yes|once|no)             #REQUIRED>
+<!ATTLIST date value   (optional|mandatory|auto) #REQUIRED>
+<!ATTLIST date comment CDATA                     #IMPLIED>
+
+<!ELEMENT string EMPTY>
+<!ATTLIST string name    CDATA                     #REQUIRED>
+<!ATTLIST string read    (explicit|implicit|no)    #REQUIRED>
+<!ATTLIST string query   (yes|no)                  #REQUIRED>
+<!ATTLIST string write   (yes|once|no)             #REQUIRED>
+<!ATTLIST string value   (optional|mandatory|auto) #REQUIRED>
+<!ATTLIST string comment CDATA                     #IMPLIED>
+
+<!ELEMENT base64 EMPTY>
+<!ATTLIST base64 name    CDATA                     #REQUIRED>
+<!ATTLIST base64 read    (explicit|implicit|no)    #REQUIRED>
+<!ATTLIST base64 query   (yes|no)                  #REQUIRED>
+<!ATTLIST base64 write   (yes|once|no)             #REQUIRED>
+<!ATTLIST base64 value   (optional|mandatory|auto) #REQUIRED>
+<!ATTLIST base64 comment CDATA                     #IMPLIED>
+
+<!ELEMENT function (description,error*)>
+<!ATTLIST function name     CDATA    #REQUIRED>
+<!ATTLIST function read     (yes|no) #REQUIRED>
+<!ATTLIST function where    (yes|no) #REQUIRED>
+<!ATTLIST function order    (yes|no) #REQUIRED>
+<!ATTLIST function write    (yes|no) #REQUIRED>
+<!ATTLIST function objectid (yes|no) #REQUIRED>
+<!ATTLIST function result   (yes|no) #REQUIRED>
+<!ATTLIST function comment  CDATA    #IMPLIED>
