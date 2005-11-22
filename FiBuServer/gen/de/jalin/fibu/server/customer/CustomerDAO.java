@@ -107,4 +107,8 @@ abstract public class CustomerDAO implements Createable {
 	public DatabaseTable getTable() {
 		return table;
 	}
+
+	public String getModuleName() {
+		return "customer";
+	}
 }

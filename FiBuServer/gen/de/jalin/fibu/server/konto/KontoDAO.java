@@ -108,4 +108,8 @@ abstract public class KontoDAO implements Createable {
 	public DatabaseTable getTable() {
 		return table;
 	}
+
+	public String getModuleName() {
+		return "konto";
+	}
 }

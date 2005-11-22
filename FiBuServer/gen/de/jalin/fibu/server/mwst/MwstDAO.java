@@ -98,4 +98,8 @@ abstract public class MwstDAO implements Createable {
 	public DatabaseTable getTable() {
 		return table;
 	}
+
+	public String getModuleName() {
+		return "mwst";
+	}
 }

@@ -100,4 +100,8 @@ abstract public class BuchungDAO implements Createable {
 	public DatabaseTable getTable() {
 		return table;
 	}
+
+	public String getModuleName() {
+		return "buchung";
+	}
 }

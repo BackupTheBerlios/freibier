@@ -1,4 +1,4 @@
-// $Id: BuchungslisteBackendImpl.java,v 1.1 2005/11/20 21:27:43 phormanns Exp $
+// $Id: BuchungslisteBackendImpl.java,v 1.1 2005/11/22 21:26:08 phormanns Exp $
 package de.jalin.fibu.server.buchungsliste.impl;
 
 import java.sql.Connection;
@@ -24,16 +24,13 @@ public class BuchungslisteBackendImpl implements BuchungslisteBackend {
 		return null;
 	}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-	// TODO Auto-generated method stub
-	}
 }
 
 /*
  *  $Log: BuchungslisteBackendImpl.java,v $
+ *  Revision 1.1  2005/11/22 21:26:08  phormanns
+ *  Modul Buchungsliste (noch nicht genutzt)
+ *
  *  Revision 1.1  2005/11/20 21:27:43  phormanns
  *  Import
  *

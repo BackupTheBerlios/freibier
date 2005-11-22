@@ -153,4 +153,8 @@ abstract public class BuchungslisteDAO implements Createable {
 	public DatabaseTable getTable() {
 		return table;
 	}
+
+	public String getModuleName() {
+		return "buchungsliste";
+	}
 }

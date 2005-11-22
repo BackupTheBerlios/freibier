@@ -99,4 +99,8 @@ abstract public class BuchungszeileDAO implements Createable {
 	public DatabaseTable getTable() {
 		return table;
 	}
+
+	public String getModuleName() {
+		return "buchungszeile";
+	}
 }
