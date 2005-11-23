@@ -1,4 +1,4 @@
-// $Id: MenuTreeModel.java,v 1.2 2005/11/20 21:29:10 phormanns Exp $
+// $Id: MenuTreeModel.java,v 1.3 2005/11/23 23:16:49 phormanns Exp $
 
 package de.jalin.fibu.gui.tree;
 
@@ -42,7 +42,7 @@ public class MenuTreeModel implements TreeModel {
 			journaleFolder.addFolder(new JournaleFolder(gui, "Alle Journale", false));
 			rootFolder.addFolder(journaleFolder);
 			StaticFolder kontenFolder = new StaticFolder("Konten-Hierarchie", new KontenTreeForm(gui));
-			kontenFolder.addFolder(new KontoNode(gui, kontenFolder, gui.getFiBuFacade().getBilanzKonto()));
+			kontenFolder.addFolder(KontoNode.buildKontoTree(gui, kontenFolder));
 			rootFolder.addFolder(kontenFolder);
 			StaticFolder auswertungenFolder = new StaticFolder("Auswertungen", new DummyForm("Auswertungen"));
 			rootFolder.addFolder(auswertungenFolder);
@@ -155,6 +155,9 @@ public class MenuTreeModel implements TreeModel {
 
 //
 // $Log: MenuTreeModel.java,v $
+// Revision 1.3  2005/11/23 23:16:49  phormanns
+// Lesen Konto-Hierarchie und Buchungsliste optimiert
+//
 // Revision 1.2  2005/11/20 21:29:10  phormanns
 // Umstellung auf XMLRPC Server
 //

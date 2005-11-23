@@ -1,29 +1,36 @@
-// $Id: KontoNode.java,v 1.5 2005/11/20 21:29:10 phormanns Exp $
+// $Id: KontoNode.java,v 1.6 2005/11/23 23:16:49 phormanns Exp $
 package de.jalin.fibu.gui.tree;
 
 import java.awt.Component;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.tree.TreeNode;
 import de.jalin.fibu.gui.FiBuException;
+import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.forms.KontoTable;
 import de.jalin.fibu.server.konto.KontoData;
 
 public class KontoNode implements TreeNode, Adoptable, Editable {
 
-	private FiBuGUI gui;
 	private TreeNode parent;
 	private KontoData kto;
 	private Vector children;
 	private KontoTable ktoTable;
 	
-	public KontoNode(FiBuGUI gui, TreeNode parent, KontoData konto) {
-		this.gui = gui;
+	private KontoNode(FiBuGUI gui, TreeNode parent, KontoData root, Map ktoHash, Map childrenHash) {
 		this.parent = parent;
-		this.kto = konto;
-		readChildren();
+		this.kto = root;
+		this.children = new Vector();
+		Enumeration childrenEnum = ((Vector) childrenHash.get(root.getKontoid())).elements();
+		KontoData childKto = null;
+		while (childrenEnum.hasMoreElements()) {
+			childKto = (KontoData) ktoHash.get((Integer) childrenEnum.nextElement());
+			this.children.addElement(new KontoNode(gui, this, childKto, ktoHash, childrenHash));
+		}
 		this.ktoTable = new KontoTable(gui, kto);
 	}
 
@@ -75,28 +82,40 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 		return kto;
 	}
 
-	public void refresh() {
-		readChildren();
-	}
-
-	private void readChildren() {
-		children = new Vector();
-		try {
-			Iterator unterkonten = gui.getFiBuFacade().getUnterkonten(kto).iterator();
-			KontoData unterKto = null;
-			while (unterkonten.hasNext()) {
-				unterKto = (KontoData) unterkonten.next();
-				children.addElement(new KontoNode(gui, this, unterKto));
-			}
-		} catch (FiBuException e) {
-			gui.handleException(e);
+	public static KontoNode buildKontoTree(FiBuGUI gui, TreeNode parent) throws FiBuException {
+		FiBuFacade fibu = gui.getFiBuFacade();
+		Iterator kontenIterator = fibu.getKontenListe().iterator();
+		KontoData kto = null;
+		Map ktoHash = new HashMap();
+		Map childrenHash = new HashMap();
+		while (kontenIterator.hasNext()) {
+			kto = (KontoData) kontenIterator.next();
+			ktoHash.put(kto.getKontoid(), kto);
+			childrenHash.put(kto.getKontoid(), new Vector());
 		}
+		kontenIterator = ktoHash.keySet().iterator();
+		Integer oberkonto = null;
+		while (kontenIterator.hasNext()) {
+			kto = (KontoData) ktoHash.get((Integer) kontenIterator.next());
+			oberkonto = kto.getOberkonto();
+			if (oberkonto != null) {
+				((Vector) childrenHash.get(oberkonto)).addElement(kto.getKontoid());
+			}
+		}
+		return new KontoNode(gui, parent, fibu.getBilanzKonto(), ktoHash, childrenHash);
 	}
 
+	public void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 /*
  *  $Log: KontoNode.java,v $
+ *  Revision 1.6  2005/11/23 23:16:49  phormanns
+ *  Lesen Konto-Hierarchie und Buchungsliste optimiert
+ *
  *  Revision 1.5  2005/11/20 21:29:10  phormanns
  *  Umstellung auf XMLRPC Server
  *

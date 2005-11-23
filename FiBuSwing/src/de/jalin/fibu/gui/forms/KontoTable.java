@@ -1,4 +1,4 @@
-// $Id: KontoTable.java,v 1.3 2005/11/20 21:29:10 phormanns Exp $
+// $Id: KontoTable.java,v 1.4 2005/11/23 23:16:49 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
@@ -15,8 +15,7 @@ import javax.swing.ListSelectionModel;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.tree.Editable;
-import de.jalin.fibu.server.buchung.BuchungData;
-import de.jalin.fibu.server.buchungszeile.BuchungszeileData;
+import de.jalin.fibu.server.buchungsliste.BuchungslisteData;
 import de.jalin.fibu.server.konto.KontoData;
 
 public class KontoTable implements Editable {
@@ -61,20 +60,18 @@ public class KontoTable implements Editable {
 	
 	private Vector readKonto() throws FiBuException {
 		Vector ktoList = new Vector();
-		Iterator buchungsZeilen = gui.getFiBuFacade().getBuchungszeilen(kto).iterator();
-		BuchungszeileData buchungsZeile = null;
-		BuchungData buchung = null;
+		Iterator buchungsZeilen = gui.getFiBuFacade().getBuchungsliste(kto).iterator();
+		BuchungslisteData buchungsZeile = null;
 		Integer betrag = null;
 		String betragSoll = null;
 		String betragHaben = null;
 		Vector tableRow = null;
 		while (buchungsZeilen.hasNext()) {
-			buchungsZeile = (BuchungszeileData) buchungsZeilen.next();
-			buchung = gui.getFiBuFacade().getBuchung(buchungsZeile);
+			buchungsZeile = (BuchungslisteData) buchungsZeilen.next();
 			tableRow = new Vector();
-			tableRow.addElement(buchung.getBelegnr());
-			tableRow.addElement(buchung.getBuchungstext());
-			tableRow.addElement(dateFormatter.format(buchung.getValuta()));
+			tableRow.addElement(buchungsZeile.getBelegnr());
+			tableRow.addElement(buchungsZeile.getBuchungstext());
+			tableRow.addElement(dateFormatter.format(buchungsZeile.getValuta()));
 			betrag = buchungsZeile.getBetrag();
 			if (buchungsZeile.getSoll().booleanValue()) {
 				betragHaben = "0,00";
@@ -93,6 +90,9 @@ public class KontoTable implements Editable {
 
 /*
  *  $Log: KontoTable.java,v $
+ *  Revision 1.4  2005/11/23 23:16:49  phormanns
+ *  Lesen Konto-Hierarchie und Buchungsliste optimiert
+ *
  *  Revision 1.3  2005/11/20 21:29:10  phormanns
  *  Umstellung auf XMLRPC Server
  *

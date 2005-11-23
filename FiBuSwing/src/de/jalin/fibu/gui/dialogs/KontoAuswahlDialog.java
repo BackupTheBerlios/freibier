@@ -1,4 +1,4 @@
-// $Id: KontoAuswahlDialog.java,v 1.5 2005/11/20 21:29:10 phormanns Exp $
+// $Id: KontoAuswahlDialog.java,v 1.6 2005/11/23 23:16:49 phormanns Exp $
 package de.jalin.fibu.gui.dialogs;
 
 import java.awt.Dimension;
@@ -40,10 +40,8 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 	}
 
 	public void actionPerformed(ActionEvent selectKonto) {
-		KontoData bilanzKonto;
 		try {
-			bilanzKonto = gui.getFiBuFacade().getBilanzKonto();
-			JTree tree = new JTree(new KontoNode(gui, null, bilanzKonto));
+			JTree tree = new JTree(KontoNode.buildKontoTree(gui, null));
 			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			tree.addTreeSelectionListener(this);
 			dialog.getContentPane().add(tree);
@@ -74,6 +72,9 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 
 /*
  *  $Log: KontoAuswahlDialog.java,v $
+ *  Revision 1.6  2005/11/23 23:16:49  phormanns
+ *  Lesen Konto-Hierarchie und Buchungsliste optimiert
+ *
  *  Revision 1.5  2005/11/20 21:29:10  phormanns
  *  Umstellung auf XMLRPC Server
  *

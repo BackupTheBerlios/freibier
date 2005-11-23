@@ -1,4 +1,4 @@
-// $Id: JournalTable.java,v 1.3 2005/11/20 21:29:10 phormanns Exp $
+// $Id: JournalTable.java,v 1.4 2005/11/23 23:16:49 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
@@ -16,10 +16,8 @@ import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.tree.Editable;
-import de.jalin.fibu.server.buchung.BuchungData;
-import de.jalin.fibu.server.buchungszeile.BuchungszeileData;
+import de.jalin.fibu.server.buchungsliste.BuchungslisteData;
 import de.jalin.fibu.server.journal.JournalData;
-import de.jalin.fibu.server.konto.KontoData;
 
 public class JournalTable implements Editable {
 	
@@ -82,48 +80,41 @@ public class JournalTable implements Editable {
 	private Vector readJournal() throws FiBuException {
 		Vector journalList = new Vector();
 		FiBuFacade fiBuFacade = gui.getFiBuFacade();
-		Iterator buchungen = fiBuFacade.getBuchungen(journal).iterator();
-		BuchungData buchung = null;
+		Iterator buchungen = fiBuFacade.getBuchungsliste(journal).iterator();
+		BuchungslisteData buchung = null;
 		String belegNr = null;
 		String buchungstext = null;
 		String valutaDatum = null;
-		BuchungszeileData buchungsZeile = null;
 		Integer betrag = null;
 		String betragSoll = null;
 		String betragHaben = null;
-		KontoData kto = null;
 		String ktoNr = null;
 		String ktoBez = null;
 		Vector tableRow = null;
 		while (buchungen.hasNext()) {
-			buchung = (BuchungData) buchungen.next();
+			buchung = (BuchungslisteData) buchungen.next();
 			belegNr = buchung.getBelegnr();
 			buchungstext = buchung.getBuchungstext();
 			valutaDatum = dateFormatter.format(buchung.getValuta());
-			Iterator buchungsZeilen = fiBuFacade.getBuchungszeilen(buchung).iterator();  // Hier kommen keine Zeilen!
-			while (buchungsZeilen.hasNext()) {
-				tableRow = new Vector();
-				tableRow.addElement(belegNr);
-				tableRow.addElement(buchungstext);
-				tableRow.addElement(valutaDatum);
-				buchungsZeile = (BuchungszeileData) buchungsZeilen.next();
-				betrag = buchungsZeile.getBetrag();
-				if (buchungsZeile.getSoll().booleanValue()) {
-					betragHaben = "0,00";
-					betragSoll = currencyFormatter.format(betrag.floatValue() / 100.0);
-				} else {
-					betragSoll = "0,00";
-					betragHaben = currencyFormatter.format(betrag.floatValue() / 100.0);
-				}
-				tableRow.addElement(betragSoll);
-				tableRow.addElement(betragHaben);
-				kto = fiBuFacade.getKonto(buchungsZeile);
-				ktoNr = kto.getKontonr();
-				ktoBez = kto.getBezeichnung();
-				tableRow.addElement(ktoNr);
-				tableRow.addElement(ktoBez);
-				journalList.addElement(tableRow);
+			tableRow = new Vector();
+			tableRow.addElement(belegNr);
+			tableRow.addElement(buchungstext);
+			tableRow.addElement(valutaDatum);
+			betrag = buchung.getBetrag();
+			if (buchung.getSoll().booleanValue()) {
+				betragHaben = "0,00";
+				betragSoll = currencyFormatter.format(betrag.floatValue() / 100.0);
+			} else {
+				betragSoll = "0,00";
+				betragHaben = currencyFormatter.format(betrag.floatValue() / 100.0);
 			}
+			tableRow.addElement(betragSoll);
+			tableRow.addElement(betragHaben);
+			ktoNr = buchung.getKontonr();
+			ktoBez = buchung.getBezeichnung();
+			tableRow.addElement(ktoNr);
+			tableRow.addElement(ktoBez);
+			journalList.addElement(tableRow);
 		}
 		return journalList;
 	}
@@ -132,6 +123,9 @@ public class JournalTable implements Editable {
 
 /*
  *  $Log: JournalTable.java,v $
+ *  Revision 1.4  2005/11/23 23:16:49  phormanns
+ *  Lesen Konto-Hierarchie und Buchungsliste optimiert
+ *
  *  Revision 1.3  2005/11/20 21:29:10  phormanns
  *  Umstellung auf XMLRPC Server
  *

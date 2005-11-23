@@ -1,4 +1,4 @@
-// $Id: FiBuFacade.java,v 1.8 2005/11/20 21:29:10 phormanns Exp $
+// $Id: FiBuFacade.java,v 1.9 2005/11/23 23:16:49 phormanns Exp $
 package de.jalin.fibu.gui;
 
 import java.net.MalformedURLException;
@@ -18,9 +18,10 @@ import net.hostsharing.admin.runtime.XmlRpcTransactionException;
 import de.jalin.fibu.server.buchung.BuchungAddCall;
 import de.jalin.fibu.server.buchung.BuchungData;
 import de.jalin.fibu.server.buchung.BuchungListCall;
+import de.jalin.fibu.server.buchungsliste.BuchungslisteData;
+import de.jalin.fibu.server.buchungsliste.BuchungslisteListCall;
 import de.jalin.fibu.server.buchungszeile.BuchungszeileAddCall;
 import de.jalin.fibu.server.buchungszeile.BuchungszeileData;
-import de.jalin.fibu.server.buchungszeile.BuchungszeileListCall;
 import de.jalin.fibu.server.customer.CustomerData;
 import de.jalin.fibu.server.customer.CustomerListCall;
 import de.jalin.fibu.server.customer.CustomerUpdateCall;
@@ -331,19 +332,18 @@ public class FiBuFacade {
 		}
 	}
 
-	public List getUnterkonten(KontoData oberKto) throws FiBuException {
+	public List getKontenListe() throws FiBuException {
 		try {
 			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
 			KontoData sampleKto = new KontoData();
-			sampleKto.setOberkonto(oberKto.getKontoid());
 			tx.addCall(new KontoListCall(sampleKto));
 			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
 			List ktoList = new ArrayList();
-			KontoData unterKto = null;
+			KontoData kto = null;
 			for (int i=0; i<resultVector.size(); i++) {
-				unterKto = new KontoData();
-				unterKto.readFromResult(resultVector, i);
-				ktoList.add(unterKto);
+				kto = new KontoData();
+				kto.readFromResult(resultVector, i);
+				ktoList.add(kto);
 			}
 			return ktoList;
 		} catch (XmlRpcClientException e) {
@@ -353,6 +353,72 @@ public class FiBuFacade {
 		}
 	}
 
+	public List getBuchungsliste(KontoData kto) throws FiBuException {
+		try {
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			BuchungslisteData sampleBuchung = new BuchungslisteData();
+			sampleBuchung.setKontoid(kto.getKontoid());
+			tx.addCall(new BuchungslisteListCall(sampleBuchung));
+			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			List buchungsList = new ArrayList();
+			BuchungslisteData buchungsListData = null;
+			for (int i=0; i<resultVector.size(); i++) {
+				buchungsListData = new BuchungslisteData();
+				buchungsListData.readFromResult(resultVector, i);
+				buchungsList.add(buchungsListData);
+			}
+			return buchungsList;
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		}
+	}
+
+	public List getBuchungsliste(JournalData journal) throws FiBuException {
+		try {
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			BuchungslisteData sampleBuchung = new BuchungslisteData();
+			sampleBuchung.setJourid(journal.getJourid());
+			tx.addCall(new BuchungslisteListCall(sampleBuchung));
+			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			List buchungsList = new ArrayList();
+			BuchungslisteData buchungsListData = null;
+			for (int i=0; i<resultVector.size(); i++) {
+				buchungsListData = new BuchungslisteData();
+				buchungsListData.readFromResult(resultVector, i);
+				buchungsList.add(buchungsListData);
+			}
+			return buchungsList;
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		}
+	}
+	
+	public List getBuchungsliste(BuchungData buchung) throws FiBuException {
+		try {
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			BuchungslisteData sampleBuchung = new BuchungslisteData();
+			sampleBuchung.setBuchid(buchung.getBuchid());
+			tx.addCall(new BuchungslisteListCall(sampleBuchung));
+			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			List buchungsList = new ArrayList();
+			BuchungslisteData buchungsListData = null;
+			for (int i=0; i<resultVector.size(); i++) {
+				buchungsListData = new BuchungslisteData();
+				buchungsListData.readFromResult(resultVector, i);
+				buchungsList.add(buchungsListData);
+			}
+			return buchungsList;
+		} catch (XmlRpcTransactionException e) {
+			throw new FiBuUserException(e.getMessage());
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		}
+	}
+	
 	private void setCustAttribute(String property, String value) throws FiBuUserException {
 		try {
 			CustomerData whereCust = new CustomerData();
@@ -380,110 +446,13 @@ public class FiBuFacade {
 		}
 	}
 
-	public List getBuchungszeilen(KontoData kto) throws FiBuException {
-		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
-			BuchungszeileData sampleZeile = new BuchungszeileData();
-			sampleZeile.setKontoid(kto.getKontoid());
-			tx.addCall(new BuchungszeileListCall(sampleZeile));
-			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
-			List zeilenList = new ArrayList();
-			BuchungszeileData zeile = null;
-			for (int i=0; i<resultVector.size(); i++) {
-				zeile = new BuchungszeileData();
-				zeile.readFromResult(resultVector, i);
-				zeilenList.add(zeile);
-			}
-			return zeilenList;
-		} catch (XmlRpcClientException e) {
-			throw new FiBuUserException(e.getMessage());
-		} catch (XmlRpcTransactionException e) {
-			throw new FiBuUserException(e.getMessage());
-		}
-	}
-
-	public List getBuchungen(JournalData journal) throws FiBuException {
-		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
-			BuchungData sampleBuchung = new BuchungData();
-			sampleBuchung.setJourid(journal.getJourid());
-			tx.addCall(new BuchungListCall(sampleBuchung));
-			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
-			List buchungsList = new ArrayList();
-			BuchungData buchung = null;
-			for (int i=0; i<resultVector.size(); i++) {
-				buchung = new BuchungData();
-				buchung.readFromResult(resultVector, i);
-				buchungsList.add(buchung);
-			}
-			return buchungsList;
-		} catch (XmlRpcClientException e) {
-			throw new FiBuUserException(e.getMessage());
-		} catch (XmlRpcTransactionException e) {
-			throw new FiBuUserException(e.getMessage());
-		}
-	}
-
-	public List getBuchungszeilen(BuchungData buchung) throws FiBuException {
-		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
-			BuchungszeileData sampleZeile = new BuchungszeileData();
-			sampleZeile.setBuchid(buchung.getBuchid());
-			tx.addCall(new BuchungszeileListCall(sampleZeile));
-			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
-			List zeilenList = new ArrayList();
-			BuchungszeileData zeile = null;
-			for (int i=0; i<resultVector.size(); i++) {
-				zeile = new BuchungszeileData();
-				zeile.readFromResult(resultVector, i);
-				zeilenList.add(zeile);
-			}
-			return zeilenList;
-		} catch (XmlRpcClientException e) {
-			throw new FiBuUserException(e.getMessage());
-		} catch (XmlRpcTransactionException e) {
-			throw new FiBuUserException(e.getMessage());
-		}
-	}
-
-	public KontoData getKonto(BuchungszeileData buchungsZeile) throws FiBuException {
-		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
-			KontoData whereKto = new KontoData();
-			whereKto.setKontoid(buchungsZeile.getKontoid());
-			tx.addCall(new KontoListCall(whereKto));
-			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
-			KontoData kto = new KontoData();
-			kto.readFromResult(resultVector, 0);
-			return kto;
-		} catch (XmlRpcTransactionException e) {
-			throw new FiBuUserException(e.getMessage());
-		} catch (XmlRpcClientException e) {
-			throw new FiBuUserException(e.getMessage());
-		}
-	}
-
-	public BuchungData getBuchung(BuchungszeileData buchungsZeile) throws FiBuException {
-		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
-			BuchungData whereBuchung = new BuchungData();
-			whereBuchung.setBuchid(buchungsZeile.getBuchid());
-			tx.addCall(new BuchungListCall(whereBuchung));
-			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
-			BuchungData buchung = new BuchungData();
-			buchung.readFromResult(resultVector, 0);
-			return buchung;
-		} catch (XmlRpcClientException e) {
-			throw new FiBuUserException(e.getMessage());
-		} catch (XmlRpcTransactionException e) {
-			throw new FiBuUserException(e.getMessage());
-		}
-	}
-	
 }
 
 /*
  *  $Log: FiBuFacade.java,v $
+ *  Revision 1.9  2005/11/23 23:16:49  phormanns
+ *  Lesen Konto-Hierarchie und Buchungsliste optimiert
+ *
  *  Revision 1.8  2005/11/20 21:29:10  phormanns
  *  Umstellung auf XMLRPC Server
  *

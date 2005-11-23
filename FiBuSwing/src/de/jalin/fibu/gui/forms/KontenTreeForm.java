@@ -1,4 +1,4 @@
-// $Id: KontenTreeForm.java,v 1.2 2005/11/16 18:24:11 phormanns Exp $
+// $Id: KontenTreeForm.java,v 1.3 2005/11/23 23:16:49 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
@@ -9,19 +9,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeSelectionModel;
 import de.jalin.fibu.gui.FiBuException;
-import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.tree.Editable;
 import de.jalin.fibu.gui.tree.KontoNode;
 
 public class KontenTreeForm implements Editable {
 	
-	private FiBuFacade fibu;
 	private FiBuGUI gui;
 	
 	public KontenTreeForm(FiBuGUI gui) {
 		this.gui = gui;
-		this.fibu = gui.getFiBuFacade();
 	}
 
 	public boolean validateAndSave() {
@@ -31,7 +28,7 @@ public class KontenTreeForm implements Editable {
 	public Component getEditor() {
 		JPanel panel = new JPanel(new BorderLayout());
 		try {
-			JTree tree = new JTree(new KontoNode(gui, null, fibu.getBilanzKonto()));
+			JTree tree = new JTree(KontoNode.buildKontoTree(gui, null));
 			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			JScrollPane scroll = new JScrollPane(tree);
 			scroll.setPreferredSize(new Dimension(585, 585));
@@ -45,6 +42,9 @@ public class KontenTreeForm implements Editable {
 
 /*
  *  $Log: KontenTreeForm.java,v $
+ *  Revision 1.3  2005/11/23 23:16:49  phormanns
+ *  Lesen Konto-Hierarchie und Buchungsliste optimiert
+ *
  *  Revision 1.2  2005/11/16 18:24:11  phormanns
  *  Exception Handling in GUI
  *  Refactorings, Focus-Steuerung
