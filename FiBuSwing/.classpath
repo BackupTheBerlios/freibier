@@ -11,9 +11,9 @@
 	<classpathentry kind="lib" path="lib/oro-2.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/FiBu-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/FreibierDB-1.0.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/FiBuServer"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/xmlrpcgen"/>
 	<classpathentry kind="lib" path="/xmlrpcgen/lib/commons-httpclient-2.0.2.jar"/>
 	<classpathentry kind="lib" path="/xmlrpcgen/lib/xmlrpc.jar"/>
+	<classpathentry kind="lib" path="lib/xmlrpcgen.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/FiBuServer"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
