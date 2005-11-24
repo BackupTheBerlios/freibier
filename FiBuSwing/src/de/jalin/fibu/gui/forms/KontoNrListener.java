@@ -1,4 +1,4 @@
-// $Id: KontoNrListener.java,v 1.5 2005/11/20 21:29:10 phormanns Exp $
+// $Id: KontoNrListener.java,v 1.6 2005/11/24 17:43:05 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.event.FocusEvent;
@@ -9,17 +9,20 @@ import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.server.konto.KontoData;
 
 public class KontoNrListener implements FocusListener {
+	
 	private FiBuFacade fibu;
 	private JTextField tfKontoNr;
 	private JTextField tfKontoText;
 	private JTextField tfMWStSatz;
+	private BetragListener betragListener;
 
 	public KontoNrListener(FiBuFacade fibu, JTextField tfKontoNr,
-			JTextField tfKontoText, JTextField tfMWStSatz) {
+			JTextField tfKontoText, JTextField tfMWStSatz, BetragListener betragListener) {
 		this.fibu = fibu;
 		this.tfKontoNr = tfKontoNr;
 		this.tfKontoText = tfKontoText;
 		this.tfMWStSatz = tfMWStSatz;
+		this.betragListener = betragListener;
 	}
 
 	public void focusGained(FocusEvent gotFocus) {
@@ -34,6 +37,7 @@ public class KontoNrListener implements FocusListener {
 				tfKontoNr.setText(kto.getKontonr());
 				writeKontoText(kto.getBezeichnung());
 				writeMWStSatz(fibu.getMWSt(kto));
+				if (betragListener != null) betragListener.berechneMWSt();
 			} else {
 				tfKontoNr.setText("");
 				writeKontoText("");
@@ -61,6 +65,9 @@ public class KontoNrListener implements FocusListener {
 }
 /*
  *  $Log: KontoNrListener.java,v $
+ *  Revision 1.6  2005/11/24 17:43:05  phormanns
+ *  Buchen als eine Transaktion in der "Buchungsmaschine"
+ *
  *  Revision 1.5  2005/11/20 21:29:10  phormanns
  *  Umstellung auf XMLRPC Server
  *

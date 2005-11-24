@@ -16,6 +16,8 @@ import de.jalin.fibu.server.buchungszeile.*;
 import de.jalin.fibu.server.buchungszeile.impl.*;
 import de.jalin.fibu.server.buchungsliste.*;
 import de.jalin.fibu.server.buchungsliste.impl.*;
+import de.jalin.fibu.server.buchungsmaschine.*;
+import de.jalin.fibu.server.buchungsmaschine.impl.*;
 
 public class Server extends XmlRpcTransactionHandler {
 
@@ -41,6 +43,8 @@ public class Server extends XmlRpcTransactionHandler {
 			new BuchungszeileHandler(new BuchungszeileBackendImpl()));
 		rpcHandler.addModule("buchungsliste", 
 			new BuchungslisteHandler(new BuchungslisteBackendImpl()));
+		rpcHandler.addModule("buchungsmaschine", 
+			new BuchungsmaschineHandler(new BuchungsmaschineBackendImpl()));
 		server.addHandler(MODUL_NAME, rpcHandler);
 		server.start();
 	}

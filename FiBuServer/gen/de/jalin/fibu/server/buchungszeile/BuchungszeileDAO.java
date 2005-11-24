@@ -15,9 +15,17 @@ abstract public class BuchungszeileDAO implements Createable {
 		// bool haben
 
 	private DatabaseTable table;
+	private DisplayColumns display;
 
 	public BuchungszeileDAO() {
 		table = new DatabaseTable("buchungszeile");
+		display = new DisplayColumns();
+		display.addColumnDefinition("buzlid", 1);
+		display.addColumnDefinition("buchid", 1);
+		display.addColumnDefinition("kontoid", 1);
+		display.addColumnDefinition("betrag", 1);
+		display.addColumnDefinition("soll", 1);
+		display.addColumnDefinition("haben", 1);
 	}
 
 	public void createDatabaseObject(Connection connect) throws XmlRpcTransactionException {
@@ -86,6 +94,7 @@ abstract public class BuchungszeileDAO implements Createable {
 		, OrderByList orderBy )
 					throws XmlRpcTransactionException
 	{
+	    if (display == null) display = this.display;
 		SelectStatement select = new SelectStatement(table, display, orderBy);
 		select.addWhereColumn("buzlid", whereData.getBuzlid());
 		select.addWhereColumn("buchid", whereData.getBuchid());

@@ -16,9 +16,18 @@ abstract public class JournalDAO implements Createable {
 		// bool absummiert
 
 	private DatabaseTable table;
+	private DisplayColumns display;
 
 	public JournalDAO() {
 		table = new DatabaseTable("journal");
+		display = new DisplayColumns();
+		display.addColumnDefinition("jourid", 1);
+		display.addColumnDefinition("journr", 1);
+		display.addColumnDefinition("jahr", 1);
+		display.addColumnDefinition("periode", 1);
+		display.addColumnDefinition("since", 1);
+		display.addColumnDefinition("lastupdate", 2);
+		display.addColumnDefinition("absummiert", 1);
 	}
 
 	public void createDatabaseObject(Connection connect) throws XmlRpcTransactionException {
@@ -93,6 +102,7 @@ abstract public class JournalDAO implements Createable {
 		, OrderByList orderBy )
 					throws XmlRpcTransactionException
 	{
+	    if (display == null) display = this.display;
 		SelectStatement select = new SelectStatement(table, display, orderBy);
 		select.addWhereColumn("jourid", whereData.getJourid());
 		select.addWhereColumn("journr", whereData.getJournr());

@@ -22,6 +22,8 @@ import de.jalin.fibu.server.buchungszeile.*;
 import de.jalin.fibu.server.buchungszeile.impl.*;
 import de.jalin.fibu.server.buchungsliste.*;
 import de.jalin.fibu.server.buchungsliste.impl.*;
+import de.jalin.fibu.server.buchungsmaschine.*;
+import de.jalin.fibu.server.buchungsmaschine.impl.*;
 
 public class Servlet extends HttpServlet {
 
@@ -66,6 +68,8 @@ public class Servlet extends HttpServlet {
 				new BuchungszeileHandler(new BuchungszeileBackendImpl()));
 			rpcHandler.addModule("buchungsliste", 
 				new BuchungslisteHandler(new BuchungslisteBackendImpl()));
+			rpcHandler.addModule("buchungsmaschine", 
+				new BuchungsmaschineHandler(new BuchungsmaschineBackendImpl()));
 			xmlrpc.addHandler(XmlRpcTransactionHandler.MODUL_NAME, rpcHandler);
 		} catch (Exception e) {
 			throw new ServletException(e);

@@ -17,9 +17,19 @@ abstract public class CustomerDAO implements Createable {
 		// date lastupdate
 
 	private DatabaseTable table;
+	private DisplayColumns display;
 
 	public CustomerDAO() {
 		table = new DatabaseTable("customer");
+		display = new DisplayColumns();
+		display.addColumnDefinition("custid", 1);
+		display.addColumnDefinition("firma", 1);
+		display.addColumnDefinition("bilanzkonto", 1);
+		display.addColumnDefinition("guvkonto", 1);
+		display.addColumnDefinition("jahr", 1);
+		display.addColumnDefinition("periode", 1);
+		display.addColumnDefinition("since", 2);
+		display.addColumnDefinition("lastupdate", 2);
 	}
 
 	public void createDatabaseObject(Connection connect) throws XmlRpcTransactionException {
@@ -94,6 +104,7 @@ abstract public class CustomerDAO implements Createable {
 		, OrderByList orderBy )
 					throws XmlRpcTransactionException
 	{
+	    if (display == null) display = this.display;
 		SelectStatement select = new SelectStatement(table, display, orderBy);
 		select.addWhereColumn("custid", whereData.getCustid());
 		select.addWhereColumn("firma", whereData.getFirma());

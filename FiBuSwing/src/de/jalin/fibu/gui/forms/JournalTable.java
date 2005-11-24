@@ -1,4 +1,4 @@
-// $Id: JournalTable.java,v 1.4 2005/11/23 23:16:49 phormanns Exp $
+// $Id: JournalTable.java,v 1.5 2005/11/24 17:43:05 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
@@ -55,7 +55,6 @@ public class JournalTable implements Editable {
 		try {
 			readJournal = readJournal();
 			journalLog = new JTable(readJournal, columnTitles);
-			journalLog.setCellSelectionEnabled(false);
 			journalLog.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			JScrollPane scroll = new JScrollPane(journalLog);
 			panel.removeAll();
@@ -123,6 +122,9 @@ public class JournalTable implements Editable {
 
 /*
  *  $Log: JournalTable.java,v $
+ *  Revision 1.5  2005/11/24 17:43:05  phormanns
+ *  Buchen als eine Transaktion in der "Buchungsmaschine"
+ *
  *  Revision 1.4  2005/11/23 23:16:49  phormanns
  *  Lesen Konto-Hierarchie und Buchungsliste optimiert
  *

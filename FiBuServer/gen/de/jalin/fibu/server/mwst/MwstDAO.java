@@ -15,9 +15,17 @@ abstract public class MwstDAO implements Createable {
 		// bool mwstsatzaktiv
 
 	private DatabaseTable table;
+	private DisplayColumns display;
 
 	public MwstDAO() {
 		table = new DatabaseTable("mwst");
+		display = new DisplayColumns();
+		display.addColumnDefinition("mwstid", 1);
+		display.addColumnDefinition("mwstsatz", 1);
+		display.addColumnDefinition("mwsttext", 1);
+		display.addColumnDefinition("mwstkontosoll", 1);
+		display.addColumnDefinition("mwstkontohaben", 1);
+		display.addColumnDefinition("mwstsatzaktiv", 2);
 	}
 
 	public void createDatabaseObject(Connection connect) throws XmlRpcTransactionException {
@@ -85,6 +93,7 @@ abstract public class MwstDAO implements Createable {
 		, OrderByList orderBy )
 					throws XmlRpcTransactionException
 	{
+	    if (display == null) display = this.display;
 		SelectStatement select = new SelectStatement(table, display, orderBy);
 		select.addWhereColumn("mwstid", whereData.getMwstid());
 		select.addWhereColumn("mwstsatz", whereData.getMwstsatz());

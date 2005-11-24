@@ -16,9 +16,18 @@ abstract public class KontoDAO implements Createable {
 		// bool isthaben
 
 	private DatabaseTable table;
+	private DisplayColumns display;
 
 	public KontoDAO() {
 		table = new DatabaseTable("konto");
+		display = new DisplayColumns();
+		display.addColumnDefinition("kontoid", 1);
+		display.addColumnDefinition("kontonr", 1);
+		display.addColumnDefinition("bezeichnung", 1);
+		display.addColumnDefinition("mwstid", 1);
+		display.addColumnDefinition("oberkonto", 1);
+		display.addColumnDefinition("istsoll", 1);
+		display.addColumnDefinition("isthaben", 1);
 	}
 
 	public void createDatabaseObject(Connection connect) throws XmlRpcTransactionException {
@@ -94,6 +103,7 @@ abstract public class KontoDAO implements Createable {
 		, OrderByList orderBy )
 					throws XmlRpcTransactionException
 	{
+	    if (display == null) display = this.display;
 		SelectStatement select = new SelectStatement(table, display, orderBy);
 		select.addWhereColumn("kontoid", whereData.getKontoid());
 		select.addWhereColumn("kontonr", whereData.getKontonr());

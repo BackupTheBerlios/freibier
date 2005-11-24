@@ -1,4 +1,4 @@
-// $Id: KontoAuswahlDialog.java,v 1.6 2005/11/23 23:16:49 phormanns Exp $
+// $Id: KontoAuswahlDialog.java,v 1.7 2005/11/24 17:43:06 phormanns Exp $
 package de.jalin.fibu.gui.dialogs;
 
 import java.awt.Dimension;
@@ -14,6 +14,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeSelectionModel;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuGUI;
+import de.jalin.fibu.gui.forms.BetragListener;
 import de.jalin.fibu.gui.tree.KontoNode;
 import de.jalin.fibu.server.konto.KontoData;
 
@@ -24,10 +25,12 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 	private JTextField tfKontoNr;
 	private JTextField tfKontoText;
 	private JTextField tfKontoMWSt;
+	private BetragListener betragListener;
 
 	public KontoAuswahlDialog(FiBuGUI gui, 
-			JTextField tfKontoNr, JTextField tfKontoText, JTextField tfKontoMWSt) {
+			JTextField tfKontoNr, JTextField tfKontoText, JTextField tfKontoMWSt, BetragListener betragListener) {
 		this.gui = gui;
+		this.betragListener = betragListener;
 		this.tfKontoNr = tfKontoNr;
 		this.tfKontoText = tfKontoText;
 		this.tfKontoMWSt = tfKontoMWSt;
@@ -65,6 +68,9 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 				gui.handleException(e);
 			}
 		}
+		if (betragListener != null) {
+			betragListener.berechneMWSt();
+		}
 		dialog.hide();
 	}
 	
@@ -72,6 +78,9 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 
 /*
  *  $Log: KontoAuswahlDialog.java,v $
+ *  Revision 1.7  2005/11/24 17:43:06  phormanns
+ *  Buchen als eine Transaktion in der "Buchungsmaschine"
+ *
  *  Revision 1.6  2005/11/23 23:16:49  phormanns
  *  Lesen Konto-Hierarchie und Buchungsliste optimiert
  *

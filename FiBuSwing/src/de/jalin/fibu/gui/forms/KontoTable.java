@@ -1,4 +1,4 @@
-// $Id: KontoTable.java,v 1.4 2005/11/23 23:16:49 phormanns Exp $
+// $Id: KontoTable.java,v 1.5 2005/11/24 17:43:04 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
@@ -47,8 +47,6 @@ public class KontoTable implements Editable {
 		JPanel panel = new JPanel(new BorderLayout());
 		try {
 			JTable kontoLog = new JTable(readKonto(), columnTitles);
-			// kontoLog.setEnabled(false);
-			kontoLog.setCellSelectionEnabled(false);
 			kontoLog.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			JScrollPane scroll = new JScrollPane(kontoLog);
 			panel.add(scroll, BorderLayout.CENTER);
@@ -90,6 +88,9 @@ public class KontoTable implements Editable {
 
 /*
  *  $Log: KontoTable.java,v $
+ *  Revision 1.5  2005/11/24 17:43:04  phormanns
+ *  Buchen als eine Transaktion in der "Buchungsmaschine"
+ *
  *  Revision 1.4  2005/11/23 23:16:49  phormanns
  *  Lesen Konto-Hierarchie und Buchungsliste optimiert
  *

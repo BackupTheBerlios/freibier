@@ -1,4 +1,4 @@
-// $Id: StammdatenForm.java,v 1.7 2005/11/20 21:29:10 phormanns Exp $
+// $Id: StammdatenForm.java,v 1.8 2005/11/24 17:43:01 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.Component;
@@ -12,6 +12,7 @@ import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.gui.FiBuGUI;
 import de.jalin.fibu.gui.dialogs.KontoAuswahlDialog;
+import de.jalin.fibu.server.customer.CustomerData;
 import de.jalin.fibu.server.konto.KontoData;
 
 public class StammdatenForm extends AbstractForm {
@@ -26,19 +27,21 @@ public class StammdatenForm extends AbstractForm {
 	private JTextField tfGuVKtoNr;
 	private JTextField tfBilanzKtoBez;
 	private JTextField tfGuVKtoBez;
+	private CustomerData customer;
 
 	public StammdatenForm(FiBuGUI gui) {
 		this.gui = gui;
 		this.fibu = gui.getFiBuFacade();
+		this.customer = fibu.getCustomer();
 	}
 
 	public boolean validateAndSave() {
 		try {
-			fibu.setFirma(tfFirma.getText());
-			fibu.setJahrAktuell(tfJahrAktuell.getText());
-			fibu.setPeriodeAktuell(tfPeriodeAktuell.getText());
-			fibu.setBilanzKonto(tfBilanzKtoNr.getText());
-			fibu.setGuVKonto(tfGuVKtoNr.getText());
+			customer = fibu.getCustomer();
+			customer.setFirma(tfFirma.getText());
+			customer.setJahr(tfJahrAktuell.getText());
+			customer.setPeriode(tfPeriodeAktuell.getText());
+			fibu.setCustomer(customer, tfBilanzKtoNr.getText().trim(), tfGuVKtoNr.getText().trim());
 			return true;
 		} catch (FiBuException e) {
 			gui.handleException(e);
@@ -48,9 +51,10 @@ public class StammdatenForm extends AbstractForm {
 
 	public Component getEditor() {
 		try {
-			tfJahrAktuell = createTextField(fibu.getJahrAktuell(), true);
-			tfPeriodeAktuell = createTextField(fibu.getPeriodeAktuell(), true);
-			tfFirma = createTextField(fibu.getFirma(), true);
+			customer = fibu.getCustomer();
+			tfJahrAktuell = createTextField(customer.getJahr(), true);
+			tfPeriodeAktuell = createTextField(customer.getPeriode(), true);
+			tfFirma = createTextField(customer.getFirma(), true);
 			KontoData bilanzKto = fibu.getBilanzKonto();
 			if (bilanzKto != null) {
 				tfBilanzKtoNr = createTextField(bilanzKto.getKontonr(), true);
@@ -67,16 +71,16 @@ public class StammdatenForm extends AbstractForm {
 				tfGuVKtoNr = createTextField("", true);
 				tfGuVKtoBez = createTextField("", false);
 			}
-			tfBilanzKtoNr.addFocusListener(new KontoNrListener(fibu, tfBilanzKtoNr, tfBilanzKtoBez, null));
-			tfGuVKtoNr.addFocusListener(new KontoNrListener(fibu, tfGuVKtoNr, tfGuVKtoBez, null));
+			tfBilanzKtoNr.addFocusListener(new KontoNrListener(fibu, tfBilanzKtoNr, tfBilanzKtoBez, null, null));
+			tfGuVKtoNr.addFocusListener(new KontoNrListener(fibu, tfGuVKtoNr, tfGuVKtoBez, null, null));
 			JButton btBilanzKto = new JButton("...");
 			btBilanzKto.setFocusable(false);
 			btBilanzKto.addActionListener(
-					new KontoAuswahlDialog(gui, tfBilanzKtoNr, tfBilanzKtoBez, null));
+					new KontoAuswahlDialog(gui, tfBilanzKtoNr, tfBilanzKtoBez, null, null));
 			JButton btGuVKto = new JButton("...");
 			btGuVKto.setFocusable(false);
 			btGuVKto.addActionListener(
-					new KontoAuswahlDialog(gui, tfGuVKtoNr, tfGuVKtoBez, null));
+					new KontoAuswahlDialog(gui, tfGuVKtoNr, tfGuVKtoBez, null, null));
 			FormLayout layout = new FormLayout(
 					"4dlu, right:pref, 4dlu, 48dlu, 4dlu, pref:grow, 4dlu, 16dlu, 4dlu",
 					"4dlu, pref, 4dlu, pref, 2dlu, pref, 8dlu, "
@@ -114,6 +118,9 @@ public class StammdatenForm extends AbstractForm {
 
 /*
  *  $Log: StammdatenForm.java,v $
+ *  Revision 1.8  2005/11/24 17:43:01  phormanns
+ *  Buchen als eine Transaktion in der "Buchungsmaschine"
+ *
  *  Revision 1.7  2005/11/20 21:29:10  phormanns
  *  Umstellung auf XMLRPC Server
  *

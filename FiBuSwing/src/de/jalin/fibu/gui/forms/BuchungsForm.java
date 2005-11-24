@@ -1,4 +1,4 @@
-// $Id: BuchungsForm.java,v 1.6 2005/11/20 21:29:10 phormanns Exp $
+// $Id: BuchungsForm.java,v 1.7 2005/11/24 17:42:57 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.Component;
@@ -33,6 +33,7 @@ public class BuchungsForm extends AbstractForm {
 	private JTextField tfSollKontoNr;
 	private JTextField tfHabenKontoNr;
 	private JTextField tfBuchungstext;
+	private JTextField tfBruttoBetrag;
 	private JTextField tfSollKontoText;
 	private JTextField tfHabenKontoText;
 	private JTextField tfSollMWStSatz;
@@ -42,6 +43,7 @@ public class BuchungsForm extends AbstractForm {
 	private JTextField tfSollMWSt;
 	private JTextField tfHabenMWSt;
 	private JournalTable tabJournal;
+	private BetragListener betragListener;
 
 	public BuchungsForm(FiBuGUI gui, JournalData jour) {
 		this.gui = gui;
@@ -68,9 +70,13 @@ public class BuchungsForm extends AbstractForm {
 				throw new FiBuUserException("Kein Buchungstext angegeben.");
 			}
 			gui.getFiBuFacade().buchen(journal, belegNr, 
-					buchungstext, valutaDatum, 
-					tfSollKontoNr.getText(), tfHabenKontoNr.getText(), 
-					tfSollBetrag.getText());
+					buchungstext, 
+					valutaDatum, 
+					tfSollKontoNr.getText(), 
+					tfHabenKontoNr.getText(), 
+					tfBruttoBetrag.getText());
+			tfBelegNr.setText("");
+			tfBelegNr.requestFocus();
 			return true;
 		} catch (FiBuException e) {
 			gui.handleException(e);
@@ -87,11 +93,13 @@ public class BuchungsForm extends AbstractForm {
 		tfHabenKontoNr = createTextField("", true);
 		tfSollKontoText = createTextField("", false);
 		tfHabenKontoText = createTextField("", false);
+		tfBruttoBetrag = createTextField("0,00", true);
+		tfBruttoBetrag.setHorizontalAlignment(JTextField.RIGHT);
 		tfSollMWStSatz = createTextField("0", false);
 		tfSollMWStSatz.setHorizontalAlignment(JTextField.RIGHT);
 		tfHabenMWStSatz = createTextField("0", false);
 		tfHabenMWStSatz.setHorizontalAlignment(JTextField.RIGHT);
-		tfSollBetrag = createTextField("0,00", true);
+		tfSollBetrag = createTextField("0,00", false);
 		tfSollBetrag.setHorizontalAlignment(JTextField.RIGHT);
 		tfHabenBetrag = createTextField("0,00", false);
 		tfHabenBetrag.setHorizontalAlignment(JTextField.RIGHT);
@@ -99,35 +107,35 @@ public class BuchungsForm extends AbstractForm {
 		tfSollMWSt.setHorizontalAlignment(JTextField.RIGHT);
 		tfHabenMWSt = createTextField("0,00", false);
 		tfHabenMWSt.setHorizontalAlignment(JTextField.RIGHT);
+		betragListener = new BetragListener(gui, tfBruttoBetrag,
+				tfSollBetrag, tfHabenBetrag, 
+				tfSollMWStSatz, tfHabenMWStSatz, 
+				tfSollMWSt, tfHabenMWSt);
 		tfSollKontoNr.addFocusListener(
-				new KontoNrListener(fibu, tfSollKontoNr, tfSollKontoText, tfSollMWStSatz));
+				new KontoNrListener(fibu, tfSollKontoNr, tfSollKontoText, tfSollMWStSatz, betragListener));
 		tfHabenKontoNr.addFocusListener(
-				new KontoNrListener(fibu, tfHabenKontoNr, tfHabenKontoText, tfHabenMWStSatz));
-		tfSollBetrag.addFocusListener(
-				new BetragListener(gui, 
-						tfSollBetrag, tfHabenBetrag, 
-						tfSollMWStSatz, tfHabenMWStSatz, 
-						tfSollMWSt, tfHabenMWSt));
+				new KontoNrListener(fibu, tfHabenKontoNr, tfHabenKontoText, tfHabenMWStSatz, betragListener));
+		tfBruttoBetrag.addFocusListener(betragListener);
 		JButton btSelSollKto = new JButton("...");
 		btSelSollKto.setFocusable(false);
 		btSelSollKto.addActionListener(
-				new KontoAuswahlDialog(gui, tfSollKontoNr, tfSollKontoText, tfSollMWStSatz));
+				new KontoAuswahlDialog(gui, tfSollKontoNr, tfSollKontoText, tfSollMWStSatz, betragListener));
 		JButton btSelHabenKto = new JButton("...");
 		btSelHabenKto.setFocusable(false);
 		btSelHabenKto.addActionListener(
-				new KontoAuswahlDialog(gui, tfHabenKontoNr, tfHabenKontoText, tfHabenMWStSatz));
+				new KontoAuswahlDialog(gui, tfHabenKontoNr, tfHabenKontoText, tfHabenMWStSatz, betragListener));
 		JButton save = new JButton("Buchen");
 		save.addActionListener(new BuchungsAction(this));
 		FormLayout layout = new FormLayout(
 				"4dlu, 48dlu, 4dlu, pref:grow, 4dlu, 16dlu, 4dlu, 8dlu, "
 						+ "4dlu, 48dlu, 4dlu, pref:grow, 4dlu, 16dlu, 4dlu",
-				"4dlu, pref, 4dlu, pref, 2dlu, pref, 8dlu, "
+				"4dlu, pref, 4dlu, pref, 2dlu, pref, 2dlu, pref, 8dlu, "
 						+ "pref, 4dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 8dlu, pref, 8dlu, "
 						+ "pref, 4dlu, fill:16dlu:grow, 4dlu");
 		PanelBuilder builder = new PanelBuilder(layout);
 		builder.setDefaultDialogBorder();
 		CellConstraints cc = new CellConstraints();
-		builder.addSeparator("Buchung", cc.xyw(2, 2, 13));
+		builder.addSeparator("Neue Buchung", cc.xyw(2, 2, 13));
 		builder.addLabel("&Beleg/Datum:", cc.xy(2, 4));
 		tfBelegNr.setFocusAccelerator('b');
 		builder.add(tfBelegNr, cc.xy(4, 4));
@@ -136,39 +144,42 @@ public class BuchungsForm extends AbstractForm {
 		builder.addLabel("Buchungs&text:", cc.xy(2, 6));
 		builder.add(tfBuchungstext, cc.xyw(4, 6, 11));
 		tfBuchungstext.setFocusAccelerator('t');
-		builder.addSeparator("&Soll-Konto", cc.xyw(2, 8, 5));
-		builder.addSeparator("&Haben-Konto", cc.xyw(10, 8, 5));
+		builder.addLabel("Brutto-Betra&g:", cc.xy(2, 8));
+		builder.add(tfBruttoBetrag, cc.xy(4, 8));
+		tfBruttoBetrag.setFocusAccelerator('g');
+		
+		builder.addSeparator("&Soll-Konto", cc.xyw(2, 10, 5));
+		builder.addSeparator("&Haben-Konto", cc.xyw(10, 10, 5));
 		tfSollKontoNr.setFocusAccelerator('s');
-		builder.add(tfSollKontoNr, cc.xy(2, 10));
-		builder.add(tfSollKontoText, cc.xy(4, 10));
-		builder.add(btSelSollKto, cc.xy(6, 10));
+		builder.add(tfSollKontoNr, cc.xy(2, 12));
+		builder.add(tfSollKontoText, cc.xy(4, 12));
+		builder.add(btSelSollKto, cc.xy(6, 12));
 		tfHabenKontoNr.setFocusAccelerator('h');
-		builder.add(tfHabenKontoNr, cc.xy(10, 10));
-		builder.add(tfHabenKontoText, cc.xy(12, 10));
-		builder.add(btSelHabenKto, cc.xy(14, 10));
-		builder.addLabel("MWSt.-Satz:", cc.xy(2, 12));
-		builder.add(tfSollMWStSatz, cc.xy(4, 12));
-		builder.addLabel("%", cc.xy(6, 12));
-		builder.addLabel("(Netto-)Betra&g:", cc.xy(2, 14));
-		tfSollBetrag.setFocusAccelerator('g');
-		builder.add(tfSollBetrag, cc.xy(4, 14));
-		builder.addLabel("¤", cc.xy(6, 14));
-		builder.addLabel("MWSt.:", cc.xy(2, 16));
-		builder.add(tfSollMWSt, cc.xy(4, 16));
+		builder.add(tfHabenKontoNr, cc.xy(10, 12));
+		builder.add(tfHabenKontoText, cc.xy(12, 12));
+		builder.add(btSelHabenKto, cc.xy(14, 12));
+		builder.addLabel("MWSt.-Satz:", cc.xy(2, 14));
+		builder.add(tfSollMWStSatz, cc.xy(4, 14));
+		builder.addLabel("%", cc.xy(6, 14));
+		builder.addLabel("(Netto-)Betrag:", cc.xy(2, 16));
+		builder.add(tfSollBetrag, cc.xy(4, 16));
 		builder.addLabel("¤", cc.xy(6, 16));
-		builder.addLabel("MWSt.-Satz:", cc.xy(10, 12));
-		builder.add(tfHabenMWStSatz, cc.xy(12, 12));
-		builder.addLabel("%", cc.xy(14, 12));
-		builder.addLabel("(Netto-)Betrag:", cc.xy(10, 14));
-		builder.add(tfHabenBetrag, cc.xy(12, 14));
-		builder.addLabel("¤", cc.xy(14, 14));
-		builder.addLabel("MWSt.:", cc.xy(10, 16));
-		builder.add(tfHabenMWSt, cc.xy(12, 16));
+		builder.addLabel("MWSt.:", cc.xy(2, 18));
+		builder.add(tfSollMWSt, cc.xy(4, 18));
+		builder.addLabel("¤", cc.xy(6, 18));
+		builder.addLabel("MWSt.-Satz:", cc.xy(10, 14));
+		builder.add(tfHabenMWStSatz, cc.xy(12, 14));
+		builder.addLabel("%", cc.xy(14, 14));
+		builder.addLabel("(Netto-)Betrag:", cc.xy(10, 16));
+		builder.add(tfHabenBetrag, cc.xy(12, 16));
 		builder.addLabel("¤", cc.xy(14, 16));
-		builder.add(save, cc.xy(2, 18));
-		builder.addSeparator("Buchungen", cc.xyw(2, 20, 13));
+		builder.addLabel("MWSt.:", cc.xy(10, 18));
+		builder.add(tfHabenMWSt, cc.xy(12, 18));
+		builder.addLabel("¤", cc.xy(14, 18));
+		builder.add(save, cc.xy(2, 20));
+		builder.addSeparator("Bisherige Buchungen", cc.xyw(2, 22, 13));
 		tabJournal = new JournalTable(gui, journal);
-		builder.add(tabJournal.getEditor(), cc.xyw(2, 22, 13));
+		builder.add(tabJournal.getEditor(), cc.xyw(2, 24, 13));
 		return builder.getPanel();
 	}
 
@@ -188,6 +199,9 @@ public class BuchungsForm extends AbstractForm {
 }
 /*
  *  $Log: BuchungsForm.java,v $
+ *  Revision 1.7  2005/11/24 17:42:57  phormanns
+ *  Buchen als eine Transaktion in der "Buchungsmaschine"
+ *
  *  Revision 1.6  2005/11/20 21:29:10  phormanns
  *  Umstellung auf XMLRPC Server
  *

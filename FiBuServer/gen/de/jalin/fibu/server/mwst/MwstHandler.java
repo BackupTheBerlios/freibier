@@ -16,8 +16,8 @@ public class MwstHandler extends AbstractHandler {
 		this.display.addColumnDefinition("mwstid", 1);
 		this.display.addColumnDefinition("mwstsatz", 1);
 		this.display.addColumnDefinition("mwsttext", 1);
-		this.display.addColumnDefinition("mwstkontosoll", 2);
-		this.display.addColumnDefinition("mwstkontohaben", 2);
+		this.display.addColumnDefinition("mwstkontosoll", 1);
+		this.display.addColumnDefinition("mwstkontohaben", 1);
 		this.display.addColumnDefinition("mwstsatzaktiv", 2);
 		this.orderBy = new OrderByList();
 		this.orderBy.addSelectableColumn("mwstid");

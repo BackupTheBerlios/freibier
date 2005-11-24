@@ -27,9 +27,29 @@ abstract public class BuchungslisteDAO implements Createable {
 		// string bezeichnung
 
 	private DatabaseTable table;
+	private DisplayColumns display;
 
 	public BuchungslisteDAO() {
 		table = new DatabaseTable("buchungsliste");
+		display = new DisplayColumns();
+		display.addColumnDefinition("buzlid", 1);
+		display.addColumnDefinition("betrag", 1);
+		display.addColumnDefinition("soll", 1);
+		display.addColumnDefinition("haben", 1);
+		display.addColumnDefinition("buchid", 1);
+		display.addColumnDefinition("belegnr", 1);
+		display.addColumnDefinition("buchungstext", 1);
+		display.addColumnDefinition("jourid", 1);
+		display.addColumnDefinition("journr", 1);
+		display.addColumnDefinition("jahr", 1);
+		display.addColumnDefinition("periode", 1);
+		display.addColumnDefinition("since", 1);
+		display.addColumnDefinition("absummiert", 1);
+		display.addColumnDefinition("valuta", 1);
+		display.addColumnDefinition("erfassung", 1);
+		display.addColumnDefinition("kontoid", 1);
+		display.addColumnDefinition("kontonr", 1);
+		display.addColumnDefinition("bezeichnung", 1);
 	}
 
 	public void createDatabaseObject(Connection connect) throws XmlRpcTransactionException {
@@ -133,6 +153,7 @@ abstract public class BuchungslisteDAO implements Createable {
 		, OrderByList orderBy )
 					throws XmlRpcTransactionException
 	{
+	    if (display == null) display = this.display;
 		SelectStatement select = new SelectStatement(table, display, orderBy);
 		select.addWhereColumn("buzlid", whereData.getBuzlid());
 		select.addWhereColumn("soll", whereData.getSoll());

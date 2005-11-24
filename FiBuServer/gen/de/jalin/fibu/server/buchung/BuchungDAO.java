@@ -15,9 +15,17 @@ abstract public class BuchungDAO implements Createable {
 		// date erfassung
 
 	private DatabaseTable table;
+	private DisplayColumns display;
 
 	public BuchungDAO() {
 		table = new DatabaseTable("buchung");
+		display = new DisplayColumns();
+		display.addColumnDefinition("buchid", 1);
+		display.addColumnDefinition("belegnr", 1);
+		display.addColumnDefinition("buchungstext", 1);
+		display.addColumnDefinition("jourid", 1);
+		display.addColumnDefinition("valuta", 1);
+		display.addColumnDefinition("erfassung", 2);
 	}
 
 	public void createDatabaseObject(Connection connect) throws XmlRpcTransactionException {
@@ -87,6 +95,7 @@ abstract public class BuchungDAO implements Createable {
 		, OrderByList orderBy )
 					throws XmlRpcTransactionException
 	{
+	    if (display == null) display = this.display;
 		SelectStatement select = new SelectStatement(table, display, orderBy);
 		select.addWhereColumn("buchid", whereData.getBuchid());
 		select.addWhereColumn("belegnr", whereData.getBelegnr());
