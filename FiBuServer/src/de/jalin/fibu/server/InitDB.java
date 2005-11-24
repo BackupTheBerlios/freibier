@@ -1,10 +1,11 @@
-// $Id: InitDB.java,v 1.1 2005/11/20 21:27:44 phormanns Exp $
+// $Id: InitDB.java,v 1.2 2005/11/24 22:36:16 phormanns Exp $
 package de.jalin.fibu.server;
 
 import java.util.Vector;
 import net.hostsharing.admin.runtime.XmlRpcTransactionException;
 import net.hostsharing.admin.runtime.XmlRpcTransactionManager;
 import de.jalin.fibu.server.buchung.impl.BuchungDAO;
+import de.jalin.fibu.server.buchungsliste.impl.BuchungslisteDAO;
 import de.jalin.fibu.server.buchungszeile.impl.BuchungszeileDAO;
 import de.jalin.fibu.server.customer.impl.CustomerDAO;
 import de.jalin.fibu.server.journal.impl.JournalDAO;
@@ -23,6 +24,7 @@ public class InitDB {
 		daoObjects.addElement(new BuchungDAO());
 		daoObjects.addElement(new BuchungszeileDAO());
 		daoObjects.addElement(new MwstDAO());
+		daoObjects.addElement(new BuchungslisteDAO());
 	}
 	
 	public void initDB() {
@@ -44,6 +46,9 @@ public class InitDB {
 
 /*
  *  $Log: InitDB.java,v $
+ *  Revision 1.2  2005/11/24 22:36:16  phormanns
+ *  Anlegen der Buchungsliste-View
+ *
  *  Revision 1.1  2005/11/20 21:27:44  phormanns
  *  Import
  *
