@@ -1,5 +1,5 @@
 /* Erzeugt am 16.08.2005 von tbayen
- * $Id: Buchung.java,v 1.10 2005/08/30 21:05:53 tbayen Exp $
+ * $Id: Buchung.java,v 1.11 2005/11/24 16:08:15 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -73,6 +73,7 @@ public class Buchung extends AbstractObject implements Comparable {
 		this.table = table;
 		try {
 			record = table.getRecordByPrimaryKey(nummer);
+			read();
 		} catch (TypeNotSupportedDBException e) {
 			throw new ImpossibleException(e, log);
 		} catch (ParseErrorDBException e) {
@@ -330,6 +331,9 @@ public class Buchung extends AbstractObject implements Comparable {
 }
 /*
  * $Log: Buchung.java,v $
+ * Revision 1.11  2005/11/24 16:08:15  tbayen
+ * PetersTest behoben: Gelesene Buchungen enthielten keine Buchungszeilen
+ *
  * Revision 1.10  2005/08/30 21:05:53  tbayen
  * Kontenplanimport aus GNUCash
  * Ausgabe von Auswertungen, Kontenübersicht, Bilanz, GuV, etc. als Tabelle
