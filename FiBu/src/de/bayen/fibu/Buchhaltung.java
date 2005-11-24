@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: Buchhaltung.java,v 1.13 2005/09/08 06:27:44 tbayen Exp $
+ * $Id: Buchhaltung.java,v 1.14 2005/11/24 11:43:32 tbayen Exp $
  */
 package de.bayen.fibu;
 
@@ -13,6 +13,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import de.bayen.database.Database;
+import de.bayen.database.ForeignKey;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.Table.QueryCondition;
@@ -105,6 +106,7 @@ public class Buchhaltung extends AbstractObject {
 						mysqlProps.getProperty("server"), mysqlProps
 								.getProperty("user"), mysqlProps
 								.getProperty("password"));
+				db.setPropertyPath(getClass().getPackage().getName() + ".dbdefinition");
 			}
 		} catch (IOException e) {} catch (UserSQL_DBException e) {}
 		if (db == null) {
@@ -421,7 +423,10 @@ public class Buchhaltung extends AbstractObject {
 	public Konto getBilanzKonto() throws SQL_DBException,
 			NotInitializedException {
 		try {
-			return new Konto(db.getTable("Konten"), (Long)getFirmenstammdaten().getField("Bilanzkonto").getValue());
+			Object value = ((ForeignKey)(getFirmenstammdaten().getField("Bilanzkonto").getValue())).getKey();
+			if(value==null || ((Long)value).intValue()==0)
+				return null;
+			return new Konto(db.getTable("Konten"), (Long)value);
 		} catch (WrongTypeDBException e) {
 			throw new ImpossibleException(e, log);
 		} catch (RecordNotExistsDBException e) {
@@ -459,7 +464,10 @@ public class Buchhaltung extends AbstractObject {
 	public Konto getGuVKonto() throws SQL_DBException,
 			NotInitializedException {
 		try {
-			return new Konto(db.getTable("Konten"), (Long)getFirmenstammdaten().getField("GuVKonto").getValue());
+			Object value = ((ForeignKey)(getFirmenstammdaten().getField("GuVKonto").getValue())).getKey();
+			if(value==null || ((Long)value).intValue()==0)
+				return null;
+			return new Konto(db.getTable("Konten"), (Long)value);
 		} catch (WrongTypeDBException e) {
 			throw new ImpossibleException(e, log);
 		} catch (RecordNotExistsDBException e) {
@@ -635,6 +643,10 @@ public class Buchhaltung extends AbstractObject {
 }
 /*
  * $Log: Buchhaltung.java,v $
+ * Revision 1.14  2005/11/24 11:43:32  tbayen
+ * Beschreiben der Stammdaten-Tabelle in Properties und
+ * bessere Arbeit mit leerer Datenbank
+ *
  * Revision 1.13  2005/09/08 06:27:44  tbayen
  * Buchhaltung.getBilanzkonto() überarbeitet
  *

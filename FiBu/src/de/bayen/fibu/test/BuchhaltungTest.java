@@ -1,5 +1,5 @@
 /* Erzeugt am 12.08.2005 von tbayen
- * $Id: BuchhaltungTest.java,v 1.2 2005/08/30 20:14:43 tbayen Exp $
+ * $Id: BuchhaltungTest.java,v 1.3 2005/11/24 11:43:32 tbayen Exp $
  */
 package de.bayen.fibu.test;
 
@@ -7,8 +7,11 @@ import junit.framework.TestCase;
 import de.bayen.database.Database;
 import de.bayen.database.Record;
 import de.bayen.database.exception.DatabaseException;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
+import de.bayen.database.exception.UserDBEx.UserSQL_DBException;
 import de.bayen.database.test.DatabaseConstructorTest;
 import de.bayen.fibu.Buchhaltung;
+import de.bayen.fibu.exceptions.FiBuException.NotInitializedException;
 
 public class BuchhaltungTest extends TestCase {
 	public void testNoDatabase() {
@@ -70,16 +73,13 @@ public class BuchhaltungTest extends TestCase {
 		return 6;
 	}
 
-	public void testGetFirmenstammdaten() {
-		try {
-			Buchhaltung bh = new Buchhaltung();
-			Record stamm = bh.getFirmenstammdaten();
-			String firma = stamm.getFormatted("Firma");
-			assertEquals("Finanzbuchhaltung", firma);
-			bh.close();
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
+	public void testGetFirmenstammdaten() throws UserSQL_DBException,
+			SQL_DBException, NotInitializedException {
+		Buchhaltung bh = new Buchhaltung();
+		Record stamm = bh.getFirmenstammdaten();
+		String firma = stamm.getFormatted("Firma");
+		assertEquals("Finanzbuchhaltung", firma);
+		bh.close();
 	}
 
 	public void testGetFirma() {
@@ -94,6 +94,10 @@ public class BuchhaltungTest extends TestCase {
 }
 /*
  * $Log: BuchhaltungTest.java,v $
+ * Revision 1.3  2005/11/24 11:43:32  tbayen
+ * Beschreiben der Stammdaten-Tabelle in Properties und
+ * bessere Arbeit mit leerer Datenbank
+ *
  * Revision 1.2  2005/08/30 20:14:43  tbayen
  * Zugriff auf Standard-Datenbank, die auch alle anderen Tests benutzen
  *
