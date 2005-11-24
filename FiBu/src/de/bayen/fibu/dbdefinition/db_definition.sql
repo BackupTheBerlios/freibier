@@ -1,4 +1,4 @@
--- $Id: db_definition.sql,v 1.7 2005/09/08 06:27:44 tbayen Exp $
+-- $Id: db_definition.sql,v 1.8 2005/11/24 16:50:11 tbayen Exp $
 --
 -- phpMyAdmin SQL Dump
 -- version 2.6.2
@@ -106,6 +106,8 @@ CREATE TABLE `MwSt` (
   `id` int(10) NOT NULL auto_increment,
   `MwStSatz` decimal(3,1) NOT NULL default '0.0',
   `Bezeichnung` char(15) NOT NULL default '',
+  `KtoVSt` int(10) default NULL,
+  `KtoMwSt` int(10) default NULL,
   PRIMARY KEY  (`id`)
 ) TYPE=InnoDB AUTO_INCREMENT=4 ;
 
@@ -113,9 +115,9 @@ CREATE TABLE `MwSt` (
 -- Daten für Tabelle `MwSt`
 -- 
 
-INSERT INTO `MwSt` VALUES (1, 0.0, 'keine');
-INSERT INTO `MwSt` VALUES (2, 7.0, 'vermindert');
-INSERT INTO `MwSt` VALUES (3, 16.0, 'voll');
+INSERT INTO `MwSt` VALUES (1, 0.0, 'keine', NULL, NULL);
+INSERT INTO `MwSt` VALUES (2, 7.0, 'vermindert', NULL, NULL);
+INSERT INTO `MwSt` VALUES (3, 16.0, 'voll', NULL, NULL);
 
 
 
@@ -140,6 +142,9 @@ CREATE TABLE `Firmenstammdaten` (
 -- 
 
 -- $Log: db_definition.sql,v $
+-- Revision 1.8  2005/11/24 16:50:11  tbayen
+-- MwSt- und VSt-Konten in Beschreibung des MWSt-Satzes
+--
 -- Revision 1.7  2005/09/08 06:27:44  tbayen
 -- Buchhaltung.getBilanzkonto() überarbeitet
 --
