@@ -1,5 +1,5 @@
 /* Erzeugt am 11.10.2004 von tbayen
- * $Id: Printable.java,v 1.2 2005/08/21 17:06:59 tbayen Exp $
+ * $Id: Printable.java,v 1.3 2005/11/24 11:47:45 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -32,12 +32,15 @@ public interface Printable {
 	/**
 	 * Diese Funktion gibt den Typ des Objektes zurück (z.B. 
 	 * TypeDefinitionInteger.class). Normalerweise ist das die Klasse des 
-	 * Objektes. Wenn es sich aber um eine Objektklasse handelt, die 
-	 * eigentliche Objekteigenschaften verbirgt, wie z.B. de.bayen.database.DataObject,
-	 * dann kann hier auch ein anderer Typ zurückgegeben werden.
+	 * Objektes (also das gleiche wie <code>getClass()</code>). Wenn es 
+	 * sich aber um eine Objektklasse handelt, die eigentliche 
+	 * Objekteigenschaften verbirgt, wie z.B. 
+	 * <code>de.bayen.database.DataObject</code>,
+	 * dann kann hier auch ein anderer Typ zurückgegeben werden (nämlich 
+	 * der Typ des eigentlichen, verborgenen Objektes).
 	 * 
-	 * Dieser Typ kann von Printern benutzt werden, um auf spezielle Eigenschaften
-	 * der Objekte zuzugreifen, wenn dies nötig sein sollte.
+	 * Dieser Typ kann von Printern benutzt werden, um auf spezielle 
+	 * Eigenschaften der Objekte zuzugreifen, wenn dies nötig sein sollte.
 	 * 
 	 * @return Class - Typ des Objektes
 	 */
@@ -47,6 +50,10 @@ public interface Printable {
 }
 /*
  * $Log: Printable.java,v $
+ * Revision 1.3  2005/11/24 11:47:45  tbayen
+ * getSelectStatement(), das auch bei null-Fremdschlüssel funktioniert
+ * sowie einige Verbesserungen in der JavaDoc
+ *
  * Revision 1.2  2005/08/21 17:06:59  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *

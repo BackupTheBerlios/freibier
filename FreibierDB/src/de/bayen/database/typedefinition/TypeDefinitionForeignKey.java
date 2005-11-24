@@ -1,5 +1,5 @@
 /* Erzeugt am 21.10.2004 von tbayen
- * $Id: TypeDefinitionForeignKey.java,v 1.5 2005/08/21 17:06:59 tbayen Exp $
+ * $Id: TypeDefinitionForeignKey.java,v 1.6 2005/11/24 11:47:45 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -122,15 +122,41 @@ public class TypeDefinitionForeignKey extends TypeDefinition {
 			IllegalDefaultValueDBException, SQL_DBException,
 			ParseErrorDBException {
 		List list = new ArrayList();
-		list.add(getProperty("foreignkey.indexcolumn"));
-		list.add(getProperty("foreignkey.resultcolumn"));
+		list.add(getIndexcolumn());
+		list.add(getResultcolumn());
 		list = db.getTable(getProperty("foreignkey.table")).getGivenColumns(
 				list, 0);
 		return list;
 	}
+
+	/**
+	 * Ergibt den Namen der Spalte in der fremden Tabelle, die den
+	 * endgültigen Wert enthält (also den, der normalerweise ausgegeben 
+	 * werden soll, wenn es darum geht, eine Ausgabe für den Benutzer
+	 * aufzubereiten.
+	 * 
+	 * @return Name der Spalte in der fremden Tabelle
+	 */
+	private String getResultcolumn() {
+		return getProperty("foreignkey.resultcolumn");
+	}
+
+	/**
+	 * Ergibt den Namen der Indexspalte (normalerweise die 
+	 * Primärschlüsselspalte) der fremden Tabelle.
+	 * 
+	 * @return Name der Indexspalte
+	 */
+	public String getIndexcolumn() {
+		return getProperty("foreignkey.indexcolumn");
+	}
 }
 /*
  * $Log: TypeDefinitionForeignKey.java,v $
+ * Revision 1.6  2005/11/24 11:47:45  tbayen
+ * getSelectStatement(), das auch bei null-Fremdschlüssel funktioniert
+ * sowie einige Verbesserungen in der JavaDoc
+ *
  * Revision 1.5  2005/08/21 17:06:59  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *

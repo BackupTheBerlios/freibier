@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: RecordDefinition.java,v 1.10 2005/09/11 16:39:56 tbayen Exp $
+ * $Id: RecordDefinition.java,v 1.11 2005/11/24 11:47:45 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -153,7 +153,8 @@ public class RecordDefinition {
 	 * </p><p>
 	 * Dieses SELECT-Statement funktioniert übrigens nicht, wenn ich einen
 	 * Fremdschlüssel auf eine Tabelle habe, die leer ist. Dann gibt es keinen
-	 * Ergebnis-Datensatz.
+	 * Ergebnis-Datensatz. In diesem Fall kann man 
+	 * <code>getSelectStatementWithoutFrom()</code> aufrufen.
 	 * </p>
 	 */
 	protected String getSelectStatement(String myTable, String fromtabellen) {
@@ -207,9 +208,42 @@ public class RecordDefinition {
 	protected String getSelectStatement(String myTable) {
 		return getSelectStatement(myTable,null);
 	}
+
+	/**
+	 * Version von <code>getSelectStatement()</code>, die ganz ohne weitere
+	 * FROM-Tabellen arbeitet und daher keine Fremdschlüsseldaten liefert.
+	 * Der Vorteil ist, das diese Methode auch funktioniert, wenn eine
+	 * Fremdschlüsseltabelle leer ist.
+	 * 
+	 * @param myTable
+	 * @return Select-Statement als String
+	 */
+	protected String getSelectStatementWithoutFrom(String myTable) {
+		String felder = "";
+		Iterator i = columnslist.iterator();
+		TypeDefinition feldtyp;
+		String foreigntablename = "_foreign_x";
+		while (i.hasNext()) {
+			feldtyp = (TypeDefinition) i.next();
+			if (!felder.equals("")) {
+				felder += ", ";
+			}
+			felder += myTable + "." + feldtyp.getName();
+			if (feldtyp instanceof TypeDefinitionForeignKey) {
+				felder += ",  NULL AS "
+						+ feldtyp.getName() + "_foreign";
+				foreigntablename = foreigntablename + "x";
+			}
+		}
+		return "SELECT " + felder + " FROM " + "`" + myTable + "` WHERE 1";
+	}
 }
 /*
  * $Log: RecordDefinition.java,v $
+ * Revision 1.11  2005/11/24 11:47:45  tbayen
+ * getSelectStatement(), das auch bei null-Fremdschlüssel funktioniert
+ * sowie einige Verbesserungen in der JavaDoc
+ *
  * Revision 1.10  2005/09/11 16:39:56  tbayen
  * RecordDefinition enthält auch name und ggf. table
  *

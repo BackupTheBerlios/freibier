@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.21 2005/09/11 16:39:57 tbayen Exp $
+ * $Id: Table.java,v 1.22 2005/11/24 11:47:45 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -367,8 +367,8 @@ public class Table {
 	 * Lies den Datensatz mit dem angegebenen Primärschlüssel. Der Schlüssel
 	 * kann als Typ den grundlegenden Objekttyp (z.B. Long oder Date) haben,
 	 * er kann String sein (woraufhin das Objekt automatisch umgewandelt wird
-	 * und er kann vom Typ ForeignKey sein (muss aber nicht, wenn es sich um 
-	 * ein Schlüsselfeld handelt).
+	 * und er kann vom Typ ForeignKey sein (muss aber nicht, auch wenn es sich 
+	 * um ein Schlüsselfeld handelt.
 	 * 
 	 * @param pkValue - Ein Datenwert (oder ein DataObject)
 	 * @return Record
@@ -400,9 +400,20 @@ public class Table {
 			pkValue = ((ForeignKey) pkValue).getKey();
 		}
 		String selectRumpf = def.getSelectStatement(name);
-		Map hash = db.executeSelectSingleRow(selectRumpf + " AND "
+		Map hash;
+		try {
+		hash= db.executeSelectSingleRow(selectRumpf + " AND "
 				+ makeWhereExpression(primdef, pkValue) + " GROUP BY " + name
 				+ "." + def.getPrimaryKey());
+		}catch(RecordNotExistsDBException e) {
+			// Falls eine Tablle, auf die mit Foreign Keys verwiesen wird,
+			// leer ist, funktioniert das vorstehende Statement nicht, dann
+			// probiere ich etwas anderes:
+			selectRumpf = def.getSelectStatementWithoutFrom(name);
+			hash= db.executeSelectSingleRow(selectRumpf + " AND "
+					+ makeWhereExpression(primdef, pkValue) + " GROUP BY " + name
+					+ "." + def.getPrimaryKey());
+		}
 		return new Record(def, hash);
 	}
 
@@ -565,6 +576,10 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.22  2005/11/24 11:47:45  tbayen
+ * getSelectStatement(), das auch bei null-Fremdschlüssel funktioniert
+ * sowie einige Verbesserungen in der JavaDoc
+ *
  * Revision 1.21  2005/09/11 16:39:57  tbayen
  * RecordDefinition enthält auch name und ggf. table
  *
