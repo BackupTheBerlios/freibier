@@ -1,5 +1,5 @@
 /* Erzeugt am 20.02.2005 von tbayen
- * $Id: WebDBDatabase.java,v 1.1 2005/04/05 21:34:46 tbayen Exp $
+ * $Id: WebDBDatabase.java,v 1.2 2005/11/25 08:59:52 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 import de.bayen.database.Database;
 import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
+import de.bayen.database.exception.SysDBEx;
 
 /**
  * Wrapper um die de.bayen.database-Klasse, der im Servlet besser funktioniert
@@ -32,13 +32,16 @@ public class WebDBDatabase extends Database implements
 	public void valueUnbound(HttpSessionBindingEvent arg0) {
 		try {
 			close();
-		} catch (SystemDatabaseException e) {
+		} catch (SysDBEx e) {
 			//log.error("Fehler beim Schliessen der Datenbank",e);
 		}
 	}
 }
 /*
  * $Log: WebDBDatabase.java,v $
+ * Revision 1.2  2005/11/25 08:59:52  tbayen
+ * kleinere Verbesserungen und Fehlerabfragen
+ *
  * Revision 1.1  2005/04/05 21:34:46  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

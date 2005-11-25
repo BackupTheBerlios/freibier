@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.9 2005/08/12 21:00:16 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.10 2005/11/25 08:59:52 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -24,8 +24,8 @@ import org.apache.log4j.Logger;
 import de.bayen.banking.ServletBanking;
 import de.bayen.database.Table;
 import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.SystemDatabaseException;
-import de.bayen.database.exception.UserDatabaseException;
+import de.bayen.database.exception.SysDBEx;
+import de.bayen.database.exception.UserDBEx;
 import de.bayen.database.typedefinition.BLOB;
 import de.bayen.database.typedefinition.TypeDefinition;
 import de.bayen.util.HttpMultipartRequest;
@@ -237,7 +237,7 @@ public abstract class ServletDatabase extends HttpServlet {
 	}
 
 	protected Map populateContextRoot(HttpServletRequest req, WebDBDatabase db)
-			throws SystemDatabaseException {
+			throws SysDBEx {
 		Map uri = uriParser.parseURI(req);
 		// context-root-hash erzeugen und mit einigen Grundwerten füllen
 		Map root = new HashMap();
@@ -344,7 +344,7 @@ public abstract class ServletDatabase extends HttpServlet {
 			db.setPropertyPath(getClass().getPackage().getName());
 			return db;
 		} catch (MissingResourceException e) {
-			throw new UserDatabaseException(
+			throw new UserDBEx(
 					"Datenbank-Beschreibung in database.properties nicht vorhanden",
 					e);
 		}
@@ -352,6 +352,9 @@ public abstract class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.10  2005/11/25 08:59:52  tbayen
+ * kleinere Verbesserungen und Fehlerabfragen
+ *
  * Revision 1.9  2005/08/12 21:00:16  tbayen
  * Compiler-Warnings bereinigt
  *

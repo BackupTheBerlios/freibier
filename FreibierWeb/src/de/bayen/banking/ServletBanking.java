@@ -1,8 +1,10 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ServletBanking.java,v 1.1 2005/04/05 21:34:47 tbayen Exp $
+ * $Id: ServletBanking.java,v 1.2 2005/11/25 08:59:52 tbayen Exp $
  */
 package de.bayen.banking;
 
+import java.io.IOException;
+import de.bayen.database.exception.DBRuntimeException;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.webframework.ServletDatabase;
 import de.bayen.webframework.WebDBDatabase;
@@ -13,7 +15,6 @@ import de.bayen.webframework.WebDBDatabase;
  * @author tbayen
  */
 public class ServletBanking extends ServletDatabase {
-
 	public void init() {
 		// Aus dem Tomcat heraus haben SSL-Connections einen anderen Typ als
 		// sonst. Das verwirrt HBCI4Java. :-( Um dem abzuhelfen, hilft der
@@ -21,7 +22,7 @@ public class ServletBanking extends ServletDatabase {
 		// passiert. Evtl. helfen diese beiden Webseiten beim Verständnis:
 		// http://www.macromedia.com/cfusion/knowledgebase/index.cfm?id=tn_19418
 		// http://forum.java.sun.com/thread.jspa?forumID=2&messageID=948150&threadID=254821
-		System.setProperty("java.protocol.handler.pkgs","javax.net.ssl");
+		System.setProperty("java.protocol.handler.pkgs", "javax.net.ssl");
 		super.init();
 		// den abgeleiteten Dispatcher, damit der meine eigenen Actions findet:
 		actionDispatcher = new ActionDispatcherBanking();
@@ -30,20 +31,27 @@ public class ServletBanking extends ServletDatabase {
 	/**
 	 * Diese Methode überlade ich, damit ich die Datenbank initialisieren
 	 * kann, falls sie noch nicht existiert.
+	 * @throws IOException 
 	 */
 	protected WebDBDatabase connectDatabase() throws DatabaseException {
 		WebDBDatabase db;
 		db = super.connectDatabase();
 		if (db.getTableNamesList().size() == 0) {
-			db.executeSqlFile("de/bayen/banking/db_definition.sql");
+			try {
+				db.executeSqlFile("de/bayen/banking/db_definition.sql");
+			} catch (IOException e) {
+				throw new DBRuntimeException(
+						"Kann Definitionsdatei nicht lesen", e);
+			}
 		}
 		return db;
 	}
-	
 }
-
 /*
  * $Log: ServletBanking.java,v $
+ * Revision 1.2  2005/11/25 08:59:52  tbayen
+ * kleinere Verbesserungen und Fehlerabfragen
+ *
  * Revision 1.1  2005/04/05 21:34:47  tbayen
  * WebDatabase 1.4 - freigegeben auf Berlios
  *

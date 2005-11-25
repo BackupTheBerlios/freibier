@@ -1,5 +1,5 @@
 /* Erzeugt am 05.06.2005 von tbayen
- * $Id: ActionEdit.java,v 1.1 2005/08/07 16:56:15 tbayen Exp $
+ * $Id: ActionEdit.java,v 1.2 2005/11/25 08:59:52 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.exception.DatabaseException;
-import de.bayen.database.exception.UserDatabaseException;
+import de.bayen.database.exception.UserDBEx;
 import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ServletDatabase;
 import de.bayen.webframework.WebDBDatabase;
@@ -53,7 +53,7 @@ public class ActionEdit extends de.bayen.webframework.actions.ActionEdit {
 					try {
 						vorlage = db.getTable("Ausgangskoerbe")
 								.getRecordByValue("Bezeichnung", "Vorlagen");
-					} catch (UserDatabaseException e) {
+					} catch (UserDBEx e) {
 						// existiert der Vorlagenkorb gar nicht?
 						vorlage = null;
 					}
@@ -71,6 +71,9 @@ public class ActionEdit extends de.bayen.webframework.actions.ActionEdit {
 }
 /*
  * $Log: ActionEdit.java,v $
+ * Revision 1.2  2005/11/25 08:59:52  tbayen
+ * kleinere Verbesserungen und Fehlerabfragen
+ *
  * Revision 1.1  2005/08/07 16:56:15  tbayen
  * Produktionsversion 1.5
  *
