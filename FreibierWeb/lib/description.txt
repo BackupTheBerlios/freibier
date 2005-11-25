@@ -2,17 +2,6 @@ Dieses Verzeichnis enthält benötigte Bibliotheken. Diese werden in
 Eclipse nicht (bzw. ganz oben im Dateibaum) mit angezeigt. Sie sind
 aber trotzdem da. :-)
 
-Dieses lib-Verzeichnis wird im Tomcat automatisch in den Classpath
-aufgenommen. Deshalb gehören hier alle Bibliotheken hinein, die meine
-Applikation während des produktiven Laufes benötigt.
-
-Ausnahmen sind nur die Bibliotheken, die Tomcat bereits selber fest
-eingebunden hat. Dies ist insbesondere "servlet.jar". Diese Datei muss
-Teil des Eclipse-Projektes sein (sie steht im Hauptverzeichnis), damit
-Eclipse prüfen kann, ob die anderen Programmteile die Servlet-Klassen
-richtig benutzt, sie darf allerdings nicht in das lib-Verzeichnis der
-Applikation kopiert werden.
-
 Übrigens stehen alle Bibliotheken lästigerweise einzeln in Eclipse auf
 der höchsten Ebene im Dateibaum herum. Das konnte ich bisher leider
 nicht ändern. Der einzige Weg, ist die Bibliotheken zu einer "Library"

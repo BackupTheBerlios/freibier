@@ -1,8 +1,20 @@
-<project name="FreibierDB" default="dist" basedir=".">
+<!-- build.xml-Datei 
+  Diese build-Datei ist möglichst universell gehalten. Alle projektbezogenen
+  Parameter stehen in der Datei build.propierties, die im Hauptverzeichnis der
+  Applikation ist. Sie kann durch eine Datei im Homeverzeichnis des Benutzers
+  überladen werden.
+  
+  Diese Datei kann auch für Webapplikationen benutzt werden. Dafür muss die
+  Property "webapp" gesetzt sein. In diesem Fall wird auch die Datei 
+  build-tomcat.xml eingebunden, die weitere, spezielle Targets enthält, um
+  die Applikation z.B. direkt zu installieren.
+-->
+
+<project default="all" basedir=".">
 
 	<!-- ==================== File and Directory Names ======================== -->
-	<property file="build.properties"/>
 	<property file="${user.home}/build.properties"/>
+	<property file="build.properties"/>
 
 	<property name="app.name"      value="appname"/>
 	<property name="app.path"      value="/${app.name}"/>
@@ -10,22 +22,66 @@
 	<property name="build.home"    value="${basedir}/build"/>
 	<property name="dist.home"     value="${basedir}/dist"/>
 	<property name="src.home"      value="${basedir}/src"/>
-	<property name="lib.home"      value="${basedir}/lib"/>
-	<property name="doc.home"      value="${basedir}/doc"/>
+	<property name="doc.home"      value="${basedir}/docs"/>
 
+	<!-- Besondere Properties, die sich nur bei Webapplikationen ergeben -->
+	<condition property="class.home" 
+		value="${build.home}/WEB-INF/classes" 
+		else="${build.home}">
+		<isset property="webapp"/>
+	</condition>
 	
+	<condition property="web.home" 
+		value="${basedir}/web">
+		<isset property="webapp"/>
+	</condition>
+
+	<condition property="lib.home"
+		value="${web.home}/WEB-INF/lib"
+		else="${basedir}/lib">
+		<isset property="webapp"/>
+	</condition>
+
+	<condition property="jarfileextension"
+		value="war"
+		else="jar">
+		<isset property="webapp"/>
+	</condition>
+
+	<condition property="catalina.home" 
+		value="/usr/share/tomcat4/">  <!-- geht unter Debian -->
+		<isset property="webapp"/>
+	</condition>
+
+	<condition property="manager.url"
+		value="http://localhost:8180/manager">
+		<isset property="webapp"/>
+	</condition>
+
+
+	<!--  ==================== Compilation Control Options ==================== -->
+	<property name="compile.debug"       value="true"/>
+	<property name="compile.deprecation" value="true"/>
+	<property name="compile.optimize"    value="true"/>
+	
+	
+	<!-- ==================== all Target ================================== -->
+	  <target name="all" depends="clean,dist"
+	   description="Clean build and dist directories, then compile"/>
+
 	
 	<!-- ==================== clean Target ================================== -->
-	  <target name="clean"
-	   description="Delete old build and dist directories">
+	<target name="clean"
+		description="Delete old build and dist directories">
 	    <delete dir="${build.home}"/>
 	    <delete dir="${dist.home}"/>
-	  </target>
+	</target>
+	
 	
 	<!-- ==================== javadoc Target ================================== -->
-	<target name="javadoc" depends="compile, importlibs"
+	<target name="javadoc" depends="compile, importlibs" unless="nojavadoc"
 		description="Create Javadoc API documentation">
-
+		<!-- kann mit "nojavadoc=true" abgewürgt werden -->
 	    <mkdir dir="${dist.home}/docs/api"/>
 	    <javadoc sourcepath="${src.home}"
 	                destdir="${dist.home}/docs/api"
@@ -33,38 +89,73 @@
 	           packagenames="*">
 	      <classpath refid="compile.classpath"/>
 	    </javadoc>
+	</target>
 
-	  </target>
-
-	
 	
 	<!-- ==================== importlibs Target ======================== -->
 	<target name="importlibs" 
 		description="Import JAR Files from other Projects">
-		
+		<!-- Property "importlibs":
+		     comma- or space-separated list of patterns of files -->
 		<copy todir="${lib.home}" flatten="yes">
 			<fileset dir="${basedir}/.." includes="${importlibs}"/>
 		</copy>
-		<path id="compile.classpath">
+	</target>
+
+	<!-- ==================== prepare Target ======================== -->
+	<target name="prepare" depends="preparewebapp">
+	    <mkdir dir="${build.home}"/>
+	    <mkdir dir="${class.home}"/>
+	</target>
+	
+	<!-- ==================== preparewebapp Target ================== -->
+	<target name="preparewebapp" if="web.home">
+		<!-- Copy static content of this web application -->
+	    <copy todir="${build.home}">
+	      <fileset dir="${web.home}"/>
+	    </copy>
+	</target>
+
+	<!-- ==================== makeclasspath Target ================== -->
+	<target name="makeclasspath" unless="webapp">
+		<!-- classpath für normale Applikationen -->
+		  <path id="compile.classpath">
 		  	<fileset dir="${lib.home}">
 		  		<include name="*.jar"/>
+	    	</fileset>
+		  </path>
+	</target>
+	
+	<!-- ==================== makeclasspathwebapp Target ============ -->
+	<target name="makeclasspathwebapp" if="webapp">
+		<path id="compile.classpath">
+			<!-- classpath für normale Applikationen -->
+	  		<fileset dir="${lib.home}">
+	  			<include name="*.jar"/>
+    		</fileset>
+	    	<!-- Include all elements that Tomcat exposes to applications -->
+	    	<pathelement location="${catalina.home}/common/classes"/>
+	    	<fileset dir="${catalina.home}/common/endorsed">
+	    		<include name="*.jar"/>
+	    	</fileset>
+	    	<fileset dir="${catalina.home}/common/lib">
+	    		<include name="*.jar"/>
+	    	</fileset>
+	    	<pathelement location="${catalina.home}/shared/classes"/>
+	    	<fileset dir="${catalina.home}/shared/lib">
+	    		<include name="*.jar"/>
 	    	</fileset>
 		</path>
 	</target>
 
-	<!-- ==================== prepare Target ======================== -->
-	<target name="prepare">
-	    <mkdir  dir="${build.home}"/>
-	</target>
-
 	
 	<!-- ==================== compile Target ======================== -->
-	  <target name="compile" depends="prepare, importlibs"
-	   description="Compile Java sources">
+	<target name="compile" depends="prepare, importlibs, makeclasspath, makeclasspathwebapp"
+		description="Compile Java sources">
 
 	    <!-- Compile Java classes as necessary -->
 	    <javac srcdir="${src.home}"
-	          destdir="${build.home}"
+	          destdir="${class.home}"
 	            debug="${compile.debug}"
 	      deprecation="${compile.deprecation}"
 	         optimize="${compile.optimize}">
@@ -72,16 +163,16 @@
 	    </javac>
 
 	    <!-- Copy application resources -->
-	    <copy  todir="${build.home}">
+	    <copy  todir="${class.home}">
 	      <fileset dir="${src.home}" excludes="**/*.java"/>
 	    </copy>
+	</target>
 
-	  </target>
 
-	
 	<!-- ==================== test Target ======================== -->
-	<target name="test" depends="compile,importlibs"
+	<target name="test" depends="compile,importlibs" unless="notest"
 		description="run all JUnit tests">
+		<!-- kann mit "notest=true" abgewürgt werden -->
 		<mkdir dir="${build.home}/reports"/>
 		<junit printsummary="withOutAndErr">
 			<formatter type="plain"/>
@@ -96,21 +187,67 @@
 			</batchtest>
 		</junit>
 	</target>
-	
+
+
 	<!-- ==================== dist Target ======================== -->
 	<target name="dist" depends="test, javadoc"
 		description="Create binary distribution">
-
   		<!-- Create application JAR file -->
     	<mkdir dir="${dist.home}"/>
-    	<jar jarfile="${dist.home}/${app.name}-${app.version}.jar"
+    	<jar jarfile="${dist.home}/${app.name}-${app.version}.${jarfileextension}"
 			basedir="${build.home}">
 		</jar>
-  	
+  	    <!-- Copy documentation subdirectories -->
 	    <mkdir dir="${dist.home}/docs"/>
-    	<copy  todir="${dist.home}/docs">
+    	<copy failonerror="no" todir="${dist.home}/docs">
       		<fileset dir="${doc.home}" excludes="**/*.java"/>
     	</copy>
 	</target>
 
+
+	<!-- Tomcat Targets (können von nicht-webapps ignoriert werden) -->
+
+	<!-- ==================== Install (Tomcat) Target ================================== -->
+	<target name="install" depends="compile"
+		description="Install application to servlet container">
+		<taskdef name="install" classname="org.apache.catalina.ant.InstallTask"/>
+		<install url="${manager.url}"
+        	username="${manager.username}"
+        	password="${manager.password}"
+			path="${app.path}"
+			war="file://${build.home}"/>
+	</target>
+
+
+	<!-- ====================== List (Tomcat) Target =================================== -->
+	<target name="list"
+		description="List installed applications on servlet container">
+		<taskdef name="list"    classname="org.apache.catalina.ant.ListTask"/>
+		<list    url="${manager.url}"
+			username="${manager.username}"
+        	password="${manager.password}"/>
+	</target>
+
+
+	<!-- ==================== Reload (Tomcat) Target =================================== -->
+	<target name="reload" depends="compile"
+   		description="Reload application on servlet container">
+		<taskdef name="reload"  classname="org.apache.catalina.ant.ReloadTask"/>
+		<reload url="${manager.url}"
+			username="${manager.username}"
+       		password="${manager.password}"
+           	path="${app.path}"/>
+  </target>
+
+
+	<!-- ==================== Remove (Tomcat) Target =================================== -->
+	<target name="remove"
+   		description="Remove application on servlet container">
+		<taskdef name="remove"  classname="org.apache.catalina.ant.RemoveTask"/>
+    	<remove url="${manager.url}"
+       		username="${manager.username}"
+       		password="${manager.password}"
+           	path="${app.path}"/>
+	</target>
+	
 </project>
