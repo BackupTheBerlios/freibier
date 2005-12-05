@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     24.07.2005 11:31:48                                                        
+
+     project freibier
+     description
+     Freibier Server 
+                   
+     phormanns                                                      
+     ====================================================================== -->
+<project name="freibier" default="dist">
+    <description>HSAdmin Server</description>
+
+	<path id="cp.build">
+		<fileset dir="lib">
+		    <include name="xmlrpc.jar"/>
+		    <include name="commons-httpclient-2.0.2.jar"/>
+		    <include name="xmlrpcgen.jar"/>
+		</fileset>
+		<fileset dir="/usr/share/java/">
+		    <include name="postgresql-jdbc3.jar"/>
+		    <include name="servlet-2.3.jar"/>
+			<include name="jdom.jar"/>
+			<include name="oro.jar"/>
+			<include name="velocity.jar"/>
+			<include name="commons-collections.jar"/>
+			<include name="logkit.jar"/>
+			<include name="junit.jar"/>
+		</fileset>
+	</path>
+
+    <!-- ================================= 
+          target: dist              
+         ================================= -->
+    <target name="dist" depends="jar" description="Build Web-Application">
+    	<war destfile="dist/RPC2.war" webxml="conf/web.xml">
+    		<lib dir="lib">
+    		    <include name="xmlrpc.jar"/>
+    		    <include name="commons-httpclient-2.0.2.jar"/>
+    		    <include name="xmlrpcgen.jar"/>
+    		</lib>
+    		<lib dir="dist">
+    		    <include name="freibier.jar"/>
+    		</lib>
+    		<lib dir="/usr/share/java">
+    		    <include name="postgresql-jdbc3.jar"/>
+    			<include name="jdom.jar"/>
+    			<include name="velocity.jar"/>
+    			<include name="commons-codec.jar"/>
+    			<include name="commons-collections.jar"/>
+    			<include name="logkit.jar"/>
+    			<include name="oro.jar"/>
+    			<include name="junit.jar"/>
+    		</lib>
+    	</war>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: jar                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="jar" depends="compile" description="Build Application JAR File">
+    	<mkdir dir="dist"/>
+    	<jar destfile="dist/freibier.jar" manifest="conf/MANIFEST.MF">
+    		<fileset dir="build"/>
+    	</jar>
+    </target>
+	
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: compile                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="compile" description="Compile Java Sources">
+    	<mkdir dir="build"/>
+    	<javac classpathref="cp.build" destdir="build" debug="true">
+    		<src path="src"/> 
+    		<src path="gen"/> 
+    	</javac>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: clean                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="clean" description="Remove Files from Buils Process">
+    	<delete dir="build"/>
+    </target>
+	
+</project>
+
