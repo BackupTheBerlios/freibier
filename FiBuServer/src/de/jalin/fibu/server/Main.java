@@ -1,4 +1,4 @@
-// $Id: Main.java,v 1.2 2005/12/12 21:09:05 phormanns Exp $
+// $Id: Main.java,v 1.3 2005/12/12 21:10:27 phormanns Exp $
 package de.jalin.fibu.server;
 
 public class Main {
@@ -8,8 +8,7 @@ public class Main {
 			if (args.length == 1) {
 				String opt = args[0];
 				if ("server".equals(opt)) {
-					Server srv = new Server();
-					srv.startServer();
+					Server.startServer();
 					System.exit(0);
 				}
 				if ("initdb.model".equals(opt)) {
@@ -26,6 +25,9 @@ public class Main {
 
 /*
  *  $Log: Main.java,v $
+ *  Revision 1.3  2005/12/12 21:10:27  phormanns
+ *  Datenbank-Initialisierung begonnen
+ *
  *  Revision 1.2  2005/12/12 21:09:05  phormanns
  *  Datenbank-Initialisierung begonnen
  *
