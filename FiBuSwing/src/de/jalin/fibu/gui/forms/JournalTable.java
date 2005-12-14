@@ -1,4 +1,4 @@
-// $Id: JournalTable.java,v 1.5 2005/11/24 17:43:05 phormanns Exp $
+// $Id: JournalTable.java,v 1.6 2005/12/14 19:29:00 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.table.TableColumnModel;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.gui.FiBuGUI;
@@ -19,7 +21,7 @@ import de.jalin.fibu.gui.tree.Editable;
 import de.jalin.fibu.server.buchungsliste.BuchungslisteData;
 import de.jalin.fibu.server.journal.JournalData;
 
-public class JournalTable implements Editable {
+public class JournalTable extends FiBuTable implements Editable {
 	
 	private static final DateFormat dateFormatter = 
 		DateFormat.getDateInstance(DateFormat.MEDIUM);
@@ -27,7 +29,7 @@ public class JournalTable implements Editable {
 	
 	private FiBuGUI gui;
 	private JournalData journal;
-	private Vector columnTitles;
+	private Vector columns;
 	private JTable journalLog;
 	private JPanel panel;
 	private Vector readJournal;
@@ -36,14 +38,14 @@ public class JournalTable implements Editable {
 		this.gui = gui;
 		this.journal = journal;
 		this.journalLog = null;
-		columnTitles = new Vector();
-		columnTitles.addElement("Beleg");
-		columnTitles.addElement("Buchungstext");
-		columnTitles.addElement("Valuta");
-		columnTitles.addElement("Soll");
-		columnTitles.addElement("Haben");
-		columnTitles.addElement("Kto.-Nr.");
-		columnTitles.addElement("Kto.-Bezeichnung");
+		columns = new Vector();
+		columns.addElement(createTableColumn(0, "Beleg", 50, SwingConstants.CENTER));
+		columns.addElement(createTableColumn(1, "Buchungstext", 200, SwingConstants.LEFT));
+		columns.addElement(createTableColumn(2, "Valuta", 75, SwingConstants.CENTER));
+		columns.addElement(createTableColumn(3, "Soll", 50, SwingConstants.RIGHT));
+		columns.addElement(createTableColumn(4, "Haben", 50, SwingConstants.RIGHT));
+		columns.addElement(createTableColumn(5, "Kto.-Nr.", 50, SwingConstants.RIGHT));
+		columns.addElement(createTableColumn(6, "Kto.-Bezeichnung", 200, SwingConstants.LEFT));
 	}
 
 	public boolean validateAndSave() {
@@ -54,8 +56,11 @@ public class JournalTable implements Editable {
 		panel = new JPanel(new BorderLayout());
 		try {
 			readJournal = readJournal();
-			journalLog = new JTable(readJournal, columnTitles);
+			TableColumnModel tableColumnModel = new FibuTableColumnModel(columns);
+			journalLog = new JTable(new FibuTableModel(readJournal, tableColumnModel), tableColumnModel);
 			journalLog.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			journalLog.setColumnSelectionAllowed(false);
+			journalLog.setRowSelectionAllowed(true);
 			JScrollPane scroll = new JScrollPane(journalLog);
 			panel.removeAll();
 			panel.add(scroll, BorderLayout.CENTER);
@@ -122,6 +127,9 @@ public class JournalTable implements Editable {
 
 /*
  *  $Log: JournalTable.java,v $
+ *  Revision 1.6  2005/12/14 19:29:00  phormanns
+ *  Eigene TableModels für JournalTable, KontoTable
+ *
  *  Revision 1.5  2005/11/24 17:43:05  phormanns
  *  Buchen als eine Transaktion in der "Buchungsmaschine"
  *
