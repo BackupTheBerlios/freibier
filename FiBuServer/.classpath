@@ -13,6 +13,6 @@
 	<classpathentry kind="lib" path="/usr/share/java/postgresql-jdbc3.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/servlet-2.3.jar"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="lib/xmlrpcgen.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/xmlrpcgen"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

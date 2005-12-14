@@ -1,4 +1,4 @@
-// $Id: Main.java,v 1.3 2005/12/12 21:10:27 phormanns Exp $
+// $Id: Main.java,v 1.4 2005/12/14 19:31:43 phormanns Exp $
 package de.jalin.fibu.server;
 
 public class Main {
@@ -9,13 +9,17 @@ public class Main {
 				String opt = args[0];
 				if ("server".equals(opt)) {
 					Server.startServer();
-					System.exit(0);
 				}
 				if ("initdb.model".equals(opt)) {
 					InitDB init = new InitDB();
 					init.initModel();
 					System.exit(0);
 				}
+			} else {
+				System.out.println("Aufruf:");
+				System.out.println("java de.jalin.fibu.Main server");
+				System.out.println("java de.jalin.fibu.Main inidb.model");
+				System.out.println("java de.jalin.fibu.Main inidb.data");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -25,6 +29,9 @@ public class Main {
 
 /*
  *  $Log: Main.java,v $
+ *  Revision 1.4  2005/12/14 19:31:43  phormanns
+ *  Start in Main-Klasse korrigiert
+ *
  *  Revision 1.3  2005/12/12 21:10:27  phormanns
  *  Datenbank-Initialisierung begonnen
  *
