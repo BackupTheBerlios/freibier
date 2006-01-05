@@ -1,14 +1,24 @@
-// $Id: JournalTable.java,v 1.6 2005/12/14 19:29:00 phormanns Exp $
+// $Id: JournalTable.java,v 1.7 2006/01/05 13:09:41 phormanns Exp $
 package de.jalin.fibu.gui.forms;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
+import javax.swing.AbstractButton;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -17,12 +27,14 @@ import javax.swing.table.TableColumnModel;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.gui.FiBuGUI;
+import de.jalin.fibu.gui.FiBuUserException;
 import de.jalin.fibu.gui.tree.Editable;
 import de.jalin.fibu.server.buchungsliste.BuchungslisteData;
 import de.jalin.fibu.server.journal.JournalData;
 
-public class JournalTable extends FiBuTable implements Editable {
+public class JournalTable extends FiBuTable implements Editable, ActionListener {
 	
+	private static final String LABEL_BUCHUNG_LOESCHEN = "Buchungs löschen";
 	private static final DateFormat dateFormatter = 
 		DateFormat.getDateInstance(DateFormat.MEDIUM);
 	private static final NumberFormat currencyFormatter = new DecimalFormat("0.00");
@@ -30,14 +42,17 @@ public class JournalTable extends FiBuTable implements Editable {
 	private FiBuGUI gui;
 	private JournalData journal;
 	private Vector columns;
-	private JTable journalLog;
+	private JTable journalLogTable;
 	private JPanel panel;
-	private Vector readJournal;
+	private Vector tabellenZeilen;
+	private JPopupMenu popupMenu;
+	private Point mouseActionPoint;
+	private List buchungsliste;
 
 	public JournalTable(FiBuGUI gui, JournalData journal) {
 		this.gui = gui;
 		this.journal = journal;
-		this.journalLog = null;
+		this.journalLogTable = null;
 		columns = new Vector();
 		columns.addElement(createTableColumn(0, "Beleg", 50, SwingConstants.CENTER));
 		columns.addElement(createTableColumn(1, "Buchungstext", 200, SwingConstants.LEFT));
@@ -55,13 +70,39 @@ public class JournalTable extends FiBuTable implements Editable {
 	public Component getEditor() {
 		panel = new JPanel(new BorderLayout());
 		try {
-			readJournal = readJournal();
+			// JTable
+			tabellenZeilen = readJournal();
 			TableColumnModel tableColumnModel = new FibuTableColumnModel(columns);
-			journalLog = new JTable(new FibuTableModel(readJournal, tableColumnModel), tableColumnModel);
-			journalLog.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			journalLog.setColumnSelectionAllowed(false);
-			journalLog.setRowSelectionAllowed(true);
-			JScrollPane scroll = new JScrollPane(journalLog);
+			journalLogTable = new JTable(new FibuTableModel(tabellenZeilen, tableColumnModel), tableColumnModel);
+			journalLogTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			journalLogTable.setColumnSelectionAllowed(false);
+			journalLogTable.setRowSelectionAllowed(true);
+			// PopUp-Menu
+			if (!journal.getAbsummiert().booleanValue()) {
+				popupMenu = new JPopupMenu();
+				JMenuItem deleteMenuItem = new JMenuItem(LABEL_BUCHUNG_LOESCHEN);
+				deleteMenuItem.addActionListener(this);
+				popupMenu.add(deleteMenuItem);
+				journalLogTable.addMouseListener(new MouseAdapter() {
+	
+					public void mousePressed(MouseEvent evt) {
+						maybeShowPopup(evt);
+					}
+	
+					public void mouseReleased(MouseEvent evt) {
+						maybeShowPopup(evt);
+					}
+	
+					private void maybeShowPopup(MouseEvent evt) {
+						 if (evt.isPopupTrigger()) {
+							 showPopupMenu(evt.getX(), evt.getY());
+					     }					
+					}
+					
+				});
+			}
+			// ScrollPane
+			JScrollPane scroll = new JScrollPane(journalLogTable);
 			panel.removeAll();
 			panel.add(scroll, BorderLayout.CENTER);
 		} catch (FiBuException e) {
@@ -69,13 +110,40 @@ public class JournalTable extends FiBuTable implements Editable {
 		}
 		return panel;
 	}
+	
+	private void showPopupMenu(int x, int y) {
+		 popupMenu.show(journalLogTable, x, y);
+		 mouseActionPoint = new Point(x, y);
+	}
+
+	public void actionPerformed(ActionEvent evt) {
+		Object eventSource = evt.getSource();
+		if (eventSource instanceof AbstractButton && LABEL_BUCHUNG_LOESCHEN.equals(((AbstractButton) eventSource).getText())) {
+			int rowIndex = journalLogTable.rowAtPoint(mouseActionPoint);
+			BuchungslisteData buchungsZeile = (BuchungslisteData) buchungsliste.get(rowIndex);
+			int queryResult = JOptionPane.showConfirmDialog(gui.getFrame(), 
+					"Soll die Buchung\n" + buchungsZeile.getBelegnr() + " / "
+					+ buchungsZeile.getBuchungstext() + "\ngelöscht werden?",
+					"Buchung löschen", JOptionPane.YES_NO_OPTION);
+			if (queryResult == 0) {
+				Integer buchid = buchungsZeile.getBuchid();
+				FiBuFacade fiBuFacade = gui.getFiBuFacade();
+				try {
+					fiBuFacade.buchungLoeschen(buchid);
+					reload();
+				} catch (FiBuUserException e) {
+					gui.handleException(e);
+				}
+			}
+		}
+	}
 
 	public void reload() {
 		try {
-			readJournal.removeAllElements();
-			readJournal.addAll(readJournal());
-			journalLog.revalidate();
-			journalLog.repaint();
+			tabellenZeilen.removeAllElements();
+			tabellenZeilen.addAll(readJournal());
+			journalLogTable.revalidate();
+			journalLogTable.repaint();
 		} catch (FiBuException e) {
 			gui.handleException(e);
 		}
@@ -84,7 +152,8 @@ public class JournalTable extends FiBuTable implements Editable {
 	private Vector readJournal() throws FiBuException {
 		Vector journalList = new Vector();
 		FiBuFacade fiBuFacade = gui.getFiBuFacade();
-		Iterator buchungen = fiBuFacade.getBuchungsliste(journal).iterator();
+		buchungsliste = fiBuFacade.getBuchungsliste(journal);
+		Iterator buchungen = buchungsliste.iterator();
 		BuchungslisteData buchung = null;
 		String belegNr = null;
 		String buchungstext = null;
@@ -127,6 +196,9 @@ public class JournalTable extends FiBuTable implements Editable {
 
 /*
  *  $Log: JournalTable.java,v $
+ *  Revision 1.7  2006/01/05 13:09:41  phormanns
+ *  Buchungen in offenen Journalen können gelöscht werden
+ *
  *  Revision 1.6  2005/12/14 19:29:00  phormanns
  *  Eigene TableModels für JournalTable, KontoTable
  *

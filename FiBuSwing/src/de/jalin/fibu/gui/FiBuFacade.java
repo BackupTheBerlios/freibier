@@ -1,4 +1,4 @@
-// $Id: FiBuFacade.java,v 1.10 2005/11/24 17:43:06 phormanns Exp $
+// $Id: FiBuFacade.java,v 1.11 2006/01/05 13:09:40 phormanns Exp $
 package de.jalin.fibu.gui;
 
 import java.net.MalformedURLException;
@@ -17,6 +17,7 @@ import net.hostsharing.admin.runtime.AbstractCall;
 import net.hostsharing.admin.runtime.ResultVector;
 import net.hostsharing.admin.runtime.XmlRpcTransactionException;
 import de.jalin.fibu.server.buchung.BuchungData;
+import de.jalin.fibu.server.buchung.BuchungDeleteCall;
 import de.jalin.fibu.server.buchungsliste.BuchungslisteData;
 import de.jalin.fibu.server.buchungsliste.BuchungslisteListCall;
 import de.jalin.fibu.server.buchungsmaschine.BuchungsmaschineAddCall;
@@ -345,10 +346,25 @@ public class FiBuFacade {
 		}
 	}
 
+	public void buchungLoeschen(Integer buchid) throws FiBuUserException {
+		try {
+			BuchungData buchung = new BuchungData();
+			buchung.setBuchid(buchid);
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			tx.addCall(new BuchungDeleteCall(buchung));
+			tx.perform();
+		} catch (XmlRpcClientException e) {
+			throw new FiBuUserException(e.getMessage());
+		}
+	}
+
 }
 
 /*
  *  $Log: FiBuFacade.java,v $
+ *  Revision 1.11  2006/01/05 13:09:40  phormanns
+ *  Buchungen in offenen Journalen können gelöscht werden
+ *
  *  Revision 1.10  2005/11/24 17:43:06  phormanns
  *  Buchen als eine Transaktion in der "Buchungsmaschine"
  *
