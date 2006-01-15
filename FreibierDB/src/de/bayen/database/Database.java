@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.13 2005/09/11 16:39:57 tbayen Exp $
+ * $Id: Database.java,v 1.14 2006/01/15 21:24:39 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -331,10 +331,10 @@ public class Database {
 					datei));
 			zeile = buffer.readLine();
 			while (zeile != null) {
-				if (zeile.length() > 0 && zeile.charAt(0) != '#'
+				Perl5Util regex = new Perl5Util();
+				if (zeile.length() > 0 && !regex.match("/^\\s*#/",zeile)
 						&& !zeile.startsWith("--")) { // Kommentarzeilen weglassen
 					sql += zeile;
-					Perl5Util regex = new Perl5Util();
 					// Langer RegEx kurzer Sinn: Haben wir ein Semikolon?
 					if (regex.match("/^(.+)\\s*;(\\s|\\n)*(?:#.*)?$/", sql)) {
 						st.addBatch(regex.group(1)); // Inhalt der ersten Klammer
@@ -451,6 +451,9 @@ public class Database {
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.14  2006/01/15 21:24:39  tbayen
+ * SQL-Text-Kommentare müssen nicht mehr am Anfang der Zeile beginnen
+ *
  * Revision 1.13  2005/09/11 16:39:57  tbayen
  * RecordDefinition enthält auch name und ggf. table
  *
