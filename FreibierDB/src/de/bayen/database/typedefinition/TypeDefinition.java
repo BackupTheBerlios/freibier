@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: TypeDefinition.java,v 1.5 2005/08/21 17:06:59 tbayen Exp $
+ * $Id: TypeDefinition.java,v 1.6 2006/01/17 21:06:01 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -171,6 +171,8 @@ abstract public class TypeDefinition {
 			type = "bool"; // MySQL wandelt das in "tinyint(1)"
 		} else if (sqltype == Types.VARBINARY) {
 			type = "blob"; // in MySQL benutze ich hierfür mediumblob
+		} else if (sqltype == Types.DATE) {
+			type = "date";  // TODO: welcher Types...-Typ für "datetime" steht, weiss ich gerade nicht
 		}
 		return type;
 	}
@@ -291,6 +293,9 @@ abstract public class TypeDefinition {
 }
 /*
  * $Log: TypeDefinition.java,v $
+ * Revision 1.6  2006/01/17 21:06:01  tbayen
+ * Anpassung für date-Objekte
+ *
  * Revision 1.5  2005/08/21 17:06:59  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *
