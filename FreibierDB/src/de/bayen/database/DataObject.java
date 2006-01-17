@@ -1,5 +1,5 @@
 /* Erzeugt am 09.10.2004 von tbayen
- * $Id: DataObject.java,v 1.6 2005/08/21 17:06:59 tbayen Exp $
+ * $Id: DataObject.java,v 1.7 2006/01/17 21:06:35 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -65,6 +65,15 @@ public class DataObject implements Printable {
 					log);
 		}
 		this.value = value;
+	}
+	
+	public String toString() {
+		try {
+			return formatNice();
+		} catch (Exception e) {
+			// bei irgendeinem Fehler nehme ich die Standard-Implementation
+			return super.toString()+":E("+e.getMessage()+")";
+		}
 	}
 
 	/**
@@ -157,6 +166,9 @@ public class DataObject implements Printable {
 }
 /*
  * $Log: DataObject.java,v $
+ * Revision 1.7  2006/01/17 21:06:35  tbayen
+ * DataObject.toString() eingefügt
+ *
  * Revision 1.6  2005/08/21 17:06:59  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *
