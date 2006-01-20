@@ -189,14 +189,21 @@
 	</target>
 
 
-	<!-- ==================== dist Target ======================== -->
-	<target name="dist" depends="test, javadoc"
-		description="Create binary distribution">
+	<!-- ==================== smalldist Target ======================== -->
+	<!-- wie dist, aber ohne docs und test, um bei der Enwicklung Zeit zu sparen -->
+	<target name="smalldist" depends="compile"
+		description="Create small distribution for testing">
+		<mkdir dir="${dist.home}"/>
   		<!-- Create application JAR file -->
     	<mkdir dir="${dist.home}"/>
     	<jar jarfile="${dist.home}/${app.name}-${app.version}.${jarfileextension}"
 			basedir="${build.home}">
 		</jar>
+	</target>
+
+	<!-- ==================== dist Target ======================== -->
+	<target name="dist" depends="test,javadoc,smalldist"
+		description="Create binary distribution">
   	    <!-- Copy documentation subdirectories -->
 	    <mkdir dir="${dist.home}/docs"/>
     	<copy failonerror="no" todir="${dist.home}/docs">
@@ -208,7 +215,7 @@
 	<!-- Tomcat Targets (können von nicht-webapps ignoriert werden) -->
 
 	<!-- ==================== Install (Tomcat) Target ================================== -->
-	<target name="install" depends="compile"
+	<target name="install" depends="dist"
 		description="Install application to servlet container">
 		<taskdef name="install" classname="org.apache.catalina.ant.InstallTask"/>
 		<install url="${manager.url}"
@@ -230,7 +237,7 @@
 
 
 	<!-- ==================== Reload (Tomcat) Target =================================== -->
-	<target name="reload" depends="compile"
+	<target name="reload" depends="smalldist"
    		description="Reload application on servlet container">
 		<taskdef name="reload"  classname="org.apache.catalina.ant.ReloadTask"/>
 		<reload url="${manager.url}"
