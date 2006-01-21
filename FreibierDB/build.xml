@@ -11,7 +11,7 @@
 <project default="all" basedir=".">
 
 	<!-- ==================== File and Directory Names ======================== -->
-	<property file="${user.home}/build.properties"/>
+	<property file="${user.home}/.build.properties"/>
 	<property file="build.properties"/>
 
 	<property name="app.name"      value="appname"/>
@@ -21,6 +21,7 @@
 	<property name="dist.home"     value="${basedir}/dist"/>
 	<property name="src.home"      value="${basedir}/src"/>
 	<property name="doc.home"      value="${basedir}/docs"/>
+	<property name="lib.home"      value="${basedir}/lib"/>
 
 	<!-- Besondere Properties, die sich nur bei Webapplikationen ergeben -->
 	<condition property="class.home" 
@@ -31,12 +32,6 @@
 	
 	<condition property="web.home" 
 		value="${basedir}/web">
-		<isset property="webapp"/>
-	</condition>
-
-	<condition property="lib.home"
-		value="${web.home}/WEB-INF/lib"
-		else="${basedir}/lib">
 		<isset property="webapp"/>
 	</condition>
 
@@ -111,6 +106,9 @@
 		<!-- Copy static content of this web application -->
 	    <copy todir="${build.home}">
 	      <fileset dir="${web.home}"/>
+	    </copy>
+	    <copy todir="${build.home}/WEB-INF/lib">
+	      <fileset dir="${lib.home}" includes="*.jar"/>
 	    </copy>
 	</target>
 

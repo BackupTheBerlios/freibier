@@ -5,4 +5,8 @@ nötig:
 
 
 erledigt:
+Version 1.1
+- Anpassungen am build.xml bei Aufteilung von FreibierWeb in Einzelprojekte
+- einheitliches build.xml für alle Projekte
+- kleinere Bugs bei der Arbeit an FreibierWeb behoben
 - alle Warnings behoben, die Eclipse angezeigt hat
