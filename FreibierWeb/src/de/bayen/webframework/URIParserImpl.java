@@ -1,5 +1,5 @@
 /* Erzeugt am 19.03.2005 von tbayen
- * $Id: URIParserImpl.java,v 1.3 2005/08/07 16:56:14 tbayen Exp $
+ * $Id: URIParserImpl.java,v 1.4 2006/01/21 23:10:09 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -77,8 +77,10 @@ public class URIParserImpl implements URIParser, URIParserForFreeMarker {
 		//
 		// Default-Werte:
 		// Ist keine action angegeben, so wird eine Einstiegs-Seite genommen
-		if (map.get("action") == null)
-			map.put("action", "tables");
+		if (map.get("action") == null) {
+			map.put("action", "nothing");
+			map.put("view", "index");
+		}
 		// Ist kein view angegeben, wird der Name der Action genommen
 		if (map.get("view") == null)
 			map.put("view", map.get("action"));
@@ -203,6 +205,9 @@ public class URIParserImpl implements URIParser, URIParserForFreeMarker {
 }
 /*
  * $Log: URIParserImpl.java,v $
+ * Revision 1.4  2006/01/21 23:10:09  tbayen
+ * Komplette Überarbeitung und Aufteilung als Einzelbibliothek - Version 1.6
+ *
  * Revision 1.3  2005/08/07 16:56:14  tbayen
  * Produktionsversion 1.5
  *

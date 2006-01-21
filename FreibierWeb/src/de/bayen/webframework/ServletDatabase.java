@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.10 2005/11/25 08:59:52 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.11 2006/01/21 23:10:09 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -21,18 +21,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import de.bayen.banking.ServletBanking;
 import de.bayen.database.Table;
+import de.bayen.database.exception.DBRuntimeException;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.exception.SysDBEx;
 import de.bayen.database.exception.UserDBEx;
 import de.bayen.database.typedefinition.BLOB;
 import de.bayen.database.typedefinition.TypeDefinition;
+import de.bayen.util.FreemarkerClassTemplateLoader;
 import de.bayen.util.HttpMultipartRequest;
-import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
-import freemarker.cache.WebappTemplateLoader;
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -46,10 +45,26 @@ import freemarker.template.TemplateScalarModel;
  * Dies ist das Basis-Servlet, das von allen konkreten Applikationen
  * abgeleitet werden sollte.
  * 
+ * <h1>Allgemeines zu Datenbanken:</h1>
+ * <p>
+ * Jede Webapplikation hat automatischen Zugriff auf genau eine Datenbank. Die Logik hierzu
+ * ist in der Klasse webframework.ServletDatabase verankert. Es wird zuerst die Datei
+ * config.properties im webframework-Paket gelesen. Diese enthält die absoluten Default-
+ * Einstellungen (Username und Passwort sind "freibierweb"). Ist dort kein Datenbankname
+ * angegeben, wird der Paketname der Applikation als Datenbankname verwendet. Dann wird im 
+ * Paket der Applikation eine config.properties gelesen, falls dort andere Voreinstellungen 
+ * stehen. So kann eine einzelne Applikation z.B. den Default-Datenbanknamen oder den 
+ * Usernamen speziell anpassen.
+ * </p><p>
+ * Dann werden die eigentlichen Einstellungen aus dem Config-Dir "/etc/freibierweb/" 
+ * gelesen. Dort wird zuerst die Datei "config.properties" und dann die Datei
+ * "appname.properties" gelesen. Hier kann der Benutzer konkrete Parameter zum Zugriff
+ * auf die Datenbank angeben.
+ * </p>
  * @author tbayen
  */
 public abstract class ServletDatabase extends HttpServlet {
-	static Logger logger = Logger.getLogger(ServletBanking.class.getName());
+	static Logger logger = Logger.getLogger(ServletDatabase.class.getName());
 	private Properties props;
 	private Configuration cfg;
 	private URIParser uriParser;
@@ -64,18 +79,17 @@ public abstract class ServletDatabase extends HttpServlet {
 				+ "' wird initialisiert.");
 		cfg = new Configuration();
 		TemplateLoader loaders[] = {
-				new WebappTemplateLoader(getServletContext(),
-						"WEB-INF/templates"),
+				//new WebappTemplateLoader(getServletContext(), "WEB-INF/templates"),
 				// mit folgender Zeile werden auch noch abgeleitete Klassen
 				// durchsucht (TO DO: aber keine mehrfach abgeleiteten).
-				new ClassTemplateLoader(this.getClass(), "templates"),
-				new ClassTemplateLoader(ServletDatabase.class, "templates")
+				new FreemarkerClassTemplateLoader(this.getClass(), "templates"),
+				new FreemarkerClassTemplateLoader(ServletDatabase.class, "templates")
 		};
 		cfg.setTemplateLoader(new MultiTemplateLoader(loaders));
 		// normalerweise gibts keine Euro-Zeichen, das stelle ich hier aber ein:
 		cfg.setEncoding(new Locale("de", "DE"), "ISO-8859-15");
 		uriParser = new URIParserImpl();
-		actionDispatcher = new ActionDispatcherClassLoader();
+		actionDispatcher = new ActionDispatcherClassLoader(this.getClass());
 		readProperties();
 	}
 
@@ -89,13 +103,15 @@ public abstract class ServletDatabase extends HttpServlet {
 	 * gesucht, die Defaults für diese Applikation enthalten kann. Danach 
 	 * werden Dateien im Verzeichnis gesucht, dass in den bisherigen 
 	 * Properties-Dateien durch den Schlüssel "configdir" angegeben ist 
-	 * (vorgegeben ist "/etc/webdatabase/"). Die erste Datei ist 
+	 * (vorgegeben ist "/etc/freibierweb/"). Die erste Datei ist 
 	 * "config.properties", die zweite hat den Namen des letzten Teils des 
 	 * Paketnamens der Applikation, gefolgt von ".properties", also z.B. 
 	 * für die Applikation im Paket "de.bayen.kontaktdaten" den Namen 
 	 * "{configdir}/kontaktdaten.properties".
 	 */
 	private void readProperties() {
+		String appname = getClass().getPackage().getName();
+		appname = appname.substring(appname.lastIndexOf('.') + 1);
 		// Properties einlesen
 		props = new Properties();
 		// zuerst die Properties der ServletDatabase-Klasse lesen:
@@ -107,6 +123,10 @@ public abstract class ServletDatabase extends HttpServlet {
 			if (stream != null)
 				props.load(stream);
 		} catch (IOException e) {}
+		// Falls kein Datenbankname, diesen auf den Paketnamen der Applikation setzen
+		if (!props.containsKey("database.name")) {
+			props.setProperty("database.name", appname);
+		}
 		// dann die Properties der konkret abgeleiteten Klasse lesen:
 		path = getClass().getPackage().getName().replace('.', '/');
 		stream = getClass().getClassLoader().getResourceAsStream(
@@ -129,9 +149,7 @@ public abstract class ServletDatabase extends HttpServlet {
 			props.load(stream);
 		} catch (IOException e) {}
 		try {
-			String name = getClass().getPackage().getName();
-			stream = new FileInputStream(path
-					+ name.substring(name.lastIndexOf('.') + 1) + ".properties");
+			stream = new FileInputStream(path + appname + ".properties");
 			props.load(stream);
 		} catch (IOException e) {}
 	}
@@ -141,7 +159,7 @@ public abstract class ServletDatabase extends HttpServlet {
 	 * Proiperties-Dateien stehen können.
 	 * 
 	 * @param key
-	 * @return
+	 * @return Property-value
 	 */
 	public String getProperty(String key) {
 		return props.getProperty(key);
@@ -325,8 +343,14 @@ public abstract class ServletDatabase extends HttpServlet {
 			ServletException {
 		logger.debug("sende Binärdaten");
 		resp.setContentType((String) root.get("contenttype"));
-		resp.getOutputStream().write(
-				((BLOB) root.get("binarydata")).toByteArray());
+		Object output = root.get("binarydata");
+		if(output.getClass().equals(BLOB.class)) {
+			resp.getOutputStream().write(((BLOB) output).toByteArray());
+		}else if(output.getClass().equals(byte[].class)) {
+			resp.getOutputStream().write((byte[])output);
+		}else {
+			throw new RuntimeException("ungültiger Binärdatentyp");
+		}
 	}
 
 	/**
@@ -342,6 +366,17 @@ public abstract class ServletDatabase extends HttpServlet {
 					getProperty("database.host"), getProperty("database.user"),
 					getProperty("database.password"));
 			db.setPropertyPath(getClass().getPackage().getName());
+			// falls die Datenbank noch nicht existiert, initialisiere ich sie
+			if (db.getTableNamesList().size() == 0) {
+				try {
+					String path = getClass().getPackage().getName().replace(
+							'.', '/');
+					db.executeSqlFile(path + "/db_definition.sql");
+				} catch (IOException e) {
+					throw new DBRuntimeException(
+							"Kann Definitionsdatei nicht lesen", e);
+				}
+			}
 			return db;
 		} catch (MissingResourceException e) {
 			throw new UserDBEx(
@@ -352,6 +387,9 @@ public abstract class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.11  2006/01/21 23:10:09  tbayen
+ * Komplette Überarbeitung und Aufteilung als Einzelbibliothek - Version 1.6
+ *
  * Revision 1.10  2005/11/25 08:59:52  tbayen
  * kleinere Verbesserungen und Fehlerabfragen
  *

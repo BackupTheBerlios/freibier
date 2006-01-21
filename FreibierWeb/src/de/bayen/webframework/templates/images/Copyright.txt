@@ -1,0 +1,23 @@
+Copyright für die Bild-Dateien
+
+Ich habe diese Bilddateien alle aus freien Quellen bezogen. Bevor jemand
+diese Dateien jedoch kommerziell nutzt oder weitergibt, sollte er prüfen,
+welche Rechte darauf liegen. Die Dateien stammen aus folgenden Quellen:
+
+-------------------------------
+Apache
+aus /usr/share/apache/icons
+down, up, link
+
+-------------------------------
+PHPMyAdmin
+aus der Weboberfläche kopiert
+bomb, forward, link
+-------------------------------
+KDE
+aus /usr/share/icons/crystalsvg/
+button_ok, button_cancel
+aus /usr/share/icons/kdeclassic/
+editdelete, filesave, 1downarrow, 1uparrow, fileopen, fileimport,
+mail_get, mail_generic
+-------------------------------

@@ -1,5 +1,5 @@
 <#-- Erzeugt am 26.02.2005 von tbayen
-     $Id: editmacros.ftl,v 1.3 2005/08/07 16:56:15 tbayen Exp $ 
+     $Id: editmacros.ftl,v 1.4 2006/01/21 23:10:10 tbayen Exp $ 
      
      Diese Datei enthält verschiedene Makros, die die Arbeit von "editform.ftl"
      einfacher und übersichtlicher machen 
@@ -54,6 +54,9 @@
       <#if objekt.getTypeDefinition().getStringType() = "decimal">
         <input name="_${feld}" type="text" value="${objekt.format()}" size="${objekt.getLength()}" maxlength="${objekt.getLength()}"/>
       </#if>
+      <#if objekt.getTypeDefinition().getStringType() = "date">
+        <input name="_${feld}" type="text" value="${objekt.format()}" size="${objekt.getLength()}" maxlength="${objekt.getLength()}"/>
+      </#if>
       <#if objekt.getTypeDefinition().getStringType() = "text">
         <textarea name="_${feld}" cols="80" rows="10">${objekt.format()}</textarea>
       </#if>
@@ -93,6 +96,9 @@
 
 <#--
 * $Log: editmacros.ftl,v $
+* Revision 1.4  2006/01/21 23:10:10  tbayen
+* Komplette Überarbeitung und Aufteilung als Einzelbibliothek - Version 1.6
+*
 * Revision 1.3  2005/08/07 16:56:15  tbayen
 * Produktionsversion 1.5
 *

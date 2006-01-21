@@ -35,6 +35,14 @@
       	<servlet-class>de.bayen.banking.ServletBanking</servlet-class>
     </servlet>
 
+    <servlet>
+      	<servlet-name>depotmanager</servlet-name>
+      	<description>
+        	Depot-Manager
+      	</description>
+      	<servlet-class>de.bayen.depotmanager.ServletDepotManager</servlet-class>
+    </servlet>
+
     <servlet-mapping>
       	<servlet-name>database</servlet-name>
       	<url-pattern>/db/*</url-pattern>
@@ -48,6 +56,11 @@
     <servlet-mapping>
       	<servlet-name>banking</servlet-name>
       	<url-pattern>/banking/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      	<servlet-name>depotmanager</servlet-name>
+      	<url-pattern>/depotmanager/*</url-pattern>
     </servlet-mapping>
 
 

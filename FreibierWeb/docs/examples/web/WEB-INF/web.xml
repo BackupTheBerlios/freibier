@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app 
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" 
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+    <display-name>Bayen Datenbank</display-name>
+    <description>
+      	Dies ist eine Datenbankanwendung von Thomas Bayen.
+    </description>
+
+    <servlet>
+      	<servlet-name>testapp</servlet-name>
+      	<description>
+        	Datenbank-Webinterface von Thomas Bayen
+      	</description>
+      	<servlet-class>de.bayen.testapp.ServletTestapp</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+      	<servlet-name>testapp</servlet-name>
+      	<url-pattern>/testapp/*</url-pattern>
+    </servlet-mapping>
+
+
+  	<resource-env-ref>
+    	<resource-env-ref-name>UserDatabase</resource-env-ref-name>
+    	<resource-env-ref-type>
+      		org.apache.catalina.UserDatabase
+    	</resource-env-ref-type>
+  	</resource-env-ref>
+		
+	<security-constraint>
+	  	<web-resource-collection>
+	  		<web-resource-name>database</web-resource-name>
+        	<url-pattern>/testapp/*</url-pattern>
+	  	</web-resource-collection>
+	  	<auth-constraint>
+	    	<role-name>webdbuser</role-name>	    
+	  	</auth-constraint>
+	  	<user-data-constraint>
+	  		<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+	  	</user-data-constraint>
+	</security-constraint>
+
+	<login-config>
+	  	<auth-method>BASIC</auth-method>
+	  	<realm-name>Web-Datenbank</realm-name>
+	</login-config>
+
+    <security-role>
+	    <role-name>webdbuser</role-name>
+    </security-role>
+
+</web-app>

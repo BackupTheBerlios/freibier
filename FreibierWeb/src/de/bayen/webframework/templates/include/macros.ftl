@@ -1,5 +1,5 @@
 <#-- Erzeugt am 26.02.2005 von tbayen
-     $Id: macros.ftl,v 1.1 2005/04/05 21:34:48 tbayen Exp $ 
+     $Id: macros.ftl,v 1.2 2006/01/21 23:10:10 tbayen Exp $ 
      
      Diese Datei enthält verschiedene Makros, die die Arbeit der anderen Templates
      einfacher und übersichtlicher machen.
@@ -10,7 +10,15 @@
   <#if action != "">
     <a class="imagelink" href="<@call params=params action=action theme=theme view=view table=table id=id/>"
   </#if>
-  <img class="inline" src="${uri.baseurl}/images/${name}.png" alt="${alt}" title="${title}" border="0"/><#t/>
+  <img class="inline" src="${
+  uri.parser.createURI(uri,{
+    "action":"image",
+    "theme" :theme,
+    "view"  :"binarydata",
+    "table" :"-",
+    "id"    :"-"
+  },{"name":name+".png"})
+}" alt="${alt}" title="${title}" border="0"/><#t/>
   <#if action != ""><#t/>
     </a><#t/>
   </#if>
@@ -44,6 +52,9 @@
 
 <#--
 * $Log: macros.ftl,v $
+* Revision 1.2  2006/01/21 23:10:10  tbayen
+* Komplette Überarbeitung und Aufteilung als Einzelbibliothek - Version 1.6
+*
 * Revision 1.1  2005/04/05 21:34:48  tbayen
 * WebDatabase 1.4 - freigegeben auf Berlios
 *

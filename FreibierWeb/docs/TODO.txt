@@ -1,13 +1,21 @@
 TODO:
 -----
 
+ergibt sich aus Neuerungen:
+- die config.properties in den Paketen können eigentlich weg
+- die Servlet-Klassen brauchen connectDatabase() nicht mehr zu implementieren
+- abgeleitete ActionDispatcher-Klassen nicht mehr nötig
 
-auf dem Produktionssystem testen/umsetzen und ggf. fertigmachen:
-- BLZ-Feldname in der Datenbank in Grossbuchstaben ändern
-- Spezial-Templates für "blz" in Transaktionen zurücksetzen
+
 
 nötig:
+- Datenbank-Anbindung erlaubt offensichtlich kein Multitasking
 - banking
+  - auf dem Produktionssystem testen/umsetzen und ggf. fertigmachen:
+    - BLZ-Feldname in der Datenbank in Grossbuchstaben ändern
+    - Spezial-Templates für "blz" in Transaktionen zurücksetzen
+  - Analyse und Umwandlung der Durst-Sparkassen-Dateien
+  - Anlegen neuer Konten per Weboberfläche
   - Bei Umwandlung Pool->Korb ggf. Testkorb als Ziel vorgeben
   - Suche funktioniert nicht
 - BayenWeb
@@ -16,14 +24,21 @@ nötig:
   - Telefonnummern in Liste für Günther
   - Bei der Anlage neuer Datensätze haben Verweisfelder immer Index 1
 wünschenswert:
+- depotmanager
+  - alle benutzten Templates anpassen
+  - YahooRetriever ohne deprecated APIs
 - banking
+  - besserer Umgang mit HBCI4Java, was Patches und Updates anbetrifft
   - Liquiditätsmanagement
   - Speichern von Kontoauszügen
   - Vorkontierte Ausgabe von Kontoauszügen
-- interne Verbesserungen
   - HBCICallback multithreading-konform benutzen
-  - Wechsel (und Neuinitialisierung) der Datenbank möglich machen
   - HBCI4Java zentral initialisieren (wird an manchen Stellen von Hand gemacht)
+- interne Verbesserungen
+  - Anpassung der Doku README und INSTALL
+  - stärkere Angleichung an JavaBeans, um andere Datenquellen auch nutzen zu können
+  - Ein überladenes Template sollte sein Original laden können
+  - Wechsel (und Neuinitialisierung) der Datenbank möglich machen
   - evtl. Session-Einstellungen für Theme, Filter, etc.
   - Connection Pool
   - System für Formulare, Validierung, etc.
@@ -38,31 +53,58 @@ wünschenswert:
   - Anker zum Aufruf bestimmter Teile der Seiten
   - Focus wieder automatisch setzen (im Template oder im Controller?!?)
   - kein Javascript in Günther-Template
+  - sinnvolle Ausgabe, wenn Datenbank nicht initialisiert werden kann
 - neue Funktionen
   - Filter in Liste
+  - Umgang mit fehlender oder nicht konfigurierter Datenbank
   - Wechsel der Datenbankverbindung
   - Bilder in der Datenbank
 - weitere Applikationen, z.B.:
+  - Kalender
   - Adressbuch
   - Event-Manager
   - OP-Manager
 - database-Klassen
+  - eine zentrale Properties-Datei für eine Datenbank ermöglichen
   - benutzte Properties auf Methoden abbilden
   - Interfaces erstellen
   - API besser standardisieren: get/set, toString, etc.
 nicht wirklich nötig:
 - Paging bei der Listenanzeige
 - Versionsnummer nicht in Webadresse benutzen?
-- Codierung des Theme ändern
-- Euro-Zeichen eingeben und ausgeben (und in PHPMyAdmin auch)
 - Beschleunigung
 - Sortieren nach Fremdschlüsseln
 
 
 
 erledigt:
+Version 1.6
+- Bugmeldung an Freemarker wg. ClassTemplateLoader
+- Fix für Bug im TemplateLoader von Freemarker
+- Kopieren des "web"-Verzeichnisses nach /doku/examples
+- Anpassung des build-Skripts
+- Umlegen der Bibliotheken nach /lib bzw. /lib/compile
+- Umbenennung des Projektes von "WebDatabase" (war mir zu allgemein) in "FreibierWeb"
+- Abspaltung der einzelnen Applikationen von der Grund-Bibliothek
+- Beispiel-Projektverzeichnis "Example" in "/doku" bzw. "/dist" erstellen
+- Minimale Beispiel-Applikation "testapp" erstellen
+- Alle Images in das Templateverzeichnis und Action zum Laden erstellt
+- stylesheet.css in Template-Verzeichnis auslagern
+- package.html für Depotmanager-Paket
+- die config.properties in den Paketen können eigentlich weg
+- die Servlet-Klassen brauchen connectDatabase() nicht mehr zu implementieren
+- abgeleitete ActionDispatcher-Klassen nicht mehr nötig
+- index.ftl in Template-Verzeichnis erstellen
+- Redirect direkt im @page-Makro ermöglicht
+- Links zu Infoseiten im Web
+- Kursdaten nur aktuelle holen
+- Sortierung der Analyse nach ISIN
+- stylesheet für Ausdruck verbessert
+- depotmanager-Grundlage neu mit HOWTO zur Erstellung neuer Applikationen
+- neues build-Skript (identisch für alle meine aktuellen Projekte)
 - Das build-Skript findet die libraries nun selber
 - Abspaltung von der Datenbankklassen als Projekt FreibierDB
+- war bereits erledigt: Euro-Zeichen eingeben und ausgeben (und in PHPMyAdmin auch)
 Version 1.5
 - Codierung von "?" bei der Erzeugung von redirect-URL nötig
 - Bei Neuanlage von Datensätzen nicht direkt eine Vorlage erstellen
@@ -156,30 +198,10 @@ Version 1.2
 Version 1.1
 
 
-Peter:
-------
-- Kapselung von last_insert_id()
-- Im NicePrinter den angezeigten Index weglassen (ist nicht nice...)
-- RecordDefinition.getSelectStatement(): angepasst für mehrere Foreign Keys auf die gleiche Tabelle
-gemeldet:
-- NULL in der Datenbank erlaubt
-  - TypedefinitionInteger.format(): ändern: if (i != null && !i.equals(""))
-  -            "          parse(): einfügen: if(s==null  || s.equals("")) return null;
-- Database.getName()
-- readonly dokumentieren und ggf. implementieren
-wünschenswert:
-- Schreiben nur der veränderten Felder
-- Logging
-- Umlaute in sql-Dateien
-gemacht, aber nicht nötig:
-- executeSqlFile nimmt auch InputStream als Parameter
-- Table.makeWhereExpression()
-
 
 
 Sonstige Notizen
 ----------------
-Pennewitz (Innenausbauer von Malomo) 02151/398885, 0173/5111014
 Fabian: 0511/7900580
 
 name=banking

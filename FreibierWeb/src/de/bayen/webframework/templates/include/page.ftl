@@ -1,11 +1,20 @@
 <#-- Erzeugt am 21.02.2005 von tbayen
-     $Id: page.ftl,v 1.1 2005/04/05 21:34:48 tbayen Exp $ -->
+     $Id: page.ftl,v 1.2 2006/01/21 23:10:10 tbayen Exp $ -->
 <#macro page>
 <html>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-15">  <#-- voll egal! -->
   <head>
     <title>${title}</title>
+    <#-- Diese Variante lädt eine externe Datei als stylesheet:
     <link rel="stylesheet" type="text/css" href="${uri.baseurl}/stylesheet.css" media="all"/>
+    -->
+    <style type="text/css">
+      <#-- Hier ist auch parse=true denkbar für z.B. Theme-abhängige stylesheets -->
+      <#include "stylesheet.css" parse=false>
+    </style>
+    <#if redirect?exists>
+      <meta http-equiv="refresh" content="0; URL=${redirect}">
+    </#if>
     <#if focus?exists>
     <script type="text/javascript">//<![CDATA[
       function focus_onload(){ document.form._${focus}.focus() }
@@ -17,18 +26,20 @@
   <#else/>
   <body>
   </#if>
-  <ul class="menu">
-    <li>
-      <a href="<@call action="tables" table="-" id="-"/>">Tabellen</a>
-      <span class="desc">Auswahl einer Datentabelle</span>
-    </li>
-    <#if menu1_name?exists>
-    <li>
-      <a href="${menu1_link}">${menu1_name}</a>
-      <span class="desc">${menu1_desc}</span>
-    </li>
-    </#if>
-  </ul>
+  <#if nomainmenu?default(0) = 0>
+    <ul class="menu">
+      <li>
+        <a href="<@call action="tables" table="-" id="-"/>">Tabellen</a>
+        <span class="desc">Auswahl einer Datentabelle</span>
+      </li>
+      <#if menu1_name?exists>
+      <li>
+        <a href="${menu1_link}">${menu1_name}</a>
+        <span class="desc">${menu1_desc}</span>
+      </li>
+      </#if>
+    </ul>
+  </#if>
   <#if debug?exists>
     ${debug}
   </#if>
@@ -38,6 +49,9 @@
 </#macro>
 <#--
 * $Log: page.ftl,v $
+* Revision 1.2  2006/01/21 23:10:10  tbayen
+* Komplette Überarbeitung und Aufteilung als Einzelbibliothek - Version 1.6
+*
 * Revision 1.1  2005/04/05 21:34:48  tbayen
 * WebDatabase 1.4 - freigegeben auf Berlios
 *

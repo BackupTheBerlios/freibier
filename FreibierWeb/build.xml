@@ -5,15 +5,13 @@
   überladen werden.
   
   Diese Datei kann auch für Webapplikationen benutzt werden. Dafür muss die
-  Property "webapp" gesetzt sein. In diesem Fall wird auch die Datei 
-  build-tomcat.xml eingebunden, die weitere, spezielle Targets enthält, um
-  die Applikation z.B. direkt zu installieren.
+  Property "webapp" gesetzt sein.
 -->
 
 <project default="all" basedir=".">
 
 	<!-- ==================== File and Directory Names ======================== -->
-	<property file="${user.home}/build.properties"/>
+	<property file="${user.home}/.build.properties"/>
 	<property file="build.properties"/>
 
 	<property name="app.name"      value="appname"/>
@@ -23,6 +21,7 @@
 	<property name="dist.home"     value="${basedir}/dist"/>
 	<property name="src.home"      value="${basedir}/src"/>
 	<property name="doc.home"      value="${basedir}/docs"/>
+	<property name="lib.home"      value="${basedir}/lib"/>
 
 	<!-- Besondere Properties, die sich nur bei Webapplikationen ergeben -->
 	<condition property="class.home" 
@@ -33,12 +32,6 @@
 	
 	<condition property="web.home" 
 		value="${basedir}/web">
-		<isset property="webapp"/>
-	</condition>
-
-	<condition property="lib.home"
-		value="${web.home}/WEB-INF/lib"
-		else="${basedir}/lib">
 		<isset property="webapp"/>
 	</condition>
 
@@ -114,6 +107,9 @@
 	    <copy todir="${build.home}">
 	      <fileset dir="${web.home}"/>
 	    </copy>
+	    <copy todir="${build.home}/WEB-INF/lib">
+	      <fileset dir="${lib.home}" includes="*.jar"/>
+	    </copy>
 	</target>
 
 	<!-- ==================== makeclasspath Target ================== -->
@@ -121,7 +117,10 @@
 		<!-- classpath für normale Applikationen -->
 		  <path id="compile.classpath">
 		  	<fileset dir="${lib.home}">
-		  		<include name="*.jar"/>
+  			  	<!-- Bibliotheken im "compile"-Unterverzeichnis werden
+  			  	     hier eingebunden, aber nicht in die Distri übernommen.
+			  	     (z.B. servlet.jar oder junit.jar)  -->
+		  		<include name="**/*.jar"/>
 	    	</fileset>
 		  </path>
 	</target>
@@ -189,18 +188,32 @@
 	</target>
 
 
-	<!-- ==================== dist Target ======================== -->
-	<target name="dist" depends="test, javadoc"
-		description="Create binary distribution">
+	<!-- ==================== smalldist Target ======================== -->
+	<!-- wie dist, aber ohne docs und test, um bei der Enwicklung Zeit zu sparen -->
+	<target name="smalldist" depends="compile"
+		description="Create small distribution for testing">
+		<mkdir dir="${dist.home}"/>
   		<!-- Create application JAR file -->
     	<mkdir dir="${dist.home}"/>
     	<jar jarfile="${dist.home}/${app.name}-${app.version}.${jarfileextension}"
 			basedir="${build.home}">
 		</jar>
+	</target>
+
+	<!-- ==================== dist Target ======================== -->
+	<target name="dist" depends="test,javadoc,smalldist"
+		description="Create binary distribution">
   	    <!-- Copy documentation subdirectories -->
 	    <mkdir dir="${dist.home}/docs"/>
     	<copy failonerror="no" todir="${dist.home}/docs">
       		<fileset dir="${doc.home}" excludes="**/*.java"/>
+    	</copy>
+	    <mkdir dir="${dist.home}/lib"/>
+    	<copy failonerror="no" todir="${dist.home}/lib">
+      		<fileset dir="${lib.home}">
+      			<exclude name="compile"/>
+      			<exclude name="compile/*"/>
+      		</fileset>
     	</copy>
 	</target>
 
@@ -208,7 +221,7 @@
 	<!-- Tomcat Targets (können von nicht-webapps ignoriert werden) -->
 
 	<!-- ==================== Install (Tomcat) Target ================================== -->
-	<target name="install" depends="compile"
+	<target name="install" depends="dist"
 		description="Install application to servlet container">
 		<taskdef name="install" classname="org.apache.catalina.ant.InstallTask"/>
 		<install url="${manager.url}"
@@ -230,7 +243,7 @@
 
 
 	<!-- ==================== Reload (Tomcat) Target =================================== -->
-	<target name="reload" depends="compile"
+	<target name="reload" depends="smalldist"
    		description="Reload application on servlet container">
 		<taskdef name="reload"  classname="org.apache.catalina.ant.ReloadTask"/>
 		<reload url="${manager.url}"

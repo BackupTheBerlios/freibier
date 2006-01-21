@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionShow.java,v 1.3 2005/08/12 22:57:11 tbayen Exp $
+ * $Id: ActionShow.java,v 1.4 2006/01/21 23:10:10 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -32,7 +32,7 @@ public class ActionShow implements Action {
 		String name = (String) uri.get("table");
 		Table tab = db.getTable(name);
 		String primarykey = tab.getRecordDefinition().getPrimaryKey();
-		String recordid = (String) ((Map) root.get("uri")).get("id");
+		String recordid = (String) uri.get("id");
 		Record record = tab.getRecordByPrimaryKey(tab.getRecordDefinition()
 				.getFieldDef(primarykey).parse(recordid));
 		root.put("record", record);
@@ -75,6 +75,9 @@ public class ActionShow implements Action {
 }
 /*
  * $Log: ActionShow.java,v $
+ * Revision 1.4  2006/01/21 23:10:10  tbayen
+ * Komplette Überarbeitung und Aufteilung als Einzelbibliothek - Version 1.6
+ *
  * Revision 1.3  2005/08/12 22:57:11  tbayen
  * Compiler-Warnings bereinigt
  *

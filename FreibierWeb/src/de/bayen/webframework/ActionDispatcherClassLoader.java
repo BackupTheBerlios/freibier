@@ -1,5 +1,5 @@
 /* Erzeugt am 19.03.2005 von tbayen
- * $Id: ActionDispatcherClassLoader.java,v 1.3 2005/08/07 16:56:14 tbayen Exp $
+ * $Id: ActionDispatcherClassLoader.java,v 1.4 2006/01/21 23:10:09 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -16,7 +16,7 @@ import de.bayen.database.exception.DatabaseException;
  * <p>
  * Wird diese Klasse abgeleitet, so werden die Action-Klassen zuerst im
  * Paket der abgeleiteten Klasse, dann im Paket dieser Basisklasse (dort 
- * sind die Standard-Actions).
+ * sind die Standard-Actions) gesucht.
  * <p>
  * Action-Klassen befinden sich immer in einem Unterpackage 
  * <code>...actions</code> und haben immer einen Namen, der mit "Action" anfängt, 
@@ -27,16 +27,35 @@ import de.bayen.database.exception.DatabaseException;
 public class ActionDispatcherClassLoader implements ActionDispatcher {
 	static Logger logger = Logger.getLogger(ActionDispatcherClassLoader.class
 			.getName());
+	private Class baseclass = null;
+
+	public ActionDispatcherClassLoader() {}
+
+	/**
+	 * Bei diesem Konstruktor kann eine Basisklasse angegeben werden, in deren Paket dann
+	 * die Actions gesucht werden.
+	 * 
+	 * @param baseclass
+	 */
+	public ActionDispatcherClassLoader(Class baseclass) {
+		this.baseclass = baseclass;
+	}
 
 	public void executeAction(String action, HttpServletRequest req, Map root,
-			WebDBDatabase db, ServletDatabase servlet) throws DatabaseException, ServletException {
+			WebDBDatabase db, ServletDatabase servlet)
+			throws DatabaseException, ServletException {
 		logger.debug("ActionDispatcher.executeAction('" + action + "', ...)");
 		if (action.equals("nothing")) {
 			return;
 		}
 		// richtige Action ausführen
 		boolean fertig = false;
-		Class cl = this.getClass();
+		Class cl;
+		if (baseclass == null) {
+			cl = this.getClass();
+		} else {
+			cl = baseclass;
+		}
 		while (cl != Object.class && fertig == false) {
 			try {
 				String classname = cl.getPackage().getName()
@@ -48,9 +67,7 @@ public class ActionDispatcherClassLoader implements ActionDispatcher {
 				Action a = ((Action) actionclass.newInstance());
 				fertig = true;
 				a.executeAction(this, req, root, db, servlet);
-			} catch (ClassNotFoundException e) {} 
-			  catch (InstantiationException e) {} 
-			  catch (IllegalAccessException e) {}
+			} catch (ClassNotFoundException e) {} catch (InstantiationException e) {} catch (IllegalAccessException e) {}
 		}
 		if (!fertig) {
 			throw new ServletException("unbekannte Action '" + action + "'");
@@ -59,6 +76,9 @@ public class ActionDispatcherClassLoader implements ActionDispatcher {
 }
 /*
  * $Log: ActionDispatcherClassLoader.java,v $
+ * Revision 1.4  2006/01/21 23:10:09  tbayen
+ * Komplette Überarbeitung und Aufteilung als Einzelbibliothek - Version 1.6
+ *
  * Revision 1.3  2005/08/07 16:56:14  tbayen
  * Produktionsversion 1.5
  *

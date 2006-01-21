@@ -1,6 +1,5 @@
-Dieses Verzeichnis enthält benötigte Bibliotheken. Diese werden in 
-Eclipse nicht (bzw. ganz oben im Dateibaum) mit angezeigt. Sie sind
-aber trotzdem da. :-)
+Dieses Verzeichnis enthält benötigte Bibliotheken für eine 
+Webapplikation.
 
 Dieses lib-Verzeichnis wird im Tomcat automatisch in den Classpath
 aufgenommen. Deshalb gehören hier alle Bibliotheken hinein, die meine
@@ -8,10 +7,9 @@ Applikation während des produktiven Laufes benötigt.
 
 Ausnahmen sind nur die Bibliotheken, die Tomcat bereits selber fest
 eingebunden hat. Dies ist insbesondere "servlet.jar". Diese Datei muss
-Teil des Eclipse-Projektes sein (sie steht im Hauptverzeichnis), damit
-Eclipse prüfen kann, ob die anderen Programmteile die Servlet-Klassen
-richtig benutzt, sie darf allerdings nicht in das lib-Verzeichnis der
-Applikation kopiert werden.
+Teil des Eclipse-Projektes sein, damit z.B. Eclipse prüfen kann, ob die 
+anderen Programmteile die Servlet-Klassen richtig benutzt, sie darf 
+allerdings nicht in das lib-Verzeichnis der Applikation kopiert werden.
 
 Übrigens stehen alle Bibliotheken lästigerweise einzeln in Eclipse auf
 der höchsten Ebene im Dateibaum herum. Das konnte ich bisher leider
@@ -24,7 +22,8 @@ an Bibliotheken stabiler wird. Außerdem hat es ausser obigem
 Schönheitsfehler keinen echten Vorteil.
 
 Handelt es sich um eine Webapplikation, so stelle ich in das Verzeichnis
-"./lib" die Bibliotheken, die von meinem Programm benutzt werden, die 
-aber nicht Teil des Paketes werden sollen (insbesondere die servlet.jar).
-Die eigentlich benötigten Bibliotheken kommen nach "./web/WEB-INF/lib".
-Sie werden mit in die ausgegebene *.war-Datei eingebunden.
+"./lib/compile" die Bibliotheken, die von meinem Programm benutzt werden, 
+die aber nicht Teil des Paketes werden sollen (insbesondere die 
+servlet.jar). Die eigentlich benötigten Bibliotheken kommen nach "./lib" 
+und werden dann vom build-Skript nach web/WEB-INF/lib kopiert. Sie werden 
+dadurch mit in die ausgegebene *.war-Datei eingebunden.

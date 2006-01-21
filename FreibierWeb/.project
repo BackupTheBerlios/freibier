@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>WebKunden</name>
+	<name>FreibierWeb</name>
 	<comment></comment>
 	<projects>
+		<project>FreibierDB</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

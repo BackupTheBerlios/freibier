@@ -45,7 +45,7 @@ Rollen "manager" und "admin", wenn man will (Für den Tomcat Manager), Rolle
 Da der Tomcat bei mir nach einigen Tagen unerklärlich abstürzt, habe ich
 folgendes Cron-Script geschrieben:
   --------------------------------------------------------------------------
-  meinserver:~# cat /etc/cron.daily/webdatabase
+  meinserver:~# cat /etc/cron.daily/freibierweb
   #!/bin/sh
 
   # Der Tomcat neigt immer dazu, abzustürzen. Das behebe ich hier
@@ -84,7 +84,7 @@ Webdatenbank
 Die *.war-Datei wird nach "/var/lib/tomcat4/webapp/" kopiert oder über den 
 Manager installiert.
 
-Zugriffsrechte in "/etc/tomcat4/policy.d/50webdatabase.policy":
+Zugriffsrechte in "/etc/tomcat4/policy.d/50freibierweb.policy":
 
   grant {
      permission java.security.AllPermission;
@@ -102,10 +102,10 @@ zum Datenimport benötigt der Benutzer noch Leserechte in der Durstimport-Tabelle
 
 Konfiguration
 -------------
-Verzeichnis /etc/webdatabase anlegen und Inhalt des etc-Verzeichnisses
+Verzeichnis /etc/freibierweb anlegen und Inhalt des etc-Verzeichnisses
 dorthin kopieren. Dann Permissions setzen:
-  chown tomcat4.root /etc/webdatabase -R
-  chmod o-rwx /etc/webdatabase -R
+  chown tomcat4.root /etc/freibierweb -R
+  chmod o-rwx /etc/freibierweb -R
 
 
 
