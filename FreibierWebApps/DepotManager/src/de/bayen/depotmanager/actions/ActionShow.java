@@ -1,5 +1,5 @@
 /* Erzeugt am 16.01.2006 von tbayen
- * $Id: ActionShow.java,v 1.1 2006/01/21 23:20:50 tbayen Exp $
+ * $Id: ActionShow.java,v 1.2 2006/01/22 20:07:34 tbayen Exp $
  */
 package de.bayen.depotmanager.actions;
 
@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import de.bayen.database.DataObject;
+import de.bayen.database.Database;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.Table.QueryCondition;
@@ -18,11 +19,10 @@ import de.bayen.database.exception.DatabaseException;
 import de.bayen.util.StringHelper;
 import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ServletDatabase;
-import de.bayen.webframework.WebDBDatabase;
 
 public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db, ServletDatabase servlet)
+			Map root, Database db, ServletDatabase servlet)
 			throws DatabaseException, ServletException {
 		super.executeAction(ad, req, root, db, servlet);
 		Map uri = (Map) root.get("uri");
@@ -133,6 +133,10 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 }
 /*
  * $Log: ActionShow.java,v $
+ * Revision 1.2  2006/01/22 20:07:34  tbayen
+ * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
+ * Klasse WebDBDatabase unnötig, wurde gelöscht
+ *
  * Revision 1.1  2006/01/21 23:20:50  tbayen
  * Erste Version 1.0 des DepotManagers
  * erste FreibierWeb-Applikation im eigenen Paket

@@ -1,5 +1,5 @@
 /* Erzeugt am 15.01.2006 von tbayen
- * $Id: ActionAktualisieren.java,v 1.1 2006/01/21 23:20:50 tbayen Exp $
+ * $Id: ActionAktualisieren.java,v 1.2 2006/01/22 20:07:35 tbayen Exp $
  */
 package de.bayen.depotmanager.actions;
 
@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import CCAPI.Candle;
 import CCAPI.DataRetrieval.ConsorsHistoryRetriever;
 import de.bayen.database.DataObject;
+import de.bayen.database.Database;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.Table.QueryCondition;
@@ -24,14 +25,13 @@ import de.bayen.depotmanager.DataRetrieval.YahooRetriever;
 import de.bayen.webframework.Action;
 import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ServletDatabase;
-import de.bayen.webframework.WebDBDatabase;
 
 public class ActionAktualisieren implements Action {
 	static Logger logger = Logger
 			.getLogger(ActionAktualisieren.class.getName());
 
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db, ServletDatabase servlet)
+			Map root, Database db, ServletDatabase servlet)
 			throws DatabaseException, ServletException {
 		//readConsorsHistory(root, db);
 		readYahoo(root, db);
@@ -46,7 +46,7 @@ public class ActionAktualisieren implements Action {
 	 * @throws SysDBEx
 	 * @throws UserDBEx
 	 */
-	protected void readYahoo(Map root, WebDBDatabase db) throws SysDBEx,
+	protected void readYahoo(Map root, Database db) throws SysDBEx,
 			UserDBEx {
 		Table allepapiere = db.getTable("Wertpapiere");
 		int gelesen = 0, geschrieben = 0;
@@ -70,7 +70,7 @@ public class ActionAktualisieren implements Action {
 	 * @param root
 	 * @param db
 	 */
-	protected void readConsorsHistory(Map root, WebDBDatabase db)
+	protected void readConsorsHistory(Map root, Database db)
 			throws SysDBEx, UserDBEx {
 		Table allepapiere = db.getTable("Wertpapiere");
 		int gelesen = 0, geschrieben = 0;
@@ -101,7 +101,7 @@ public class ActionAktualisieren implements Action {
 	 * @return false, wenn schon ein Wert für diesen Tag vorlag
 	 * @throws SysDBEx
 	 */
-	private boolean saveCandle(DataObject papierid, WebDBDatabase db,
+	private boolean saveCandle(DataObject papierid, Database db,
 			Candle candle) throws SysDBEx {
 		logger.debug("Candle gelesen:"+candle);
 		if(candle==null)
@@ -148,6 +148,10 @@ public class ActionAktualisieren implements Action {
 }
 /*
  * $Log: ActionAktualisieren.java,v $
+ * Revision 1.2  2006/01/22 20:07:35  tbayen
+ * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
+ * Klasse WebDBDatabase unnötig, wurde gelöscht
+ *
  * Revision 1.1  2006/01/21 23:20:50  tbayen
  * Erste Version 1.0 des DepotManagers
  * erste FreibierWeb-Applikation im eigenen Paket

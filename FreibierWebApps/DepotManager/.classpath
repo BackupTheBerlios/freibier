@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FreibierDB"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FreibierWeb"/>
-	<classpathentry kind="lib" path="lib/FreibierDB-1.1.jar"/>
+	<classpathentry sourcepath="/FreibierDB/src" kind="lib" path="lib/FreibierDB-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/freemarker.jar"/>
 	<classpathentry kind="lib" path="lib/FreibierWeb-1.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
