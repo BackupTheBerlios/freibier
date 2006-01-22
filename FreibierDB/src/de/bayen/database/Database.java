@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.14 2006/01/15 21:24:39 tbayen Exp $
+ * $Id: Database.java,v 1.15 2006/01/22 19:40:01 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -25,6 +24,7 @@ import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import de.bayen.database.exception.DBRuntimeException;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.exception.SysDBEx;
@@ -77,22 +77,28 @@ public class Database {
 
 	private void openConnection() throws UserSQL_DBException {
 		log.trace("openConnection");
+//		try {
+//			Class.forName("com.mysql.jdbc.Driver");
+//		} catch (ClassNotFoundException e) {
+//			/* Ist der JDBC-Treiber nicht, installiert, kann man dies z.B. durch
+//			 * das Debian-Paket "libmysql-java" nachholen. Dann muss die
+//			 * Mysql-JDBC-Bibliothek in den Pfad für Bibliotheken eingebunden
+//			 * werden. Dies geht bei Eclipse z.B. unter dem Menüpunkt
+//			 * Project/Properties auf der Karte Java Build Path/Libraries.
+//			 */
+//			throw new DBRuntimeException.DriverNotFoundException(
+//					"JDBC-Treiber für MySQL kann nicht geladen werden", e, log);
+//		};
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			/*
-			 * Ist der JDBC-Treiber nicht, installiert, kann man dies z.B. durch
-			 * das Debian-Paket "libmysql-java" nachholen. Dann muss die
-			 * Mysql-JDBC-Bibliothek in den Pfad für Bibliotheken eingebunden
-			 * werden. Dies geht bei Eclipse z.B. unter dem Menüpunkt
-			 * Project/Properties auf der Karte Java Build Path/Libraries.
-			 */
-			throw new DBRuntimeException.DriverNotFoundException(
-					"JDBC-Treiber für MySQL kann nicht geladen werden", e, log);
-		};
-		try {
-			conn = DriverManager.getConnection("jdbc:mysql://" + server + "/"
-					+ name, user, password);
+			MysqlDataSource ds = new MysqlDataSource();
+			ds.setServerName(server);
+			ds.setDatabaseName(name);
+			ds.setUser(user);
+			ds.setPassword(password);
+			conn = ds.getConnection();
+			log.debug("TB!!!!! open:"+conn);
+//			conn = DriverManager.getConnection("jdbc:mysql://" + server + "/"
+//					+ name, user, password);
 		} catch (SQLException e2) {
 			throw new UserDBEx.UserSQL_DBException(
 					"Verbindung zur SQL-Datenbank '" + name
@@ -332,7 +338,7 @@ public class Database {
 			zeile = buffer.readLine();
 			while (zeile != null) {
 				Perl5Util regex = new Perl5Util();
-				if (zeile.length() > 0 && !regex.match("/^\\s*#/",zeile)
+				if (zeile.length() > 0 && !regex.match("/^\\s*#/", zeile)
 						&& !zeile.startsWith("--")) { // Kommentarzeilen weglassen
 					sql += zeile;
 					// Langer RegEx kurzer Sinn: Haben wir ein Semikolon?
@@ -442,6 +448,8 @@ public class Database {
 		try {
 			if (conn != null) {
 				conn.close();
+				log.debug("TB!!!!! close:"+conn);
+
 			}
 		} catch (SQLException e) {
 			throw new SysDBEx.SQL_DBException(
@@ -451,6 +459,9 @@ public class Database {
 }
 /*
  * $Log: Database.java,v $
+ * Revision 1.15  2006/01/22 19:40:01  tbayen
+ * Erste Einführung von DataSource (Vorbereitung für Connection Pools)
+ *
  * Revision 1.14  2006/01/15 21:24:39  tbayen
  * SQL-Text-Kommentare müssen nicht mehr am Anfang der Zeile beginnen
  *
