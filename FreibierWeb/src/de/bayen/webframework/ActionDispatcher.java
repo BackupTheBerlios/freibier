@@ -1,11 +1,12 @@
 /* Erzeugt am 19.03.2005 von tbayen
- * $Id: ActionDispatcher.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
+ * $Id: ActionDispatcher.java,v 1.3 2006/01/22 19:44:25 tbayen Exp $
  */
 package de.bayen.webframework;
 
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import de.bayen.database.Database;
 import de.bayen.database.exception.DatabaseException;
 
 /**
@@ -36,11 +37,15 @@ public interface ActionDispatcher {
 	 * @throws ServletException
 	 */
 	public void executeAction(String action, HttpServletRequest req, Map root,
-			WebDBDatabase db, ServletDatabase servlet) throws DatabaseException, ServletException;
+			Database db, ServletDatabase servlet) throws DatabaseException, ServletException;
 }
 
 /*
  * $Log: ActionDispatcher.java,v $
+ * Revision 1.3  2006/01/22 19:44:25  tbayen
+ * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
+ * Klasse WebDBDatabase unnötig, wurde gelöscht
+ *
  * Revision 1.2  2005/04/18 10:57:55  tbayen
  * Urlaubsarbeit:
  * Eigenes View, um Exceptions abzufangen

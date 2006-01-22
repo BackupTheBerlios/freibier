@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.11 2006/01/21 23:10:09 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.12 2006/01/22 19:44:24 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -21,11 +21,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
+import de.bayen.database.Database;
 import de.bayen.database.Table;
 import de.bayen.database.exception.DBRuntimeException;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.exception.SysDBEx;
 import de.bayen.database.exception.UserDBEx;
+import de.bayen.database.exception.SysDBEx.SQL_DBException;
 import de.bayen.database.typedefinition.BLOB;
 import de.bayen.database.typedefinition.TypeDefinition;
 import de.bayen.util.FreemarkerClassTemplateLoader;
@@ -69,6 +71,7 @@ public abstract class ServletDatabase extends HttpServlet {
 	private Configuration cfg;
 	private URIParser uriParser;
 	protected ActionDispatcher actionDispatcher;
+	protected Database database;
 
 	/**
 	 * Hier wird das Servlet initialisiert.
@@ -91,6 +94,22 @@ public abstract class ServletDatabase extends HttpServlet {
 		uriParser = new URIParserImpl();
 		actionDispatcher = new ActionDispatcherClassLoader(this.getClass());
 		readProperties();
+		try {
+			connectDatabase();
+		} catch (DatabaseException e) {
+			logger.error("Kann die Datenbank nicht öffnen.",e);
+			throw new RuntimeException("Kann die Datenbank nicht öffnen.");
+		}
+	}
+
+	/**
+	 * Aufräumen der Ressourcen, die ich in init() belegt habe
+	 */
+	public void destroy() {
+		try {
+			database.close();
+		} catch (SQL_DBException e) {}
+		super.destroy();
 	}
 
 	/**
@@ -196,18 +215,18 @@ public abstract class ServletDatabase extends HttpServlet {
 		String theme = null;
 		String table = null;
 		try {
-			// Die Datenbank wird in der Session gespeichert, damit sie nicht
-			// bei jedem Request neu aufgemacht werden muss
-			WebDBDatabase db = null;
-			//db = (WebDBDatabase) req.getSession().getAttribute("de.bayen.database");
-			if (db == null) {
-				db = connectDatabase();
-				req.getSession().setAttribute("de.bayen.database", db);
-			}
-			root.putAll(populateContextRoot(req, db));
+//			// Die Datenbank wird in der Session gespeichert, damit sie nicht
+//			// bei jedem Request neu aufgemacht werden muss
+//			WebDBDatabase db = null;
+//			//db = (WebDBDatabase) req.getSession().getAttribute("de.bayen.database");
+//			if (db == null) {
+//				db = connectDatabase();
+//				req.getSession().setAttribute("de.bayen.database", db);
+//			}
+			root.putAll(populateContextRoot(req, database));
 			uri = (Map) root.get("uri");
 			String action = (String) uri.get("action");
-			actionDispatcher.executeAction(action, req, root, db, this);
+			actionDispatcher.executeAction(action, req, root, database, this);
 			String view = (String) uri.get("view");
 			theme = (String) uri.get("theme");
 			table = (String) uri.get("table");
@@ -254,7 +273,7 @@ public abstract class ServletDatabase extends HttpServlet {
 		doGet(new HttpMultipartRequest(req), resp);
 	}
 
-	protected Map populateContextRoot(HttpServletRequest req, WebDBDatabase db)
+	protected Map populateContextRoot(HttpServletRequest req, Database db)
 			throws SysDBEx {
 		Map uri = uriParser.parseURI(req);
 		// context-root-hash erzeugen und mit einigen Grundwerten füllen
@@ -360,24 +379,24 @@ public abstract class ServletDatabase extends HttpServlet {
 	 * Falls man die Datenbank ggf. automatisch einrichten will, kann man
 	 * diese Methode entsprechend überladen.
 	 */
-	protected WebDBDatabase connectDatabase() throws DatabaseException {
+	protected void connectDatabase() throws DatabaseException {
 		try {
-			WebDBDatabase db = new WebDBDatabase(getProperty("database.name"),
+			database = new Database(getProperty("database.name"),
 					getProperty("database.host"), getProperty("database.user"),
 					getProperty("database.password"));
-			db.setPropertyPath(getClass().getPackage().getName());
+			database.setPropertyPath(getClass().getPackage().getName());
 			// falls die Datenbank noch nicht existiert, initialisiere ich sie
-			if (db.getTableNamesList().size() == 0) {
+			if (database.getTableNamesList().size() == 0) {
 				try {
 					String path = getClass().getPackage().getName().replace(
 							'.', '/');
-					db.executeSqlFile(path + "/db_definition.sql");
+					database.executeSqlFile(path + "/db_definition.sql");
 				} catch (IOException e) {
 					throw new DBRuntimeException(
 							"Kann Definitionsdatei nicht lesen", e);
 				}
 			}
-			return db;
+			
 		} catch (MissingResourceException e) {
 			throw new UserDBEx(
 					"Datenbank-Beschreibung in database.properties nicht vorhanden",
@@ -387,6 +406,10 @@ public abstract class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.12  2006/01/22 19:44:24  tbayen
+ * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
+ * Klasse WebDBDatabase unnötig, wurde gelöscht
+ *
  * Revision 1.11  2006/01/21 23:10:09  tbayen
  * Komplette Überarbeitung und Aufteilung als Einzelbibliothek - Version 1.6
  *

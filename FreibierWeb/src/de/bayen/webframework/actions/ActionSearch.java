@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionSearch.java,v 1.4 2005/08/12 22:57:11 tbayen Exp $
+ * $Id: ActionSearch.java,v 1.5 2006/01/22 19:44:24 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import de.bayen.database.Database;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.Table.QueryCondition;
@@ -16,7 +17,6 @@ import de.bayen.database.exception.DatabaseException;
 import de.bayen.webframework.Action;
 import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ServletDatabase;
-import de.bayen.webframework.WebDBDatabase;
 
 /**
  * Sucht einen Datensatz anhand der Eingaben in den übergebenen Parametern.
@@ -29,7 +29,7 @@ public class ActionSearch implements Action {
 	 * @see de.bayen.webframework.actions.Action#executeAction(de.bayen.webframework.ActionDispatcher, javax.servlet.http.HttpServletRequest, java.util.Map, de.bayen.webframework.WebDBDatabase)
 	 */
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db, ServletDatabase servlet)
+			Map root, Database db, ServletDatabase servlet)
 			throws DatabaseException, ServletException {
 		Map uri = (Map) root.get("uri");
 		String name = (String) uri.get("table");
@@ -82,6 +82,10 @@ public class ActionSearch implements Action {
 }
 /*
  * $Log: ActionSearch.java,v $
+ * Revision 1.5  2006/01/22 19:44:24  tbayen
+ * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
+ * Klasse WebDBDatabase unnötig, wurde gelöscht
+ *
  * Revision 1.4  2005/08/12 22:57:11  tbayen
  * Compiler-Warnings bereinigt
  *

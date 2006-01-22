@@ -9,7 +9,6 @@ ergibt sich aus Neuerungen:
 
 
 nötig:
-- Datenbank-Anbindung erlaubt offensichtlich kein Multitasking
 - banking
   - auf dem Produktionssystem testen/umsetzen und ggf. fertigmachen:
     - BLZ-Feldname in der Datenbank in Grossbuchstaben ändern
@@ -23,9 +22,9 @@ nötig:
   - Filter (z.B. nach Aussendienstlern)
   - Telefonnummern in Liste für Günther
   - Bei der Anlage neuer Datensätze haben Verweisfelder immer Index 1
+
 wünschenswert:
 - depotmanager
-  - alle benutzten Templates anpassen
   - YahooRetriever ohne deprecated APIs
 - banking
   - besserer Umgang mit HBCI4Java, was Patches und Updates anbetrifft
@@ -69,6 +68,7 @@ wünschenswert:
   - benutzte Properties auf Methoden abbilden
   - Interfaces erstellen
   - API besser standardisieren: get/set, toString, etc.
+
 nicht wirklich nötig:
 - Paging bei der Listenanzeige
 - Versionsnummer nicht in Webadresse benutzen?
@@ -78,7 +78,10 @@ nicht wirklich nötig:
 
 
 erledigt:
-Version 1.6
+- WebDBDatabase-Klasse unnötig gemacht und gelöscht
+- Datenbank-Anbindung geändert
+- Database läuft intern jetzt mit Datasource
+Version 1.6, (DepotManager 1.0, FreibierDB 1.1)
 - Bugmeldung an Freemarker wg. ClassTemplateLoader
 - Fix für Bug im TemplateLoader von Freemarker
 - Kopieren des "web"-Verzeichnisses nach /doku/examples
@@ -196,27 +199,3 @@ Version 1.2
 - logische Aufteilung der URL
 - Erzeugen der Datenbank
 Version 1.1
-
-
-
-
-Sonstige Notizen
-----------------
-Fabian: 0511/7900580
-
-name=banking
-host=sqlserver
-user=kontaktdaten
-password=kontaktdaten
-
-bayenweb:
-name=kontaktdaten
-host=sqlserver
-user=kontaktdaten
-password=kontaktdaten
-
-kontaktdaten:
-name=tbayen
-host=sqlserver
-user=kontaktdaten
-password=kontaktdaten

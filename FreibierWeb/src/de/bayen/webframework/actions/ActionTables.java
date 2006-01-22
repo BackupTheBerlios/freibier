@@ -1,16 +1,16 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionTables.java,v 1.2 2005/04/18 10:57:55 tbayen Exp $
+ * $Id: ActionTables.java,v 1.3 2006/01/22 19:44:24 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import de.bayen.database.Database;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.webframework.Action;
 import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ServletDatabase;
-import de.bayen.webframework.WebDBDatabase;
 
 /**
  * TODO Klassenbeschreibung für die Klasse "ActionTables"
@@ -22,7 +22,7 @@ public class ActionTables implements Action {
 	 * @see de.bayen.webframework.actions.Action#executeAction(de.bayen.webframework.ActionDispatcher, javax.servlet.http.HttpServletRequest, java.util.Map, de.bayen.webframework.WebDBDatabase)
 	 */
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db, ServletDatabase servlet) throws DatabaseException,
+			Map root, Database db, ServletDatabase servlet) throws DatabaseException,
 			ServletException {
 		root.put("list", db.getTableNamesList());
 	}
@@ -30,6 +30,10 @@ public class ActionTables implements Action {
 
 /*
  * $Log: ActionTables.java,v $
+ * Revision 1.3  2006/01/22 19:44:24  tbayen
+ * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
+ * Klasse WebDBDatabase unnötig, wurde gelöscht
+ *
  * Revision 1.2  2005/04/18 10:57:55  tbayen
  * Urlaubsarbeit:
  * Eigenes View, um Exceptions abzufangen

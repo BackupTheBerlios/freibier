@@ -1,5 +1,5 @@
 /* Erzeugt am 20.01.2006 von tbayen
- * $Id: ActionImage.java,v 1.1 2006/01/21 23:10:10 tbayen Exp $
+ * $Id: ActionImage.java,v 1.2 2006/01/22 19:44:24 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -9,17 +9,17 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
+import de.bayen.database.Database;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.webframework.Action;
 import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ServletDatabase;
-import de.bayen.webframework.WebDBDatabase;
 
 public class ActionImage implements Action {
 	static Logger logger = Logger.getLogger(ActionImage.class.getName());
 
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db, ServletDatabase servlet)
+			Map root, Database db, ServletDatabase servlet)
 			throws DatabaseException, ServletException {
 		Map uri = (Map) root.get("uri");
 		String name = req.getParameter("name");
@@ -62,6 +62,10 @@ public class ActionImage implements Action {
 }
 /*
  * $Log: ActionImage.java,v $
+ * Revision 1.2  2006/01/22 19:44:24  tbayen
+ * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
+ * Klasse WebDBDatabase unnötig, wurde gelöscht
+ *
  * Revision 1.1  2006/01/21 23:10:10  tbayen
  * Komplette Überarbeitung und Aufteilung als Einzelbibliothek - Version 1.6
  *

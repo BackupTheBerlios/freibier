@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionShow.java,v 1.4 2006/01/21 23:10:10 tbayen Exp $
+ * $Id: ActionShow.java,v 1.5 2006/01/22 19:44:24 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import de.bayen.database.Database;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.Table.QueryCondition;
@@ -17,7 +18,6 @@ import de.bayen.database.typedefinition.TypeDefinition;
 import de.bayen.webframework.Action;
 import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ServletDatabase;
-import de.bayen.webframework.WebDBDatabase;
 
 /**
  * TODO Klassenbeschreibung für die Klasse "ActionShow"
@@ -26,7 +26,7 @@ import de.bayen.webframework.WebDBDatabase;
  */
 public class ActionShow implements Action {
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db, ServletDatabase servlet)
+			Map root, Database db, ServletDatabase servlet)
 			throws DatabaseException, ServletException {
 		Map uri = (Map) root.get("uri");
 		String name = (String) uri.get("table");
@@ -75,6 +75,10 @@ public class ActionShow implements Action {
 }
 /*
  * $Log: ActionShow.java,v $
+ * Revision 1.5  2006/01/22 19:44:24  tbayen
+ * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
+ * Klasse WebDBDatabase unnötig, wurde gelöscht
+ *
  * Revision 1.4  2006/01/21 23:10:10  tbayen
  * Komplette Überarbeitung und Aufteilung als Einzelbibliothek - Version 1.6
  *

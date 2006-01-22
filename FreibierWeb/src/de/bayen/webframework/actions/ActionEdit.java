@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionEdit.java,v 1.4 2005/08/12 22:57:11 tbayen Exp $
+ * $Id: ActionEdit.java,v 1.5 2006/01/22 19:44:24 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import de.bayen.database.DataObject;
+import de.bayen.database.Database;
 import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.exception.DatabaseException;
@@ -18,7 +19,6 @@ import de.bayen.util.HttpMultipartRequest.UploadedFile;
 import de.bayen.webframework.Action;
 import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ServletDatabase;
-import de.bayen.webframework.WebDBDatabase;
 
 /**
  * TODO Klassenbeschreibung für die Klasse "ActionEdit"
@@ -27,7 +27,7 @@ import de.bayen.webframework.WebDBDatabase;
  */
 public class ActionEdit implements Action {
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db, ServletDatabase servlet)
+			Map root, Database db, ServletDatabase servlet)
 			throws DatabaseException, ServletException {
 		Map uri = (Map) root.get("uri");
 		String name = (String) uri.get("table");
@@ -70,6 +70,10 @@ public class ActionEdit implements Action {
 }
 /*
  * $Log: ActionEdit.java,v $
+ * Revision 1.5  2006/01/22 19:44:24  tbayen
+ * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
+ * Klasse WebDBDatabase unnötig, wurde gelöscht
+ *
  * Revision 1.4  2005/08/12 22:57:11  tbayen
  * Compiler-Warnings bereinigt
  *

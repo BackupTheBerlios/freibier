@@ -1,5 +1,5 @@
 /* Erzeugt am 24.04.2005 von tbayen
- * $Id: ActionButton.java,v 1.1 2005/08/07 16:56:13 tbayen Exp $
+ * $Id: ActionButton.java,v 1.2 2006/01/22 19:44:24 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -7,12 +7,12 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
+import de.bayen.database.Database;
 import de.bayen.database.exception.DatabaseException;
 import de.bayen.webframework.Action;
 import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ActionDispatcherClassLoader;
 import de.bayen.webframework.ServletDatabase;
-import de.bayen.webframework.WebDBDatabase;
 
 /**
  * Die Button-Action bearbeitet Buttonklicks, die dann auf eine angegebene
@@ -31,7 +31,7 @@ public class ActionButton implements Action {
 			.getName());
 
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
-			Map root, WebDBDatabase db, ServletDatabase servlet)
+			Map root, Database db, ServletDatabase servlet)
 			throws DatabaseException, ServletException {
 		String realaction=req.getParameter("action");
 		if(realaction==null){
@@ -46,6 +46,10 @@ public class ActionButton implements Action {
 
 /*
  * $Log: ActionButton.java,v $
+ * Revision 1.2  2006/01/22 19:44:24  tbayen
+ * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
+ * Klasse WebDBDatabase unnötig, wurde gelöscht
+ *
  * Revision 1.1  2005/08/07 16:56:13  tbayen
  * Produktionsversion 1.5
  *

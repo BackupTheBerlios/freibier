@@ -1,5 +1,5 @@
 /* Erzeugt am 19.03.2005 von tbayen
- * $Id: ActionDispatcherClassLoader.java,v 1.4 2006/01/21 23:10:09 tbayen Exp $
+ * $Id: ActionDispatcherClassLoader.java,v 1.5 2006/01/22 19:44:25 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
+import de.bayen.database.Database;
 import de.bayen.database.exception.DatabaseException;
 
 /**
@@ -42,7 +43,7 @@ public class ActionDispatcherClassLoader implements ActionDispatcher {
 	}
 
 	public void executeAction(String action, HttpServletRequest req, Map root,
-			WebDBDatabase db, ServletDatabase servlet)
+			Database db, ServletDatabase servlet)
 			throws DatabaseException, ServletException {
 		logger.debug("ActionDispatcher.executeAction('" + action + "', ...)");
 		if (action.equals("nothing")) {
@@ -76,6 +77,10 @@ public class ActionDispatcherClassLoader implements ActionDispatcher {
 }
 /*
  * $Log: ActionDispatcherClassLoader.java,v $
+ * Revision 1.5  2006/01/22 19:44:25  tbayen
+ * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
+ * Klasse WebDBDatabase unnötig, wurde gelöscht
+ *
  * Revision 1.4  2006/01/21 23:10:09  tbayen
  * Komplette Überarbeitung und Aufteilung als Einzelbibliothek - Version 1.6
  *
