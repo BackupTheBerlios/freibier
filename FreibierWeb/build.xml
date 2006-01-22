@@ -149,7 +149,7 @@
 
 	
 	<!-- ==================== compile Target ======================== -->
-	<target name="compile" depends="prepare, importlibs, makeclasspath, makeclasspathwebapp"
+	<target name="compile" depends="importlibs, prepare, makeclasspath, makeclasspathwebapp"
 		description="Compile Java sources">
 
 	    <!-- Compile Java classes as necessary -->
