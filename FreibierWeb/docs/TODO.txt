@@ -9,14 +9,6 @@ ergibt sich aus Neuerungen:
 
 
 nötig:
-- banking
-  - auf dem Produktionssystem testen/umsetzen und ggf. fertigmachen:
-    - BLZ-Feldname in der Datenbank in Grossbuchstaben ändern
-    - Spezial-Templates für "blz" in Transaktionen zurücksetzen
-  - Analyse und Umwandlung der Durst-Sparkassen-Dateien
-  - Anlegen neuer Konten per Weboberfläche
-  - Bei Umwandlung Pool->Korb ggf. Testkorb als Ziel vorgeben
-  - Suche funktioniert nicht
 - BayenWeb
   - Aktualisierung statt neuimport
   - Filter (z.B. nach Aussendienstlern)
@@ -26,13 +18,6 @@ nötig:
 wünschenswert:
 - depotmanager
   - YahooRetriever ohne deprecated APIs
-- banking
-  - besserer Umgang mit HBCI4Java, was Patches und Updates anbetrifft
-  - Liquiditätsmanagement
-  - Speichern von Kontoauszügen
-  - Vorkontierte Ausgabe von Kontoauszügen
-  - HBCICallback multithreading-konform benutzen
-  - HBCI4Java zentral initialisieren (wird an manchen Stellen von Hand gemacht)
 - interne Verbesserungen
   - Anpassung der Doku README und INSTALL
   - stärkere Angleichung an JavaBeans, um andere Datenquellen auch nutzen zu können
@@ -78,6 +63,8 @@ nicht wirklich nötig:
 
 
 erledigt:
+- Banking-TODOs in eigene Datei innerhalb dieses Projektes ausgelagert
+- eigenes Projekt für Banking begonnen
 - WebDBDatabase-Klasse unnötig gemacht und gelöscht
 - Datenbank-Anbindung geändert
 - Database läuft intern jetzt mit Datasource
