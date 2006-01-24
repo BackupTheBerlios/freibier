@@ -1,0 +1,14 @@
+Dieses Verzeichnis kann als Vorlage für eigene Appliaktionen dienen.
+
+Es wird komplett in die erzeugte Webapplikation kopiert. Es enthält
+zuerst einmal Dateien, die ganz normal unter der Context-URL der
+Applikation per Webbrowser aufgerufen werden können. Hier bietet
+sich also an, eine Datei "index.html" an seine Bedürfnisse anzupassen.
+Eventuell kann man hier auch Grafiken in ein images-Verzeichnis
+kopieren etc.
+
+Das Unterverzeichnis WEB-INF kann nicht über einen Browser erreicht
+werden. Es enthält die Konfiguration der Applikation. Hier befindet
+sich die Datei "web.xml", die die Applikation in den Tomcat einbindet
+sowie ein "lib"-Verzeichnis, in das alle benötigten Bibliotheken
+kommen.

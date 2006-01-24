@@ -1,0 +1,29 @@
+Dieses Programm ist (c) Thomas Bayen (tbayen@bayen.de) und Peter Hormanns
+
+Dieses Programm ist unter der GPL veröffentlicht und darf unter den
+Bedingungen dieser Lizenz kopiert und benutzt werden. Der genaue Text
+der GPL ist beigefügt.
+
+
+
+Alle fremden Teile des Programmes sind mit der Absicht ausgesucht
+worden, das Programm im Ganzen unter der GPL vertreiben zu können.
+Diese Teile sind im einzelnen:
+
+Es enthält die HBCI4Java-Bibliothek, die ebenfalls unter der GPL steht.
+
+Es enthält einige Bibliotheken (jar-Files), deren Lizenz ein Benutzer
+selber prüfen sollte.
+
+Es enthält Grafikdateien im Verzeichnis images, die aus verschiedenen
+Debian-Paketen entnommen wurden, die also DFSG-konforme Lizenzen haben. 
+In diesem Verzeichnis befindet sich eine Textdatei, die über Herkunft 
+und Copyright dieser Dateien Auskunft gibt.
+
+
+
+Die Autoren übernehmen keine Garantie für irgendetwas, auch nicht
+dafür, daß irgendwelche Teile dieses Programms mit Rechten Dritter
+belastet sind. Es wird keine Zusicherung hinsichtlich irgendwelcher
+Eigenschaften dieses Programmes gemacht und dementsprechend auch 
+keinerlei Garantie übernommen.
