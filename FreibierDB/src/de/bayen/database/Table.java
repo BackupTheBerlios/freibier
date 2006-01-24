@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.22 2005/11/24 11:47:45 tbayen Exp $
+ * $Id: Table.java,v 1.23 2006/01/24 22:13:41 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -84,7 +84,7 @@ public class Table {
 		public static final int LESS = 3;
 		public static final int LESS_OR_EQUAL = 4;
 		public static final int LIKE = 5;
-		public static final int SQL = 5; // SQL-Befehl in value, Tabelle(n) in column
+		public static final int SQL = 6; // SQL-Befehl in value, Tabelle(n) in column
 
 		/**
 		 * Diese Klasse erzeugt eine Datenbankabfrage, ohne daß man dafür SQL
@@ -576,6 +576,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.23  2006/01/24 22:13:41  tbayen
+ * LIKE in Queries ging nicht
+ *
  * Revision 1.22  2005/11/24 11:47:45  tbayen
  * getSelectStatement(), das auch bei null-Fremdschlüssel funktioniert
  * sowie einige Verbesserungen in der JavaDoc
