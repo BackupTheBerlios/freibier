@@ -90,7 +90,7 @@
 		description="Import JAR Files from other Projects">
 		<!-- Property "importlibs":
 		     comma- or space-separated list of patterns of files -->
-		<copy todir="${lib.home}" flatten="yes">
+		<copy todir="${lib.home}" flatten="yes" preservelastmodified="true">
 			<fileset dir="${basedir}/.." includes="${importlibs}"/>
 		</copy>
 	</target>

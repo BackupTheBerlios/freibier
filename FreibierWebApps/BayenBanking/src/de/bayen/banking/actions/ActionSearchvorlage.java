@@ -1,5 +1,5 @@
 /* Erzeugt am 02.06.2005 von tbayen
- * $Id: ActionSearchvorlage.java,v 1.1 2006/01/24 00:26:01 tbayen Exp $
+ * $Id: ActionSearchvorlage.java,v 1.2 2006/01/24 22:41:56 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -14,6 +14,7 @@ import de.bayen.database.Record;
 import de.bayen.database.Table;
 import de.bayen.database.Table.QueryCondition;
 import de.bayen.database.exception.DatabaseException;
+import de.bayen.database.exception.UserDBEx.RecordNotExistsDBException;
 import de.bayen.webframework.Action;
 import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ServletDatabase;
@@ -46,8 +47,13 @@ public class ActionSearchvorlage implements Action {
 		QueryCondition condi = tab.new QueryCondition(parameter.substring(1),
 				operator, value);
 		// zusätzliche Kondition: nur Datensätze aus dem Vorlagenkorb
-		String vorlagenkorb = db.getTable("Ausgangskoerbe").getRecordByValue(
-				"Bezeichnung", "Vorlagen").getField("id").format();
+		String vorlagenkorb;
+		try {
+			vorlagenkorb = db.getTable("Ausgangskoerbe").getRecordByValue(
+					"Bezeichnung", "Vorlagen").getField("id").format();
+		} catch (RecordNotExistsDBException e) {
+			throw new RuntimeException("Ausgangskorb 'Vorlagen' existiert nicht.",e);
+		}
 		QueryCondition nextcond = tab.new QueryCondition("Ausgangskorb",
 				Table.QueryCondition.EQUAL, vorlagenkorb);
 		condi.and(nextcond);
@@ -79,6 +85,9 @@ public class ActionSearchvorlage implements Action {
 }
 /*
  * $Log: ActionSearchvorlage.java,v $
+ * Revision 1.2  2006/01/24 22:41:56  tbayen
+ * Suchfunktion repariert
+ *
  * Revision 1.1  2006/01/24 00:26:01  tbayen
  * Erste eigenständige Version (1.6beta)
  * sollte funktional gleich sein mit banking-Modul aus WebDatabase/FreibierWeb 1.5

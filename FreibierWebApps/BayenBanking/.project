@@ -3,6 +3,8 @@
 	<name>BayenBanking</name>
 	<comment></comment>
 	<projects>
+		<project>FreibierDB</project>
+		<project>FreibierWeb</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

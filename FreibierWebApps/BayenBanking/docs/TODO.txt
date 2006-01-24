@@ -1,38 +1,31 @@
 TODO:
 -----
 
-ergibt sich aus Neuerungen:
-- die config.properties in den Paketen können eigentlich weg
-- die Servlet-Klassen brauchen connectDatabase() nicht mehr zu implementieren
-- abgeleitete ActionDispatcher-Klassen nicht mehr nötig
-
-
-
 nötig:
-- banking
-  - auf dem Produktionssystem testen/umsetzen und ggf. fertigmachen:
-    - BLZ-Feldname in der Datenbank in Grossbuchstaben ändern
-    - Spezial-Templates für "blz" in Transaktionen zurücksetzen
-  - Analyse und Umwandlung der Durst-Sparkassen-Dateien
-  - Anlegen neuer Konten per Weboberfläche
-  - Bei Umwandlung Pool->Korb ggf. Testkorb als Ziel vorgeben
-  - Suche funktioniert nicht
+- auf dem Produktionssystem testen/umsetzen und ggf. fertigmachen:
+  - BLZ-Feldname in der Datenbank in Grossbuchstaben ändern
+  - Spezial-Templates für "blz" in Transaktionen zurücksetzen
+- Analyse und Umwandlung der Durst-Sparkassen-Dateien
 
 wünschenswert:
-- banking
-  - besserer Umgang mit HBCI4Java, was Patches und Updates anbetrifft
-  - Liquiditätsmanagement
-  - Speichern von Kontoauszügen
-  - Vorkontierte Ausgabe von Kontoauszügen
-  - HBCICallback multithreading-konform benutzen
-  - HBCI4Java zentral initialisieren (wird an manchen Stellen von Hand gemacht)
-
+- Anlegen neuer Konten per Weboberfläche
+- Liquiditätsmanagement
+- Speichern von Kontoauszügen
+- Vorkontierte Ausgabe von Kontoauszügen
+- HBCICallback multithreading-konform benutzen
+- HBCI4Java zentral initialisieren (wird an manchen Stellen von Hand gemacht)
 
 
 
 erledigt:
+- Suche funktioniert wieder richtig
 - stylesheet wird richtig geladen (include wie in neuem FreibierWeb)
 - lauffähig als Applikation mit FreibierWeb als Bibliothek
+- besserer Umgang mit HBCI4Java wg. Patches und Updates (keine Patches mehr nötig?)
 - HBCI4Java aktualisiert auf Version 2.5.0rc-5
+- die config.properties in den Paketen konnten weg
+- die Servlet-Klassen brauchen connectDatabase() nicht mehr zu implementieren
+- abgeleitete ActionDispatcher-Klassen nicht mehr nötig
 - Version auf 1.6 festgelegt (letzte WebDatabase-Version mit Banking war 1.5)
 - Aufteilung der WebDatabase-Applikation in FreibierWeb, BayenBanking, u.a.
+- Bei Umwandlung Pool->Korb ggf. Testkorb als Ziel vorgeben
