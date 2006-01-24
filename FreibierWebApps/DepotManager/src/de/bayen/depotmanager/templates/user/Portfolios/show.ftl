@@ -1,5 +1,5 @@
 <#-- Erzeugt am 17.01.2006 von tbayen
-     $Id: show.ftl,v 1.1 2006/01/21 23:20:50 tbayen Exp $ -->
+     $Id: show.ftl,v 1.2 2006/01/24 21:59:28 tbayen Exp $ -->
 <#assign title="${record.getField(fields[0])}"/>
 <#include "include/editmacros.ftl"/>
 <#assign menu1_name=uri.table>
@@ -69,13 +69,14 @@
       <td class="numbers">${bew.Anzahl}</td>
       <td class="numbers">${bew.Kurs} &euro;</td>
       <td class="numbers">${bew.Betrag} &euro;</td>
+      </tr><tr>
     </#list>
-    </tr><tr>
       <td class="layout"></td><td class="topline numbers">${papier.AnzahlNice}</td>
       <td class="layout"></td><td class="topline numbers">${papier.SummeNice} &euro;</td>
     </tr><tr>
       <td>Kurs vom ${papier.KursDatum}</td><td></td>
-      <td class="numbers">${papier.KursAktuellNice} &euro;</td><td class="numbers">${papier.SummeAktuellNice} &euro;</td>
+      <td class="numbers">${papier.KursAktuellNice} &euro;</td>
+      <td class="numbers">${papier.SummeAktuellNice} &euro;</td>
     </tr><tr>
       <td>
         <#if papier.GV="G">
@@ -83,8 +84,17 @@
         <#else/>
           Verlust
         </#if>
-      </td><td></td>
-      <td></td><td
+      </td><td></td><td
+        <#if papier.GV="G">
+          class="numbers gruen"
+        <#else/>
+          class="numbers rot"
+        </#if>
+      >
+      <#if papier.SummeAktuell!=0>
+        <#if papier.Gewinn/papier.SummeAktuell&gt;0>+</#if>${(papier.Gewinn/papier.SummeAktuell)?string("0.00%")}
+      </#if>
+      </td><td
       <#if papier.GV="G">
         class="numbers gruen gross topline doubleunderline"
       <#else/>
@@ -105,7 +115,17 @@
       <#else/>
         Gesamtverlust
       </#if>
-    </td><td></td><td></td><td
+    </td><td></td><td
+    <#if GV="G">
+      class="numbers gruen"
+    <#else/>
+      class="numbers rot"
+    </#if>
+    >
+    <#if Summe!=0>
+      <#if Gewinn/Summe&gt;0>+</#if>${(Gewinn/Summe)?string("0.00%")}
+    </#if>
+    </td><td
     <#if GV="G">
       class="numbers gruen gross topline doubleunderline"
     <#else/>
@@ -118,6 +138,9 @@
 
 <#--
 * $Log: show.ftl,v $
+* Revision 1.2  2006/01/24 21:59:28  tbayen
+* Prozentangabe bei Gewinn/Verlust
+*
 * Revision 1.1  2006/01/21 23:20:50  tbayen
 * Erste Version 1.0 des DepotManagers
 * erste FreibierWeb-Applikation im eigenen Paket

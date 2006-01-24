@@ -1,0 +1,9 @@
+TODO:
+-----
+
+nötig:
+
+erledigt:
+- Prozentausgabe Gewinn zum Einsatz
+- ActionShow erkannte immer nur eine Transaktion pro Wertpapier
+Version 1.0

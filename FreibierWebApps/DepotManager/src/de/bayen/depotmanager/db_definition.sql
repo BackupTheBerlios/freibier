@@ -1,5 +1,5 @@
 # SQL-Definitionen
-# $Id: db_definition.sql,v 1.1 2006/01/21 23:20:50 tbayen Exp $
+# $Id: db_definition.sql,v 1.2 2006/01/24 21:59:28 tbayen Exp $
 
 create table Portfolios (
 	Name		char(20),
@@ -9,7 +9,7 @@ create table Portfolios (
 );
 
 create table Wertpapiere (
-	Name		char(20),
+	Name		char(40),
 	ISIN		char(12),
 	# ID-Feld
 	id int auto_increment, 
@@ -37,6 +37,9 @@ create table Kursdaten (
 );
 
 # $Log: db_definition.sql,v $
+# Revision 1.2  2006/01/24 21:59:28  tbayen
+# Prozentangabe bei Gewinn/Verlust
+#
 # Revision 1.1  2006/01/21 23:20:50  tbayen
 # Erste Version 1.0 des DepotManagers
 # erste FreibierWeb-Applikation im eigenen Paket

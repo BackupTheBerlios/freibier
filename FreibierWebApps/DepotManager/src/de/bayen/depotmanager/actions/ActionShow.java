@@ -1,5 +1,5 @@
 /* Erzeugt am 16.01.2006 von tbayen
- * $Id: ActionShow.java,v 1.2 2006/01/22 20:07:34 tbayen Exp $
+ * $Id: ActionShow.java,v 1.3 2006/01/24 21:59:28 tbayen Exp $
  */
 package de.bayen.depotmanager.actions;
 
@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.log4j.Logger;
 import de.bayen.database.DataObject;
 import de.bayen.database.Database;
 import de.bayen.database.Record;
@@ -21,6 +22,8 @@ import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ServletDatabase;
 
 public class ActionShow extends de.bayen.webframework.actions.ActionShow {
+	static Logger logger = Logger.getLogger(ActionShow.class.getName());
+
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
 			Map root, Database db, ServletDatabase servlet)
 			throws DatabaseException, ServletException {
@@ -35,15 +38,15 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 			Map papiere = new HashMap();
 			root.put("bewegungen", papiere);
 			Table bew = db.getTable("Bewegungen");
-			QueryCondition cond = bew.new QueryCondition("Portfolio", 0,
-					recordid);
+			QueryCondition cond = bew.new QueryCondition("Portfolio",
+					QueryCondition.EQUAL, recordid);
 			List bewegungen = bew.getRecordsFromQuery(cond, "Datum", true);
 			for (int i = 0; i < bewegungen.size(); i++) {
 				Record rec = (Record) bewegungen.get(i);
 				// Wertpapier feststellen, ggf. Hash dazu erzeugen und in "papier" bereitstellen
 				DataObject papierId = rec.getField("Wertpapier");
 				Map papier;
-				if (!papiere.containsValue(papierId.format())) {
+				if (!papiere.containsKey(papierId.format())) {
 					// Dieses Papier gibt es noch nicht, es wird neu angelegt:
 					papier = new HashMap();
 					Record wertpapier = db.getTable("Wertpapiere")
@@ -61,9 +64,10 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 					List aktuellerkursList = kursdatenTabelle.getRecords(
 							condition, "Datum", false, 0, 1);
 					if (aktuellerkursList.size() > 0) {
-						Record aktuellerkurs = (Record) aktuellerkursList.get(0);
-						BigDecimal kursaktuell = (BigDecimal) aktuellerkurs.getField(
-								"Schlusskurs").getValue();
+						Record aktuellerkurs = (Record) aktuellerkursList
+								.get(0);
+						BigDecimal kursaktuell = (BigDecimal) aktuellerkurs
+								.getField("Schlusskurs").getValue();
 						papier.put("KursAktuell", kursaktuell);
 						papier.put("KursAktuellNice",
 								StringHelper.BigDecimal2String(
@@ -78,10 +82,10 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 						papier.put("KursAktuellNice", "0,00");
 						papier.put("KursDatum", "00.00.0000");
 					}
+					logger.debug("Neues Papier: " + papier);
 					papiere.put(papierId.format(), papier);
 				} else {
 					papier = (Map) papiere.get(papierId.format());
-
 				}
 				// Jetzt die eigentliche Bewegung in den "papier"-Hash schreiben
 				List papierBewegungen = (List) papier.get("einzelbewegungen");
@@ -96,6 +100,7 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 						.getField("Kurs").getValue());
 				einzelbewegung.put("Betrag", StringHelper.BigDecimal2String(
 						betrag, 2));
+				logger.debug("Einzelbewegung: " + einzelbewegung);
 				papierBewegungen.add(einzelbewegung);
 				// Papier-Daten aktualisieren
 				papier.put("Anzahl", ((BigDecimal) papier.get("Anzahl")).add(
@@ -108,12 +113,14 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 				papier.put("SummeNice", StringHelper.BigDecimal2String(
 						(BigDecimal) papier.get("Summe"), 2));
 				BigDecimal summeAktuell = ((BigDecimal) papier.get("Anzahl"))
-						.multiply((BigDecimal)papier.get("KursAktuell"));
+						.multiply((BigDecimal) papier.get("KursAktuell"));
+				papier.put("SummeAktuell", summeAktuell);
 				papier.put("SummeAktuellNice", StringHelper.BigDecimal2String(
 						summeAktuell, 2));
 				gesamtsumme = gesamtsumme.add(summeAktuell);
 				BigDecimal gewinn = summeAktuell.subtract((BigDecimal) papier
 						.get("Summe"));
+				papier.put("Gewinn", gewinn);
 				papier.put("GewinnNice", StringHelper.BigDecimal2String(gewinn,
 						2));
 				papier.put("GV", gewinn.compareTo(new BigDecimal(0)) < 0 ? "V"
@@ -133,6 +140,9 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 }
 /*
  * $Log: ActionShow.java,v $
+ * Revision 1.3  2006/01/24 21:59:28  tbayen
+ * Prozentangabe bei Gewinn/Verlust
+ *
  * Revision 1.2  2006/01/22 20:07:34  tbayen
  * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
  * Klasse WebDBDatabase unnötig, wurde gelöscht
