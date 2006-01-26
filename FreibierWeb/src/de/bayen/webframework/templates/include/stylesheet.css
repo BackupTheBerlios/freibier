@@ -205,14 +205,14 @@ td.icon {height: 1em; white-space: nowrap;}  /* Tabellenfeld enthält nur Icon(s)
     background-color: silver;
   }
 
-  /* Elemente, die exlizit nicht gedruckt werden sollen */
+  /* Elemente, die explizit nicht gedruckt werden sollen */
   /* sollte immer in ein <div>-Tag kommen, klappt sonst nämlich oft nicht */
   /* (alte Vers. deaktiviert 19.01.06:) .forscreen{max-height:0; max-width:0; overflow:hidden; }*/
   .forscreen{display:none; }
 }
 
 @media screen{
-  /* Elemente, die exlizit gedruckt werden sollen */
+  /* Elemente, die explizit gedruckt werden sollen */
   /* sollte immer in ein <div>-Tag kommen, klappt sonst nämlich oft nicht */
   /* (alte Vers. deaktiviert 19.01.06:) .forprint{max-height:0; max-width:0; overflow:hidden; }*/
   .forprint{display:none; }
