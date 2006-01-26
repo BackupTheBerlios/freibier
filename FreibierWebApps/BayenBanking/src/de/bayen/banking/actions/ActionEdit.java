@@ -1,5 +1,5 @@
 /* Erzeugt am 05.06.2005 von tbayen
- * $Id: ActionEdit.java,v 1.1 2006/01/24 00:26:01 tbayen Exp $
+ * $Id: ActionEdit.java,v 1.2 2006/01/26 13:49:20 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -25,7 +25,6 @@ public class ActionEdit extends de.bayen.webframework.actions.ActionEdit {
 	public void executeAction(ActionDispatcher ad, HttpServletRequest req,
 			Map root, Database db, ServletDatabase servlet)
 			throws DatabaseException, ServletException {
-		super.executeAction(ad, req, root, db, servlet);
 		// Falls das hier die "Transaktionen"-Tabelle ist, speichere ich 
 		// die Werte als Vorlage ab:
 		Map uri = (Map) root.get("uri");
@@ -48,7 +47,8 @@ public class ActionEdit extends de.bayen.webframework.actions.ActionEdit {
 							.getParameter("_Empfaenger"));
 					record.setField("Kontonummer", req
 							.getParameter("_Kontonummer"));
-					record.setField("BLZ", req.getParameter("_BLZ"));
+					// TODO: blz grosschreiben
+					record.setField("blz", req.getParameter("_blz"));
 					Record vorlage;
 					try {
 						vorlage = db.getTable("Ausgangskoerbe")
@@ -67,10 +67,14 @@ public class ActionEdit extends de.bayen.webframework.actions.ActionEdit {
 				}
 			}
 		}
+		super.executeAction(ad, req, root, db, servlet);
 	}
 }
 /*
  * $Log: ActionEdit.java,v $
+ * Revision 1.2  2006/01/26 13:49:20  tbayen
+ * Suchen: automatische Anlage von Vorlagen funktionierte nicht richtig
+ *
  * Revision 1.1  2006/01/24 00:26:01  tbayen
  * Erste eigenständige Version (1.6beta)
  * sollte funktional gleich sein mit banking-Modul aus WebDatabase/FreibierWeb 1.5

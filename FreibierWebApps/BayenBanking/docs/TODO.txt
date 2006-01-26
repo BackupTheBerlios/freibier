@@ -5,6 +5,7 @@ nötig:
 - auf dem Produktionssystem testen/umsetzen und ggf. fertigmachen:
   - BLZ-Feldname in der Datenbank in Grossbuchstaben ändern
   - Spezial-Templates für "blz" in Transaktionen zurücksetzen
+- Lastschriften und Einzüge in einem Ausgangskorb ermöglichen
 - Analyse und Umwandlung der Durst-Sparkassen-Dateien
 
 wünschenswert:
