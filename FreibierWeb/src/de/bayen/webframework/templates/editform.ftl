@@ -1,5 +1,5 @@
 <#-- Erzeugt am 21.02.2005 von tbayen
-     $Id: editform.ftl,v 1.2 2005/04/06 21:14:10 tbayen Exp $ -->
+     $Id: editform.ftl,v 1.3 2006/01/28 14:13:37 tbayen Exp $ -->
 <#assign title="Datensatz '${record.getField(fields[0]).format()}' aus Tabelle '${uri.table}'"/>
 <#include "include/editmacros.ftl"/>
 <#assign menu1_name=uri.table>
@@ -19,7 +19,9 @@
       </tr>
       </#list>
     </table>
-  </td></tr><tr><td class="layout">
+  </td></tr>
+  <tr><td colspan=2 class="empty layout"></td></tr>  <#-- Leerzeile vor den Buttons -->
+  <tr><td class="layout">
     <table class="fill maxwidth">
       <tr>
         <td class="leftbutton oneofthree">
@@ -54,6 +56,9 @@
 
 <#--
 * $Log: editform.ftl,v $
+* Revision 1.3  2006/01/28 14:13:37  tbayen
+* Layout verbessert
+*
 * Revision 1.2  2005/04/06 21:14:10  tbayen
 * Anwenderprobleme behoben,
 * redirect-view implementiert

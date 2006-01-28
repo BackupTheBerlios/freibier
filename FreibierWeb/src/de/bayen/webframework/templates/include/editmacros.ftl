@@ -1,5 +1,5 @@
 <#-- Erzeugt am 26.02.2005 von tbayen
-     $Id: editmacros.ftl,v 1.4 2006/01/21 23:10:10 tbayen Exp $ 
+     $Id: editmacros.ftl,v 1.5 2006/01/28 14:13:37 tbayen Exp $ 
      
      Diese Datei enthält verschiedene Makros, die die Arbeit von "editform.ftl"
      einfacher und übersichtlicher machen 
@@ -35,7 +35,7 @@
         </#if>
       </#list>
       </select>
-      <a class="imagelink" href="<@call action="search" view="editform" table=foreigntable id="-" params={"_${indexcolumn}":objekt.format()}/>">
+      <a class="imagelink" href="<@call action="search" view="show" table=foreigntable id="-" params={"_${indexcolumn}":objekt.format()}/>">
         <#if selected?exists>
           <@icon name="fileopen" alt=">" title="anzeigen von '${selected}'"/>
         </#if>
@@ -46,16 +46,17 @@
         <@feldausgabe feld=feld record=record/>&nbsp;ersetzen:<input name="_${feld}" type="file" size="15" maxlength="${objekt.getLength()}"/>
   	  </#if>
       <#if objekt.getTypeDefinition().getStringType() = "char">
-  	    <input name="_${feld}" type="text" value="${objekt.format()}" size="${objekt.getLength()}" maxlength="${objekt.getLength()}"/>
+        <#-- Ich mache die size einen größer, da sonst manchmal ein halbes Zeichen fehlt -->
+  	    <input name="_${feld}" type="text" value="${objekt.format()}" size="${objekt.getLength()+1}" maxlength="${objekt.getLength()}"/>
   	  </#if>
       <#if objekt.getTypeDefinition().getStringType() = "int">
-        <input name="_${feld}" type="text" value="${objekt.format()}" size="${objekt.getLength()}" maxlength="${objekt.getLength()}"/>
+        <input name="_${feld}" type="text" value="${objekt.format()}" size="${objekt.getLength()+1}" maxlength="${objekt.getLength()}"/>
       </#if>
       <#if objekt.getTypeDefinition().getStringType() = "decimal">
-        <input name="_${feld}" type="text" value="${objekt.format()}" size="${objekt.getLength()}" maxlength="${objekt.getLength()}"/>
+        <input name="_${feld}" type="text" value="${objekt.format()}" size="${objekt.getLength()+1}" maxlength="${objekt.getLength()}"/>
       </#if>
       <#if objekt.getTypeDefinition().getStringType() = "date">
-        <input name="_${feld}" type="text" value="${objekt.format()}" size="${objekt.getLength()}" maxlength="${objekt.getLength()}"/>
+        <input name="_${feld}" type="text" value="${objekt.format()}" size="${objekt.getLength()+1}" maxlength="${objekt.getLength()}"/>
       </#if>
       <#if objekt.getTypeDefinition().getStringType() = "text">
         <textarea name="_${feld}" cols="80" rows="10">${objekt.format()}</textarea>
@@ -96,6 +97,9 @@
 
 <#--
 * $Log: editmacros.ftl,v $
+* Revision 1.5  2006/01/28 14:13:37  tbayen
+* Layout verbessert
+*
 * Revision 1.4  2006/01/21 23:10:10  tbayen
 * Komplette Überarbeitung und Aufteilung als Einzelbibliothek - Version 1.6
 *

@@ -30,7 +30,9 @@ wünschenswert:
   - Anzeige des Benutzers
   - logout, d.h. Formular-Login
   - Themes abhängig vom Benutzer / der Rolle
+  - Logging der Zugriffe nach Benutzer (evtl. in Datenbank)
 - Benutzerfreundlichkeit
+  - größere Icons (Vergleich z.B. mit Ausgabe ohne stylesheet)
   - Suchformular
   - verbesserte Navigation
   - Ausgabe von Auszugsdaten in schönerem Zahlenformat
@@ -38,6 +40,7 @@ wünschenswert:
   - Focus wieder automatisch setzen (im Template oder im Controller?!?)
   - kein Javascript in Günther-Template
   - sinnvolle Ausgabe, wenn Datenbank nicht initialisiert werden kann
+  - Action und View für Datensicherung
 - neue Funktionen
   - Filter in Liste
   - Umgang mit fehlender oder nicht konfigurierter Datenbank
