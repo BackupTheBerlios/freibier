@@ -90,7 +90,7 @@
 		description="Import JAR Files from other Projects">
 		<!-- Property "importlibs":
 		     comma- or space-separated list of patterns of files -->
-		<copy todir="${lib.home}" flatten="yes">
+		<copy todir="${lib.home}" flatten="yes" preservelastmodified="true">
 			<fileset dir="${basedir}/.." includes="${importlibs}"/>
 		</copy>
 	</target>
@@ -104,10 +104,10 @@
 	<!-- ==================== preparewebapp Target ================== -->
 	<target name="preparewebapp" if="web.home">
 		<!-- Copy static content of this web application -->
-	    <copy todir="${build.home}">
+	    <copy todir="${build.home}" preservelastmodified="true">
 	      <fileset dir="${web.home}"/>
 	    </copy>
-	    <copy todir="${build.home}/WEB-INF/lib">
+	    <copy todir="${build.home}/WEB-INF/lib" preservelastmodified="true">
 	      <fileset dir="${lib.home}" includes="*.jar"/>
 	    </copy>
 	</target>
@@ -162,7 +162,7 @@
 	    </javac>
 
 	    <!-- Copy application resources -->
-	    <copy  todir="${class.home}">
+	    <copy  todir="${class.home}" preservelastmodified="true">
 	      <fileset dir="${src.home}" excludes="**/*.java"/>
 	    </copy>
 	</target>
@@ -205,11 +205,11 @@
 		description="Create binary distribution">
   	    <!-- Copy documentation subdirectories -->
 	    <mkdir dir="${dist.home}/docs"/>
-    	<copy failonerror="no" todir="${dist.home}/docs">
+    	<copy failonerror="no" todir="${dist.home}/docs" preservelastmodified="true">
       		<fileset dir="${doc.home}" excludes="**/*.java"/>
     	</copy>
 	    <mkdir dir="${dist.home}/lib"/>
-    	<copy failonerror="no" todir="${dist.home}/lib">
+    	<copy failonerror="no" todir="${dist.home}/lib" preservelastmodified="true">
       		<fileset dir="${lib.home}">
       			<exclude name="compile"/>
       			<exclude name="compile/*"/>
