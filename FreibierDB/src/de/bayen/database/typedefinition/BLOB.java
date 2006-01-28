@@ -1,5 +1,5 @@
 /* Erzeugt am 27.03.2005 von tbayen
- * $Id: BLOB.java,v 1.1 2005/08/07 21:18:49 tbayen Exp $
+ * $Id: BLOB.java,v 1.2 2006/01/28 17:36:40 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -37,11 +37,7 @@ public class BLOB {
 		if (blobdata == null) {
 			data = new byte[0];
 		} else {
-			data = new byte[blobdata.length];
-			// TODO: gibts hier kein memcpy oder so?
-			for (int i = 0; i < blobdata.length; i++) {
-				data[i] = blobdata[i];
-			}
+			data = (byte[]) blobdata.clone();
 		}
 	}
 
@@ -158,6 +154,9 @@ public class BLOB {
 }
 /*
  * $Log: BLOB.java,v $
+ * Revision 1.2  2006/01/28 17:36:40  tbayen
+ * Extraktion von BLOBS optimiert (altes Todo abgearbeitet)
+ *
  * Revision 1.1  2005/08/07 21:18:49  tbayen
  * Version 1.0 der Freibier-Datenbankklassen,
  * extrahiert aus dem Projekt WebDatabase V1.5

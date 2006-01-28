@@ -1,5 +1,5 @@
 /* Erzeugt am 09.10.2004 von tbayen
- * $Id: DataObject.java,v 1.7 2006/01/17 21:06:35 tbayen Exp $
+ * $Id: DataObject.java,v 1.8 2006/01/28 17:36:40 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -66,6 +66,13 @@ public class DataObject implements Printable {
 		}
 		this.value = value;
 	}
+	
+	/**
+	 * Ergibt den formatNice()-Wert des DataObject, also eine (ggf. hübsch
+	 * formatierte) String-Darstellung des Wertes des Objekts.
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	
 	public String toString() {
 		try {
@@ -166,6 +173,9 @@ public class DataObject implements Printable {
 }
 /*
  * $Log: DataObject.java,v $
+ * Revision 1.8  2006/01/28 17:36:40  tbayen
+ * Extraktion von BLOBS optimiert (altes Todo abgearbeitet)
+ *
  * Revision 1.7  2006/01/17 21:06:35  tbayen
  * DataObject.toString() eingefügt
  *
