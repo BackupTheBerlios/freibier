@@ -1,24 +1,21 @@
 INSTALL.txt
 -----------
 
-Beschreibung der Installation der Webdatenbank.
-
-Das Paket wird mit "ant dist" erzeugt. Es entsteht ein "dist"-Verzeichnis, in dem 
-sich eine *.war-Datei befindet. Diese Datei ist alles, was wir für die Installation
-benötigen.
+Diese Datei beschreibt, was man benötigt, um eine Webapplikation, die auf
+FreibierWeb aufbaut, zu betreiben.
 
 
 
 MySQL
 -----
 Erstmal Mysql und am besten auch PHPMyAdmin installieren (soll hier nicht erklärt 
-werden). Dann eine Datenbank, z.B. "kontaktdaten" einrichten und danach einen User
-"kontaktdaten" einrichten, der keine allgemeinen Rechte, aber alle Rechte auf
+werden). Dann eine Datenbank, z.B. "depotmanager" einrichten und danach einen User
+"freibierweb" einrichten, der keine allgemeinen Rechte, aber alle Rechte auf
 diese Datenbank erhält. Fertig! Die Datenbankstruktur erzeugt die Applikation
 selber, wenn sie eine leere Datenbank vorfindet.
 
-Für die Telefondatenbank ist noch eine Tabelle tbayen einzurichten, auf die
-derselbe User Zugriff hat; Fuer das Banking eine Tabelle banking.
+Für die Telefondatenbank ist eine Tabelle telefon einzurichten, auf die
+derselbe User Zugriff hat; Fuer das Banking eine Tabelle banking, usw.
 
 
 Java
@@ -94,12 +91,6 @@ Fertig!
 
 
 
-Spezielles für die Anwendung bei Firma Bayen
---------------------------------------------
-zum Datenimport benötigt der Benutzer noch Leserechte in der Durstimport-Tabelle.
-
-
-
 Konfiguration
 -------------
 Verzeichnis /etc/freibierweb anlegen und Inhalt des etc-Verzeichnisses
@@ -107,18 +98,14 @@ dorthin kopieren. Dann Permissions setzen:
   chown tomcat4.root /etc/freibierweb -R
   chmod o-rwx /etc/freibierweb -R
 
+In dieses Verzeichnis kommen dann alle lokalen Konfigurationsdateien z.B.
+die Zugangsdaten für den SQL-Server.
 
 
-Spezielles für Banking
-----------------------
-Wenn die Applikation einen Chipkartenleser benutzen soll, als root:
-  adduser tomcat4 dialout
-Dann Tomcat neu starten.
 
-Wenn HBCI4Java im Webdatabase-Paket enthalten ist:
-- Tomcat muss nach jedem Neuinstallieren des Paketes neu gestartet werden.
-Alternative (dann die Sourcen der Lib entfernen):
-- Die Bibliothek "hbci4java.jar" muss nach /var/lib/tomcat4/shared/ kopiert 
-  werden (Da Sie eine native-Bibliothek aufruft, darf sie nur ein einziges Mal
-  in einer VM laufen und muss deshalb im Tomcat und nicht in der Applikation
-  installiert sein).
+Besonderheiten für bestimmte Applikationen:
+===========================================
+
+Spezielles für die Anwendung bei Firma Bayen
+--------------------------------------------
+zum Datenimport benötigt der Benutzer noch Leserechte in der Durstimport-Tabelle.

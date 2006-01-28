@@ -1,25 +1,19 @@
 TODO:
 -----
 
-ergibt sich aus Neuerungen:
-- die config.properties in den Paketen können eigentlich weg
-- die Servlet-Klassen brauchen connectDatabase() nicht mehr zu implementieren
-- abgeleitete ActionDispatcher-Klassen nicht mehr nötig
-
-
-
 nötig:
 - BayenWeb
+  - ergibt sich aus Neuerungen:
+    - die config.properties in den Paketen können eigentlich weg
+    - die Servlet-Klassen brauchen connectDatabase() nicht mehr zu implementieren
+    - abgeleitete ActionDispatcher-Klassen nicht mehr nötig
   - Aktualisierung statt neuimport
   - Filter (z.B. nach Aussendienstlern)
   - Telefonnummern in Liste für Günther
   - Bei der Anlage neuer Datensätze haben Verweisfelder immer Index 1
 
 wünschenswert:
-- depotmanager
-  - YahooRetriever ohne deprecated APIs
 - interne Verbesserungen
-  - Anpassung der Doku README und INSTALL
   - stärkere Angleichung an JavaBeans, um andere Datenquellen auch nutzen zu können
   - Ein überladenes Template sollte sein Original laden können
   - Wechsel (und Neuinitialisierung) der Datenbank möglich machen
@@ -58,6 +52,8 @@ wünschenswert:
   - API besser standardisieren: get/set, toString, etc.
 
 nicht wirklich nötig:
+- depotmanager
+  - YahooRetriever ohne deprecated APIs
 - Paging bei der Listenanzeige
 - Versionsnummer nicht in Webadresse benutzen?
 - Beschleunigung
@@ -66,7 +62,8 @@ nicht wirklich nötig:
 
 
 erledigt:
-- Banking-TODOs in eigene Datei innerhalb dieses Projektes ausgelagert
+- Anpassung der Doku README und INSTALL
+- Banking-TODOs in eigene Datei innerhalb des Banking-Projektes ausgelagert
 - eigenes Projekt für Banking begonnen
 - WebDBDatabase-Klasse unnötig gemacht und gelöscht
 - Datenbank-Anbindung geändert
