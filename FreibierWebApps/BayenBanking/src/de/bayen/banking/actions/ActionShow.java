@@ -1,5 +1,5 @@
 /* Erzeugt am 03.04.2005 von tbayen
- * $Id: ActionShow.java,v 1.1 2006/01/24 00:26:01 tbayen Exp $
+ * $Id: ActionShow.java,v 1.2 2006/01/28 17:41:44 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -51,8 +51,10 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 				root.put("dtaussumme", dtaus.getE_Summe());
 				root.put("dtauslg", dtaus.getA_LastOrGut());
 			} catch (Exception e) {
-				throw new ServletException("Fehler beim Lesen der DTAUS-Datei",
-						e);
+				// Der Fall tritt eigentlich nicht ein. 
+				// im Administrationsmodus (wo er auftreten kann, z.B. beim Anlegen
+				// eines neuen Datensatzes) stört diese Exception nur.
+				//throw new ServletException("Fehler beim Lesen der DTAUS-Datei", e);
 			}
 			// Vorbereiten für das Einlesen von DTAUS-Dateien
 			List liste = new ArrayList();
@@ -85,6 +87,9 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 }
 /*
  * $Log: ActionShow.java,v $
+ * Revision 1.2  2006/01/28 17:41:44  tbayen
+ * Problem im Administrationsmodus behoben
+ *
  * Revision 1.1  2006/01/24 00:26:01  tbayen
  * Erste eigenständige Version (1.6beta)
  * sollte funktional gleich sein mit banking-Modul aus WebDatabase/FreibierWeb 1.5
