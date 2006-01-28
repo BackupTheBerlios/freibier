@@ -1,5 +1,5 @@
 /* Erzeugt am 02.04.2005 von tbayen
- * $Id: ActionCopy2pool.java,v 1.1 2006/01/24 00:26:01 tbayen Exp $
+ * $Id: ActionCopy2pool.java,v 1.2 2006/01/28 14:19:17 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -53,8 +53,9 @@ public class ActionCopy2pool implements Action {
 				.getRecordDefinition().getFieldDef(0).getName(), true);
 		Record konto = db.getTable("Konten").getRecordByPrimaryKey(
 				ausgangskorb.getField("Konto"));
-		Record zahlungsart = db.getTable("Zahlungsarten")
-				.getRecordByPrimaryKey(ausgangskorb.getField("Zahlungsart"));
+		Table zahlungsarten = db.getTable("Zahlungsarten");
+		Record zahlungsart = zahlungsarten.getRecordByPrimaryKey(ausgangskorb
+				.getField("Zahlungsart"));
 		// Datenstruktur aufbauen, die HBCI4Java benötigt:
 		Konto kto = new Konto(konto.getFormatted("BLZ"), konto
 				.getFormatted("Kontonummer"));
@@ -72,7 +73,8 @@ public class ActionCopy2pool implements Action {
 			hbcita.otherAccount = new Konto(ta.getFormatted("BLZ"), ta
 					.getFormatted("Kontonummer"));
 			hbcita.otherAccount.name = ta.getFormatted("Empfaenger");
-			hbcita.key = textschl;
+			hbcita.key = zahlungsarten.getRecordByPrimaryKey(
+					ta.getField("Zahlungsart")).getFormatted("Textschluessel");
 			String betrag = ta.getField("Betrag").getValue().toString();
 			summe = summe.add(new BigDecimal(betrag));
 			hbcita.value = new Value(betrag);
@@ -86,7 +88,7 @@ public class ActionCopy2pool implements Action {
 				}
 			}
 			dtaus.addEntry(hbcita);
-			if(ausgangskorb.getFormatted("Dauerauftraege").equals("false")){
+			if (ausgangskorb.getFormatted("Dauerauftraege").equals("false")) {
 				t_tab.deleteRecord(ta);
 			}
 		}
@@ -118,6 +120,9 @@ public class ActionCopy2pool implements Action {
 }
 /*
  * $Log: ActionCopy2pool.java,v $
+ * Revision 1.2  2006/01/28 14:19:17  tbayen
+ * Zahlungsart in Transaktionen ermöglicht, Abbuch. und Lastschr. zu mischen
+ *
  * Revision 1.1  2006/01/24 00:26:01  tbayen
  * Erste eigenständige Version (1.6beta)
  * sollte funktional gleich sein mit banking-Modul aus WebDatabase/FreibierWeb 1.5

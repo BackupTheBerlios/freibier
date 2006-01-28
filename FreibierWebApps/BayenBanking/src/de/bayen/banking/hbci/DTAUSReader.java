@@ -1,5 +1,5 @@
 /* Erzeugt am 03.04.2005 von tbayen
- * $Id: DTAUSReader.java,v 1.1 2006/01/24 00:26:00 tbayen Exp $
+ * $Id: DTAUSReader.java,v 1.2 2006/01/28 14:19:17 tbayen Exp $
  */
 package de.bayen.banking.hbci;
 
@@ -13,9 +13,10 @@ import org.apache.oro.text.perl.Perl5Util;
  * 
  * Um diese Dateien zu erzeugen, gibt es bereits eine Klasse in HBCI4Java,
  * deshalb habe ich hier nur die Methoden implementiert, die ich benötigte,
- * um mir Daten über den Inhalt der DTAUS-Datei zu extrahieren. Es gibt
- * Informationen aus dem A-Satz (am Anfang der Datei), dem E-Satz (am Ende
- * der Datei) und den C-Sätzen (den eigentlichen Transaktions-Daten).
+ * um mir Daten über den Inhalt der DTAUS-Datei zu extrahieren (also die
+ * umgekehrte Operation). Es gibt Informationen aus dem A-Satz (am Anfang 
+ * der Datei), dem E-Satz (am Ende der Datei) und den C-Sätzen (den 
+ * eigentlichen Transaktions-Daten).
  * 
  * @author tbayen
  */
@@ -186,19 +187,19 @@ public class DTAUSReader {
 		for (int i = 0; i < erg.length; i++) {
 			erg[i] = dtaus[i + offset];
 			// Konvertierung in DIN 66003-Zeichensatz (wie es sich gehört):
-			if (((int) erg[i]) + 256 == (int) '\133')
+			if ((int) erg[i] == (int) '\133')
 				erg[i] = (byte) 'Ä';
-			if (((int) erg[i]) + 256 == (int) '\134')
+			if ((int) erg[i] == (int) '\134')
 				erg[i] = (byte) 'Ö';
-			if (((int) erg[i]) + 256 == (int) '\135')
+			if ((int) erg[i] == (int) '\135')
 				erg[i] = (byte) 'Ü';
-			if (((int) erg[i]) + 256 == (int) '\173')
+			if ((int) erg[i] == (int) '\173')
 				erg[i] = (byte) 'ä';
-			if (((int) erg[i]) + 256 == (int) '\174')
+			if ((int) erg[i] == (int) '\174')
 				erg[i] = (byte) 'ö';
-			if (((int) erg[i]) + 256 == (int) '\175')
+			if ((int) erg[i] == (int) '\175')
 				erg[i] = (byte) 'ü';
-			if (((int) erg[i]) + 256 == (int) '\176')
+			if ((int) erg[i] == (int) '\176')
 				erg[i] = (byte) 'ß';
 			// Konvertierung des von DURST verwendeten Zeichensatzes:
 			// (empirisch ermittelt)
@@ -215,6 +216,9 @@ public class DTAUSReader {
 
 /*
  * $Log: DTAUSReader.java,v $
+ * Revision 1.2  2006/01/28 14:19:17  tbayen
+ * Zahlungsart in Transaktionen ermöglicht, Abbuch. und Lastschr. zu mischen
+ *
  * Revision 1.1  2006/01/24 00:26:00  tbayen
  * Erste eigenständige Version (1.6beta)
  * sollte funktional gleich sein mit banking-Modul aus WebDatabase/FreibierWeb 1.5

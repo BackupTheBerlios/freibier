@@ -1,5 +1,5 @@
 <#-- Erzeugt am 02.04.2005 von tbayen
-     $Id: show.ftl,v 1.1 2006/01/24 00:26:01 tbayen Exp $ -->
+     $Id: show.ftl,v 1.2 2006/01/28 14:19:17 tbayen Exp $ -->
 <#assign title="Lastschrift/Überweisung"/>
 <#include "include/editmacros.ftl"/>
 <@page>
@@ -20,10 +20,11 @@
         </tr>
       </#list>
     </table>
-  </td></tr><tr><td colspan="2">
-    <a href="<@call view="editform"/>">Diese Daten ändern</a>
-  </td></tr><tr><td class="layout">
+  </td></tr><tr><td colspan="2" class="layout">
+    <a href="<@call action="show" view="editform"/>">Diese Daten ändern</a>
+  </td></tr>
 
+  <tr><td class="layout">
   <#if (lists?size>0) >
     </td></tr><tr><td>
     <h2>enthaltene Listen</h2>
@@ -35,7 +36,9 @@
       <@unterliste sublist=thislist/>
     </table>
     </#list>
-  </td></tr></table>
+  </td></tr>
+  <tr><td colspan=2 class="empty layout"></td></tr>  <#-- Leerzeile vor den Buttons -->
+  </table>
 
   <form name="newbutton" action="<@call 
       action="new" view="editform" id="-"
@@ -48,6 +51,9 @@
 
 <#--
 * $Log: show.ftl,v $
+* Revision 1.2  2006/01/28 14:19:17  tbayen
+* Zahlungsart in Transaktionen ermöglicht, Abbuch. und Lastschr. zu mischen
+*
 * Revision 1.1  2006/01/24 00:26:01  tbayen
 * Erste eigenständige Version (1.6beta)
 * sollte funktional gleich sein mit banking-Modul aus WebDatabase/FreibierWeb 1.5

@@ -1,5 +1,5 @@
 <#-- Erzeugt am 03.04.2005 von tbayen
-     $Id: show.ftl,v 1.1 2006/01/24 00:26:01 tbayen Exp $ -->
+     $Id: show.ftl,v 1.2 2006/01/28 14:19:17 tbayen Exp $ -->
 <#assign title="Auftrag '${record.getField(fields[0]).format()}' aus dem Pool"/>
 <#include "include/editmacros.ftl"/>
 <#assign menu1_name=uri.table>
@@ -41,10 +41,8 @@
 
   <h2>DTAUS-Datei wieder in Ausgangskorb zurückholen</h2>
   Diese Funktion dient z.B. zur Korrektur von bereits in den Pool gestellten
-  Aufträgen. Bei Lastschriften wird die Information, ob es sich um einen 
-  Einzug oder um eine Abbuchung handelt, nicht mit eingelesen. Sind die 
-  Last-/Gutschriften wieder im Ausgangskorb, wird die Pool-Datei nicht gelöscht. 
-  Dies muss ggf. von Hand gemacht werden.
+  Aufträgen. Sind die Last-/Gutschriften wieder im Ausgangskorb, wird die 
+  Pool-Datei nicht gelöscht. Dies muss ggf. von Hand gemacht werden.
   <form name="form" action="<@call action="dtausparse" view="show"/>" method="post">
     <select name="_konto">
       <#list korbliste as option>
@@ -57,6 +55,9 @@
 
 <#--
 * $Log: show.ftl,v $
+* Revision 1.2  2006/01/28 14:19:17  tbayen
+* Zahlungsart in Transaktionen ermöglicht, Abbuch. und Lastschr. zu mischen
+*
 * Revision 1.1  2006/01/24 00:26:01  tbayen
 * Erste eigenständige Version (1.6beta)
 * sollte funktional gleich sein mit banking-Modul aus WebDatabase/FreibierWeb 1.5

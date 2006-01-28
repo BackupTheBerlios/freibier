@@ -1,5 +1,5 @@
 <#-- Erzeugt am 02.04.2005 von tbayen
-     $Id: show.ftl,v 1.1 2006/01/24 00:26:01 tbayen Exp $ -->
+     $Id: show.ftl,v 1.2 2006/01/28 14:19:17 tbayen Exp $ -->
 <#assign title="Ausgangskorb '${record.getField(fields[0]).format()}'"/>
 <#include "include/editmacros.ftl"/>
 <#assign menu1_name="Ausgangskörbe">
@@ -45,7 +45,17 @@
       </tr>
     </#list>
   </table>
-  <@sublistnewbutton sublist=thislist/>
+  <#-- Ich rufe hier nicht einfach @sublistnewbutton auf, sondern setze
+       ausser dem Ausgangskorb auch noch die Zahlungsart auf den Startwert -->
+  <div class="forscreen">
+    <@link action="new" view="editform" table=sublist.tablename id="-" 
+           params={
+             "_${sublist.indexcolumn}":record.getField(primarykey).format(),
+             "_Zahlungsart":record.getField("Zahlungsart").format()
+           }>
+      Neu anlegen
+    </@link>
+  </div>
 
   <#-- Summe der Transaktionen ausrechnen und ausgeben: -->   
   <#assign summe=0/>
@@ -72,6 +82,9 @@
 
 <#--
 * $Log: show.ftl,v $
+* Revision 1.2  2006/01/28 14:19:17  tbayen
+* Zahlungsart in Transaktionen ermöglicht, Abbuch. und Lastschr. zu mischen
+*
 * Revision 1.1  2006/01/24 00:26:01  tbayen
 * Erste eigenständige Version (1.6beta)
 * sollte funktional gleich sein mit banking-Modul aus WebDatabase/FreibierWeb 1.5

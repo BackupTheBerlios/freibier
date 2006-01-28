@@ -1,5 +1,5 @@
 # SQL-Definitionen
-# $Id: db_definition.sql,v 1.1 2006/01/24 00:26:00 tbayen Exp $
+# $Id: db_definition.sql,v 1.2 2006/01/28 14:19:17 tbayen Exp $
 
 create table Konten(
 	Bezeichnung			char(30),
@@ -55,6 +55,7 @@ create table Transaktionen (
 	BLZ				char(8),
 	Kontonummer		char(10),
 	Ausgangskorb	int,
+	Zahlungsart		int,
 	Betrag			decimal(11,2),
 	Vwz1			char(27),
 	Vwz2			char(27),
@@ -82,6 +83,9 @@ insert into Ausgangskoerbe (Bezeichnung,Konto,Zahlungsart,Dauerauftraege)
 
 
 # $Log: db_definition.sql,v $
+# Revision 1.2  2006/01/28 14:19:17  tbayen
+# Zahlungsart in Transaktionen ermöglicht, Abbuch. und Lastschr. zu mischen
+#
 # Revision 1.1  2006/01/24 00:26:00  tbayen
 # Erste eigenständige Version (1.6beta)
 # sollte funktional gleich sein mit banking-Modul aus WebDatabase/FreibierWeb 1.5

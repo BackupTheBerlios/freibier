@@ -2,13 +2,10 @@ TODO:
 -----
 
 nötig:
-- auf dem Produktionssystem testen/umsetzen und ggf. fertigmachen:
-  - BLZ-Feldname in der Datenbank in Grossbuchstaben ändern
-  - Spezial-Templates für "blz" in Transaktionen zurücksetzen
-- Lastschriften und Einzüge in einem Ausgangskorb ermöglichen
 - Analyse und Umwandlung der Durst-Sparkassen-Dateien
 
 wünschenswert:
+- ungültige Bank und andere Fehleingaben bemerken und ggf. rot anzeigen
 - Anlegen neuer Konten per Weboberfläche
 - Liquiditätsmanagement
 - Speichern von Kontoauszügen
@@ -19,6 +16,11 @@ wünschenswert:
 
 
 erledigt:
+- Beim Umwandeln von DTAUS zurück wurden die Umlaute falsch gewandelt
+- Lastschriften und Einzüge in einem Ausgangskorb ermöglichen
+- Anleitung zum Update auf neues Datenbankformat erstellt
+- BLZ-Feldname in der Datenbank in Grossbuchstaben ändern
+- Spezial-Templates für "blz" in Transaktionen zurücksetzen
 - Suche funktioniert wieder richtig
 - stylesheet wird richtig geladen (include wie in neuem FreibierWeb)
 - lauffähig als Applikation mit FreibierWeb als Bibliothek

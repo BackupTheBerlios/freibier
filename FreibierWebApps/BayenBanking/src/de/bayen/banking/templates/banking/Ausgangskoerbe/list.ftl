@@ -1,5 +1,5 @@
 <#-- Erzeugt am 05.04.2005 von tbayen
-     $Id: list.ftl,v 1.1 2006/01/24 00:26:01 tbayen Exp $ -->
+     $Id: list.ftl,v 1.2 2006/01/28 14:19:17 tbayen Exp $ -->
 <#assign title="Ausgangskörbe auswählen"/>
 <#include "include/listmacros.ftl"/>
 <@page>
@@ -29,6 +29,7 @@
     <#list list as record>
       <@recordrow fields=fields tablename=uri.table record=record/>
     </#list>
+    <tr><td colspan=2 class="empty layout"></td></tr>  <#-- Leerzeile vor den Buttons -->
   </table>
 
   <form action="<@call action="new" view="editform"/>" method="post">
@@ -38,6 +39,9 @@
 </@page>
 <#--
 * $Log: list.ftl,v $
+* Revision 1.2  2006/01/28 14:19:17  tbayen
+* Zahlungsart in Transaktionen ermöglicht, Abbuch. und Lastschr. zu mischen
+*
 * Revision 1.1  2006/01/24 00:26:01  tbayen
 * Erste eigenständige Version (1.6beta)
 * sollte funktional gleich sein mit banking-Modul aus WebDatabase/FreibierWeb 1.5

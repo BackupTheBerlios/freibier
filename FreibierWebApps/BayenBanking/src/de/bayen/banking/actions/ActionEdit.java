@@ -1,5 +1,5 @@
 /* Erzeugt am 05.06.2005 von tbayen
- * $Id: ActionEdit.java,v 1.2 2006/01/26 13:49:20 tbayen Exp $
+ * $Id: ActionEdit.java,v 1.3 2006/01/28 14:19:17 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -47,8 +47,7 @@ public class ActionEdit extends de.bayen.webframework.actions.ActionEdit {
 							.getParameter("_Empfaenger"));
 					record.setField("Kontonummer", req
 							.getParameter("_Kontonummer"));
-					// TODO: blz grosschreiben
-					record.setField("blz", req.getParameter("_blz"));
+					record.setField("BLZ", req.getParameter("_BLZ"));
 					Record vorlage;
 					try {
 						vorlage = db.getTable("Ausgangskoerbe")
@@ -72,6 +71,9 @@ public class ActionEdit extends de.bayen.webframework.actions.ActionEdit {
 }
 /*
  * $Log: ActionEdit.java,v $
+ * Revision 1.3  2006/01/28 14:19:17  tbayen
+ * Zahlungsart in Transaktionen ermöglicht, Abbuch. und Lastschr. zu mischen
+ *
  * Revision 1.2  2006/01/26 13:49:20  tbayen
  * Suchen: automatische Anlage von Vorlagen funktionierte nicht richtig
  *
