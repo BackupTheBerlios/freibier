@@ -1,5 +1,5 @@
 /* Erzeugt am 27.03.2005 von tbayen
- * $Id: ActionDownload.java,v 1.4 2006/01/22 19:44:24 tbayen Exp $
+ * $Id: ActionDownload.java,v 1.5 2006/01/28 17:10:34 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -15,7 +15,7 @@ import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ServletDatabase;
 
 /**
- * TODO Klassenbeschreibung für die Klasse "ActionDownload"
+ * Implementation der Action "download"
  * 
  * @author tbayen
  */
@@ -34,7 +34,7 @@ public class ActionDownload implements Action {
 				.getValue());
 		String contenttype = req.getParameter("contenttype");
 		if (contenttype == null) {
-			// TODO: hier könnte man eine automatische Analyse machen
+			// hier könnte man eine automatische Analyse machen
 			contenttype = "application/octet-stream";
 		}
 		root.put("contenttype", contenttype);
@@ -42,6 +42,9 @@ public class ActionDownload implements Action {
 }
 /*
  * $Log: ActionDownload.java,v $
+ * Revision 1.5  2006/01/28 17:10:34  tbayen
+ * kleinere Todos (die meisten in der Doku) abgearbeitet
+ *
  * Revision 1.4  2006/01/22 19:44:24  tbayen
  * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
  * Klasse WebDBDatabase unnötig, wurde gelöscht

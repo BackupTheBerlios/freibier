@@ -1,5 +1,5 @@
 /* Erzeugt am 19.03.2005 von tbayen
- * $Id: ActionDispatcher.java,v 1.3 2006/01/22 19:44:25 tbayen Exp $
+ * $Id: ActionDispatcher.java,v 1.4 2006/01/28 17:10:34 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -31,7 +31,7 @@ public interface ActionDispatcher {
 	 * @param req
 	 * @param root
 	 * @param db
-	 * @param servlet TODO
+	 * @param servlet
 	 * 
 	 * @throws DatabaseException
 	 * @throws ServletException
@@ -42,6 +42,9 @@ public interface ActionDispatcher {
 
 /*
  * $Log: ActionDispatcher.java,v $
+ * Revision 1.4  2006/01/28 17:10:34  tbayen
+ * kleinere Todos (die meisten in der Doku) abgearbeitet
+ *
  * Revision 1.3  2006/01/22 19:44:25  tbayen
  * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
  * Klasse WebDBDatabase unnötig, wurde gelöscht

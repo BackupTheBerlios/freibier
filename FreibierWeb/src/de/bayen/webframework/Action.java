@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: Action.java,v 1.3 2006/01/22 19:44:24 tbayen Exp $
+ * $Id: Action.java,v 1.4 2006/01/28 17:10:34 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -33,7 +33,7 @@ public interface Action {
 	 * @param root Die Map, die mein Model enthält, das später dem view 
 	 * übergeben wird
 	 * @param db Datenbankverbindung
-	 * @param servlet TODO
+	 * @param servlet
 	 * 
 	 * @throws DatabaseException
 	 * @throws ServletException
@@ -44,6 +44,9 @@ public interface Action {
 }
 /*
  * $Log: Action.java,v $
+ * Revision 1.4  2006/01/28 17:10:34  tbayen
+ * kleinere Todos (die meisten in der Doku) abgearbeitet
+ *
  * Revision 1.3  2006/01/22 19:44:24  tbayen
  * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
  * Klasse WebDBDatabase unnötig, wurde gelöscht

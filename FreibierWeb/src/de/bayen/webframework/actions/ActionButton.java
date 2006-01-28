@@ -1,5 +1,5 @@
 /* Erzeugt am 24.04.2005 von tbayen
- * $Id: ActionButton.java,v 1.2 2006/01/22 19:44:24 tbayen Exp $
+ * $Id: ActionButton.java,v 1.3 2006/01/28 17:10:34 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -24,6 +24,8 @@ import de.bayen.webframework.ServletDatabase;
  * die Button-Action. Die eigentlichen Buttons bekommen dann als Name
  * "Action" und als Value die eigentliche Action.
  * 
+ * TODO: Diese Action ist bisher noch nicht richtig implementiert.
+ * 
  * @author tbayen
  */
 public class ActionButton implements Action {
@@ -40,12 +42,14 @@ public class ActionButton implements Action {
 		logger.debug("Button-Action mit Ziel "+realaction);
 		// Umleitung auf andere Action
 //		ad.executeAction("show", req, root, db, servlet);
-		// TODO Methode schreiben
 	}
 }
 
 /*
  * $Log: ActionButton.java,v $
+ * Revision 1.3  2006/01/28 17:10:34  tbayen
+ * kleinere Todos (die meisten in der Doku) abgearbeitet
+ *
  * Revision 1.2  2006/01/22 19:44:24  tbayen
  * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
  * Klasse WebDBDatabase unnötig, wurde gelöscht

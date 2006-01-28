@@ -1,5 +1,5 @@
 /* Erzeugt am 21.03.2005 von tbayen
- * $Id: ActionNew.java,v 1.4 2006/01/22 19:44:24 tbayen Exp $
+ * $Id: ActionNew.java,v 1.5 2006/01/28 17:10:34 tbayen Exp $
  */
 package de.bayen.webframework.actions;
 
@@ -15,7 +15,7 @@ import de.bayen.webframework.ActionDispatcher;
 import de.bayen.webframework.ServletDatabase;
 
 /**
- * TODO Klassenbeschreibung für die Klasse "ActionNew"
+ * Implementation der Action "new"
  * 
  * @author tbayen
  */
@@ -27,16 +27,8 @@ public class ActionNew implements Action {
 		Map uri = (Map) root.get("uri");
 		String name = (String) uri.get("table");
 		Table tab = db.getTable(name);
-		// TODO: Das gehört in die Database-Klassen:
-		// Der Datensatz existiert nicht, also erzeuge ich erstmal
-		// einen leeren, besorge mir dessen ID und hole mir dann
-		// den neuen Datensatz.
-		// TODO: ausserdem ist das ein Fall für eine Transaktion
 		Record record = tab.getEmptyRecord();
-		tab.setRecord(record);
-		// TODO das gehört irgendwie in Database gekapselt
-		Map erg = db.executeSelectSingleRow("SELECT LAST_INSERT_ID()");
-		String recordid = erg.get("last_insert_id()").toString();
+		String recordid=tab.setRecordAndReturnID(record).toString();
 		// Umleitung auf andere Action
 		// Ich leite auf edit um, dann kann man beim new-Aufruf noch per
 		// Parameter direkt einige Felder neu füllen. edit ruft dann show
@@ -48,6 +40,9 @@ public class ActionNew implements Action {
 
 /*
  * $Log: ActionNew.java,v $
+ * Revision 1.5  2006/01/28 17:10:34  tbayen
+ * kleinere Todos (die meisten in der Doku) abgearbeitet
+ *
  * Revision 1.4  2006/01/22 19:44:24  tbayen
  * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
  * Klasse WebDBDatabase unnötig, wurde gelöscht
