@@ -62,6 +62,7 @@ nicht wirklich nötig:
 
 
 erledigt:
+- Einige TODOs (vor allem in der Doku) bereinigt
 - Anpassung der Doku README und INSTALL
 - Banking-TODOs in eigene Datei innerhalb des Banking-Projektes ausgelagert
 - eigenes Projekt für Banking begonnen
