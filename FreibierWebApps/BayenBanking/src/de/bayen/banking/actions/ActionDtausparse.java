@@ -1,5 +1,5 @@
 /* Erzeugt am 18.04.2005 von tbayen
- * $Id: ActionDtausparse.java,v 1.2 2006/01/28 14:19:17 tbayen Exp $
+ * $Id: ActionDtausparse.java,v 1.3 2006/01/28 17:42:22 tbayen Exp $
  */
 package de.bayen.banking.actions;
 
@@ -50,11 +50,6 @@ public class ActionDtausparse implements Action {
 				ta.setField("Zahlungsart", zahlungsarten.getRecordByValue(
 						"Textschluessel", dtaus.getC_Textschluessel(i))
 						.getPrimaryKey());
-//				//TODO: eine schönere Lösung ist mir nicht eingefallen:
-//				String textschl = dtaus.getC_Textschluessel(i);
-//				if ((!textschl.equals("04")) && (!textschl.equals("05"))) {
-//					textschl = "";
-//				}
 				List vwz = dtaus.getC_Verwendungszweck(i);
 				ta.setField("Vwz1", (String) vwz.get(0));
 				if (vwz.size() > 1)
@@ -72,6 +67,9 @@ public class ActionDtausparse implements Action {
 }
 /*
  * $Log: ActionDtausparse.java,v $
+ * Revision 1.3  2006/01/28 17:42:22  tbayen
+ * docs angepasst und Todos überarbeitet
+ *
  * Revision 1.2  2006/01/28 14:19:17  tbayen
  * Zahlungsart in Transaktionen ermöglicht, Abbuch. und Lastschr. zu mischen
  *

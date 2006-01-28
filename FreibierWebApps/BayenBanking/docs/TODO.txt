@@ -2,9 +2,10 @@ TODO:
 -----
 
 nötig:
-- Analyse und Umwandlung der Durst-Sparkassen-Dateien
 
 wünschenswert:
+- Analyse und Umwandlung der Durst-Sparkassen-Dateien
+- TAN für Smartcard abfragen
 - ungültige Bank und andere Fehleingaben bemerken und ggf. rot anzeigen
 - Anlegen neuer Konten per Weboberfläche
 - Liquiditätsmanagement
@@ -16,6 +17,11 @@ wünschenswert:
 
 
 erledigt:
+Version 1.6
+- Testlauf mit Smartcard
+- INSTALL.txt geschrieben
+- Installation der aktuellen HBCI4Java-Smartcard-Bibliothek
+- Testlauf mit PinTan
 - Beim Umwandeln von DTAUS zurück wurden die Umlaute falsch gewandelt
 - Lastschriften und Einzüge in einem Ausgangskorb ermöglichen
 - Anleitung zum Update auf neues Datenbankformat erstellt

@@ -1,0 +1,80 @@
+Spezielles für Banking
+----------------------
+
+Wenn die Applikation einen Chipkartenleser benutzen soll, als root:
+  adduser tomcat4 dialout
+Dann Tomcat neu starten.
+
+Wenn HBCI4Java benutzt wird:
+- Tomcat muss nach jedem Neuinstallieren des Paketes neu gestartet werden.
+Alternative (dann die Sourcen der Lib entfernen):
+- Die Bibliothek "hbci4java.jar" muss nach /var/lib/tomcat4/shared/ kopiert 
+  werden (Da Sie eine native-Bibliothek aufruft, darf sie nur ein einziges Mal
+  in einer VM laufen und muss deshalb im Tomcat und nicht in der Applikation
+  installiert sein).
+
+
+Installation Schritt für Schritt:
+- Vergewissern, daß "/etc/freibierweb/config.properties" existiert und einen
+  Zugang zum Datenbankserver erlaubt.
+
+- Anlegen einer Datenbank "banking" per PHPMyAdmin und Zugriff des Users
+  "freibierweb" (oder welcher das auch immer ist) erlauben.
+
+- in die Datei "/etc/freibierweb/banking.properties" folgendes eintragen:
+    
+    dtausimport.directory=/mnt/public/dta
+    1234567.pin=12345
+    
+  Das Import-Directory kann benutzt werden, um DTAUS-Dateien aus anderen 
+  Programmen zu übernehmen.
+  
+  Die letzte Zeile enthält Kontonummer und PIN, ist also als sehr sensitiv
+  zu behandeln. Besser ist, die PIN hier wegzulassen und dann von Hand 
+  einzugeben. Ein Eintrag hier ist nur sinnvoll, wenn man die Sicherheit
+  durch eine Chipkarte gewährleistet.
+
+ - Anlegen einer Datei "/etc/freibierweb/banking-hbci.properties":
+ 
+	client.product.name=HBCI4Java
+	client.product.version=2.5
+	client.product.name=HBCI4Java
+	client.product.version=2.5
+	client.passport.DDV.path=/etc/freibierweb/hbci4java-passports/
+	client.passport.DDV.libname.ddv=/etc/freibierweb/libhbci4java-card-linux.so
+	client.passport.DDV.libname.ctapi=/usr/lib/libtowitoko.so.2.0.0
+	client.passport.DDV.port=0
+	client.passport.DDV.ctnumber=0
+	client.passport.DDV.usebio=-1
+	client.passport.DDV.softpin=1
+	client.passport.DDV.pin=12345
+	client.passport.DDV.entryidx=1
+	client.passport.PinTan.filename=/etc/freibierweb/hbci4java-passports/pintan_vb.medium
+	client.passport.PinTan.checkcert=0
+	client.passport.PinTan.init=1
+	client.passport.default=PinTan
+	client.retries.passphrase=2
+	log.loglevel.default=4
+	kernel.dialogs.ignoreDialogEndErrors=0
+
+Die PIN-Zeile für DDV kann am besten auch weggelassen werden. Sie enthält die
+PIN der Chipkarte. Der PinTan-Filename wird von der Banking-Anwendung nicht
+benutzt, sondern jeweils überschrieben.
+
+- Die Datei "dist/lib/libhbci4java-card-linux.so" aus der HBCI4Java-Distribution
+  kopieren wir auch in unser Verzeichnis. Dazu installieren wir das 
+  towitoko-Debian-Paket. Dieses enthält den Hardwaretreiber für den Towitoko
+  Chipkartenleser. (Wer einen anderen Leser benutzt, sollte das gerne auch hier
+  dokumentieren.
+  
+- Die Passport-Dateien, die man mit dem Passport-Editor des HBCI4Java-Projektes
+  erzeugt hat, kommen nach "/etc/freibierweb/hbci4java-passports/". Sie haben
+  als Namen einen Text, der in der Datenbank bei den Kontodaten eingegeben werden
+  muss, gefolgt von ".medium", also z.B. "volksbank.medium".
+  
+- Permissions setzen mit:
+
+  chown tomcat4.root /etc/freibierweb -R
+  chmod o-rwx /etc/freibierweb -R
+
+- Jetzt sollte alles angelegt sein, was nicht direkt in der Datenbank steht.
