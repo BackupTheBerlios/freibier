@@ -1,5 +1,5 @@
 <#-- Erzeugt am 05.04.2005 von tbayen
-     $Id: list.ftl,v 1.2 2006/01/28 14:19:17 tbayen Exp $ -->
+     $Id: list.ftl,v 1.3 2006/01/29 01:27:50 tbayen Exp $ -->
 <#assign title="Ausgangskörbe auswählen"/>
 <#include "include/listmacros.ftl"/>
 <@page>
@@ -29,7 +29,7 @@
     <#list list as record>
       <@recordrow fields=fields tablename=uri.table record=record/>
     </#list>
-    <tr><td colspan=2 class="empty layout"></td></tr>  <#-- Leerzeile vor den Buttons -->
+    <tr><td colspan="7" class="empty layout"></td></tr>  <#-- Leerzeile vor den Buttons -->
   </table>
 
   <form action="<@call action="new" view="editform"/>" method="post">
@@ -39,6 +39,9 @@
 </@page>
 <#--
 * $Log: list.ftl,v $
+* Revision 1.3  2006/01/29 01:27:50  tbayen
+* optische Verbesserung
+*
 * Revision 1.2  2006/01/28 14:19:17  tbayen
 * Zahlungsart in Transaktionen ermöglicht, Abbuch. und Lastschr. zu mischen
 *
