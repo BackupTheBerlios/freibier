@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.15 2006/01/22 19:40:01 tbayen Exp $
+ * $Id: Database.java,v 1.16 2006/01/29 00:41:16 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oro.text.perl.Perl5Util;
@@ -50,7 +51,7 @@ import de.bayen.database.typedefinition.TypeDefinition;
 public class Database {
 	private static Log log = LogFactory.getLog(Database.class);
 	private Connection conn;
-	private String name, server, user, password;
+	private String name;
 	private String propertyPath = "";
 
 	/**
@@ -62,10 +63,15 @@ public class Database {
 		super();
 		log.trace("Konstruktor");
 		this.name = name;
-		this.server = server;
-		this.user = user;
-		this.password = password;
-		openConnection();
+		openConnection(name, server, user, password);
+	}
+
+	public Database(DataSource ds, String name) throws UserSQL_DBException {
+		super();
+		log.trace("Konstruktor");
+		this.name = name;
+		// die folgenden Werte werden nicht benötigt, wenn ich eine DataSource habe
+		openConnection(ds);
 	}
 
 	public void setPropertyPath(String path) {
@@ -75,34 +81,30 @@ public class Database {
 		}
 	}
 
-	private void openConnection() throws UserSQL_DBException {
+	private void openConnection(String name, String server, String user,
+			String password) throws UserSQL_DBException {
 		log.trace("openConnection");
-//		try {
-//			Class.forName("com.mysql.jdbc.Driver");
-//		} catch (ClassNotFoundException e) {
-//			/* Ist der JDBC-Treiber nicht, installiert, kann man dies z.B. durch
-//			 * das Debian-Paket "libmysql-java" nachholen. Dann muss die
-//			 * Mysql-JDBC-Bibliothek in den Pfad für Bibliotheken eingebunden
-//			 * werden. Dies geht bei Eclipse z.B. unter dem Menüpunkt
-//			 * Project/Properties auf der Karte Java Build Path/Libraries.
-//			 */
-//			throw new DBRuntimeException.DriverNotFoundException(
-//					"JDBC-Treiber für MySQL kann nicht geladen werden", e, log);
-//		};
 		try {
 			MysqlDataSource ds = new MysqlDataSource();
 			ds.setServerName(server);
 			ds.setDatabaseName(name);
 			ds.setUser(user);
 			ds.setPassword(password);
-			conn = ds.getConnection();
-			log.debug("TB!!!!! open:"+conn);
-//			conn = DriverManager.getConnection("jdbc:mysql://" + server + "/"
-//					+ name, user, password);
-		} catch (SQLException e2) {
+			openConnection(ds);
+		} catch (UserSQL_DBException e) {
 			throw new UserDBEx.UserSQL_DBException(
 					"Verbindung zur SQL-Datenbank '" + name
-							+ "' kann nicht geöffnet werden", e2, log);
+							+ "' kann nicht geöffnet werden", e, log);
+		}
+	}
+
+	private void openConnection(DataSource ds) throws UserSQL_DBException {
+		try {
+			conn = ds.getConnection();
+		} catch (SQLException e) {
+			throw new UserDBEx.UserSQL_DBException(
+					"Verbindung zur SQL-Datenbank '" + name
+							+ "' kann nicht geöffnet werden", e, log);
 		}
 	}
 
@@ -207,17 +209,17 @@ public class Database {
 	 */
 	public Table getTable(String name) throws SQL_getTableDBException,
 			IllegalDefaultValueDBException, ParseErrorDBException {
+		ResultSet columns = null, primarykeys = null;
+		RecordDefinition def = new RecordDefinition();
+		String recordname = name;
 		try {
-			ResultSet columns = conn.getMetaData().getColumns(null, null, name,
-					"%");
-			RecordDefinition def = new RecordDefinition();
+			columns = conn.getMetaData().getColumns(null, null, name, "%");
 			ResourceBundle resource = null;
 			try {
 				log.debug("Suche Property File: " + propertyPath + name);
 				resource = ResourceBundle.getBundle(propertyPath + name);
 				//log.debug("Resource: "+resource);
 			} catch (MissingResourceException e) {}
-			String recordname = name;
 			def.setName(recordname);
 			while (columns.next()) {
 				TypeDefinition typ = TypeDefinition.create(columns
@@ -225,9 +227,8 @@ public class Database {
 						columns.getInt("COLUMN_SIZE"), resource, this);
 				def.addColumn(typ);
 			}
-			columns.close();
-			ResultSet primarykeys = conn.getMetaData().getPrimaryKeys(null,
-					null, name);
+			//columns.close();
+			primarykeys = conn.getMetaData().getPrimaryKeys(null, null, name);
 			if (primarykeys.next()) {
 				def.setPrimaryKey(primarykeys.getString("COLUMN_NAME"));
 				if (primarykeys.next()) {
@@ -239,7 +240,7 @@ public class Database {
 				throw new DBRuntimeException.WrongNumberOfPrimaryKeysException(
 						"Keine Primärschlüsselspalte definiert", log);
 			}
-			primarykeys.close();
+			//primarykeys.close();
 			if (resource != null) {
 				// Datensatzname (ist z.B. die Einzahl des Tabellennamens)
 				try {
@@ -270,6 +271,13 @@ public class Database {
 			throw new SysDBEx.SQL_getTableDBException(
 					"Tabelle kann nicht angesprochen werden: '" + name + "'",
 					e, log);
+		} finally {
+			try {
+				columns.close();
+			} catch (Exception e) {}
+			try {
+				primarykeys.close();
+			} catch (Exception e) {}
 		}
 	}
 
@@ -331,8 +339,9 @@ public class Database {
 		log.trace("executeSqlFile");
 		String sql = "";
 		String zeile;
+		Statement st = null;
 		try {
-			Statement st = conn.createStatement();
+			st = conn.createStatement();
 			BufferedReader buffer = new BufferedReader(new InputStreamReader(
 					datei));
 			zeile = buffer.readLine();
@@ -351,9 +360,12 @@ public class Database {
 				zeile = buffer.readLine();
 			};
 			st.executeBatch();
-			st.close();
 		} catch (SQLException e) {
 			throw new SysDBEx.SQL_DBException("SQL-Exception", e, log);
+		} finally {
+			try {
+				st.close();
+			} catch (Exception e) {}
 		}
 		if (!sql.equals("")) {
 			throw new SysDBEx.SQL_DBException(
@@ -366,8 +378,9 @@ public class Database {
 			RecordNotExistsDBException {
 		log.trace("executeSelectSingleRow");
 		Map hash = new HashMap();
+		Statement st = null;
 		try {
-			Statement st = conn.createStatement();
+			st = conn.createStatement();
 			log.debug("SQL SELECT: " + sql);
 			ResultSet rs = st.executeQuery(sql);
 			ResultSetMetaData metadata = rs.getMetaData();
@@ -382,10 +395,13 @@ public class Database {
 						"angegebener Datensatz existiert nicht", log);
 			}
 			rs.close();
-			st.close();
 		} catch (SQLException e) {
 			throw new SysDBEx.SQL_DBException(
 					"SQL-Query kann die Datenbank nicht erreichen", e, log);
+		} finally {
+			try {
+				st.close();
+			} catch (Exception e) {}
 		}
 		return hash;
 	}
@@ -394,8 +410,9 @@ public class Database {
 		log.trace("executeSelectMultipleRows");
 		List resultList = new ArrayList();
 		Map hash = null;
+		Statement st=null;
 		try {
-			Statement st = conn.createStatement();
+			st = conn.createStatement();
 			log.debug("SQL SELECT: " + sql);
 			ResultSet rs = st.executeQuery(sql);
 			ResultSetMetaData metadata = rs.getMetaData();
@@ -409,10 +426,13 @@ public class Database {
 				resultList.add(hash);
 			}
 			rs.close();
-			st.close();
 		} catch (SQLException e) {
 			throw new SysDBEx.SQL_DBException(
 					"SQL-Query kann die Datenbank nicht erreichen", e, log);
+		} finally {
+			try {
+				st.close();
+			} catch (Exception e) {}
 		}
 		return resultList;
 	}
@@ -428,18 +448,22 @@ public class Database {
 	public void executeUpdate(String sql) throws SQL_DBException,
 			RecordNotExistsDBException {
 		log.trace("executeUpdate");
+		Statement st=null;
 		try {
-			Statement st = conn.createStatement();
+			st = conn.createStatement();
 			log.debug("SQL UPDATE: " + sql);
 			int updateCount = st.executeUpdate(sql);
 			if (updateCount < 1) {
 				throw new UserDBEx.RecordNotExistsDBException(
 						"angegebener Datensatz existiert nicht", log);
 			}
-			st.close();
 		} catch (SQLException e) {
 			throw new SysDBEx.SQL_DBException(
 					"SQL-Update kann die Datenbank nicht erreichen", e, log);
+		} finally {
+			try {
+				st.close();
+			} catch (Exception e) {}
 		}
 	}
 
@@ -448,8 +472,6 @@ public class Database {
 		try {
 			if (conn != null) {
 				conn.close();
-				log.debug("TB!!!!! close:"+conn);
-
 			}
 		} catch (SQLException e) {
 			throw new SysDBEx.SQL_DBException(
@@ -457,8 +479,12 @@ public class Database {
 		}
 	}
 }
+
 /*
  * $Log: Database.java,v $
+ * Revision 1.16  2006/01/29 00:41:16  tbayen
+ * Konstruktor per DataSource sowie garantierte Freigabe aller JDBC-Ressourcen
+ *
  * Revision 1.15  2006/01/22 19:40:01  tbayen
  * Erste Einführung von DataSource (Vorbereitung für Connection Pools)
  *
