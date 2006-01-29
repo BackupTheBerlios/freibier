@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.12 2006/01/22 19:44:24 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.13 2006/01/29 00:41:52 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -16,10 +16,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 import de.bayen.database.Database;
 import de.bayen.database.Table;
@@ -86,7 +90,8 @@ public abstract class ServletDatabase extends HttpServlet {
 				// mit folgender Zeile werden auch noch abgeleitete Klassen
 				// durchsucht (TO DO: aber keine mehrfach abgeleiteten).
 				new FreemarkerClassTemplateLoader(this.getClass(), "templates"),
-				new FreemarkerClassTemplateLoader(ServletDatabase.class, "templates")
+				new FreemarkerClassTemplateLoader(ServletDatabase.class,
+						"templates")
 		};
 		cfg.setTemplateLoader(new MultiTemplateLoader(loaders));
 		// normalerweise gibts keine Euro-Zeichen, das stelle ich hier aber ein:
@@ -97,7 +102,7 @@ public abstract class ServletDatabase extends HttpServlet {
 		try {
 			connectDatabase();
 		} catch (DatabaseException e) {
-			logger.error("Kann die Datenbank nicht öffnen.",e);
+			logger.error("Kann die Datenbank nicht öffnen.", e);
 			throw new RuntimeException("Kann die Datenbank nicht öffnen.");
 		}
 	}
@@ -145,6 +150,9 @@ public abstract class ServletDatabase extends HttpServlet {
 		// Falls kein Datenbankname, diesen auf den Paketnamen der Applikation setzen
 		if (!props.containsKey("database.name")) {
 			props.setProperty("database.name", appname);
+		}
+		if (!props.containsKey("database.datasource")) {
+			props.setProperty("database.datasource", appname);
 		}
 		// dann die Properties der konkret abgeleiteten Klasse lesen:
 		path = getClass().getPackage().getName().replace('.', '/');
@@ -215,14 +223,14 @@ public abstract class ServletDatabase extends HttpServlet {
 		String theme = null;
 		String table = null;
 		try {
-//			// Die Datenbank wird in der Session gespeichert, damit sie nicht
-//			// bei jedem Request neu aufgemacht werden muss
-//			WebDBDatabase db = null;
-//			//db = (WebDBDatabase) req.getSession().getAttribute("de.bayen.database");
-//			if (db == null) {
-//				db = connectDatabase();
-//				req.getSession().setAttribute("de.bayen.database", db);
-//			}
+			//			// Die Datenbank wird in der Session gespeichert, damit sie nicht
+			//			// bei jedem Request neu aufgemacht werden muss
+			//			WebDBDatabase db = null;
+			//			//db = (WebDBDatabase) req.getSession().getAttribute("de.bayen.database");
+			//			if (db == null) {
+			//				db = connectDatabase();
+			//				req.getSession().setAttribute("de.bayen.database", db);
+			//			}
 			root.putAll(populateContextRoot(req, database));
 			uri = (Map) root.get("uri");
 			String action = (String) uri.get("action");
@@ -363,11 +371,11 @@ public abstract class ServletDatabase extends HttpServlet {
 		logger.debug("sende Binärdaten");
 		resp.setContentType((String) root.get("contenttype"));
 		Object output = root.get("binarydata");
-		if(output.getClass().equals(BLOB.class)) {
+		if (output.getClass().equals(BLOB.class)) {
 			resp.getOutputStream().write(((BLOB) output).toByteArray());
-		}else if(output.getClass().equals(byte[].class)) {
-			resp.getOutputStream().write((byte[])output);
-		}else {
+		} else if (output.getClass().equals(byte[].class)) {
+			resp.getOutputStream().write((byte[]) output);
+		} else {
 			throw new RuntimeException("ungültiger Binärdatentyp");
 		}
 	}
@@ -381,9 +389,18 @@ public abstract class ServletDatabase extends HttpServlet {
 	 */
 	protected void connectDatabase() throws DatabaseException {
 		try {
-			database = new Database(getProperty("database.name"),
-					getProperty("database.host"), getProperty("database.user"),
-					getProperty("database.password"));
+			String datasource = getProperty("database.datasource");
+			try {
+				Context initCtx = new InitialContext();
+				DataSource ds = (DataSource) initCtx
+						.lookup("java:comp/env/jdbc/" + datasource);
+				database=new Database(ds,getProperty("database.name"));
+			} catch (NamingException e) {
+				// Wenns keine DataSource gibt, nehme ich den herkömmlichen Weg
+				database = new Database(getProperty("database.name"),
+						getProperty("database.host"), getProperty("database.user"),
+						getProperty("database.password"));
+			}
 			database.setPropertyPath(getClass().getPackage().getName());
 			// falls die Datenbank noch nicht existiert, initialisiere ich sie
 			if (database.getTableNamesList().size() == 0) {
@@ -396,7 +413,6 @@ public abstract class ServletDatabase extends HttpServlet {
 							"Kann Definitionsdatei nicht lesen", e);
 				}
 			}
-			
 		} catch (MissingResourceException e) {
 			throw new UserDBEx(
 					"Datenbank-Beschreibung in database.properties nicht vorhanden",
@@ -406,6 +422,9 @@ public abstract class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.13  2006/01/29 00:41:52  tbayen
+ * Datenbankverbindung per DataSource möglich
+ *
  * Revision 1.12  2006/01/22 19:44:24  tbayen
  * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
  * Klasse WebDBDatabase unnötig, wurde gelöscht

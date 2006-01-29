@@ -18,7 +18,6 @@ wünschenswert:
   - Ein überladenes Template sollte sein Original laden können
   - Wechsel (und Neuinitialisierung) der Datenbank möglich machen
   - evtl. Session-Einstellungen für Theme, Filter, etc.
-  - Connection Pool
   - System für Formulare, Validierung, etc.
 - Benutzersensitivität
   - Anzeige des Benutzers
@@ -62,6 +61,7 @@ nicht wirklich nötig:
 
 
 erledigt:
+- Connection Pool per JNDI
 - Einige TODOs (vor allem in der Doku) bereinigt
 - Anpassung der Doku README und INSTALL
 - Banking-TODOs in eigene Datei innerhalb des Banking-Projektes ausgelagert
