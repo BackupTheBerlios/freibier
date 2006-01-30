@@ -1,5 +1,5 @@
 <#-- Erzeugt am 03.04.2005 von tbayen
-     $Id: show.ftl,v 1.2 2006/01/28 14:19:17 tbayen Exp $ -->
+     $Id: show.ftl,v 1.3 2006/01/30 18:01:53 tbayen Exp $ -->
 <#assign title="Auftrag '${record.getField(fields[0]).format()}' aus dem Pool"/>
 <#include "include/editmacros.ftl"/>
 <#assign menu1_name=uri.table>
@@ -20,24 +20,25 @@
   </td></tr><tr><td colspan="2">
   </td></tr></table>
 
-  <h2>Informationen aus der DTAUS-Datei</h2>
   <#if dtauslg=="L">
     <#assign dtaustyp="Lastschriften"/>
   <#else/>
     <#assign dtaustyp="Überweisungen"/>
   </#if>
-  <ul>
-    <li>BLZ: ${dtausblz}</li> 
-    <li>Kontonummer: ${dtauskontonummer}</li>
-    <li>Summe: ${dtaussumme} &euro;</li>
-    <li>Lastschrift oder Überweisung: ${dtaustyp}</li>
-  </ul>
 
   <h2>Versenden der ${dtaustyp}</h2>
   <form name="form" action="<@call action="senddtaus" view="show"/>" method="post">
   	TAN: <input name="tan" type="text" value="" size="6" maxlength="6"/>
     <button name="submit" type="submit" value="ok">${dtaustyp} zur Bank senden</button>
   </form>
+
+  <h2>Informationen aus der DTAUS-Datei</h2>
+  <ul>
+    <li>BLZ: ${dtausblz}</li> 
+    <li>Kontonummer: ${dtauskontonummer}</li>
+    <li>Summe: ${dtaussumme} &euro;</li>
+    <li>Lastschrift oder Überweisung: ${dtaustyp}</li>
+  </ul>
 
   <h2>DTAUS-Datei wieder in Ausgangskorb zurückholen</h2>
   Diese Funktion dient z.B. zur Korrektur von bereits in den Pool gestellten
@@ -55,6 +56,9 @@
 
 <#--
 * $Log: show.ftl,v $
+* Revision 1.3  2006/01/30 18:01:53  tbayen
+* Eingabe von TAN-Nummer weiter oben im Formular ist benutzerfreundlicher
+*
 * Revision 1.2  2006/01/28 14:19:17  tbayen
 * Zahlungsart in Transaktionen ermöglicht, Abbuch. und Lastschr. zu mischen
 *
