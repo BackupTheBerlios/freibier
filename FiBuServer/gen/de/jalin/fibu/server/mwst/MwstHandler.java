@@ -37,6 +37,24 @@ public class MwstHandler extends AbstractHandler {
 	    			session,
 	    			callParamLists);
 		}
+		if("add".equals(functionName)) {
+	    		return callMwstAddCall(
+	    			dbConnect, 
+	    			session,
+	    			callParamLists);
+		}
+		if("update".equals(functionName)) {
+	    		return callMwstUpdateCall(
+	    			dbConnect, 
+	    			session,
+	    			callParamLists);
+		}
+		if("delete".equals(functionName)) {
+	    		return callMwstDeleteCall(
+	    			dbConnect, 
+	    			session,
+	    			callParamLists);
+		}
 		throw new ServerException(9003);
 	}
 
@@ -77,6 +95,66 @@ public class MwstHandler extends AbstractHandler {
 					, display
 					, orderBy
 					)
+				);
+		}
+		return listResult;
+	}
+
+	public Vector callMwstAddCall(
+		Connection dbConnect, 
+		XmlRpcSession session,
+		XmlRpcTransactionParams callParamLists)
+	   		throws XmlRpcTransactionException {
+	   	Vector listResult = new Vector();
+		MwstData writeData = new MwstData();
+		readPropertiesVector(callParamLists.getSetProps(), writeData);
+		Iterator objIterator = parseObjectIdList(callParamLists.getObjectIds(), "mwstid", writeData).iterator();
+		while (objIterator.hasNext()) {
+				backend.executeMwstAddCall(
+					dbConnect
+					, session
+					, (MwstData) objIterator.next()
+				);
+		}
+		return listResult;
+	}
+
+	public Vector callMwstUpdateCall(
+		Connection dbConnect, 
+		XmlRpcSession session,
+		XmlRpcTransactionParams callParamLists)
+	   		throws XmlRpcTransactionException {
+	   	Vector listResult = new Vector();
+		MwstData writeData = new MwstData();
+		readPropertiesVector(callParamLists.getSetProps(), writeData);
+		MwstData whereData = new MwstData();
+		readPropertiesVector(callParamLists.getWhereProps(), whereData);
+		Iterator objIterator = parseObjectIdList(callParamLists.getObjectIds(), "mwstid", whereData).iterator();
+		while (objIterator.hasNext()) {
+				backend.executeMwstUpdateCall(
+					dbConnect
+					, session
+					, writeData
+					, (MwstData) objIterator.next()
+				);
+		}
+		return listResult;
+	}
+
+	public Vector callMwstDeleteCall(
+		Connection dbConnect, 
+		XmlRpcSession session,
+		XmlRpcTransactionParams callParamLists)
+	   		throws XmlRpcTransactionException {
+	   	Vector listResult = new Vector();
+		MwstData whereData = new MwstData();
+		readPropertiesVector(callParamLists.getWhereProps(), whereData);
+		Iterator objIterator = parseObjectIdList(callParamLists.getObjectIds(), "mwstid", whereData).iterator();
+		while (objIterator.hasNext()) {
+				backend.executeMwstDeleteCall(
+					dbConnect
+					, session
+					, (MwstData) objIterator.next()
 				);
 		}
 		return listResult;

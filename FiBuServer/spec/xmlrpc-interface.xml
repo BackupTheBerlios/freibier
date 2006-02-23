@@ -39,6 +39,15 @@
     <function name="list" read="yes" where="yes" order="yes" write="no" objectid="yes" result="yes">
       <description>MWSt-Sätze lesen</description>
     </function>
+    <function name="add" read="no" where="no" order="no" write="yes" objectid="yes" result="no">
+      <description>Die Funktion add fügt einen neuen MWSt-Satz ein</description>
+    </function>
+    <function name="update" read="no" where="yes" order="no" write="yes" objectid="yes" result="no">
+      <description>Die Funktion update ändert Attribute eines MWSt-Satzes</description>
+    </function>
+    <function name="delete" read="no" where="yes" order="no" write="no" objectid="yes" result="no">
+      <description>Die Funktion delete löscht MWSt-Sätze</description>
+    </function>
   </module>
   <module name="konto">
     <description>Das Modul konto verwaltet die Buchhaltungskonten</description>
