@@ -49,12 +49,6 @@ public class MwstHandler extends AbstractHandler {
 	    			session,
 	    			callParamLists);
 		}
-		if("delete".equals(functionName)) {
-	    		return callMwstDeleteCall(
-	    			dbConnect, 
-	    			session,
-	    			callParamLists);
-		}
 		throw new ServerException(9003);
 	}
 
@@ -135,25 +129,6 @@ public class MwstHandler extends AbstractHandler {
 					dbConnect
 					, session
 					, writeData
-					, (MwstData) objIterator.next()
-				);
-		}
-		return listResult;
-	}
-
-	public Vector callMwstDeleteCall(
-		Connection dbConnect, 
-		XmlRpcSession session,
-		XmlRpcTransactionParams callParamLists)
-	   		throws XmlRpcTransactionException {
-	   	Vector listResult = new Vector();
-		MwstData whereData = new MwstData();
-		readPropertiesVector(callParamLists.getWhereProps(), whereData);
-		Iterator objIterator = parseObjectIdList(callParamLists.getObjectIds(), "mwstid", whereData).iterator();
-		while (objIterator.hasNext()) {
-				backend.executeMwstDeleteCall(
-					dbConnect
-					, session
 					, (MwstData) objIterator.next()
 				);
 		}

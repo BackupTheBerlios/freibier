@@ -32,12 +32,4 @@ public interface MwstBackend {
 		, MwstData writeData
 		, MwstData whereData
 	) throws MwstException;
-
-	public 
-		void
-			executeMwstDeleteCall
-		( Connection dbConnection
-		, XmlRpcSession session
-		, MwstData whereData
-	) throws MwstException;
 }

@@ -17,7 +17,7 @@ abstract public class BuchungDAO implements Createable {
 	private DatabaseTable table;
 	private DisplayColumns display;
 
-	public BuchungDAO() {
+	public BuchungDAO() throws XmlRpcTransactionException {
 		table = new DatabaseTable("buchung");
 		display = new DisplayColumns();
 		display.addColumnDefinition("buchid", 1);

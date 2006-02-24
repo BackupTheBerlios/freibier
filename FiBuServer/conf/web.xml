@@ -11,9 +11,21 @@
 		<load-on-startup/>
 	</servlet>
  
+	<servlet>
+		<servlet-name>hsadmintd</servlet-name>
+	    <display-name>FreiBier Ticket Server</display-name>
+		<servlet-class>net.hostsharing.admin.ticket.servlet.TicketServlet</servlet-class>
+		<load-on-startup/>
+	</servlet>
+   	
  	<servlet-mapping>
     	<servlet-name>freibier</servlet-name>
-    	<url-pattern>/*</url-pattern>
+    	<url-pattern>/RPC2</url-pattern>
+  	</servlet-mapping>
+
+ 	<servlet-mapping>
+    	<servlet-name>hsadmintd</servlet-name>
+    	<url-pattern>/getTicket</url-pattern>
   	</servlet-mapping>
 
 </web-app>

@@ -17,7 +17,7 @@ abstract public class MwstDAO implements Createable {
 	private DatabaseTable table;
 	private DisplayColumns display;
 
-	public MwstDAO() {
+	public MwstDAO() throws XmlRpcTransactionException {
 		table = new DatabaseTable("mwst");
 		display = new DisplayColumns();
 		display.addColumnDefinition("mwstid", 1);

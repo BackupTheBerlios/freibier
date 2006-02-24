@@ -1,17 +1,32 @@
-// $Id: InitDB.java,v 1.5 2006/02/23 17:08:11 phormanns Exp $
+// $Id: InitDB.java,v 1.6 2006/02/24 22:27:40 phormanns Exp $
+/* 
+ * HSAdmin - hostsharing.net Paketadministration
+ * Copyright (C) 2005, 2006 Peter Hormanns                               
+ *                                                                
+ * This program is free software; you can redistribute it and/or  
+ * modify it under the terms of the GNU General Public License    
+ * as published by the Free Software Foundation; either version 2 
+ * of the License, or (at your option) any later version.         
+ *                                                                 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  
+ * GNU General Public License for more details.                   
+ *                                                                 
+ * You should have received a copy of the GNU General Public      
+ * License along with this program; if not, write to the Free      
+ * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+ * MA  02111-1307, USA.                                                                                        
+ */
 package de.jalin.fibu.server;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.StringTokenizer;
 import java.util.Vector;
-
 import net.hostsharing.admin.runtime.InitDatabase;
 import net.hostsharing.admin.runtime.PostgresAccess;
 import net.hostsharing.admin.runtime.ResultVector;
@@ -41,7 +56,7 @@ public class InitDB {
 	private Integer ermMWStId;
 	private Integer vollMWStId;
 
-	public InitDB() {
+	public InitDB() throws XmlRpcTransactionException {
 		daoObjects = new Vector();
 		customerDAO = new CustomerDAO();
 		daoObjects.addElement(customerDAO);
@@ -197,16 +212,14 @@ public class InitDB {
 		}
 		return string;
 	}
-
-	public static void main(String[] args) {
-		InitDB initDB = new InitDB();
-		initDB.initModel();
-		initDB.initData();
-	}
 }
 
 /*
  * $Log: InitDB.java,v $
+ * Revision 1.6  2006/02/24 22:27:40  phormanns
+ * Copyright
+ * diverse Verbesserungen
+ *
  * Revision 1.5  2006/02/23 17:08:11  phormanns
  * Kontenplan für DBInit
  *

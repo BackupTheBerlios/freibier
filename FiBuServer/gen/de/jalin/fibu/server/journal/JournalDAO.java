@@ -18,7 +18,7 @@ abstract public class JournalDAO implements Createable {
 	private DatabaseTable table;
 	private DisplayColumns display;
 
-	public JournalDAO() {
+	public JournalDAO() throws XmlRpcTransactionException {
 		table = new DatabaseTable("journal");
 		display = new DisplayColumns();
 		display.addColumnDefinition("jourid", 1);

@@ -1,4 +1,23 @@
-// $Id: FiBuFacade.java,v 1.11 2006/01/05 13:09:40 phormanns Exp $
+// $Id: FiBuFacade.java,v 1.12 2006/02/24 22:24:22 phormanns Exp $
+/* 
+ * HSAdmin - hostsharing.net Paketadministration
+ * Copyright (C) 2005, 2006 Peter Hormanns                               
+ *                                                                
+ * This program is free software; you can redistribute it and/or  
+ * modify it under the terms of the GNU General Public License    
+ * as published by the Free Software Foundation; either version 2 
+ * of the License, or (at your option) any later version.         
+ *                                                                 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  
+ * GNU General Public License for more details.                   
+ *                                                                 
+ * You should have received a copy of the GNU General Public      
+ * License along with this program; if not, write to the Free      
+ * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+ * MA  02111-1307, USA.                                                                                        
+ */
 package de.jalin.fibu.gui;
 
 import java.net.MalformedURLException;
@@ -41,13 +60,15 @@ public class FiBuFacade {
 	private static final NumberFormat currencyFormatter = new DecimalFormat("0.00");
 	
 	private XmlRpcTransactionClient client;
+	private String ticket;
 	private CustomerData customer;
 	private KontoData bilanzKonto;
 	private KontoData guvKonto;
 	
-	public FiBuFacade() throws FiBuException {
+	public FiBuFacade(String url, String ticket) throws FiBuException {
 		try {
-			client = new XmlRpcTransactionClient();
+			client = new XmlRpcTransactionClient(url);
+			this.ticket = ticket;
 			customer = new CustomerData();
 			bilanzKonto = new KontoData();
 			guvKonto = new KontoData();
@@ -63,7 +84,7 @@ public class FiBuFacade {
 	
 	public void setCustomer(CustomerData updatedCustomer, String bilanzKtoNr, String guvKtoNr) throws FiBuException {
 		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			KontoData sampleBilanzKto = new KontoData();
 			sampleBilanzKto.setKontoid(customer.getBilanzkonto());
 			KontoData sampleGuVKonto = new KontoData();
@@ -89,7 +110,7 @@ public class FiBuFacade {
 	
 	public Vector getOffeneJournale() throws FiBuException {
 		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			JournalData queryJournal = new JournalData();
 			queryJournal.setAbsummiert(Boolean.FALSE);
 			JournalListCall journalListCall = new JournalListCall(queryJournal);
@@ -113,7 +134,7 @@ public class FiBuFacade {
 
 	public Vector getAlleJournale() throws FiBuException {
 		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			JournalData queryJournal = new JournalData();
 			JournalListCall journalListCall = new JournalListCall(queryJournal);
 			journalListCall.addOrderByColumn("jourid", false);
@@ -144,7 +165,7 @@ public class FiBuFacade {
 	
 	public void absummieren(JournalData whereJournal) throws FiBuException {
 		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			JournalData setJournal = (JournalData) whereJournal.cloneData();
 			setJournal.setAbsummiert(Boolean.TRUE);
 			tx.addCall(new JournalUpdateCall(setJournal, whereJournal));
@@ -158,14 +179,14 @@ public class FiBuFacade {
 	
 	public JournalData neuesJournal() throws FiBuException {
 		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			CustomerData whereCust = new CustomerData();
 			tx.addCall(new CustomerListCall(whereCust));
 			Vector functionsResults = (Vector) tx.perform().get(0);
 			ResultVector resultVector = new ResultVector(functionsResults);
 			CustomerData cust = new CustomerData();
 			cust.readFromResult(resultVector, 0);
-			tx = new XmlRpcClientTransaction(client, "xxx");
+			tx = new XmlRpcClientTransaction(client, ticket);
 			JournalData addJournal = new JournalData();
 			addJournal.setAbsummiert(Boolean.FALSE);
 			addJournal.setJahr(cust.getJahr());
@@ -186,7 +207,7 @@ public class FiBuFacade {
 
 	public KontoData getKonto(String ktoNr) throws FiBuException {
 		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			KontoData whereKto = new KontoData();
 			whereKto.setKontonr(ktoNr);
 			tx.addCall(new KontoListCall(whereKto));
@@ -204,7 +225,7 @@ public class FiBuFacade {
 	public void buchen(JournalData journal, String belegNr, String buchungstext, String valutaDatum, 
 			String sollKtoNr, String habenKtoNr, String betrag) throws FiBuException {
 		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			BuchungsmaschineData buchung = new BuchungsmaschineData();
 			buchung.setBelegnr(belegNr);
 			buchung.setBrutto(new Integer(Math.round(currencyFormatter.parse(betrag).floatValue() * 100.0f)));
@@ -228,7 +249,7 @@ public class FiBuFacade {
 
 	public String getMWSt(KontoData kto) throws FiBuException {
 		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			MwstData mwst = new MwstData();
 			mwst.setMwstid(kto.getMwstid());
 			tx.addCall(new MwstListCall(mwst));
@@ -245,9 +266,11 @@ public class FiBuFacade {
 
 	public List getKontenListe() throws FiBuException {
 		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			KontoData sampleKto = new KontoData();
-			tx.addCall(new KontoListCall(sampleKto));
+			KontoListCall kontoListCall = new KontoListCall(sampleKto);
+			kontoListCall.addOrderByColumn("kontonr", true);
+			tx.addCall(kontoListCall);
 			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
 			List ktoList = new ArrayList();
 			KontoData kto = null;
@@ -290,7 +313,7 @@ public class FiBuFacade {
 	
 	private List callBuchungslisteList(AbstractCall buchungslisteListCall) throws FiBuUserException {
 		try {
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			tx.addCall(buchungslisteListCall);
 			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
 			List buchungsList = new ArrayList();
@@ -312,7 +335,7 @@ public class FiBuFacade {
 		try {
 			CustomerData whereCust = new CustomerData();
 			whereCust.setCustid(writeCust.getCustid());
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			tx.addCall(new CustomerUpdateCall(writeCust, whereCust));
 			tx.perform();
 		} catch (XmlRpcClientException e) {
@@ -323,11 +346,11 @@ public class FiBuFacade {
 	private void initCustomerUndKonten() throws FiBuUserException {
 		try {
 			CustomerData sampleCust = new CustomerData();
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			tx.addCall(new CustomerListCall(sampleCust));
 			ResultVector result = new ResultVector((Vector) tx.perform().get(0));
 			customer.readFromResult(result, 0);
-			tx = new XmlRpcClientTransaction(client, "xxx");
+			tx = new XmlRpcClientTransaction(client, ticket);
 			KontoData sampleBilanzKto = new KontoData();
 			sampleBilanzKto.setKontoid(customer.getBilanzkonto());
 			KontoData sampleGuVKonto = new KontoData();
@@ -350,7 +373,7 @@ public class FiBuFacade {
 		try {
 			BuchungData buchung = new BuchungData();
 			buchung.setBuchid(buchid);
-			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, "xxx");
+			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			tx.addCall(new BuchungDeleteCall(buchung));
 			tx.perform();
 		} catch (XmlRpcClientException e) {
@@ -362,6 +385,10 @@ public class FiBuFacade {
 
 /*
  *  $Log: FiBuFacade.java,v $
+ *  Revision 1.12  2006/02/24 22:24:22  phormanns
+ *  Copyright
+ *  diverse Verbesserungen
+ *
  *  Revision 1.11  2006/01/05 13:09:40  phormanns
  *  Buchungen in offenen Journalen können gelöscht werden
  *

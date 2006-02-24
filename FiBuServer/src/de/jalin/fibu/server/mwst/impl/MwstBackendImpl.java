@@ -1,4 +1,23 @@
-// $Id: MwstBackendImpl.java,v 1.2 2006/02/23 17:08:28 phormanns Exp $
+// $Id: MwstBackendImpl.java,v 1.3 2006/02/24 22:27:40 phormanns Exp $
+/* 
+ * HSAdmin - hostsharing.net Paketadministration
+ * Copyright (C) 2005, 2006 Peter Hormanns                               
+ *                                                                
+ * This program is free software; you can redistribute it and/or  
+ * modify it under the terms of the GNU General Public License    
+ * as published by the Free Software Foundation; either version 2 
+ * of the License, or (at your option) any later version.         
+ *                                                                 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  
+ * GNU General Public License for more details.                   
+ *                                                                 
+ * You should have received a copy of the GNU General Public      
+ * License along with this program; if not, write to the Free      
+ * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+ * MA  02111-1307, USA.                                                                                        
+ */
 package de.jalin.fibu.server.mwst.impl;
 
 import java.sql.Connection;
@@ -15,8 +34,12 @@ public class MwstBackendImpl implements MwstBackend {
 	
 	private MwstDAO mwstDAO;
 
-	public MwstBackendImpl() {
-		mwstDAO = new MwstDAO();
+	public MwstBackendImpl() throws MwstException {
+		try {
+			mwstDAO = new MwstDAO();
+		} catch (XmlRpcTransactionException e) {
+			throw new MwstException(10201, e);
+		}
 	}
 
 	public Vector executeMwstListCall(Connection dbConnection,
@@ -44,18 +67,14 @@ public class MwstBackendImpl implements MwstBackend {
 			throw new MwstException(10201, e);
 		}
 	}
-
-	public void executeMwstDeleteCall(Connection dbConnection, XmlRpcSession session, MwstData whereData) throws MwstException {
-		try {
-			mwstDAO.deleteMwst(dbConnection, whereData);
-		} catch (XmlRpcTransactionException e) {
-			throw new MwstException(10201, e);
-		}
-	}
 }
 
 /*
  *  $Log: MwstBackendImpl.java,v $
+ *  Revision 1.3  2006/02/24 22:27:40  phormanns
+ *  Copyright
+ *  diverse Verbesserungen
+ *
  *  Revision 1.2  2006/02/23 17:08:28  phormanns
  *  neue Funktionen
  *

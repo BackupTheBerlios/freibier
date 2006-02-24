@@ -1,4 +1,23 @@
-// $Id: JournalBackendImpl.java,v 1.1 2005/11/20 21:27:44 phormanns Exp $
+// $Id: JournalBackendImpl.java,v 1.2 2006/02/24 22:27:40 phormanns Exp $
+/* 
+ * HSAdmin - hostsharing.net Paketadministration
+ * Copyright (C) 2005, 2006 Peter Hormanns                               
+ *                                                                
+ * This program is free software; you can redistribute it and/or  
+ * modify it under the terms of the GNU General Public License    
+ * as published by the Free Software Foundation; either version 2 
+ * of the License, or (at your option) any later version.         
+ *                                                                 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  
+ * GNU General Public License for more details.                   
+ *                                                                 
+ * You should have received a copy of the GNU General Public      
+ * License along with this program; if not, write to the Free      
+ * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+ * MA  02111-1307, USA.                                                                                        
+ */
 package de.jalin.fibu.server.journal.impl;
 
 import java.sql.Connection;
@@ -17,16 +36,20 @@ public class JournalBackendImpl implements JournalBackend {
 	private JournalDAO journalDAO;
 	private DisplayColumns display;
 
-	public JournalBackendImpl() {
-		this.journalDAO = new JournalDAO();
-		this.display = new DisplayColumns();
-		this.display.addColumnDefinition("jourid", 1);
-		this.display.addColumnDefinition("journr", 1);
-		this.display.addColumnDefinition("jahr", 1);
-		this.display.addColumnDefinition("periode", 1);
-		this.display.addColumnDefinition("since", 1);
-		this.display.addColumnDefinition("lastupdate", 2);
-		this.display.addColumnDefinition("absummiert", 1);
+	public JournalBackendImpl() throws JournalException {
+		try {
+			this.journalDAO = new JournalDAO();
+			this.display = new DisplayColumns();
+			this.display.addColumnDefinition("jourid", 1);
+			this.display.addColumnDefinition("journr", 1);
+			this.display.addColumnDefinition("jahr", 1);
+			this.display.addColumnDefinition("periode", 1);
+			this.display.addColumnDefinition("since", 1);
+			this.display.addColumnDefinition("lastupdate", 2);
+			this.display.addColumnDefinition("absummiert", 1);
+		} catch (XmlRpcTransactionException e) {
+			throw new JournalException(10401, e);
+		}
 	}
 
 	public Vector executeJournalListCall(Connection dbConnection,
@@ -84,6 +107,10 @@ public class JournalBackendImpl implements JournalBackend {
 
 /*
  *  $Log: JournalBackendImpl.java,v $
+ *  Revision 1.2  2006/02/24 22:27:40  phormanns
+ *  Copyright
+ *  diverse Verbesserungen
+ *
  *  Revision 1.1  2005/11/20 21:27:44  phormanns
  *  Import
  *

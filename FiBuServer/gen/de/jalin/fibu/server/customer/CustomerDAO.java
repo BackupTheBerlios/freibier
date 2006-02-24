@@ -19,7 +19,7 @@ abstract public class CustomerDAO implements Createable {
 	private DatabaseTable table;
 	private DisplayColumns display;
 
-	public CustomerDAO() {
+	public CustomerDAO() throws XmlRpcTransactionException {
 		table = new DatabaseTable("customer");
 		display = new DisplayColumns();
 		display.addColumnDefinition("custid", 1);

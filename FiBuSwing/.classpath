@@ -13,7 +13,7 @@
 	<classpathentry kind="lib" path="lib/oro-2.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/xmlrpc.jar"/>
 	<classpathentry kind="var" path="JRE_LIB"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/xmlrpcgen"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FiBuServer"/>
+	<classpathentry kind="lib" path="lib/xmlrpcgen.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

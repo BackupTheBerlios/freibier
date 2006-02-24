@@ -33,7 +33,7 @@
           target: dist              
          ================================= -->
     <target name="dist" depends="jar" description="Build Web-Application">
-    	<war destfile="dist/RPC2.war" webxml="conf/web.xml">
+    	<war destfile="dist/fibu.war" webxml="conf/web.xml">
     		<lib dir="lib">
     		    <include name="xmlrpc.jar"/>
     		    <include name="commons-httpclient-2.0.2.jar"/>
@@ -48,10 +48,14 @@
     			<include name="velocity.jar"/>
     			<include name="commons-codec.jar"/>
     			<include name="commons-collections.jar"/>
+    			<include name="commons-logging.jar"/>
     			<include name="logkit.jar"/>
     			<include name="oro.jar"/>
     			<include name="junit.jar"/>
     		</lib>
+    		<classes dir="conf">
+    			<include name=".pgsql.properties"/>
+    		</classes>
     	</war>
     </target>
 

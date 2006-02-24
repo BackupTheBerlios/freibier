@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="/usr/share/java/servlet-2.3.jar"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/xmlrpcgen"/>
+	<classpathentry kind="lib" path="/usr/share/java/commons-logging.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

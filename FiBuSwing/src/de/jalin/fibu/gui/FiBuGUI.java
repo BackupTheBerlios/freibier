@@ -1,4 +1,23 @@
-// $Id: FiBuGUI.java,v 1.9 2005/11/20 21:29:10 phormanns Exp $
+// $Id: FiBuGUI.java,v 1.10 2006/02/24 22:24:22 phormanns Exp $
+/* 
+ * HSAdmin - hostsharing.net Paketadministration
+ * Copyright (C) 2005, 2006 Peter Hormanns                               
+ *                                                                
+ * This program is free software; you can redistribute it and/or  
+ * modify it under the terms of the GNU General Public License    
+ * as published by the Free Software Foundation; either version 2 
+ * of the License, or (at your option) any later version.         
+ *                                                                 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  
+ * GNU General Public License for more details.                   
+ *                                                                 
+ * You should have received a copy of the GNU General Public      
+ * License along with this program; if not, write to the Free      
+ * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+ * MA  02111-1307, USA.                                                                                        
+ */
 
 package de.jalin.fibu.gui;
 
@@ -8,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -25,6 +45,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import org.apache.commons.httpclient.HttpException;
+import net.hostsharing.admin.ticket.client.TicketClient;
 
 import com.jgoodies.looks.LookUtils;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
@@ -42,7 +64,9 @@ public class FiBuGUI {
 
 	public FiBuGUI() {
 		try {
-			fibu = new FiBuFacade();
+			TicketClient ticketCli = new TicketClient("http://www.hormanns-wenz.de/fibu/getTicket");
+			String ticket = ticketCli.getTicket("peter", "egal");
+			fibu = new FiBuFacade("http://www.hormanns-wenz.de/fibu/RPC2", ticket);
 			frame = new JFrame("Freibier - Buchhaltung");
 			frame.addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent e) {
@@ -68,6 +92,12 @@ public class FiBuGUI {
 			frame.pack();
 			frame.setVisible(true);
 		} catch (FiBuException e) {
+			System.err.println(e.getMessage());
+			System.exit(1);
+		} catch (HttpException e) {
+			System.err.println(e.getMessage());
+			System.exit(1);
+		} catch (IOException e) {
 			System.err.println(e.getMessage());
 			System.exit(1);
 		}
@@ -161,6 +191,10 @@ public class FiBuGUI {
 
 //
 // $Log: FiBuGUI.java,v $
+// Revision 1.10  2006/02/24 22:24:22  phormanns
+// Copyright
+// diverse Verbesserungen
+//
 // Revision 1.9  2005/11/20 21:29:10  phormanns
 // Umstellung auf XMLRPC Server
 //

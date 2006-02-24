@@ -29,7 +29,7 @@ abstract public class BuchungslisteDAO implements Createable {
 	private DatabaseTable table;
 	private DisplayColumns display;
 
-	public BuchungslisteDAO() {
+	public BuchungslisteDAO() throws XmlRpcTransactionException {
 		table = new DatabaseTable("buchungsliste");
 		display = new DisplayColumns();
 		display.addColumnDefinition("buzlid", 1);

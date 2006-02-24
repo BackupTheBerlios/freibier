@@ -1,2 +1,2 @@
 Main-Class: de.jalin.fibu.server.Main
-Class-Path: /usr/share/java/jdom.jar /usr/share/java/oro.jar /usr/share/java/velocity.jar /usr/share/java/logkit.jar /usr/share/java/commons-collections.jar /usr/share/java/junit.jar /usr/share/java/postgresql-jdbc3.jar /usr/share/java/commons-codec.jar commons-httpclient-2.0.2.jar xmlrpc.jar xmlrpcgen.jar
+Class-Path: jdom.jar oro.jar velocity.jar logkit.jar commons-collections.jar junit.jar postgresql-jdbc3.jar commons-logging.jar commons-codec.jar commons-httpclient-2.0.2.jar xmlrpc.jar xmlrpcgen.jar

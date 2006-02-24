@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?> 
+ <jnlp 
+   spec="1.0+" 
+   codebase="http://www.hormanns-wenz.de/attach/FiBu" 
+   href="fibu.jnlp"> 
+    <information> 
+      <title>Freibier FiBu Applikation</title> 
+      <vendor>Informatikbüro Hormanns und Wenz</vendor> 
+      <homepage href="http://www.hormanns-wenz.de/Wiki.jsp?page=FiBu"/> 
+      <description>Freibier FiBu Demo</description> 
+      <description kind="short">Webstart-Demo der Freibier FiBu.</description> 
+      <!-- <icon href=""/> -->
+    </information> 
+    <resources> 
+      <j2se version="1.4+"/> 
+      <jar href="fibugui.jar" main="true"/> 
+      <jar href="commons-codec.jar"/> 
+      <jar href="commons-httpclient-2.0.2.jar"/> 
+      <jar href="commons-logging-1.0.4.jar"/> 
+      <jar href="forms-1.0.5.jar"/> 
+      <jar href="freibier.jar"/> 
+      <jar href="log4j-1.2.8.jar"/> 
+      <jar href="looks-1.3.2.jar"/> 
+      <jar href="oro-2.0.8.jar"/> 
+      <jar href="xmlrpc.jar"/> 
+      <jar href="xmlrpcgen.jar"/> 
+    </resources> 
+    <application-desc main-class="de.jalin.fibu.gui.FiBuGUI"/> 
+  </jnlp> 

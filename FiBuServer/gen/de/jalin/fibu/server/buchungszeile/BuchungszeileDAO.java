@@ -17,7 +17,7 @@ abstract public class BuchungszeileDAO implements Createable {
 	private DatabaseTable table;
 	private DisplayColumns display;
 
-	public BuchungszeileDAO() {
+	public BuchungszeileDAO() throws XmlRpcTransactionException {
 		table = new DatabaseTable("buchungszeile");
 		display = new DisplayColumns();
 		display.addColumnDefinition("buzlid", 1);

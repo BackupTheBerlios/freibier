@@ -1,11 +1,30 @@
-// $Id: KontoNode.java,v 1.6 2005/11/23 23:16:49 phormanns Exp $
+// $Id: KontoNode.java,v 1.7 2006/02/24 22:24:22 phormanns Exp $
+/* 
+ * HSAdmin - hostsharing.net Paketadministration
+ * Copyright (C) 2005, 2006 Peter Hormanns                               
+ *                                                                
+ * This program is free software; you can redistribute it and/or  
+ * modify it under the terms of the GNU General Public License    
+ * as published by the Free Software Foundation; either version 2 
+ * of the License, or (at your option) any later version.         
+ *                                                                 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  
+ * GNU General Public License for more details.                   
+ *                                                                 
+ * You should have received a copy of the GNU General Public      
+ * License along with this program; if not, write to the Free      
+ * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+ * MA  02111-1307, USA.                                                                                        
+ */
 package de.jalin.fibu.gui.tree;
 
 import java.awt.Component;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 import javax.swing.tree.TreeNode;
 import de.jalin.fibu.gui.FiBuException;
@@ -86,8 +105,8 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 		FiBuFacade fibu = gui.getFiBuFacade();
 		Iterator kontenIterator = fibu.getKontenListe().iterator();
 		KontoData kto = null;
-		Map ktoHash = new HashMap();
-		Map childrenHash = new HashMap();
+		Map ktoHash = new TreeMap();
+		Map childrenHash = new TreeMap();
 		while (kontenIterator.hasNext()) {
 			kto = (KontoData) kontenIterator.next();
 			ktoHash.put(kto.getKontoid(), kto);
@@ -113,6 +132,10 @@ public class KontoNode implements TreeNode, Adoptable, Editable {
 
 /*
  *  $Log: KontoNode.java,v $
+ *  Revision 1.7  2006/02/24 22:24:22  phormanns
+ *  Copyright
+ *  diverse Verbesserungen
+ *
  *  Revision 1.6  2005/11/23 23:16:49  phormanns
  *  Lesen Konto-Hierarchie und Buchungsliste optimiert
  *

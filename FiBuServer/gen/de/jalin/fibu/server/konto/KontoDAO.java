@@ -18,7 +18,7 @@ abstract public class KontoDAO implements Createable {
 	private DatabaseTable table;
 	private DisplayColumns display;
 
-	public KontoDAO() {
+	public KontoDAO() throws XmlRpcTransactionException {
 		table = new DatabaseTable("konto");
 		display = new DisplayColumns();
 		display.addColumnDefinition("kontoid", 1);
