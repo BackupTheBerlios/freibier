@@ -15,5 +15,6 @@
 	<classpathentry kind="var" path="JRE_LIB"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FiBuServer"/>
 	<classpathentry kind="lib" path="lib/xmlrpcgen.jar"/>
+	<classpathentry kind="lib" path="lib/jcalendar.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -19,6 +19,7 @@
       <jar href="commons-logging-1.0.4.jar"/> 
       <jar href="forms-1.0.5.jar"/> 
       <jar href="freibier.jar"/> 
+      <jar href="jcalendar.jar"/> 
       <jar href="log4j-1.2.8.jar"/> 
       <jar href="looks-1.3.2.jar"/> 
       <jar href="oro-2.0.8.jar"/> 

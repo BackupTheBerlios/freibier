@@ -1,4 +1,4 @@
-// $Id: BuchungsForm.java,v 1.8 2006/02/24 22:24:22 phormanns Exp $
+// $Id: BuchungsForm.java,v 1.9 2006/02/26 12:30:21 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -24,14 +24,13 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.toedter.calendar.JDateChooser;
 import de.jalin.fibu.gui.FiBuException;
 import de.jalin.fibu.gui.FiBuFacade;
 import de.jalin.fibu.gui.FiBuGUI;
@@ -48,7 +47,7 @@ public class BuchungsForm extends AbstractForm {
 	private FiBuGUI gui;
 	private JournalData journal;
 	private JTextField tfBelegNr;
-	private JTextField tfValutaDatum;
+	private JDateChooser dfValutaDatum;
 	private JTextField tfSollKontoNr;
 	private JTextField tfHabenKontoNr;
 	private JTextField tfBuchungstext;
@@ -75,22 +74,14 @@ public class BuchungsForm extends AbstractForm {
 			if (belegNr.length() < 1) {
 				throw new FiBuUserException("Kein Beleg angegeben.");
 			}
-			String valutaDatum = tfValutaDatum.getText();
-			try {
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(dateFormatter.parse(valutaDatum));
-				if (cal.get(Calendar.YEAR) < 100) cal.add(Calendar.YEAR, 2000);
-				tfValutaDatum.setText(dateFormatter.format(cal.getTime()));
-			} catch (ParseException e) {
-				throw new FiBuUserException("Kein gültiges Datum angegeben.");
-			}
+			Date valutaDatum = dfValutaDatum.getDate();
 			String buchungstext = tfBuchungstext.getText();
 			if (buchungstext.length() < 1) {
 				throw new FiBuUserException("Kein Buchungstext angegeben.");
 			}
 			gui.getFiBuFacade().buchen(journal, belegNr, 
 					buchungstext, 
-					valutaDatum, 
+					dateFormatter.format(valutaDatum), 
 					tfSollKontoNr.getText(), 
 					tfHabenKontoNr.getText(), 
 					tfBruttoBetrag.getText());
@@ -105,25 +96,30 @@ public class BuchungsForm extends AbstractForm {
 
 	public Component getEditor() {
 		FiBuFacade fibu = gui.getFiBuFacade();
+		// Kopfdaten
 		tfBelegNr = createTextField("", true);
 		tfBuchungstext = createTextField("", true);
-		tfValutaDatum = createTextField(dateFormatter.format(new Date()), true);
-		tfSollKontoNr = createTextField("", true);
-		tfHabenKontoNr = createTextField("", true);
-		tfSollKontoText = createTextField("", false);
-		tfHabenKontoText = createTextField("", false);
+		dfValutaDatum = new JDateChooser();
+		dfValutaDatum.setDateFormatString("dd.MM.yyyy");
+		dfValutaDatum.setDate(new Date());
 		tfBruttoBetrag = createTextField("0,00", true);
 		tfBruttoBetrag.setHorizontalAlignment(JTextField.RIGHT);
+		// Sollkonto
+		tfSollKontoNr = createTextField("", true);
+		tfSollKontoText = createTextField("", false);
 		tfSollMWStSatz = createTextField("0", false);
 		tfSollMWStSatz.setHorizontalAlignment(JTextField.RIGHT);
-		tfHabenMWStSatz = createTextField("0", false);
-		tfHabenMWStSatz.setHorizontalAlignment(JTextField.RIGHT);
 		tfSollBetrag = createTextField("0,00", false);
 		tfSollBetrag.setHorizontalAlignment(JTextField.RIGHT);
-		tfHabenBetrag = createTextField("0,00", false);
-		tfHabenBetrag.setHorizontalAlignment(JTextField.RIGHT);
 		tfSollMWSt = createTextField("0,00", false);
 		tfSollMWSt.setHorizontalAlignment(JTextField.RIGHT);
+		// Habenkonto
+		tfHabenKontoNr = createTextField("", true);
+		tfHabenKontoText = createTextField("", false);
+		tfHabenMWStSatz = createTextField("0", false);
+		tfHabenMWStSatz.setHorizontalAlignment(JTextField.RIGHT);
+		tfHabenBetrag = createTextField("0,00", false);
+		tfHabenBetrag.setHorizontalAlignment(JTextField.RIGHT);
 		tfHabenMWSt = createTextField("0,00", false);
 		tfHabenMWSt.setHorizontalAlignment(JTextField.RIGHT);
 		betragListener = new BetragListener(gui, tfBruttoBetrag,
@@ -158,8 +154,8 @@ public class BuchungsForm extends AbstractForm {
 		builder.addLabel("&Beleg/Datum:", cc.xy(2, 4));
 		tfBelegNr.setFocusAccelerator('b');
 		builder.add(tfBelegNr, cc.xy(4, 4));
-		tfValutaDatum.setFocusAccelerator('d');
-		builder.add(tfValutaDatum, cc.xyw(6, 4, 9));
+		// tfValutaDatum.setFocusAccelerator('d');
+		builder.add(dfValutaDatum, cc.xyw(6, 4, 9));
 		builder.addLabel("Buchungs&text:", cc.xy(2, 6));
 		builder.add(tfBuchungstext, cc.xyw(4, 6, 11));
 		tfBuchungstext.setFocusAccelerator('t');
@@ -218,6 +214,9 @@ public class BuchungsForm extends AbstractForm {
 }
 /*
  *  $Log: BuchungsForm.java,v $
+ *  Revision 1.9  2006/02/26 12:30:21  phormanns
+ *  Webstart und JDateChooser
+ *
  *  Revision 1.8  2006/02/24 22:24:22  phormanns
  *  Copyright
  *  diverse Verbesserungen
