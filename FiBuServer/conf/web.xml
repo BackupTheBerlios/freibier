@@ -18,6 +18,13 @@
 		<load-on-startup/>
 	</servlet>
    	
+	<servlet>
+		<servlet-name>webgui</servlet-name>
+	    <display-name>FreiBier WebGUI</display-name>
+		<servlet-class>de.jalin.fibu.server.WebGUI</servlet-class>
+		<load-on-startup/>
+	</servlet>
+   	
  	<servlet-mapping>
     	<servlet-name>freibier</servlet-name>
     	<url-pattern>/RPC2</url-pattern>
@@ -26,6 +33,11 @@
  	<servlet-mapping>
     	<servlet-name>hsadmintd</servlet-name>
     	<url-pattern>/getTicket</url-pattern>
+  	</servlet-mapping>
+
+ 	<servlet-mapping>
+    	<servlet-name>webgui</servlet-name>
+    	<url-pattern>/webgui</url-pattern>
   	</servlet-mapping>
 
 </web-app>

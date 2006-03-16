@@ -52,6 +52,7 @@
     			<include name="logkit.jar"/>
     			<include name="oro.jar"/>
     			<include name="junit.jar"/>
+    			<include name="velocity.jar"/>
     		</lib>
     		<classes dir="conf">
     			<include name=".pgsql.properties"/>

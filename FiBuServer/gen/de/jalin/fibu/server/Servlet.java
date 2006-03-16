@@ -27,7 +27,7 @@ import de.jalin.fibu.server.buchungsmaschine.impl.*;
 
 public class Servlet extends HttpServlet {
 
-	private static final long serialVersionUID = -6241033859600678799L;
+	private static final long serialVersionUID = -1L;
 
 	private XmlRpcServer xmlrpc;
 

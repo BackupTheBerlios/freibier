@@ -15,5 +15,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/xmlrpcgen"/>
 	<classpathentry kind="lib" path="/usr/share/java/commons-logging.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/velocity.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
