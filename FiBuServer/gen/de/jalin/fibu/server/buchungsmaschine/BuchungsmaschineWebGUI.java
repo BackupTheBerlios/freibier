@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.buchungsmaschine;
 
 import java.sql.*;
@@ -29,10 +31,14 @@ public class BuchungsmaschineWebGUI extends AbstractWebGUI {
 		this.orderBy = new OrderByList();
 	}
 
-	public void prepare(String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	public void prepare(String module, String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		Map params = new HashMap();
+		ModuleProperties moduleProperties = getModuleProperties();
 		params.put("menu", request.getSession().getAttribute("menu"));
-		params.put("props", getModuleProperties());
+		params.put("props", moduleProperties);
+		params.put("modulename", module);
+		params.put("functionname", function);
+		params.put("function", moduleProperties.getFunction(function));
 		try {
 			response.getWriter().print(mergeTemplate("params.vm", params));
 		} catch (Exception e) {
@@ -70,6 +76,7 @@ public class BuchungsmaschineWebGUI extends AbstractWebGUI {
 		props.addProperty("buchungstext", "string", "implicit", "no", "once", "optional");
 		props.addProperty("jourid", "int", "implicit", "no", "once", "optional");
 		props.addProperty("valuta", "date", "implicit", "no", "once", "optional");
+		props.addFunction("buchungsmaschine", "add", false, false, false, true, true, false);
 		return props;
 	}
 

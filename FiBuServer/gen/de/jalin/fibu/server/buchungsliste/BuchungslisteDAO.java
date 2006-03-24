@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.buchungsliste;
 
 import java.sql.*;
@@ -178,4 +180,9 @@ abstract public class BuchungslisteDAO implements Createable {
 	public String getModuleName() {
 		return "buchungsliste";
 	}
+	
+	public DisplayColumns getDisplayColumns() {
+		return display;
+	}
+	
 }

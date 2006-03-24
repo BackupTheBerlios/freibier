@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.mwst;
 
 import java.sql.*;
@@ -31,10 +33,14 @@ public class MwstWebGUI extends AbstractWebGUI {
 		this.orderBy.addSelectableColumn("mwstsatzaktiv");
 	}
 
-	public void prepare(String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	public void prepare(String module, String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		Map params = new HashMap();
+		ModuleProperties moduleProperties = getModuleProperties();
 		params.put("menu", request.getSession().getAttribute("menu"));
-		params.put("props", getModuleProperties());
+		params.put("props", moduleProperties);
+		params.put("modulename", module);
+		params.put("functionname", function);
+		params.put("function", moduleProperties.getFunction(function));
 		try {
 			response.getWriter().print(mergeTemplate("params.vm", params));
 		} catch (Exception e) {
@@ -82,6 +88,9 @@ public class MwstWebGUI extends AbstractWebGUI {
 		props.addProperty("mwstkontosoll", "int", "implicit", "yes", "once", "mandatory");
 		props.addProperty("mwstkontohaben", "int", "implicit", "yes", "once", "mandatory");
 		props.addProperty("mwstsatzaktiv", "bool", "explicit", "yes", "yes", "auto");
+		props.addFunction("mwst", "list", true, true, true, false, true, true);
+		props.addFunction("mwst", "add", false, false, false, true, true, false);
+		props.addFunction("mwst", "update", false, true, false, true, true, false);
 		return props;
 	}
 
@@ -119,7 +128,7 @@ public class MwstWebGUI extends AbstractWebGUI {
 		try {
 			response.getWriter().print(mergeTemplate("liste.vm", params));
 		} catch (Exception e) {
-			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR, e.getMessage());
+			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR_CODE, e.getMessage());
 		}
 	}
 

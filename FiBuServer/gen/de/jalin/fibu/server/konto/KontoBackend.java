@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.konto;
 
 import java.sql.*;

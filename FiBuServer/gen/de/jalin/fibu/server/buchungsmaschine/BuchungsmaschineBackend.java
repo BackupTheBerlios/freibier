@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.buchungsmaschine;
 
 import java.sql.*;

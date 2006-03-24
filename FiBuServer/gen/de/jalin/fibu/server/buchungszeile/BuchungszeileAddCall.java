@@ -1,6 +1,7 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.buchungszeile;
 
-import java.util.*;
 import net.hostsharing.admin.runtime.*;
 
 public class BuchungszeileAddCall extends AbstractCall {

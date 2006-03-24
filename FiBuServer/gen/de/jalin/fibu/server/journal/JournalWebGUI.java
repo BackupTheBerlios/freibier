@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.journal;
 
 import java.sql.*;
@@ -33,10 +35,14 @@ public class JournalWebGUI extends AbstractWebGUI {
 		this.orderBy.addSelectableColumn("absummiert");
 	}
 
-	public void prepare(String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	public void prepare(String module, String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		Map params = new HashMap();
+		ModuleProperties moduleProperties = getModuleProperties();
 		params.put("menu", request.getSession().getAttribute("menu"));
-		params.put("props", getModuleProperties());
+		params.put("props", moduleProperties);
+		params.put("modulename", module);
+		params.put("functionname", function);
+		params.put("function", moduleProperties.getFunction(function));
 		try {
 			response.getWriter().print(mergeTemplate("params.vm", params));
 		} catch (Exception e) {
@@ -92,6 +98,10 @@ public class JournalWebGUI extends AbstractWebGUI {
 		props.addProperty("since", "date", "implicit", "yes", "yes", "auto");
 		props.addProperty("lastupdate", "date", "explicit", "yes", "no", "auto");
 		props.addProperty("absummiert", "bool", "implicit", "yes", "yes", "auto");
+		props.addFunction("journal", "list", true, true, true, false, true, true);
+		props.addFunction("journal", "add", false, false, false, true, true, true);
+		props.addFunction("journal", "update", false, true, false, true, true, false);
+		props.addFunction("journal", "delete", false, true, false, false, true, false);
 		return props;
 	}
 
@@ -130,7 +140,7 @@ public class JournalWebGUI extends AbstractWebGUI {
 		try {
 			response.getWriter().print(mergeTemplate("liste.vm", params));
 		} catch (Exception e) {
-			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR, e.getMessage());
+			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR_CODE, e.getMessage());
 		}
 	}
 
@@ -154,7 +164,7 @@ public class JournalWebGUI extends AbstractWebGUI {
 		try {
 			response.getWriter().print(mergeTemplate("liste.vm", params));
 		} catch (Exception e) {
-			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR, e.getMessage());
+			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR_CODE, e.getMessage());
 		}
 	}
 

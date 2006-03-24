@@ -2,9 +2,9 @@
 <!DOCTYPE interface SYSTEM "xmlrpc-interface.dtd">
 <interface name="fibu">
   <description>Schnittstelle des Freibier-FiBu-Servers</description>
-  <error code="10000">Fehlende Rechte für diese Funktion.</error>
-  <error code="10010">Fehler beim Datenbankzugriff.</error>
-  <error code="10020">Falscher Name für XMLRPC-Funktion.</error>
+  <error name="MISSING_RIGHTS" code="10000">Fehlende Rechte für diese Funktion.</error>
+  <error name="DATABASE_ERROR" code="10010">Fehler beim Datenbankzugriff.</error>
+  <error name="XMLRPC_ERROR" code="10020">Falscher Name für XMLRPC-Funktion.</error>
   <module name="customer">
     <description>Das Modul customer verwaltet die Firmenstammdaten</description>
     <properties objectid="{custid}">
@@ -17,7 +17,7 @@
       <date   name="since"       	read="explicit" query="no"  write="no"   value="auto"/>
       <date   name="lastupdate" 		read="explicit" query="no"  write="no"   value="auto"/>
     </properties>
-    <error code="10101">Cust-Fehler Unbekannt</error>
+    <error name="ERR_CUSTOMER" code="10101">Cust-Fehler Unbekannt</error>
     <function name="list" read="yes" where="yes" order="yes" write="no" objectid="yes" result="yes">
       <description>Auflisten der Firmenstammdaten</description>
     </function>
@@ -35,7 +35,7 @@
       <int    name="mwstkontohaben"  read="implicit" query="yes" write="once"  value="mandatory"/>
       <bool   name="mwstsatzaktiv"   read="explicit" query="yes" write="yes"   value="auto"/>
     </properties>
-    <error code="10201">MWSt-Fehler Unbekannt</error>
+    <error name="ERR_TAX" code="10201">MWSt-Fehler Unbekannt</error>
     <function name="list" read="yes" where="yes" order="yes" write="no" objectid="yes" result="yes">
       <description>MWSt-Sätze lesen</description>
     </function>
@@ -57,7 +57,7 @@
       <bool   name="istsoll"        read="implicit" query="yes" write="yes"   value="auto"/>
       <bool   name="isthaben"		read="implicit" query="yes" write="yes"   value="auto"/>
     </properties>
-    <error code="10301">Konto-Fehler Unbekannt</error>
+    <error name="ERR_LEDGER" code="10301">Konto-Fehler Unbekannt</error>
     <function name="list" read="yes" where="yes" order="yes" write="no" objectid="yes" result="yes">
       <description>Die Funktion list liefert eine Liste von Konten</description>
     </function>
@@ -82,7 +82,7 @@
       <date   name="lastupdate" 		read="explicit" query="yes" write="no"    value="auto"/>
       <bool   name="absummiert"		read="implicit" query="yes" write="yes"   value="auto"/>
     </properties>
-    <error code="10401">Journal-Fehler Unbekannt</error>
+    <error name="ERR_JOURNAL" code="10401">Journal-Fehler Unbekannt</error>
     <function name="list" read="yes" where="yes" order="yes" write="no" objectid="yes" result="yes">
       <description>Die Funktion list liefert eine Liste von Journalen</description>
     </function>
@@ -106,7 +106,7 @@
       <date   name="valuta"       	read="implicit" query="yes" write="yes"   value="mandatory"/>
       <date   name="erfassung" 		read="explicit" query="yes" write="no"    value="auto"/>
     </properties>
-    <error code="10501">Buchungs-Fehler Unbekannt</error>
+    <error name="ERR_ACCOUNTING" code="10501">Buchungs-Fehler Unbekannt</error>
     <function name="list" read="yes" where="yes" order="yes" write="no" objectid="yes" result="yes">
       <description>Die Funktion list liefert eine Liste von Buchungen</description>
     </function>
@@ -130,7 +130,7 @@
       <bool   name="soll"        	read="implicit" query="yes" write="yes"   value="mandatory"/>
       <bool   name="haben"			read="implicit" query="yes" write="yes"   value="mandatory"/>
     </properties>
-    <error code="10601">Buchungszeile-Fehler Unbekannt</error>
+    <error name="ERR_ENTRY" code="10601">Buchungszeile-Fehler Unbekannt</error>
     <function name="list" read="yes" where="yes" order="yes" write="no" objectid="yes" result="yes">
       <description>Die Funktion list liefert eine Liste von Buchungen</description>
     </function>
@@ -167,7 +167,7 @@
       <string name="kontonr"  		read="implicit" query="yes" write="no" value="optional"/>
       <string name="bezeichnung" 	read="implicit" query="no"  write="no" value="optional"/>
     </properties>
-    <error code="10701">Buchungsliste-Fehler Unbekannt</error>
+    <error name="ERR_BOOK" code="10701">Buchungsliste-Fehler Unbekannt</error>
     <function name="list" read="yes" where="yes" order="yes" write="no" objectid="yes" result="yes">
       <description>Die Funktion list liefert eine Liste von Buchungen</description>
     </function>
@@ -186,7 +186,7 @@
       <int    name="jourid"         read="implicit" query="no" write="once" value="optional"/>
       <date   name="valuta"       	read="implicit" query="no" write="once" value="optional"/>
     </properties>
-    <error code="10801">Buchungsmaschine-Fehler Unbekannt</error>
+    <error name="ERR_ENGINE" code="10801">Buchungsmaschine-Fehler Unbekannt</error>
     <function name="add" read="no" where="no" order="no" write="yes" objectid="yes" result="no">
       <description>Die Funktion add fuehrt eine Buchung aus</description>
     </function>

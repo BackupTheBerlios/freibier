@@ -8,7 +8,7 @@
                    
      phormanns                                                      
      ====================================================================== -->
-<project name="freibier" default="dist">
+<project name="freibier" default="dist" basedir=".">
     <description>HSAdmin Server</description>
 
 	<path id="cp.build">
@@ -29,6 +29,10 @@
 		</fileset>
 	</path>
 
+	<target name="deploy" depends="dist" description="copy war file to tomcat webapps">
+		<copy file="dist/fibu.war" todir="/home/peter/tomcat/webapps"/>
+	</target>
+	
     <!-- ================================= 
           target: dist              
          ================================= -->
@@ -61,6 +65,14 @@
     </target>
 
     <!-- - - - - - - - - - - - - - - - - - 
+          target: xmlrpcgen
+         - - - - - - - - - - - - - - - - - -->
+	<target name="xmlrpcgen" description="Build xmlrpcgen Module">
+		<ant dir="../xmlrpcgen" antfile="build.xml" target="dist"/>
+		<copy file="../xmlrpcgen/dist/xmlrpcgen.jar" todir="lib"/>
+	</target>
+	
+    <!-- - - - - - - - - - - - - - - - - - 
           target: jar                      
          - - - - - - - - - - - - - - - - - -->
     <target name="jar" depends="compile" description="Build Application JAR File">
@@ -73,7 +85,7 @@
     <!-- - - - - - - - - - - - - - - - - - 
           target: compile                      
          - - - - - - - - - - - - - - - - - -->
-    <target name="compile" description="Compile Java Sources">
+    <target name="compile" depends="xmlrpcgen" description="Compile Java Sources">
     	<mkdir dir="build"/>
     	<javac classpathref="cp.build" destdir="build" debug="true">
     		<src path="src"/> 

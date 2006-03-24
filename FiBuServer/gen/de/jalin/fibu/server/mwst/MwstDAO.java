@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.mwst;
 
 import java.sql.*;
@@ -111,4 +113,9 @@ abstract public class MwstDAO implements Createable {
 	public String getModuleName() {
 		return "mwst";
 	}
+	
+	public DisplayColumns getDisplayColumns() {
+		return display;
+	}
+	
 }

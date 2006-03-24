@@ -1,12 +1,11 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server;
 
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.*;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import net.hostsharing.admin.runtime.*;
 import de.jalin.fibu.server.customer.*;
 import de.jalin.fibu.server.customer.impl.*;
@@ -37,8 +36,18 @@ public class WebGUI extends HttpServlet {
 		request.getSession().setAttribute("menu", menu);
 		String module = request.getParameter("module");
 		String function = request.getParameter("function");
-		AbstractWebGUI guiModule = (AbstractWebGUI) guiModules.get(module);
-		guiModule.prepare(function, request, response);
+		try {
+			if (module == null) {
+				Map params = new HashMap();
+				params.put("menu", request.getSession().getAttribute("menu"));
+					response.getWriter().print(Utils.mergeTemplate("menu.vm", params, this));
+			} else {
+				AbstractWebGUI guiModule = (AbstractWebGUI) guiModules.get(module);
+				guiModule.prepare(module, function, request, response);
+			}
+		} catch (Exception e) {
+			throw new ServletException(e);
+		}
 	}
 
 	protected void doPost(HttpServletRequest request,

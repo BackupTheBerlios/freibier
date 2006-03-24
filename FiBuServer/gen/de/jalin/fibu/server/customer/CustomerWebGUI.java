@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.customer;
 
 import java.sql.*;
@@ -33,10 +35,14 @@ public class CustomerWebGUI extends AbstractWebGUI {
 		this.orderBy.addSelectableColumn("periode");
 	}
 
-	public void prepare(String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	public void prepare(String module, String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		Map params = new HashMap();
+		ModuleProperties moduleProperties = getModuleProperties();
 		params.put("menu", request.getSession().getAttribute("menu"));
-		params.put("props", getModuleProperties());
+		params.put("props", moduleProperties);
+		params.put("modulename", module);
+		params.put("functionname", function);
+		params.put("function", moduleProperties.getFunction(function));
 		try {
 			response.getWriter().print(mergeTemplate("params.vm", params));
 		} catch (Exception e) {
@@ -79,6 +85,8 @@ public class CustomerWebGUI extends AbstractWebGUI {
 		props.addProperty("periode", "string", "implicit", "yes", "yes", "mandatory");
 		props.addProperty("since", "date", "explicit", "no", "no", "auto");
 		props.addProperty("lastupdate", "date", "explicit", "no", "no", "auto");
+		props.addFunction("customer", "list", true, true, true, false, true, true);
+		props.addFunction("customer", "update", false, true, false, true, true, false);
 		return props;
 	}
 
@@ -115,7 +123,7 @@ public class CustomerWebGUI extends AbstractWebGUI {
 		try {
 			response.getWriter().print(mergeTemplate("liste.vm", params));
 		} catch (Exception e) {
-			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR, e.getMessage());
+			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR_CODE, e.getMessage());
 		}
 	}
 

@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.journal;
 
 import java.sql.*;
@@ -121,4 +123,9 @@ abstract public class JournalDAO implements Createable {
 	public String getModuleName() {
 		return "journal";
 	}
+	
+	public DisplayColumns getDisplayColumns() {
+		return display;
+	}
+	
 }

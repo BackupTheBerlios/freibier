@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.buchungszeile;
 
 import java.sql.*;
@@ -31,10 +33,14 @@ public class BuchungszeileWebGUI extends AbstractWebGUI {
 		this.orderBy.addSelectableColumn("haben");
 	}
 
-	public void prepare(String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	public void prepare(String module, String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		Map params = new HashMap();
+		ModuleProperties moduleProperties = getModuleProperties();
 		params.put("menu", request.getSession().getAttribute("menu"));
-		params.put("props", getModuleProperties());
+		params.put("props", moduleProperties);
+		params.put("modulename", module);
+		params.put("functionname", function);
+		params.put("function", moduleProperties.getFunction(function));
 		try {
 			response.getWriter().print(mergeTemplate("params.vm", params));
 		} catch (Exception e) {
@@ -89,6 +95,10 @@ public class BuchungszeileWebGUI extends AbstractWebGUI {
 		props.addProperty("betrag", "int", "implicit", "yes", "yes", "mandatory");
 		props.addProperty("soll", "bool", "implicit", "yes", "yes", "mandatory");
 		props.addProperty("haben", "bool", "implicit", "yes", "yes", "mandatory");
+		props.addFunction("buchungszeile", "list", true, true, true, false, true, true);
+		props.addFunction("buchungszeile", "add", false, false, false, true, true, false);
+		props.addFunction("buchungszeile", "update", false, true, false, true, true, false);
+		props.addFunction("buchungszeile", "delete", false, true, false, false, true, false);
 		return props;
 	}
 
@@ -127,7 +137,7 @@ public class BuchungszeileWebGUI extends AbstractWebGUI {
 		try {
 			response.getWriter().print(mergeTemplate("liste.vm", params));
 		} catch (Exception e) {
-			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR, e.getMessage());
+			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR_CODE, e.getMessage());
 		}
 	}
 

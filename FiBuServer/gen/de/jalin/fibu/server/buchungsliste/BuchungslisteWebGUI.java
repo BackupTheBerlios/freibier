@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.buchungsliste;
 
 import java.sql.*;
@@ -50,10 +52,14 @@ public class BuchungslisteWebGUI extends AbstractWebGUI {
 		this.orderBy.addSelectableColumn("kontonr");
 	}
 
-	public void prepare(String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	public void prepare(String module, String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		Map params = new HashMap();
+		ModuleProperties moduleProperties = getModuleProperties();
 		params.put("menu", request.getSession().getAttribute("menu"));
-		params.put("props", getModuleProperties());
+		params.put("props", moduleProperties);
+		params.put("modulename", module);
+		params.put("functionname", function);
+		params.put("function", moduleProperties.getFunction(function));
 		try {
 			response.getWriter().print(mergeTemplate("params.vm", params));
 		} catch (Exception e) {
@@ -99,6 +105,7 @@ public class BuchungslisteWebGUI extends AbstractWebGUI {
 		props.addProperty("kontoid", "int", "implicit", "yes", "no", "optional");
 		props.addProperty("kontonr", "string", "implicit", "yes", "no", "optional");
 		props.addProperty("bezeichnung", "string", "implicit", "no", "no", "optional");
+		props.addFunction("buchungsliste", "list", true, true, true, false, true, true);
 		return props;
 	}
 
@@ -134,7 +141,7 @@ public class BuchungslisteWebGUI extends AbstractWebGUI {
 		try {
 			response.getWriter().print(mergeTemplate("liste.vm", params));
 		} catch (Exception e) {
-			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR, e.getMessage());
+			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR_CODE, e.getMessage());
 		}
 	}
 

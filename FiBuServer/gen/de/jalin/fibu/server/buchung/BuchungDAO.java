@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.buchung;
 
 import java.sql.*;
@@ -113,4 +115,9 @@ abstract public class BuchungDAO implements Createable {
 	public String getModuleName() {
 		return "buchung";
 	}
+	
+	public DisplayColumns getDisplayColumns() {
+		return display;
+	}
+	
 }

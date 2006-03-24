@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.buchungsliste;
 
 import net.hostsharing.admin.runtime.GenericData;

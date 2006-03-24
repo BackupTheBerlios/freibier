@@ -5,6 +5,7 @@
 
 <!ELEMENT error (#PCDATA)>
 <!ATTLIST error code    CDATA #REQUIRED>
+<!ATTLIST error name    CDATA #REQUIRED>
 <!ATTLIST error comment CDATA #IMPLIED> 
 
 <!ELEMENT module (description,properties,error*,function+)>

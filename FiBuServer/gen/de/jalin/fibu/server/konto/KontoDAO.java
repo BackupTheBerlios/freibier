@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.konto;
 
 import java.sql.*;
@@ -122,4 +124,9 @@ abstract public class KontoDAO implements Createable {
 	public String getModuleName() {
 		return "konto";
 	}
+	
+	public DisplayColumns getDisplayColumns() {
+		return display;
+	}
+	
 }

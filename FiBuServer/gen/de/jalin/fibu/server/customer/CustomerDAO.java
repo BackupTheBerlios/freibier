@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.customer;
 
 import java.sql.*;
@@ -122,4 +124,9 @@ abstract public class CustomerDAO implements Createable {
 	public String getModuleName() {
 		return "customer";
 	}
+	
+	public DisplayColumns getDisplayColumns() {
+		return display;
+	}
+	
 }

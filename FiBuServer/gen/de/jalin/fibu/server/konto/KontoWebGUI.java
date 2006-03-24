@@ -1,3 +1,5 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.konto;
 
 import java.sql.*;
@@ -33,10 +35,14 @@ public class KontoWebGUI extends AbstractWebGUI {
 		this.orderBy.addSelectableColumn("isthaben");
 	}
 
-	public void prepare(String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	public void prepare(String module, String function, HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		Map params = new HashMap();
+		ModuleProperties moduleProperties = getModuleProperties();
 		params.put("menu", request.getSession().getAttribute("menu"));
-		params.put("props", getModuleProperties());
+		params.put("props", moduleProperties);
+		params.put("modulename", module);
+		params.put("functionname", function);
+		params.put("function", moduleProperties.getFunction(function));
 		try {
 			response.getWriter().print(mergeTemplate("params.vm", params));
 		} catch (Exception e) {
@@ -92,6 +98,10 @@ public class KontoWebGUI extends AbstractWebGUI {
 		props.addProperty("oberkonto", "int", "implicit", "yes", "yes", "optional");
 		props.addProperty("istsoll", "bool", "implicit", "yes", "yes", "auto");
 		props.addProperty("isthaben", "bool", "implicit", "yes", "yes", "auto");
+		props.addFunction("konto", "list", true, true, true, false, true, true);
+		props.addFunction("konto", "add", false, false, false, true, true, false);
+		props.addFunction("konto", "update", false, true, false, true, true, false);
+		props.addFunction("konto", "delete", false, true, false, false, true, false);
 		return props;
 	}
 
@@ -130,7 +140,7 @@ public class KontoWebGUI extends AbstractWebGUI {
 		try {
 			response.getWriter().print(mergeTemplate("liste.vm", params));
 		} catch (Exception e) {
-			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR, e.getMessage());
+			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR_CODE, e.getMessage());
 		}
 	}
 

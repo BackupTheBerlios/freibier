@@ -1,6 +1,7 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.buchung;
 
-import java.util.*;
 import net.hostsharing.admin.runtime.*;
 
 public class BuchungDeleteCall extends AbstractCall {

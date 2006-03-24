@@ -1,6 +1,7 @@
+// Generiert mit xmlrpcgen
+
 package de.jalin.fibu.server.konto;
 
-import java.util.*;
 import net.hostsharing.admin.runtime.*;
 
 public class KontoListCall extends AbstractCall {
