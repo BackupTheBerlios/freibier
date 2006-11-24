@@ -9,13 +9,13 @@
     <description>Das Modul customer verwaltet die Firmenstammdaten</description>
     <properties objectid="{custid}">
       <int    name="custid"      	read="implicit" query="yes" write="no"   value="auto"/>
-      <string name="firma"  			read="implicit" query="yes" write="yes"  value="mandatory"/>
+      <string name="firma"  		read="implicit" query="yes" write="yes"  value="mandatory"/>
       <int    name="bilanzkonto" 	read="implicit" query="yes" write="yes"  value="mandatory"/>
       <int    name="guvkonto"       read="implicit" query="yes" write="yes"  value="mandatory"/>
-      <string name="jahr"       		read="implicit" query="yes" write="yes"  value="mandatory"/>
+      <string name="jahr"       	read="implicit" query="yes" write="yes"  value="mandatory"/>
       <string name="periode"        read="implicit" query="yes" write="yes"  value="mandatory"/>
       <date   name="since"       	read="explicit" query="no"  write="no"   value="auto"/>
-      <date   name="lastupdate" 		read="explicit" query="no"  write="no"   value="auto"/>
+      <date   name="lastupdate" 	read="explicit" query="no"  write="no"   value="auto"/>
     </properties>
     <error name="ERR_CUSTOMER" code="10101">Cust-Fehler Unbekannt</error>
     <function name="list" read="yes" where="yes" order="yes" write="no" objectid="yes" result="yes">
@@ -56,6 +56,10 @@
       <int    name="oberkonto"      read="implicit" query="yes" write="yes"   value="optional"/>
       <bool   name="istsoll"        read="implicit" query="yes" write="yes"   value="auto"/>
       <bool   name="isthaben"		read="implicit" query="yes" write="yes"   value="auto"/>
+      <bool   name="istaktiv"		read="implicit" query="yes" write="yes"   value="auto"/>
+      <bool   name="istpassiv"		read="implicit" query="yes" write="yes"   value="auto"/>
+      <bool   name="istaufwand"		read="implicit" query="yes" write="yes"   value="auto"/>
+      <bool   name="istertrag"		read="implicit" query="yes" write="yes"   value="auto"/>
     </properties>
     <error name="ERR_LEDGER" code="10301">Konto-Fehler Unbekannt</error>
     <function name="list" read="yes" where="yes" order="yes" write="no" objectid="yes" result="yes">
@@ -157,7 +161,7 @@
       <string name="buchungstext"   read="implicit" query="yes" write="no" value="optional"/>
       <int    name="jourid"         read="implicit" query="yes" write="no" value="optional"/>
       <string name="journr"  		read="implicit" query="yes" write="no" value="optional"/>
-      <string name="jahr"       		read="implicit" query="yes" write="no" value="optional"/>
+      <string name="jahr"       	read="implicit" query="yes" write="no" value="optional"/>
       <string name="periode"        read="implicit" query="yes" write="no" value="optional"/>
       <date   name="since"       	read="implicit" query="no"  write="no" value="optional"/>
       <bool   name="absummiert"		read="implicit" query="yes" write="no" value="optional"/>
@@ -166,6 +170,12 @@
       <int    name="kontoid"  		read="implicit" query="yes" write="no" value="optional"/>
       <string name="kontonr"  		read="implicit" query="yes" write="no" value="optional"/>
       <string name="bezeichnung" 	read="implicit" query="no"  write="no" value="optional"/>
+      <bool   name="istsoll"      	read="implicit" query="yes" write="no" value="optional"/>
+      <bool   name="isthaben"		read="implicit" query="yes" write="no" value="optional"/>
+      <bool   name="istaktiv"       read="implicit" query="yes" write="no" value="optional"/>
+      <bool   name="istpassiv"		read="implicit" query="yes" write="no" value="optional"/>
+      <bool   name="istaufwand"     read="implicit" query="yes" write="no" value="optional"/>
+      <bool   name="istertrag"		read="implicit" query="yes" write="no" value="optional"/>
     </properties>
     <error name="ERR_BOOK" code="10701">Buchungsliste-Fehler Unbekannt</error>
     <function name="list" read="yes" where="yes" order="yes" write="no" objectid="yes" result="yes">

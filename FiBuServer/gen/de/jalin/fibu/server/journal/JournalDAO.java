@@ -43,7 +43,12 @@ abstract public class JournalDAO implements Createable {
 		createStmt.addColumn("bool", "absummiert", true, false);
 		createStmt.createDatabaseObject(connect);
 	}
-
+	
+	public void dropDatabaseObject(Connection connect) throws XmlRpcTransactionException {
+		CreateTableStatement dropStmt = new CreateTableStatement(table);
+		dropStmt.dropDatabaseObject(connect);
+	}
+	
 	public void addJournal
 		(  Connection connect, JournalData writeData )
 					throws XmlRpcTransactionException

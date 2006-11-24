@@ -11,8 +11,24 @@ public class BuchungHandler extends AbstractHandler {
 	private BuchungBackend backend;
 	private DisplayColumns display;
 	private OrderByList orderBy;
+	private ModuleProperties moduleDescription;
+
+	public ModuleProperties getModuleProperties() {
+		return moduleDescription;
+	}
 
 	public BuchungHandler(BuchungBackend backend) {
+	    this.moduleDescription = new ModuleProperties("buchung");
+	    this.moduleDescription.addProperty("buchid", "int", "implicit", "yes", "no", "auto");
+	    this.moduleDescription.addProperty("belegnr", "string", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("buchungstext", "string", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("jourid", "int", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("valuta", "date", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("erfassung", "date", "explicit", "yes", "no", "auto");
+	    this.moduleDescription.addFunction("buchung", "list", true, true, true, false, true, true);
+	    this.moduleDescription.addFunction("buchung", "add", false, false, false, true, true, false);
+	    this.moduleDescription.addFunction("buchung", "update", false, true, false, true, true, false);
+	    this.moduleDescription.addFunction("buchung", "delete", false, true, false, false, true, false);
 		this.backend = backend;
 		this.display = new DisplayColumns();
 		this.display.addColumnDefinition("buchid", 1);

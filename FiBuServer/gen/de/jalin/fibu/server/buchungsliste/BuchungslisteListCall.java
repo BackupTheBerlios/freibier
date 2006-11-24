@@ -30,5 +30,11 @@ public class BuchungslisteListCall extends AbstractCall {
 		addWhereProperty("absummiert", whereData.getAbsummiert());
 		addWhereProperty("kontoid", whereData.getKontoid());
 		addWhereProperty("kontonr", whereData.getKontonr());
+		addWhereProperty("istsoll", whereData.getIstsoll());
+		addWhereProperty("isthaben", whereData.getIsthaben());
+		addWhereProperty("istaktiv", whereData.getIstaktiv());
+		addWhereProperty("istpassiv", whereData.getIstpassiv());
+		addWhereProperty("istaufwand", whereData.getIstaufwand());
+		addWhereProperty("istertrag", whereData.getIstertrag());
 	}
 }

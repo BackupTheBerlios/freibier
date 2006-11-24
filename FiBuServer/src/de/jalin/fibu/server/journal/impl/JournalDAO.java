@@ -1,4 +1,4 @@
-// $Id: JournalDAO.java,v 1.2 2006/02/24 22:27:40 phormanns Exp $
+// $Id: JournalDAO.java,v 1.3 2006/11/24 21:10:03 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -41,10 +41,19 @@ public class JournalDAO extends de.jalin.fibu.server.journal.JournalDAO {
 		super.createDatabaseObject(connect);
 		jouridSEQ.createDatabaseObject(connect);
 	}
+
+	public void dropDatabaseObject(Connection connect) throws XmlRpcTransactionException {
+		super.dropDatabaseObject(connect);
+		jouridSEQ.dropDatabaseObject(connect);
+	}
+	
 }
 
 /*
  *  $Log: JournalDAO.java,v $
+ *  Revision 1.3  2006/11/24 21:10:03  phormanns
+ *  Datenmodellerweiterung bei Konto und Buchungsliste
+ *
  *  Revision 1.2  2006/02/24 22:27:40  phormanns
  *  Copyright
  *  diverse Verbesserungen

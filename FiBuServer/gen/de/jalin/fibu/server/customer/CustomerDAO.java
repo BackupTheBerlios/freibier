@@ -46,7 +46,12 @@ abstract public class CustomerDAO implements Createable {
 		createStmt.addColumn("date", "lastupdate", true, false);
 		createStmt.createDatabaseObject(connect);
 	}
-
+	
+	public void dropDatabaseObject(Connection connect) throws XmlRpcTransactionException {
+		CreateTableStatement dropStmt = new CreateTableStatement(table);
+		dropStmt.dropDatabaseObject(connect);
+	}
+	
 	public void addCustomer
 		(  Connection connect, CustomerData writeData )
 					throws XmlRpcTransactionException

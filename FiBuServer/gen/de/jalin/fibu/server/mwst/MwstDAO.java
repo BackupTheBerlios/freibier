@@ -40,7 +40,12 @@ abstract public class MwstDAO implements Createable {
 		createStmt.addColumn("bool", "mwstsatzaktiv", true, false);
 		createStmt.createDatabaseObject(connect);
 	}
-
+	
+	public void dropDatabaseObject(Connection connect) throws XmlRpcTransactionException {
+		CreateTableStatement dropStmt = new CreateTableStatement(table);
+		dropStmt.dropDatabaseObject(connect);
+	}
+	
 	public void addMwst
 		(  Connection connect, MwstData writeData )
 					throws XmlRpcTransactionException

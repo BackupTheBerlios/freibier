@@ -1,4 +1,4 @@
-// $Id: BuchungslisteDAO.java,v 1.2 2006/02/24 22:27:40 phormanns Exp $
+// $Id: BuchungslisteDAO.java,v 1.3 2006/11/24 21:10:03 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -72,6 +72,12 @@ public class BuchungslisteDAO extends
 		createStmt.addColumn(kontoDAO.getModuleName(), "kontoid");
 		createStmt.addColumn(kontoDAO.getModuleName(), "kontonr");
 		createStmt.addColumn(kontoDAO.getModuleName(), "bezeichnung");
+		createStmt.addColumn(kontoDAO.getModuleName(), "istsoll");
+		createStmt.addColumn(kontoDAO.getModuleName(), "isthaben");
+		createStmt.addColumn(kontoDAO.getModuleName(), "istaktiv");
+		createStmt.addColumn(kontoDAO.getModuleName(), "istpassiv");
+		createStmt.addColumn(kontoDAO.getModuleName(), "istaufwand");
+		createStmt.addColumn(kontoDAO.getModuleName(), "istertrag");
 		createStmt.addJoin(kontoDAO.getModuleName(), "kontoid", 
 				buchungszeileDAO.getModuleName(), "kontoid");
 		createStmt.addJoin(buchungDAO.getModuleName(), "buchid",
@@ -79,6 +85,11 @@ public class BuchungslisteDAO extends
 		createStmt.addJoin(journalDAO.getModuleName(), "jourid", 
 				buchungDAO.getModuleName(), "jourid");
 		createStmt.createDatabaseObject(connect);
+	}
+	
+	public void dropDatabaseObject(Connection connect) throws XmlRpcTransactionException {
+		CreateViewStatement createStmt = new CreateViewStatement(super.getTable());
+		createStmt.dropDatabaseObject(connect);
 	}
 
 	public Vector listBuchungslistes(Connection connect, BuchungslisteData whereData, DisplayColumns display, OrderByList orderBy) throws XmlRpcTransactionException {
@@ -97,6 +108,9 @@ public class BuchungslisteDAO extends
 
 /*
  *  $Log: BuchungslisteDAO.java,v $
+ *  Revision 1.3  2006/11/24 21:10:03  phormanns
+ *  Datenmodellerweiterung bei Konto und Buchungsliste
+ *
  *  Revision 1.2  2006/02/24 22:27:40  phormanns
  *  Copyright
  *  diverse Verbesserungen

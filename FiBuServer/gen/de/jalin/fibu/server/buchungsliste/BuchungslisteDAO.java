@@ -27,6 +27,12 @@ abstract public class BuchungslisteDAO implements Createable {
 		// int kontoid
 		// string kontonr
 		// string bezeichnung
+		// bool istsoll
+		// bool isthaben
+		// bool istaktiv
+		// bool istpassiv
+		// bool istaufwand
+		// bool istertrag
 
 	private DatabaseTable table;
 	private DisplayColumns display;
@@ -52,6 +58,12 @@ abstract public class BuchungslisteDAO implements Createable {
 		display.addColumnDefinition("kontoid", 1);
 		display.addColumnDefinition("kontonr", 1);
 		display.addColumnDefinition("bezeichnung", 1);
+		display.addColumnDefinition("istsoll", 1);
+		display.addColumnDefinition("isthaben", 1);
+		display.addColumnDefinition("istaktiv", 1);
+		display.addColumnDefinition("istpassiv", 1);
+		display.addColumnDefinition("istaufwand", 1);
+		display.addColumnDefinition("istertrag", 1);
 	}
 
 	public void createDatabaseObject(Connection connect) throws XmlRpcTransactionException {
@@ -74,9 +86,20 @@ abstract public class BuchungslisteDAO implements Createable {
 		createStmt.addColumn("int", "kontoid", false, false);
 		createStmt.addColumn("string", "kontonr", false, false);
 		createStmt.addColumn("string", "bezeichnung", false, false);
+		createStmt.addColumn("bool", "istsoll", false, false);
+		createStmt.addColumn("bool", "isthaben", false, false);
+		createStmt.addColumn("bool", "istaktiv", false, false);
+		createStmt.addColumn("bool", "istpassiv", false, false);
+		createStmt.addColumn("bool", "istaufwand", false, false);
+		createStmt.addColumn("bool", "istertrag", false, false);
 		createStmt.createDatabaseObject(connect);
 	}
-
+	
+	public void dropDatabaseObject(Connection connect) throws XmlRpcTransactionException {
+		CreateTableStatement dropStmt = new CreateTableStatement(table);
+		dropStmt.dropDatabaseObject(connect);
+	}
+	
 	public void addBuchungsliste
 		(  Connection connect, BuchungslisteData writeData )
 					throws XmlRpcTransactionException
@@ -100,6 +123,12 @@ abstract public class BuchungslisteDAO implements Createable {
 		insert.addSetColumn("kontoid", writeData.getKontoid());
 		insert.addSetColumn("kontonr", writeData.getKontonr());
 		insert.addSetColumn("bezeichnung", writeData.getBezeichnung());
+		insert.addSetColumn("istsoll", writeData.getIstsoll());
+		insert.addSetColumn("isthaben", writeData.getIsthaben());
+		insert.addSetColumn("istaktiv", writeData.getIstaktiv());
+		insert.addSetColumn("istpassiv", writeData.getIstpassiv());
+		insert.addSetColumn("istaufwand", writeData.getIstaufwand());
+		insert.addSetColumn("istertrag", writeData.getIstertrag());
 		insert.execute(connect);
 	}
 
@@ -123,6 +152,12 @@ abstract public class BuchungslisteDAO implements Createable {
 		update.addWhereColumn("absummiert", whereData.getAbsummiert());
 		update.addWhereColumn("kontoid", whereData.getKontoid());
 		update.addWhereColumn("kontonr", whereData.getKontonr());
+		update.addWhereColumn("istsoll", whereData.getIstsoll());
+		update.addWhereColumn("isthaben", whereData.getIsthaben());
+		update.addWhereColumn("istaktiv", whereData.getIstaktiv());
+		update.addWhereColumn("istpassiv", whereData.getIstpassiv());
+		update.addWhereColumn("istaufwand", whereData.getIstaufwand());
+		update.addWhereColumn("istertrag", whereData.getIstertrag());
 		update.execute(connect);
 	}
 
@@ -145,6 +180,12 @@ abstract public class BuchungslisteDAO implements Createable {
 		delete.addWhereColumn("absummiert", whereData.getAbsummiert());
 		delete.addWhereColumn("kontoid", whereData.getKontoid());
 		delete.addWhereColumn("kontonr", whereData.getKontonr());
+		delete.addWhereColumn("istsoll", whereData.getIstsoll());
+		delete.addWhereColumn("isthaben", whereData.getIsthaben());
+		delete.addWhereColumn("istaktiv", whereData.getIstaktiv());
+		delete.addWhereColumn("istpassiv", whereData.getIstpassiv());
+		delete.addWhereColumn("istaufwand", whereData.getIstaufwand());
+		delete.addWhereColumn("istertrag", whereData.getIstertrag());
 		delete.execute(connect);
 	}
 
@@ -170,6 +211,12 @@ abstract public class BuchungslisteDAO implements Createable {
 		select.addWhereColumn("absummiert", whereData.getAbsummiert());
 		select.addWhereColumn("kontoid", whereData.getKontoid());
 		select.addWhereColumn("kontonr", whereData.getKontonr());
+		select.addWhereColumn("istsoll", whereData.getIstsoll());
+		select.addWhereColumn("isthaben", whereData.getIsthaben());
+		select.addWhereColumn("istaktiv", whereData.getIstaktiv());
+		select.addWhereColumn("istpassiv", whereData.getIstpassiv());
+		select.addWhereColumn("istaufwand", whereData.getIstaufwand());
+		select.addWhereColumn("istertrag", whereData.getIstertrag());
 		return select.select(connect);
 	}
 

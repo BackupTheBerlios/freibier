@@ -11,8 +11,24 @@ public class CustomerHandler extends AbstractHandler {
 	private CustomerBackend backend;
 	private DisplayColumns display;
 	private OrderByList orderBy;
+	private ModuleProperties moduleDescription;
+
+	public ModuleProperties getModuleProperties() {
+		return moduleDescription;
+	}
 
 	public CustomerHandler(CustomerBackend backend) {
+	    this.moduleDescription = new ModuleProperties("customer");
+	    this.moduleDescription.addProperty("custid", "int", "implicit", "yes", "no", "auto");
+	    this.moduleDescription.addProperty("firma", "string", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("bilanzkonto", "int", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("guvkonto", "int", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("jahr", "string", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("periode", "string", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("since", "date", "explicit", "no", "no", "auto");
+	    this.moduleDescription.addProperty("lastupdate", "date", "explicit", "no", "no", "auto");
+	    this.moduleDescription.addFunction("customer", "list", true, true, true, false, true, true);
+	    this.moduleDescription.addFunction("customer", "update", false, true, false, true, true, false);
 		this.backend = backend;
 		this.display = new DisplayColumns();
 		this.display.addColumnDefinition("custid", 1);

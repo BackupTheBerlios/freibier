@@ -11,8 +11,39 @@ public class BuchungslisteHandler extends AbstractHandler {
 	private BuchungslisteBackend backend;
 	private DisplayColumns display;
 	private OrderByList orderBy;
+	private ModuleProperties moduleDescription;
+
+	public ModuleProperties getModuleProperties() {
+		return moduleDescription;
+	}
 
 	public BuchungslisteHandler(BuchungslisteBackend backend) {
+	    this.moduleDescription = new ModuleProperties("buchungsliste");
+	    this.moduleDescription.addProperty("buzlid", "int", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("betrag", "int", "implicit", "no", "no", "optional");
+	    this.moduleDescription.addProperty("soll", "bool", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("haben", "bool", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("buchid", "int", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("belegnr", "string", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("buchungstext", "string", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("jourid", "int", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("journr", "string", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("jahr", "string", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("periode", "string", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("since", "date", "implicit", "no", "no", "optional");
+	    this.moduleDescription.addProperty("absummiert", "bool", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("valuta", "date", "implicit", "no", "no", "optional");
+	    this.moduleDescription.addProperty("erfassung", "date", "implicit", "no", "no", "optional");
+	    this.moduleDescription.addProperty("kontoid", "int", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("kontonr", "string", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("bezeichnung", "string", "implicit", "no", "no", "optional");
+	    this.moduleDescription.addProperty("istsoll", "bool", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("isthaben", "bool", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("istaktiv", "bool", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("istpassiv", "bool", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("istaufwand", "bool", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addProperty("istertrag", "bool", "implicit", "yes", "no", "optional");
+	    this.moduleDescription.addFunction("buchungsliste", "list", true, true, true, false, true, true);
 		this.backend = backend;
 		this.display = new DisplayColumns();
 		this.display.addColumnDefinition("buzlid", 1);
@@ -33,6 +64,12 @@ public class BuchungslisteHandler extends AbstractHandler {
 		this.display.addColumnDefinition("kontoid", 1);
 		this.display.addColumnDefinition("kontonr", 1);
 		this.display.addColumnDefinition("bezeichnung", 1);
+		this.display.addColumnDefinition("istsoll", 1);
+		this.display.addColumnDefinition("isthaben", 1);
+		this.display.addColumnDefinition("istaktiv", 1);
+		this.display.addColumnDefinition("istpassiv", 1);
+		this.display.addColumnDefinition("istaufwand", 1);
+		this.display.addColumnDefinition("istertrag", 1);
 		this.orderBy = new OrderByList();
 		this.orderBy.addSelectableColumn("buzlid");
 		this.orderBy.addSelectableColumn("soll");
@@ -47,6 +84,12 @@ public class BuchungslisteHandler extends AbstractHandler {
 		this.orderBy.addSelectableColumn("absummiert");
 		this.orderBy.addSelectableColumn("kontoid");
 		this.orderBy.addSelectableColumn("kontonr");
+		this.orderBy.addSelectableColumn("istsoll");
+		this.orderBy.addSelectableColumn("isthaben");
+		this.orderBy.addSelectableColumn("istaktiv");
+		this.orderBy.addSelectableColumn("istpassiv");
+		this.orderBy.addSelectableColumn("istaufwand");
+		this.orderBy.addSelectableColumn("istertrag");
 	}
 
 	public Vector call(Connection dbConnect, XmlRpcSession session,

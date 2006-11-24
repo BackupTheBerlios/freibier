@@ -11,8 +11,23 @@ public class MwstHandler extends AbstractHandler {
 	private MwstBackend backend;
 	private DisplayColumns display;
 	private OrderByList orderBy;
+	private ModuleProperties moduleDescription;
+
+	public ModuleProperties getModuleProperties() {
+		return moduleDescription;
+	}
 
 	public MwstHandler(MwstBackend backend) {
+	    this.moduleDescription = new ModuleProperties("mwst");
+	    this.moduleDescription.addProperty("mwstid", "int", "implicit", "yes", "no", "auto");
+	    this.moduleDescription.addProperty("mwstsatz", "int", "implicit", "yes", "once", "mandatory");
+	    this.moduleDescription.addProperty("mwsttext", "string", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("mwstkontosoll", "int", "implicit", "yes", "once", "mandatory");
+	    this.moduleDescription.addProperty("mwstkontohaben", "int", "implicit", "yes", "once", "mandatory");
+	    this.moduleDescription.addProperty("mwstsatzaktiv", "bool", "explicit", "yes", "yes", "auto");
+	    this.moduleDescription.addFunction("mwst", "list", true, true, true, false, true, true);
+	    this.moduleDescription.addFunction("mwst", "add", false, false, false, true, true, false);
+	    this.moduleDescription.addFunction("mwst", "update", false, true, false, true, true, false);
 		this.backend = backend;
 		this.display = new DisplayColumns();
 		this.display.addColumnDefinition("mwstid", 1);

@@ -52,7 +52,12 @@ abstract public class BuchungsmaschineDAO implements Createable {
 		createStmt.addColumn("date", "valuta", false, false);
 		createStmt.createDatabaseObject(connect);
 	}
-
+	
+	public void dropDatabaseObject(Connection connect) throws XmlRpcTransactionException {
+		CreateTableStatement dropStmt = new CreateTableStatement(table);
+		dropStmt.dropDatabaseObject(connect);
+	}
+	
 	public void addBuchungsmaschine
 		(  Connection connect, BuchungsmaschineData writeData )
 					throws XmlRpcTransactionException

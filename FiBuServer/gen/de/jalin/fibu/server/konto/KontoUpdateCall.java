@@ -26,6 +26,10 @@ public class KontoUpdateCall extends AbstractCall {
 		addSetProperty("oberkonto", setData.getOberkonto());
 		addSetProperty("istsoll", setData.getIstsoll());
 		addSetProperty("isthaben", setData.getIsthaben());
+		addSetProperty("istaktiv", setData.getIstaktiv());
+		addSetProperty("istpassiv", setData.getIstpassiv());
+		addSetProperty("istaufwand", setData.getIstaufwand());
+		addSetProperty("istertrag", setData.getIstertrag());
 		addWhereProperty("kontoid", whereData.getKontoid());
 		addWhereProperty("kontonr", whereData.getKontonr());
 		addWhereProperty("bezeichnung", whereData.getBezeichnung());
@@ -33,5 +37,9 @@ public class KontoUpdateCall extends AbstractCall {
 		addWhereProperty("oberkonto", whereData.getOberkonto());
 		addWhereProperty("istsoll", whereData.getIstsoll());
 		addWhereProperty("isthaben", whereData.getIsthaben());
+		addWhereProperty("istaktiv", whereData.getIstaktiv());
+		addWhereProperty("istpassiv", whereData.getIstpassiv());
+		addWhereProperty("istaufwand", whereData.getIstaufwand());
+		addWhereProperty("istertrag", whereData.getIstertrag());
 	}
 }

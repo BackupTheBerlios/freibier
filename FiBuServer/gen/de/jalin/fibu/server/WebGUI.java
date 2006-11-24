@@ -2,11 +2,18 @@
 
 package de.jalin.fibu.server;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Vector;
+
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+
 import net.hostsharing.admin.runtime.*;
+import net.hostsharing.admin.runtime.standardModules.impl.*;
+import net.hostsharing.admin.runtime.standardModules.modules.*;
+import net.hostsharing.admin.runtime.standardModules.properties.*;
+import net.hostsharing.admin.runtime.standardModules.functions.*;
 import de.jalin.fibu.server.customer.*;
 import de.jalin.fibu.server.customer.impl.*;
 import de.jalin.fibu.server.mwst.*;
@@ -24,69 +31,76 @@ import de.jalin.fibu.server.buchungsliste.impl.*;
 import de.jalin.fibu.server.buchungsmaschine.*;
 import de.jalin.fibu.server.buchungsmaschine.impl.*;
 
-public class WebGUI extends HttpServlet {
+public class WebGUI extends AbstractWebGUIServlet {
 
-	private static final long serialVersionUID = -1L;
+	private static final long serialVersionUID = 1164399842915L;
 
-	private Hashtable guiModules;
-	private Vector menu;
-
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		request.getSession().setAttribute("menu", menu);
-		String module = request.getParameter("module");
-		String function = request.getParameter("function");
-		try {
-			if (module == null) {
-				Map params = new HashMap();
-				params.put("menu", request.getSession().getAttribute("menu"));
-					response.getWriter().print(Utils.mergeTemplate("menu.vm", params, this));
-			} else {
-				AbstractWebGUI guiModule = (AbstractWebGUI) guiModules.get(module);
-				guiModule.prepare(module, function, request, response);
-			}
-		} catch (Exception e) {
-			throw new ServletException(e);
-		}
-	}
-
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		request.getSession().setAttribute("menu", menu);
-		String module = request.getParameter("module");
-		String function = request.getParameter("function");
-		AbstractWebGUI guiModule = (AbstractWebGUI) guiModules.get(module);
-		guiModule.execute(function, request, response);
-	}
-	
 	public void init() throws ServletException {
+		super.init();
 		try {
-		    guiModules = new Hashtable();
-		    menu = new Vector();
-			CustomerWebGUI customerWebGUI = new CustomerWebGUI(new CustomerBackendImpl());
+			guiModules = new Hashtable();
+			menu = new Vector();
+			SystemWebGUI systemWebGUI = new SystemWebGUI();
+			systemWebGUI.setAuthenticator(authenticator);
+			guiModules.put("system", systemWebGUI);
+			menu.addElement(systemWebGUI.getMenu());
+			Map modulesMap = new HashMap();
+			CustomerBackendImpl customerBackend = new CustomerBackendImpl();
+			modulesMap.put("customer", new CustomerHandler(customerBackend));
+			CustomerWebGUI customerWebGUI = new CustomerWebGUI(customerBackend);
 			guiModules.put("customer", customerWebGUI);
 			menu.addElement(customerWebGUI.getMenu());
-			MwstWebGUI mwstWebGUI = new MwstWebGUI(new MwstBackendImpl());
+			MwstBackendImpl mwstBackend = new MwstBackendImpl();
+			modulesMap.put("mwst", new MwstHandler(mwstBackend));
+			MwstWebGUI mwstWebGUI = new MwstWebGUI(mwstBackend);
 			guiModules.put("mwst", mwstWebGUI);
 			menu.addElement(mwstWebGUI.getMenu());
-			KontoWebGUI kontoWebGUI = new KontoWebGUI(new KontoBackendImpl());
+			KontoBackendImpl kontoBackend = new KontoBackendImpl();
+			modulesMap.put("konto", new KontoHandler(kontoBackend));
+			KontoWebGUI kontoWebGUI = new KontoWebGUI(kontoBackend);
 			guiModules.put("konto", kontoWebGUI);
 			menu.addElement(kontoWebGUI.getMenu());
-			JournalWebGUI journalWebGUI = new JournalWebGUI(new JournalBackendImpl());
+			JournalBackendImpl journalBackend = new JournalBackendImpl();
+			modulesMap.put("journal", new JournalHandler(journalBackend));
+			JournalWebGUI journalWebGUI = new JournalWebGUI(journalBackend);
 			guiModules.put("journal", journalWebGUI);
 			menu.addElement(journalWebGUI.getMenu());
-			BuchungWebGUI buchungWebGUI = new BuchungWebGUI(new BuchungBackendImpl());
+			BuchungBackendImpl buchungBackend = new BuchungBackendImpl();
+			modulesMap.put("buchung", new BuchungHandler(buchungBackend));
+			BuchungWebGUI buchungWebGUI = new BuchungWebGUI(buchungBackend);
 			guiModules.put("buchung", buchungWebGUI);
 			menu.addElement(buchungWebGUI.getMenu());
-			BuchungszeileWebGUI buchungszeileWebGUI = new BuchungszeileWebGUI(new BuchungszeileBackendImpl());
+			BuchungszeileBackendImpl buchungszeileBackend = new BuchungszeileBackendImpl();
+			modulesMap.put("buchungszeile", new BuchungszeileHandler(buchungszeileBackend));
+			BuchungszeileWebGUI buchungszeileWebGUI = new BuchungszeileWebGUI(buchungszeileBackend);
 			guiModules.put("buchungszeile", buchungszeileWebGUI);
 			menu.addElement(buchungszeileWebGUI.getMenu());
-			BuchungslisteWebGUI buchungslisteWebGUI = new BuchungslisteWebGUI(new BuchungslisteBackendImpl());
+			BuchungslisteBackendImpl buchungslisteBackend = new BuchungslisteBackendImpl();
+			modulesMap.put("buchungsliste", new BuchungslisteHandler(buchungslisteBackend));
+			BuchungslisteWebGUI buchungslisteWebGUI = new BuchungslisteWebGUI(buchungslisteBackend);
 			guiModules.put("buchungsliste", buchungslisteWebGUI);
 			menu.addElement(buchungslisteWebGUI.getMenu());
-			BuchungsmaschineWebGUI buchungsmaschineWebGUI = new BuchungsmaschineWebGUI(new BuchungsmaschineBackendImpl());
+			BuchungsmaschineBackendImpl buchungsmaschineBackend = new BuchungsmaschineBackendImpl();
+			modulesMap.put("buchungsmaschine", new BuchungsmaschineHandler(buchungsmaschineBackend));
+			BuchungsmaschineWebGUI buchungsmaschineWebGUI = new BuchungsmaschineWebGUI(buchungsmaschineBackend);
 			guiModules.put("buchungsmaschine", buchungsmaschineWebGUI);
 			menu.addElement(buchungsmaschineWebGUI.getMenu());
+			PropertiesBackendImpl propertiesBackend = new PropertiesBackendImpl();
+			modulesMap.put("properties", new PropertiesHandler(propertiesBackend));
+			PropertiesWebGUI propertiesWebGUI = new PropertiesWebGUI(propertiesBackend);
+			guiModules.put("properties", propertiesWebGUI);
+			menu.addElement(propertiesWebGUI.getMenu());
+			FunctionsBackendImpl functionsBackend = new FunctionsBackendImpl();
+			modulesMap.put("functions", new FunctionsHandler(functionsBackend));
+			FunctionsWebGUI functionsWebGUI = new FunctionsWebGUI(functionsBackend);
+			guiModules.put("functions", functionsWebGUI);
+			menu.addElement(functionsWebGUI.getMenu());
+			ModulesBackendImpl modulesBackend = new ModulesBackendImpl();
+			modulesMap.put("modules", new ModulesHandler(modulesBackend));
+			modulesBackend.setModules(modulesMap);
+			ModulesWebGUI modulesWebGUI = new ModulesWebGUI(modulesBackend);
+			guiModules.put("modules", modulesWebGUI);
+			menu.addElement(modulesWebGUI.getMenu());
 		} catch (Exception e) {
 			throw new ServletException(e);
 		}

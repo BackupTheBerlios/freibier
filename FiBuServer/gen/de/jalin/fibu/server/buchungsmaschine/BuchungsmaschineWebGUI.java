@@ -11,11 +11,15 @@ import net.hostsharing.admin.runtime.*;
 
 public class BuchungsmaschineWebGUI extends AbstractWebGUI {
 
+	private static final long serialVersionUID = 1164399841901L;
+
+	private PostgresAccess pgAccess;
 	private BuchungsmaschineBackend backend;
 	private DisplayColumns display;
 	private OrderByList orderBy;
 
-	public BuchungsmaschineWebGUI(BuchungsmaschineBackend backend) {
+	public BuchungsmaschineWebGUI(BuchungsmaschineBackend backend) throws XmlRpcTransactionException {
+		pgAccess = PostgresAccess.getInstance();
 		this.backend = backend;
 		this.display = new DisplayColumns();
 		this.display.addColumnDefinition("buzlid", 1);
@@ -48,17 +52,27 @@ public class BuchungsmaschineWebGUI extends AbstractWebGUI {
 
 	public void execute(String functionName, HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		try {
-			Connection dbConnect = PostgresAccess.getInstance().getConnection();
-			XmlRpcSession session = new XmlRpcSession(request.getRemoteUser());
-			if("add".equals(functionName)) {
-	    		callBuchungsmaschineAddCall(
-	    			dbConnect, 
-	    			session,
-	    			request,
-	    			response);
+			Connection dbConnect = pgAccess.getConnection();
+			try {
+				dbConnect.setAutoCommit(false);
+				XmlRpcSession session = getSession(request, response);
+				if("add".equals(functionName)) {
+		    		callBuchungsmaschineAddCall(
+		    			dbConnect, 
+		    			session,
+		    			request,
+		    			response);
+				}
+				dbConnect.commit();
+				dbConnect.setAutoCommit(true);
+			} catch (BuchungsmaschineException e) {
+				dbConnect.rollback();
+				dbConnect.setAutoCommit(true);
+			} catch (XmlRpcTransactionException e) {
+				dbConnect.rollback();
+				dbConnect.setAutoCommit(true);
+				throw new ServletException(e);
 			}
-		} catch (XmlRpcTransactionException e) {
-			throw new ServletException(e);
 		} catch (SQLException e) {
 			throw new ServletException(e);
 		}
@@ -93,11 +107,37 @@ public class BuchungsmaschineWebGUI extends AbstractWebGUI {
 		HttpServletResponse response)
 	   		throws XmlRpcTransactionException {
 		BuchungsmaschineData writeData = (BuchungsmaschineData) getWriteData(request, new BuchungsmaschineData());
-			backend.executeBuchungsmaschineAddCall(
-				dbConnect
-				, session
-				, writeData
-			);
+		try {
+				backend.executeBuchungsmaschineAddCall(
+					dbConnect
+					, session
+					, writeData
+				);
+			String templateName = "funct_ok.vm";
+			Map params = new HashMap();
+			params.put("menu", request.getSession().getAttribute("menu"));
+			params.put("modulename", "buchungsmaschine");
+			params.put("functionname", "add");
+			try {
+				response.getWriter().print(mergeTemplate(templateName, params));
+			} catch (Exception e) {
+				throw new ServerException(ErrorCode.TEMPLATE_ERROR_CODE);
+			}
+		} catch (BuchungsmaschineException e) {
+			String templateName = "funct_err.vm";
+			Map params = new HashMap();
+			params.put("menu", request.getSession().getAttribute("menu"));
+			params.put("modulename", "buchungsmaschine");
+			params.put("functionname", "add");
+			params.put("errorcode", new Integer(e.code));
+			params.put("errormsg", e.getMessage());
+			try {
+				response.getWriter().print(mergeTemplate(templateName, params));
+			} catch (Exception e1) {
+				throw new ServerException(ErrorCode.TEMPLATE_ERROR_CODE);
+			}
+			throw e;
+		}
 	}
 
 }

@@ -23,5 +23,9 @@ public class KontoAddCall extends AbstractCall {
 		addSetProperty("oberkonto", setData.getOberkonto());
 		addSetProperty("istsoll", setData.getIstsoll());
 		addSetProperty("isthaben", setData.getIsthaben());
+		addSetProperty("istaktiv", setData.getIstaktiv());
+		addSetProperty("istpassiv", setData.getIstpassiv());
+		addSetProperty("istaufwand", setData.getIstaufwand());
+		addSetProperty("istertrag", setData.getIstertrag());
 	}
 }

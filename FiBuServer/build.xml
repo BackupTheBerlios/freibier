@@ -18,9 +18,10 @@
 		    <include name="xmlrpcgen.jar"/>
 		</fileset>
 		<fileset dir="/usr/share/java/">
+			<include name="xerces.jar"/>
 		    <include name="postgresql-jdbc3.jar"/>
 		    <include name="servlet-2.3.jar"/>
-			<include name="jdom.jar"/>
+			<include name="jdom1.jar"/>
 			<include name="oro.jar"/>
 			<include name="velocity.jar"/>
 			<include name="commons-collections.jar"/>
@@ -87,10 +88,22 @@
          - - - - - - - - - - - - - - - - - -->
     <target name="compile" depends="xmlrpcgen" description="Compile Java Sources">
     	<mkdir dir="build"/>
-    	<javac classpathref="cp.build" destdir="build" debug="true">
+    	<javac classpathref="cp.build" destdir="build" debug="true" encoding="ISO-8859-1">
     		<src path="src"/> 
     		<src path="gen"/> 
     	</javac>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: generate                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="generate" depends="xmlrpcgen" description="Generate Java Sources">
+    	<mkdir dir="gen"/>
+    	<java classpathref="cp.build" classname="net.hostsharing.admin.generator.Main">
+    		<arg value="spec/xmlrpc-interface.xml"/>
+    		<arg value="gen"/>
+			<arg value="de.jalin.fibu.server"/>
+    	</java>
     </target>
 
     <!-- - - - - - - - - - - - - - - - - - 

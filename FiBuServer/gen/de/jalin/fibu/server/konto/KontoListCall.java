@@ -24,5 +24,9 @@ public class KontoListCall extends AbstractCall {
 		addWhereProperty("oberkonto", whereData.getOberkonto());
 		addWhereProperty("istsoll", whereData.getIstsoll());
 		addWhereProperty("isthaben", whereData.getIsthaben());
+		addWhereProperty("istaktiv", whereData.getIstaktiv());
+		addWhereProperty("istpassiv", whereData.getIstpassiv());
+		addWhereProperty("istaufwand", whereData.getIstaufwand());
+		addWhereProperty("istertrag", whereData.getIstertrag());
 	}
 }

@@ -13,6 +13,10 @@ public class KontoData extends GenericData {
 	private Integer oberkonto;
 	private Boolean istsoll;
 	private Boolean isthaben;
+	private Boolean istaktiv;
+	private Boolean istpassiv;
+	private Boolean istaufwand;
+	private Boolean istertrag;
 
 	public KontoData() {
 		kontoid = null;
@@ -22,6 +26,10 @@ public class KontoData extends GenericData {
 		oberkonto = null;
 		istsoll = null;
 		isthaben = null;
+		istaktiv = null;
+		istpassiv = null;
+		istaufwand = null;
+		istertrag = null;
 	}
 
 	public Integer getKontoid() {
@@ -80,6 +88,38 @@ public class KontoData extends GenericData {
 		this.isthaben = isthaben;
 	}
 	
+	public Boolean getIstaktiv() {
+		return istaktiv;
+	}
+	
+	public void setIstaktiv(Boolean istaktiv) {
+		this.istaktiv = istaktiv;
+	}
+	
+	public Boolean getIstpassiv() {
+		return istpassiv;
+	}
+	
+	public void setIstpassiv(Boolean istpassiv) {
+		this.istpassiv = istpassiv;
+	}
+	
+	public Boolean getIstaufwand() {
+		return istaufwand;
+	}
+	
+	public void setIstaufwand(Boolean istaufwand) {
+		this.istaufwand = istaufwand;
+	}
+	
+	public Boolean getIstertrag() {
+		return istertrag;
+	}
+	
+	public void setIstertrag(Boolean istertrag) {
+		this.istertrag = istertrag;
+	}
+	
 	public String[] getAttributeNames() {
 		return new String[] { 
 				   "kontoid"
@@ -89,6 +129,10 @@ public class KontoData extends GenericData {
 				,  "oberkonto"
 				,  "istsoll"
 				,  "isthaben"
+				,  "istaktiv"
+				,  "istpassiv"
+				,  "istaufwand"
+				,  "istertrag"
 			};
 	}
 	

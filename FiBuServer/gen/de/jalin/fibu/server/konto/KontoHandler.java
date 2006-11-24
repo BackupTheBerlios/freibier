@@ -11,8 +11,29 @@ public class KontoHandler extends AbstractHandler {
 	private KontoBackend backend;
 	private DisplayColumns display;
 	private OrderByList orderBy;
+	private ModuleProperties moduleDescription;
+
+	public ModuleProperties getModuleProperties() {
+		return moduleDescription;
+	}
 
 	public KontoHandler(KontoBackend backend) {
+	    this.moduleDescription = new ModuleProperties("konto");
+	    this.moduleDescription.addProperty("kontoid", "int", "implicit", "yes", "no", "auto");
+	    this.moduleDescription.addProperty("kontonr", "string", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("bezeichnung", "string", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("mwstid", "int", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("oberkonto", "int", "implicit", "yes", "yes", "optional");
+	    this.moduleDescription.addProperty("istsoll", "bool", "implicit", "yes", "yes", "auto");
+	    this.moduleDescription.addProperty("isthaben", "bool", "implicit", "yes", "yes", "auto");
+	    this.moduleDescription.addProperty("istaktiv", "bool", "implicit", "yes", "yes", "auto");
+	    this.moduleDescription.addProperty("istpassiv", "bool", "implicit", "yes", "yes", "auto");
+	    this.moduleDescription.addProperty("istaufwand", "bool", "implicit", "yes", "yes", "auto");
+	    this.moduleDescription.addProperty("istertrag", "bool", "implicit", "yes", "yes", "auto");
+	    this.moduleDescription.addFunction("konto", "list", true, true, true, false, true, true);
+	    this.moduleDescription.addFunction("konto", "add", false, false, false, true, true, false);
+	    this.moduleDescription.addFunction("konto", "update", false, true, false, true, true, false);
+	    this.moduleDescription.addFunction("konto", "delete", false, true, false, false, true, false);
 		this.backend = backend;
 		this.display = new DisplayColumns();
 		this.display.addColumnDefinition("kontoid", 1);
@@ -22,6 +43,10 @@ public class KontoHandler extends AbstractHandler {
 		this.display.addColumnDefinition("oberkonto", 1);
 		this.display.addColumnDefinition("istsoll", 1);
 		this.display.addColumnDefinition("isthaben", 1);
+		this.display.addColumnDefinition("istaktiv", 1);
+		this.display.addColumnDefinition("istpassiv", 1);
+		this.display.addColumnDefinition("istaufwand", 1);
+		this.display.addColumnDefinition("istertrag", 1);
 		this.orderBy = new OrderByList();
 		this.orderBy.addSelectableColumn("kontoid");
 		this.orderBy.addSelectableColumn("kontonr");
@@ -30,6 +55,10 @@ public class KontoHandler extends AbstractHandler {
 		this.orderBy.addSelectableColumn("oberkonto");
 		this.orderBy.addSelectableColumn("istsoll");
 		this.orderBy.addSelectableColumn("isthaben");
+		this.orderBy.addSelectableColumn("istaktiv");
+		this.orderBy.addSelectableColumn("istpassiv");
+		this.orderBy.addSelectableColumn("istaufwand");
+		this.orderBy.addSelectableColumn("istertrag");
 	}
 
 	public Vector call(Connection dbConnect, XmlRpcSession session,

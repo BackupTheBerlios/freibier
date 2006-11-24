@@ -11,8 +11,24 @@ public class BuchungszeileHandler extends AbstractHandler {
 	private BuchungszeileBackend backend;
 	private DisplayColumns display;
 	private OrderByList orderBy;
+	private ModuleProperties moduleDescription;
+
+	public ModuleProperties getModuleProperties() {
+		return moduleDescription;
+	}
 
 	public BuchungszeileHandler(BuchungszeileBackend backend) {
+	    this.moduleDescription = new ModuleProperties("buchungszeile");
+	    this.moduleDescription.addProperty("buzlid", "int", "implicit", "yes", "no", "auto");
+	    this.moduleDescription.addProperty("buchid", "int", "implicit", "yes", "once", "mandatory");
+	    this.moduleDescription.addProperty("kontoid", "int", "implicit", "yes", "once", "mandatory");
+	    this.moduleDescription.addProperty("betrag", "int", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("soll", "bool", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addProperty("haben", "bool", "implicit", "yes", "yes", "mandatory");
+	    this.moduleDescription.addFunction("buchungszeile", "list", true, true, true, false, true, true);
+	    this.moduleDescription.addFunction("buchungszeile", "add", false, false, false, true, true, false);
+	    this.moduleDescription.addFunction("buchungszeile", "update", false, true, false, true, true, false);
+	    this.moduleDescription.addFunction("buchungszeile", "delete", false, true, false, false, true, false);
 		this.backend = backend;
 		this.display = new DisplayColumns();
 		this.display.addColumnDefinition("buzlid", 1);

@@ -1,4 +1,4 @@
-// $Id: InitDB.java,v 1.6 2006/02/24 22:27:40 phormanns Exp $
+// $Id: InitDB.java,v 1.7 2006/11/24 21:10:03 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -31,6 +31,9 @@ import net.hostsharing.admin.runtime.InitDatabase;
 import net.hostsharing.admin.runtime.PostgresAccess;
 import net.hostsharing.admin.runtime.ResultVector;
 import net.hostsharing.admin.runtime.XmlRpcTransactionException;
+import net.hostsharing.admin.runtime.standardModules.impl.FunctionsDAO;
+import net.hostsharing.admin.runtime.standardModules.impl.ModulesDAO;
+import net.hostsharing.admin.runtime.standardModules.impl.PropertiesDAO;
 import de.jalin.fibu.server.buchung.impl.BuchungDAO;
 import de.jalin.fibu.server.buchungsliste.impl.BuchungslisteDAO;
 import de.jalin.fibu.server.buchungszeile.impl.BuchungszeileDAO;
@@ -55,9 +58,20 @@ public class InitDB {
 	private Integer nullMWStId;
 	private Integer ermMWStId;
 	private Integer vollMWStId;
+	private ModulesDAO modulesDAO;
+	private FunctionsDAO functionsDAO;
+	private PropertiesDAO propertiesDAO;
 
 	public InitDB() throws XmlRpcTransactionException {
 		daoObjects = new Vector();
+		
+		modulesDAO = new ModulesDAO();
+		daoObjects.addElement(modulesDAO);
+		functionsDAO = new FunctionsDAO();
+		daoObjects.addElement(functionsDAO);
+		propertiesDAO = new PropertiesDAO();
+		daoObjects.addElement(propertiesDAO);
+		
 		customerDAO = new CustomerDAO();
 		daoObjects.addElement(customerDAO);
 		kontoDAO = new KontoDAO();
@@ -81,6 +95,17 @@ public class InitDB {
 			System.out.println("Datenbank initialisiert.");
 		} catch (XmlRpcTransactionException e) {
 			System.out.println("Fehler bei der Datenmodellinitialisierung.");
+			System.out.println(e.getLocalizedMessage());
+		}
+	}
+	
+	public void dropData() {
+		try {
+			InitDatabase init = new InitDatabase();
+			init.dropDatabase(daoObjects);
+			System.out.println("Datenbanktabellen gelöscht.");
+		} catch (XmlRpcTransactionException e) {
+			System.out.println("Fehler beim Löschen des Datenmodells.");
 			System.out.println(e.getLocalizedMessage());
 		}
 	}
@@ -121,6 +146,10 @@ public class InitDB {
 			bilanzKonto.setBezeichnung("Finanzbuchhaltung");
 			bilanzKonto.setIstsoll(Boolean.TRUE);
 			bilanzKonto.setIsthaben(Boolean.TRUE);
+			bilanzKonto.setIstaktiv(Boolean.TRUE);
+			bilanzKonto.setIstpassiv(Boolean.TRUE);
+			bilanzKonto.setIstaufwand(Boolean.TRUE);
+			bilanzKonto.setIstertrag(Boolean.TRUE);
 			kontoDAO.addKonto(connection, bilanzKonto);
 			CustomerData cust = new CustomerData();
 			cust.setCustid(new Integer(customerDAO.nextId(connection)));
@@ -160,6 +189,7 @@ public class InitDB {
 
 	private void readKontenFromFile(Connection connection, String fileName) throws IOException, XmlRpcTransactionException {
 		BufferedReader reader = new BufferedReader(new FileReader(fileName));
+		reader.readLine();
 		String kontoString = reader.readLine();
 		String kontoNrString = null;
 		String kontoBezString = null;
@@ -176,8 +206,12 @@ public class InitDB {
 			konto.setKontoid(kontoId);
 			konto.setKontonr(kontoNrString);
 			konto.setBezeichnung(kontoBezString);
-			konto.setIsthaben(Boolean.TRUE);
-			konto.setIstsoll(Boolean.TRUE);
+			konto.setIstsoll(new Boolean("J".equals(tokens[2].substring(1, tokens[2].length()))));
+			konto.setIsthaben(new Boolean("J".equals(tokens[3].substring(1, tokens[3].length()))));
+			konto.setIstaktiv(new Boolean("J".equals(tokens[4].substring(1, tokens[4].length()))));
+			konto.setIstpassiv(new Boolean("J".equals(tokens[5].substring(1, tokens[5].length()))));
+			konto.setIstaufwand(new Boolean("J".equals(tokens[6].substring(1, tokens[6].length()))));
+			konto.setIstertrag(new Boolean("J".equals(tokens[7].substring(1, tokens[7].length()))));
 			konto.setMwstid(nullMWStId);
 			konto.setOberkonto(findOberkonto(connection, kontoNrString));
 			kontoDAO.addKonto(connection, konto);
@@ -216,6 +250,9 @@ public class InitDB {
 
 /*
  * $Log: InitDB.java,v $
+ * Revision 1.7  2006/11/24 21:10:03  phormanns
+ * Datenmodellerweiterung bei Konto und Buchungsliste
+ *
  * Revision 1.6  2006/02/24 22:27:40  phormanns
  * Copyright
  * diverse Verbesserungen

@@ -7,16 +7,16 @@ import net.hostsharing.admin.runtime.*;
 
 public class BuchungException extends XmlRpcTransactionException {
 
-	private static final long serialVersionUID = 1143225536041L;
+	private static final long serialVersionUID = 1164399838968L;
 
 	public static final int ERR_MISSING_RIGHTS = 10000;
-	public static final String MSG_10000 = "Fehlende Rechte für diese Funktion.";
+	public static final String MSG_10000 = "Fehlende Rechte fÃ¼r diese Funktion.";
 
 	public static final int ERR_DATABASE_ERROR = 10010;
 	public static final String MSG_10010 = "Fehler beim Datenbankzugriff.";
 
 	public static final int ERR_XMLRPC_ERROR = 10020;
-	public static final String MSG_10020 = "Falscher Name für XMLRPC-Funktion.";
+	public static final String MSG_10020 = "Falscher Name fÃ¼r XMLRPC-Funktion.";
 
 	public static final int ERR_ERR_CUSTOMER = 10101;
 	public static final String MSG_10101 = "Cust-Fehler Unbekannt";

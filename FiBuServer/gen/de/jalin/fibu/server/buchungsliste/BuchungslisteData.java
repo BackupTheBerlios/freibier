@@ -24,6 +24,12 @@ public class BuchungslisteData extends GenericData {
 	private Integer kontoid;
 	private String kontonr;
 	private String bezeichnung;
+	private Boolean istsoll;
+	private Boolean isthaben;
+	private Boolean istaktiv;
+	private Boolean istpassiv;
+	private Boolean istaufwand;
+	private Boolean istertrag;
 
 	public BuchungslisteData() {
 		buzlid = null;
@@ -44,6 +50,12 @@ public class BuchungslisteData extends GenericData {
 		kontoid = null;
 		kontonr = null;
 		bezeichnung = null;
+		istsoll = null;
+		isthaben = null;
+		istaktiv = null;
+		istpassiv = null;
+		istaufwand = null;
+		istertrag = null;
 	}
 
 	public Integer getBuzlid() {
@@ -190,6 +202,54 @@ public class BuchungslisteData extends GenericData {
 		this.bezeichnung = bezeichnung;
 	}
 	
+	public Boolean getIstsoll() {
+		return istsoll;
+	}
+	
+	public void setIstsoll(Boolean istsoll) {
+		this.istsoll = istsoll;
+	}
+	
+	public Boolean getIsthaben() {
+		return isthaben;
+	}
+	
+	public void setIsthaben(Boolean isthaben) {
+		this.isthaben = isthaben;
+	}
+	
+	public Boolean getIstaktiv() {
+		return istaktiv;
+	}
+	
+	public void setIstaktiv(Boolean istaktiv) {
+		this.istaktiv = istaktiv;
+	}
+	
+	public Boolean getIstpassiv() {
+		return istpassiv;
+	}
+	
+	public void setIstpassiv(Boolean istpassiv) {
+		this.istpassiv = istpassiv;
+	}
+	
+	public Boolean getIstaufwand() {
+		return istaufwand;
+	}
+	
+	public void setIstaufwand(Boolean istaufwand) {
+		this.istaufwand = istaufwand;
+	}
+	
+	public Boolean getIstertrag() {
+		return istertrag;
+	}
+	
+	public void setIstertrag(Boolean istertrag) {
+		this.istertrag = istertrag;
+	}
+	
 	public String[] getAttributeNames() {
 		return new String[] { 
 				   "buzlid"
@@ -210,6 +270,12 @@ public class BuchungslisteData extends GenericData {
 				,  "kontoid"
 				,  "kontonr"
 				,  "bezeichnung"
+				,  "istsoll"
+				,  "isthaben"
+				,  "istaktiv"
+				,  "istpassiv"
+				,  "istaufwand"
+				,  "istertrag"
 			};
 	}
 	

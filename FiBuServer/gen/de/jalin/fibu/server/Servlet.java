@@ -10,6 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.xmlrpc.XmlRpcServer;
 import net.hostsharing.admin.runtime.*;
+import net.hostsharing.admin.runtime.standardModules.impl.*;
+import net.hostsharing.admin.runtime.standardModules.modules.*;
+import net.hostsharing.admin.runtime.standardModules.properties.*;
+import net.hostsharing.admin.runtime.standardModules.functions.*;
 import de.jalin.fibu.server.customer.*;
 import de.jalin.fibu.server.customer.impl.*;
 import de.jalin.fibu.server.mwst.*;
@@ -56,6 +60,8 @@ public class Servlet extends HttpServlet {
 		try {
 			xmlrpc = new XmlRpcServer();
 			XmlRpcTransactionHandler rpcHandler = new XmlRpcTransactionHandler();
+/*			rpcHandler.addModule("rights", 
+				new RightsHandler(new RightsBackendImpl()));*/
 			rpcHandler.addModule("customer", 
 				new CustomerHandler(new CustomerBackendImpl()));
 			rpcHandler.addModule("mwst", 
@@ -72,6 +78,14 @@ public class Servlet extends HttpServlet {
 				new BuchungslisteHandler(new BuchungslisteBackendImpl()));
 			rpcHandler.addModule("buchungsmaschine", 
 				new BuchungsmaschineHandler(new BuchungsmaschineBackendImpl()));
+			rpcHandler.addModule("functions", 
+				new FunctionsHandler(new FunctionsBackendImpl()));
+			rpcHandler.addModule("properties", 
+				new PropertiesHandler(new PropertiesBackendImpl()));
+			ModulesBackendImpl modulesBackendImpl = new ModulesBackendImpl();
+			rpcHandler.addModule("modules", 
+				new ModulesHandler(modulesBackendImpl));
+			modulesBackendImpl.setModules(rpcHandler.getModules());
 			xmlrpc.addHandler(XmlRpcTransactionHandler.MODUL_NAME, rpcHandler);
 		} catch (Exception e) {
 			throw new ServletException(e);

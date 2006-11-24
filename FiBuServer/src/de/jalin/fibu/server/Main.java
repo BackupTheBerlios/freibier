@@ -1,4 +1,4 @@
-// $Id: Main.java,v 1.6 2006/02/24 22:27:40 phormanns Exp $
+// $Id: Main.java,v 1.7 2006/11/24 21:10:03 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -39,11 +39,17 @@ public class Main {
 					init.initData();
 					System.exit(0);
 				}
+				if ("initdb.drop".equals(opt)) {
+					InitDB init = new InitDB();
+					init.dropData();
+					System.exit(0);
+				}
 			} else {
 				System.out.println("Aufruf:");
 				System.out.println("java de.jalin.fibu.Main server");
-				System.out.println("java de.jalin.fibu.Main inidb.model");
-				System.out.println("java de.jalin.fibu.Main inidb.data");
+				System.out.println("java de.jalin.fibu.Main initdb.model");
+				System.out.println("java de.jalin.fibu.Main initdb.data");
+				System.out.println("java de.jalin.fibu.Main initdb.drop");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -53,6 +59,9 @@ public class Main {
 
 /*
  *  $Log: Main.java,v $
+ *  Revision 1.7  2006/11/24 21:10:03  phormanns
+ *  Datenmodellerweiterung bei Konto und Buchungsliste
+ *
  *  Revision 1.6  2006/02/24 22:27:40  phormanns
  *  Copyright
  *  diverse Verbesserungen

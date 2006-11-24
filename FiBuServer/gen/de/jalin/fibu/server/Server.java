@@ -4,6 +4,10 @@ package de.jalin.fibu.server;
 
 import org.apache.xmlrpc.*;
 import net.hostsharing.admin.runtime.*;
+import net.hostsharing.admin.runtime.standardModules.impl.*;
+import net.hostsharing.admin.runtime.standardModules.modules.*;
+import net.hostsharing.admin.runtime.standardModules.properties.*;
+import net.hostsharing.admin.runtime.standardModules.functions.*;
 import de.jalin.fibu.server.customer.*;
 import de.jalin.fibu.server.customer.impl.*;
 import de.jalin.fibu.server.mwst.*;
@@ -47,6 +51,14 @@ public class Server extends XmlRpcTransactionHandler {
 			new BuchungslisteHandler(new BuchungslisteBackendImpl()));
 		rpcHandler.addModule("buchungsmaschine", 
 			new BuchungsmaschineHandler(new BuchungsmaschineBackendImpl()));
+		rpcHandler.addModule("functions", 
+			new FunctionsHandler(new FunctionsBackendImpl()));
+		rpcHandler.addModule("properties", 
+			new PropertiesHandler(new PropertiesBackendImpl()));
+		ModulesBackendImpl modulesBackendImpl = new ModulesBackendImpl();
+		rpcHandler.addModule("modules", 
+			new ModulesHandler(modulesBackendImpl));
+		modulesBackendImpl.setModules(rpcHandler.getModules());
 		server.addHandler(MODUL_NAME, rpcHandler);
 		server.start();
 	}

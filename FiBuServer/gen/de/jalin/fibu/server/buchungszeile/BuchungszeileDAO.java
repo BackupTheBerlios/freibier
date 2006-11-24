@@ -40,7 +40,12 @@ abstract public class BuchungszeileDAO implements Createable {
 		createStmt.addColumn("bool", "haben", true, false);
 		createStmt.createDatabaseObject(connect);
 	}
-
+	
+	public void dropDatabaseObject(Connection connect) throws XmlRpcTransactionException {
+		CreateTableStatement dropStmt = new CreateTableStatement(table);
+		dropStmt.dropDatabaseObject(connect);
+	}
+	
 	public void addBuchungszeile
 		(  Connection connect, BuchungszeileData writeData )
 					throws XmlRpcTransactionException

@@ -11,11 +11,15 @@ import net.hostsharing.admin.runtime.*;
 
 public class JournalWebGUI extends AbstractWebGUI {
 
+	private static final long serialVersionUID = 1164399837841L;
+
+	private PostgresAccess pgAccess;
 	private JournalBackend backend;
 	private DisplayColumns display;
 	private OrderByList orderBy;
 
-	public JournalWebGUI(JournalBackend backend) {
+	public JournalWebGUI(JournalBackend backend) throws XmlRpcTransactionException {
+		pgAccess = PostgresAccess.getInstance();
 		this.backend = backend;
 		this.display = new DisplayColumns();
 		this.display.addColumnDefinition("jourid", 1);
@@ -52,38 +56,48 @@ public class JournalWebGUI extends AbstractWebGUI {
 
 	public void execute(String functionName, HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		try {
-			Connection dbConnect = PostgresAccess.getInstance().getConnection();
-			XmlRpcSession session = new XmlRpcSession(request.getRemoteUser());
-			if("list".equals(functionName)) {
-	    		callJournalListCall(
-	    			dbConnect, 
-	    			session,
-	    			request,
-	    			response);
+			Connection dbConnect = pgAccess.getConnection();
+			try {
+				dbConnect.setAutoCommit(false);
+				XmlRpcSession session = getSession(request, response);
+				if("list".equals(functionName)) {
+		    		callJournalListCall(
+		    			dbConnect, 
+		    			session,
+		    			request,
+		    			response);
+				}
+				if("add".equals(functionName)) {
+		    		callJournalAddCall(
+		    			dbConnect, 
+		    			session,
+		    			request,
+		    			response);
+				}
+				if("update".equals(functionName)) {
+		    		callJournalUpdateCall(
+		    			dbConnect, 
+		    			session,
+		    			request,
+		    			response);
+				}
+				if("delete".equals(functionName)) {
+		    		callJournalDeleteCall(
+		    			dbConnect, 
+		    			session,
+		    			request,
+		    			response);
+				}
+				dbConnect.commit();
+				dbConnect.setAutoCommit(true);
+			} catch (JournalException e) {
+				dbConnect.rollback();
+				dbConnect.setAutoCommit(true);
+			} catch (XmlRpcTransactionException e) {
+				dbConnect.rollback();
+				dbConnect.setAutoCommit(true);
+				throw new ServletException(e);
 			}
-			if("add".equals(functionName)) {
-	    		callJournalAddCall(
-	    			dbConnect, 
-	    			session,
-	    			request,
-	    			response);
-			}
-			if("update".equals(functionName)) {
-	    		callJournalUpdateCall(
-	    			dbConnect, 
-	    			session,
-	    			request,
-	    			response);
-			}
-			if("delete".equals(functionName)) {
-	    		callJournalDeleteCall(
-	    			dbConnect, 
-	    			session,
-	    			request,
-	    			response);
-			}
-		} catch (XmlRpcTransactionException e) {
-			throw new ServletException(e);
 		} catch (SQLException e) {
 			throw new ServletException(e);
 		}
@@ -125,22 +139,42 @@ public class JournalWebGUI extends AbstractWebGUI {
 		getDisplayColumns(request, display);
 		orderBy.reset();
 		getOrderByList(request, orderBy);
-		Vector resultList = 
-			backend.executeJournalListCall(
-				dbConnect
-				, session
-				, whereData
-				, display
-				, orderBy
-			);
-		Map params = new HashMap();
-		params.put("headers", resultList.get(0));
-		params.put("rows", resultList.get(1));
-		params.put("menu", request.getSession().getAttribute("menu"));
 		try {
-			response.getWriter().print(mergeTemplate("liste.vm", params));
-		} catch (Exception e) {
-			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR_CODE, e.getMessage());
+			Vector resultList = 
+				backend.executeJournalListCall(
+					dbConnect
+					, session
+					, whereData
+					, display
+					, orderBy
+				);
+			String templateName = "funct_ok.vm";
+			Map params = new HashMap();
+			params.put("menu", request.getSession().getAttribute("menu"));
+			params.put("modulename", "journal");
+			params.put("functionname", "list");
+			params.put("headers", resultList.get(0));
+			params.put("rows", resultList.get(1));
+			templateName = "liste.vm";
+			try {
+				response.getWriter().print(mergeTemplate(templateName, params));
+			} catch (Exception e) {
+				throw new ServerException(ErrorCode.TEMPLATE_ERROR_CODE);
+			}
+		} catch (JournalException e) {
+			String templateName = "funct_err.vm";
+			Map params = new HashMap();
+			params.put("menu", request.getSession().getAttribute("menu"));
+			params.put("modulename", "journal");
+			params.put("functionname", "list");
+			params.put("errorcode", new Integer(e.code));
+			params.put("errormsg", e.getMessage());
+			try {
+				response.getWriter().print(mergeTemplate(templateName, params));
+			} catch (Exception e1) {
+				throw new ServerException(ErrorCode.TEMPLATE_ERROR_CODE);
+			}
+			throw e;
 		}
 	}
 
@@ -151,20 +185,40 @@ public class JournalWebGUI extends AbstractWebGUI {
 		HttpServletResponse response)
 	   		throws XmlRpcTransactionException {
 		JournalData writeData = (JournalData) getWriteData(request, new JournalData());
-		Vector resultList = 
-			backend.executeJournalAddCall(
-				dbConnect
-				, session
-				, writeData
-			);
-		Map params = new HashMap();
-		params.put("headers", resultList.get(0));
-		params.put("rows", resultList.get(1));
-		params.put("menu", request.getSession().getAttribute("menu"));
 		try {
-			response.getWriter().print(mergeTemplate("liste.vm", params));
-		} catch (Exception e) {
-			throw new XmlRpcTransactionException(ErrorCode.TEMPLATE_ERROR_CODE, e.getMessage());
+			Vector resultList = 
+				backend.executeJournalAddCall(
+					dbConnect
+					, session
+					, writeData
+				);
+			String templateName = "funct_ok.vm";
+			Map params = new HashMap();
+			params.put("menu", request.getSession().getAttribute("menu"));
+			params.put("modulename", "journal");
+			params.put("functionname", "add");
+			params.put("headers", resultList.get(0));
+			params.put("rows", resultList.get(1));
+			templateName = "liste.vm";
+			try {
+				response.getWriter().print(mergeTemplate(templateName, params));
+			} catch (Exception e) {
+				throw new ServerException(ErrorCode.TEMPLATE_ERROR_CODE);
+			}
+		} catch (JournalException e) {
+			String templateName = "funct_err.vm";
+			Map params = new HashMap();
+			params.put("menu", request.getSession().getAttribute("menu"));
+			params.put("modulename", "journal");
+			params.put("functionname", "add");
+			params.put("errorcode", new Integer(e.code));
+			params.put("errormsg", e.getMessage());
+			try {
+				response.getWriter().print(mergeTemplate(templateName, params));
+			} catch (Exception e1) {
+				throw new ServerException(ErrorCode.TEMPLATE_ERROR_CODE);
+			}
+			throw e;
 		}
 	}
 
@@ -176,12 +230,38 @@ public class JournalWebGUI extends AbstractWebGUI {
 	   		throws XmlRpcTransactionException {
 		JournalData writeData = (JournalData) getWriteData(request, new JournalData());
 		JournalData whereData = (JournalData) getWhereData(request, new JournalData());
-			backend.executeJournalUpdateCall(
-				dbConnect
-				, session
-				, writeData
-				, whereData
-			);
+		try {
+				backend.executeJournalUpdateCall(
+					dbConnect
+					, session
+					, writeData
+					, whereData
+				);
+			String templateName = "funct_ok.vm";
+			Map params = new HashMap();
+			params.put("menu", request.getSession().getAttribute("menu"));
+			params.put("modulename", "journal");
+			params.put("functionname", "update");
+			try {
+				response.getWriter().print(mergeTemplate(templateName, params));
+			} catch (Exception e) {
+				throw new ServerException(ErrorCode.TEMPLATE_ERROR_CODE);
+			}
+		} catch (JournalException e) {
+			String templateName = "funct_err.vm";
+			Map params = new HashMap();
+			params.put("menu", request.getSession().getAttribute("menu"));
+			params.put("modulename", "journal");
+			params.put("functionname", "update");
+			params.put("errorcode", new Integer(e.code));
+			params.put("errormsg", e.getMessage());
+			try {
+				response.getWriter().print(mergeTemplate(templateName, params));
+			} catch (Exception e1) {
+				throw new ServerException(ErrorCode.TEMPLATE_ERROR_CODE);
+			}
+			throw e;
+		}
 	}
 
 	public void callJournalDeleteCall(
@@ -191,11 +271,37 @@ public class JournalWebGUI extends AbstractWebGUI {
 		HttpServletResponse response)
 	   		throws XmlRpcTransactionException {
 		JournalData whereData = (JournalData) getWhereData(request, new JournalData());
-			backend.executeJournalDeleteCall(
-				dbConnect
-				, session
-				, whereData
-			);
+		try {
+				backend.executeJournalDeleteCall(
+					dbConnect
+					, session
+					, whereData
+				);
+			String templateName = "funct_ok.vm";
+			Map params = new HashMap();
+			params.put("menu", request.getSession().getAttribute("menu"));
+			params.put("modulename", "journal");
+			params.put("functionname", "delete");
+			try {
+				response.getWriter().print(mergeTemplate(templateName, params));
+			} catch (Exception e) {
+				throw new ServerException(ErrorCode.TEMPLATE_ERROR_CODE);
+			}
+		} catch (JournalException e) {
+			String templateName = "funct_err.vm";
+			Map params = new HashMap();
+			params.put("menu", request.getSession().getAttribute("menu"));
+			params.put("modulename", "journal");
+			params.put("functionname", "delete");
+			params.put("errorcode", new Integer(e.code));
+			params.put("errormsg", e.getMessage());
+			try {
+				response.getWriter().print(mergeTemplate(templateName, params));
+			} catch (Exception e1) {
+				throw new ServerException(ErrorCode.TEMPLATE_ERROR_CODE);
+			}
+			throw e;
+		}
 	}
 
 }

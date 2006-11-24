@@ -15,6 +15,18 @@
 		<servlet-name>hsadmintd</servlet-name>
 	    <display-name>FreiBier Ticket Server</display-name>
 		<servlet-class>net.hostsharing.admin.ticket.servlet.TicketServlet</servlet-class>
+		<init-param>
+			<param-name>authenticator</param-name>
+			<param-value>net.hostsharing.admin.ticket.servlet.EgalAuthenticator</param-value>
+		</init-param>
+		<init-param>
+			<param-name>verifyticketcommand</param-name>
+			<param-value>sudo -u hsadmint /usr/bin/gpg --verify --homedir=/home/hsadmint/.gnupg/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>generateticketcommand</param-name>
+			<param-value>/home/peter/bin/hsadmint </param-value>
+		</init-param>
 		<load-on-startup/>
 	</servlet>
    	
@@ -22,6 +34,10 @@
 		<servlet-name>webgui</servlet-name>
 	    <display-name>FreiBier WebGUI</display-name>
 		<servlet-class>de.jalin.fibu.server.WebGUI</servlet-class>
+		<init-param>
+			<param-name>authenticator</param-name>
+			<param-value>net.hostsharing.admin.ticket.servlet.EgalAuthenticator</param-value>
+		</init-param>
 		<load-on-startup/>
 	</servlet>
    	
