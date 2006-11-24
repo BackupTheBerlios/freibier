@@ -1,4 +1,4 @@
-// $Id: FiBuFacade.java,v 1.12 2006/02/24 22:24:22 phormanns Exp $
+// $Id: FiBuFacade.java,v 1.13 2006/11/24 21:12:59 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -312,6 +312,7 @@ public class FiBuFacade {
 	}
 	
 	private List callBuchungslisteList(AbstractCall buchungslisteListCall) throws FiBuUserException {
+		// TODO Call mit zwei Aufrufen BuchungsListe, z.B. Aktiva - Passiva oder Auswand - Ertrag
 		try {
 			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			tx.addCall(buchungslisteListCall);
@@ -385,6 +386,9 @@ public class FiBuFacade {
 
 /*
  *  $Log: FiBuFacade.java,v $
+ *  Revision 1.13  2006/11/24 21:12:59  phormanns
+ *  kleine Aenderungen
+ *
  *  Revision 1.12  2006/02/24 22:24:22  phormanns
  *  Copyright
  *  diverse Verbesserungen

@@ -1,4 +1,4 @@
-// $Id: FiBuGUI.java,v 1.10 2006/02/24 22:24:22 phormanns Exp $
+// $Id: FiBuGUI.java,v 1.11 2006/11/24 21:12:59 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -64,9 +64,9 @@ public class FiBuGUI {
 
 	public FiBuGUI() {
 		try {
-			TicketClient ticketCli = new TicketClient("http://www.hormanns-wenz.de/fibu/getTicket");
+			TicketClient ticketCli = new TicketClient("http://localhost:8180/fibu/getTicket");
 			String ticket = ticketCli.getTicket("peter", "egal");
-			fibu = new FiBuFacade("http://www.hormanns-wenz.de/fibu/RPC2", ticket);
+			fibu = new FiBuFacade("http://localhost:8180/fibu/RPC2", ticket);
 			frame = new JFrame("Freibier - Buchhaltung");
 			frame.addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent e) {
@@ -191,6 +191,9 @@ public class FiBuGUI {
 
 //
 // $Log: FiBuGUI.java,v $
+// Revision 1.11  2006/11/24 21:12:59  phormanns
+// kleine Aenderungen
+//
 // Revision 1.10  2006/02/24 22:24:22  phormanns
 // Copyright
 // diverse Verbesserungen

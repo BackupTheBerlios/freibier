@@ -2,12 +2,12 @@
 <!-- ====================================================================== 
      03.09.2005 12:57:37                                                        
 
-     project      	xmlrpcgen
-     description	HSAdmin Java Generator
+     project      	FiBuSwing
+     description	FiBu Client Anwendung
                    
      Peter Hormanns                                                         
      ====================================================================== -->
-<project name="xmlrpcgen" default="dist">
+<project name="fibuswing" default="dist">
     <description>HSAdmin Java Generator</description>
 
 	<path id="cp.build">
@@ -39,11 +39,27 @@
     <!-- - - - - - - - - - - - - - - - - - 
           target: compile                      
          - - - - - - - - - - - - - - - - - -->
-    <target name="compile" description="Compile Java Sources">
+    <target name="compile"  depends="xmlrpcgen,server" description="Compile Java Sources">
     	<mkdir dir="build"/>
-    	<javac classpathref="cp.build" srcdir="src" destdir="build" debug="true"/>
+    	<javac classpathref="cp.build" srcdir="src" destdir="build" debug="true" encoding="ISO-8859-15"/>
     </target>
 
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: xmlrpcgen
+         - - - - - - - - - - - - - - - - - -->
+	<target name="xmlrpcgen" description="Build xmlrpcgen Module">
+		<ant dir="../xmlrpcgen" antfile="build.xml" target="dist"/>
+		<copy file="../xmlrpcgen/dist/xmlrpcgen.jar" todir="lib"/>
+	</target>
+	
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: server
+         - - - - - - - - - - - - - - - - - -->
+	<target name="server" description="Build FiBu Server">
+		<ant dir="../FiBuServer" antfile="build.xml" target="jar"/>
+		<copy file="../FiBuServer/dist/freibier.jar" todir="lib"/>
+	</target>
+	
     <!-- - - - - - - - - - - - - - - - - - 
           target: clean                      
          - - - - - - - - - - - - - - - - - -->

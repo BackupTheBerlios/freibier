@@ -1,4 +1,4 @@
-// $Id: KontoAuswahlDialog.java,v 1.8 2006/02/24 22:24:22 phormanns Exp $
+// $Id: KontoAuswahlDialog.java,v 1.9 2006/11/24 21:12:59 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -67,7 +67,7 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			tree.addTreeSelectionListener(this);
 			dialog.getContentPane().add(tree);
-			dialog.show();
+			dialog.setVisible(true);
 		} catch (FiBuException e) {
 			gui.handleException(e);
 		}
@@ -90,13 +90,16 @@ public class KontoAuswahlDialog implements ActionListener, TreeSelectionListener
 		if (betragListener != null) {
 			betragListener.berechneMWSt();
 		}
-		dialog.hide();
+		dialog.setVisible(false);
 	}
 	
 }
 
 /*
  *  $Log: KontoAuswahlDialog.java,v $
+ *  Revision 1.9  2006/11/24 21:12:59  phormanns
+ *  kleine Aenderungen
+ *
  *  Revision 1.8  2006/02/24 22:24:22  phormanns
  *  Copyright
  *  diverse Verbesserungen

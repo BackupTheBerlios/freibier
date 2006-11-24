@@ -1,2 +1,2 @@
 Main-Class: de.jalin.fibu.gui.FiBuGUI
-Class-Path: 
+Class-Path: fibugui.jar commons-codec.jar commons-httpclient-2.0.2.jar commons-logging-1.0.4.jar forms-1.0.5.jar jcalendar.jar log4j-1.2.8.jar looks-1.3.2.jar oro-2.0.8.jar xmlrpc.jar xmlrpcgen.jar freibier.jar /usr/share/java/commons-codec.jar
