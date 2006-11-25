@@ -1,4 +1,4 @@
-// $Id: FiBuFacade.java,v 1.13 2006/11/24 21:12:59 phormanns Exp $
+// $Id: FiBuFacade.java,v 1.14 2006/11/25 13:16:15 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -29,11 +29,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+
 import net.hostsharing.admin.client.XmlRpcClientException;
 import net.hostsharing.admin.client.XmlRpcClientTransaction;
 import net.hostsharing.admin.client.XmlRpcTransactionClient;
 import net.hostsharing.admin.runtime.AbstractCall;
-import net.hostsharing.admin.runtime.ResultVector;
+import net.hostsharing.admin.runtime.QueryResult;
 import net.hostsharing.admin.runtime.XmlRpcTransactionException;
 import de.jalin.fibu.server.buchung.BuchungData;
 import de.jalin.fibu.server.buchung.BuchungDeleteCall;
@@ -92,8 +93,8 @@ public class FiBuFacade {
 			tx.addCall(new KontoListCall(sampleBilanzKto));
 			tx.addCall(new KontoListCall(sampleGuVKonto));
 			Vector callResults = tx.perform();
-			ResultVector resBilanzKto = new ResultVector((Vector) callResults.get(0));
-			ResultVector resGuVKto = new ResultVector((Vector) callResults.get(1));
+			QueryResult resBilanzKto = new QueryResult((Vector) callResults, 0);
+			QueryResult resGuVKto = new QueryResult((Vector) callResults, 1);
 			bilanzKonto.readFromResult(resBilanzKto, 0);
 			guvKonto.readFromResult(resGuVKto, 0);
 			updatedCustomer.setCustid(customer.getCustid());
@@ -116,7 +117,7 @@ public class FiBuFacade {
 			JournalListCall journalListCall = new JournalListCall(queryJournal);
 			journalListCall.addOrderByColumn("jourid", false);
 			tx.addCall(journalListCall);
-			ResultVector result = new ResultVector((Vector) tx.perform().get(0));
+			QueryResult result = new QueryResult((Vector) tx.perform(), 0);
 			Vector offeneJournale = new Vector();
 			JournalData jour = null;
 			for (int i=0; i<result.size(); i++) {
@@ -139,7 +140,7 @@ public class FiBuFacade {
 			JournalListCall journalListCall = new JournalListCall(queryJournal);
 			journalListCall.addOrderByColumn("jourid", false);
 			tx.addCall(journalListCall);
-			ResultVector result = new ResultVector((Vector) tx.perform().get(0));
+			QueryResult result = new QueryResult((Vector) tx.perform(), 0);
 			Vector alleJournale = new Vector();
 			JournalData jour = null;
 			for (int i=0; i<result.size(); i++) {
@@ -182,8 +183,8 @@ public class FiBuFacade {
 			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			CustomerData whereCust = new CustomerData();
 			tx.addCall(new CustomerListCall(whereCust));
-			Vector functionsResults = (Vector) tx.perform().get(0);
-			ResultVector resultVector = new ResultVector(functionsResults);
+			Vector functionsResults = (Vector) tx.perform();
+			QueryResult resultVector = new QueryResult(functionsResults, 0);
 			CustomerData cust = new CustomerData();
 			cust.readFromResult(resultVector, 0);
 			tx = new XmlRpcClientTransaction(client, ticket);
@@ -193,8 +194,8 @@ public class FiBuFacade {
 			addJournal.setPeriode(cust.getPeriode());
 			addJournal.setSince(new Date());
 			tx.addCall(new JournalAddCall(addJournal));
-			functionsResults = (Vector) tx.perform().get(0);
-			resultVector = new ResultVector(functionsResults);
+			functionsResults = (Vector) tx.perform();
+			resultVector = new QueryResult(functionsResults, 0);
 			JournalData newJournal = new JournalData();
 			newJournal.readFromResult(resultVector, 0);
 			return newJournal;
@@ -211,7 +212,7 @@ public class FiBuFacade {
 			KontoData whereKto = new KontoData();
 			whereKto.setKontonr(ktoNr);
 			tx.addCall(new KontoListCall(whereKto));
-			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			QueryResult resultVector = new QueryResult((Vector) tx.perform(), 0);
 			KontoData kto = new KontoData();
 			kto.readFromResult(resultVector, 0);
 			return kto;
@@ -254,7 +255,7 @@ public class FiBuFacade {
 			mwst.setMwstid(kto.getMwstid());
 			tx.addCall(new MwstListCall(mwst));
 			mwst = new MwstData();
-			mwst.readFromResult(new ResultVector((Vector) tx.perform().get(0)), 0);
+			mwst.readFromResult(new QueryResult((Vector) tx.perform(), 0), 0);
 			double mwstFloat = mwst.getMwstsatz().floatValue() / 100.0;
 			return percentFormatter.format(mwstFloat);
 		} catch (XmlRpcClientException e) {
@@ -271,7 +272,7 @@ public class FiBuFacade {
 			KontoListCall kontoListCall = new KontoListCall(sampleKto);
 			kontoListCall.addOrderByColumn("kontonr", true);
 			tx.addCall(kontoListCall);
-			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			QueryResult resultVector = new QueryResult((Vector) tx.perform(), 0);
 			List ktoList = new ArrayList();
 			KontoData kto = null;
 			for (int i=0; i<resultVector.size(); i++) {
@@ -316,7 +317,7 @@ public class FiBuFacade {
 		try {
 			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			tx.addCall(buchungslisteListCall);
-			ResultVector resultVector = new ResultVector((Vector) tx.perform().get(0));
+			QueryResult resultVector = new QueryResult((Vector) tx.perform(), 0);
 			List buchungsList = new ArrayList();
 			BuchungslisteData buchungsListData = null;
 			for (int i=0; i<resultVector.size(); i++) {
@@ -349,7 +350,7 @@ public class FiBuFacade {
 			CustomerData sampleCust = new CustomerData();
 			XmlRpcClientTransaction tx = new XmlRpcClientTransaction(client, ticket);
 			tx.addCall(new CustomerListCall(sampleCust));
-			ResultVector result = new ResultVector((Vector) tx.perform().get(0));
+			QueryResult result = new QueryResult((Vector) tx.perform(), 0);
 			customer.readFromResult(result, 0);
 			tx = new XmlRpcClientTransaction(client, ticket);
 			KontoData sampleBilanzKto = new KontoData();
@@ -359,8 +360,8 @@ public class FiBuFacade {
 			tx.addCall(new KontoListCall(sampleBilanzKto));
 			tx.addCall(new KontoListCall(sampleGuVKonto));
 			Vector callResults = tx.perform();
-			ResultVector resBilanzKto = new ResultVector((Vector) callResults.get(0));
-			ResultVector resGuVKto = new ResultVector((Vector) callResults.get(1));
+			QueryResult resBilanzKto = new QueryResult((Vector) callResults, 0);
+			QueryResult resGuVKto = new QueryResult((Vector) callResults, 1);
 			bilanzKonto.readFromResult(resBilanzKto, 0);
 			guvKonto.readFromResult(resGuVKto, 0);
 		} catch (XmlRpcClientException e) {
@@ -386,6 +387,10 @@ public class FiBuFacade {
 
 /*
  *  $Log: FiBuFacade.java,v $
+ *  Revision 1.14  2006/11/25 13:16:15  phormanns
+ *  ResultVector in QueryResult umbenannt
+ *  Refactoring: DAOs liefern QueryResult bei Select
+ *
  *  Revision 1.13  2006/11/24 21:12:59  phormanns
  *  kleine Aenderungen
  *
