@@ -1,4 +1,4 @@
-// $Id: BuchungszeileBackendImpl.java,v 1.2 2006/02/24 22:27:40 phormanns Exp $
+// $Id: BuchungszeileBackendImpl.java,v 1.3 2006/11/25 12:59:38 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -47,7 +47,7 @@ public class BuchungszeileBackendImpl implements BuchungszeileBackend {
 			DisplayColumns display, OrderByList orderBy)
 			throws BuchungszeileException {
 		try {
-			return buchungszeileDAO.listBuchungszeiles(dbConnection, whereData, display, orderBy);
+			return buchungszeileDAO.listBuchungszeiles(dbConnection, whereData, display, orderBy).getResult();
 		} catch (XmlRpcTransactionException e) {
 			throw new BuchungszeileException(10501, e);
 		}
@@ -88,6 +88,10 @@ public class BuchungszeileBackendImpl implements BuchungszeileBackend {
 
 /*
  *  $Log: BuchungszeileBackendImpl.java,v $
+ *  Revision 1.3  2006/11/25 12:59:38  phormanns
+ *  ResultVector in QueryResult umbenannt
+ *  Refactoring: DAOs liefern QueryResult bei Select
+ *
  *  Revision 1.2  2006/02/24 22:27:40  phormanns
  *  Copyright
  *  diverse Verbesserungen

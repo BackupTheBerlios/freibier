@@ -104,7 +104,7 @@ abstract public class CustomerDAO implements Createable {
 		delete.execute(connect);
 	}
 
-	public Vector listCustomers
+	public QueryResult listCustomers
 	(  Connection connect
 		, CustomerData whereData 
 		, DisplayColumns display
@@ -119,7 +119,7 @@ abstract public class CustomerDAO implements Createable {
 		select.addWhereColumn("guvkonto", whereData.getGuvkonto());
 		select.addWhereColumn("jahr", whereData.getJahr());
 		select.addWhereColumn("periode", whereData.getPeriode());
-		return select.select(connect);
+		return select.executeQuery(connect);
 	}
 
 	public DatabaseTable getTable() {

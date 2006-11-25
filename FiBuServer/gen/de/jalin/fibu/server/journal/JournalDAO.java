@@ -102,7 +102,7 @@ abstract public class JournalDAO implements Createable {
 		delete.execute(connect);
 	}
 
-	public Vector listJournals
+	public QueryResult listJournals
 	(  Connection connect
 		, JournalData whereData 
 		, DisplayColumns display
@@ -118,7 +118,7 @@ abstract public class JournalDAO implements Createable {
 		select.addWhereColumn("since", whereData.getSince());
 		select.addWhereColumn("lastupdate", whereData.getLastupdate());
 		select.addWhereColumn("absummiert", whereData.getAbsummiert());
-		return select.select(connect);
+		return select.executeQuery(connect);
 	}
 
 	public DatabaseTable getTable() {

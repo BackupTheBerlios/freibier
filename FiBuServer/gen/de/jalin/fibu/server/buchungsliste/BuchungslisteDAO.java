@@ -189,7 +189,7 @@ abstract public class BuchungslisteDAO implements Createable {
 		delete.execute(connect);
 	}
 
-	public Vector listBuchungslistes
+	public QueryResult listBuchungslistes
 	(  Connection connect
 		, BuchungslisteData whereData 
 		, DisplayColumns display
@@ -217,7 +217,7 @@ abstract public class BuchungslisteDAO implements Createable {
 		select.addWhereColumn("istpassiv", whereData.getIstpassiv());
 		select.addWhereColumn("istaufwand", whereData.getIstaufwand());
 		select.addWhereColumn("istertrag", whereData.getIstertrag());
-		return select.select(connect);
+		return select.executeQuery(connect);
 	}
 
 	public DatabaseTable getTable() {

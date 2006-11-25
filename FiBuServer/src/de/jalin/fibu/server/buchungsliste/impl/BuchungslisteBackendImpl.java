@@ -1,4 +1,4 @@
-// $Id: BuchungslisteBackendImpl.java,v 1.3 2006/02/24 22:27:40 phormanns Exp $
+// $Id: BuchungslisteBackendImpl.java,v 1.4 2006/11/25 12:59:38 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -47,7 +47,7 @@ public class BuchungslisteBackendImpl implements BuchungslisteBackend {
 			DisplayColumns display, OrderByList orderBy)
 			throws BuchungslisteException {
 		try {
-			return buchungslisteDAO.listBuchungslistes(dbConnection, whereData, display, orderBy);
+			return buchungslisteDAO.listBuchungslistes(dbConnection, whereData, display, orderBy).getResult();
 		} catch (XmlRpcTransactionException e) {
 			throw new BuchungslisteException(10701, e);
 		}
@@ -57,6 +57,10 @@ public class BuchungslisteBackendImpl implements BuchungslisteBackend {
 
 /*
  *  $Log: BuchungslisteBackendImpl.java,v $
+ *  Revision 1.4  2006/11/25 12:59:38  phormanns
+ *  ResultVector in QueryResult umbenannt
+ *  Refactoring: DAOs liefern QueryResult bei Select
+ *
  *  Revision 1.3  2006/02/24 22:27:40  phormanns
  *  Copyright
  *  diverse Verbesserungen

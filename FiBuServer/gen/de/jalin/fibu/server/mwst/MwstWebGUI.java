@@ -11,7 +11,7 @@ import net.hostsharing.admin.runtime.*;
 
 public class MwstWebGUI extends AbstractWebGUI {
 
-	private static final long serialVersionUID = 1164399835491L;
+	private static final long serialVersionUID = 1164458220319L;
 
 	private PostgresAccess pgAccess;
 	private MwstBackend backend;

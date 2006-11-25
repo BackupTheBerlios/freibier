@@ -1,4 +1,4 @@
-// $Id: BuchungsmaschineDAO.java,v 1.2 2006/02/24 22:27:40 phormanns Exp $
+// $Id: BuchungsmaschineDAO.java,v 1.3 2006/11/25 12:59:38 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -22,10 +22,10 @@ package de.jalin.fibu.server.buchungsmaschine.impl;
 
 import java.sql.Connection;
 import java.util.Date;
-import java.util.Vector;
+
 import net.hostsharing.admin.runtime.DisplayColumns;
 import net.hostsharing.admin.runtime.OrderByList;
-import net.hostsharing.admin.runtime.ResultVector;
+import net.hostsharing.admin.runtime.QueryResult;
 import net.hostsharing.admin.runtime.XmlRpcTransactionException;
 import de.jalin.fibu.server.buchung.BuchungData;
 import de.jalin.fibu.server.buchung.impl.BuchungDAO;
@@ -61,13 +61,13 @@ public class BuchungsmaschineDAO extends
 		habenMwst.setMwstid(writeData.getHabenmwstid());
 		sollKto.setKontonr(writeData.getSollkontonr());
 		habenKto.setKontonr(writeData.getHabenkontonr());
-		ResultVector resSollMwst = new ResultVector(mwstDAO.listMwsts(connect, sollMwst, null, null));
+		QueryResult resSollMwst = mwstDAO.listMwsts(connect, sollMwst, null, null);
 		sollMwst.readFromResult(resSollMwst, 0);
-		ResultVector resHabenMwst = new ResultVector(mwstDAO.listMwsts(connect, habenMwst, null, null));
+		QueryResult resHabenMwst = mwstDAO.listMwsts(connect, habenMwst, null, null);
 		habenMwst.readFromResult(resHabenMwst, 0);
-		ResultVector resSollKto = new ResultVector(kontoDAO.listKontos(connect, sollKto, null, null));
+		QueryResult resSollKto = kontoDAO.listKontos(connect, sollKto, null, null);
 		sollKto.readFromResult(resSollKto, 0);
-		ResultVector resHabenKto = new ResultVector(kontoDAO.listKontos(connect, habenKto, null, null));
+		QueryResult resHabenKto = kontoDAO.listKontos(connect, habenKto, null, null);
 		habenKto.readFromResult(resHabenKto, 0);
 		BuchungData buchung = new BuchungData();
 		buchung.setBuchid(new Integer(buchungDAO.nextId(connect)));
@@ -77,7 +77,7 @@ public class BuchungsmaschineDAO extends
 		buchung.setJourid(writeData.getJourid());
 		buchung.setValuta(writeData.getValuta());
 		buchungDAO.addBuchung(connect, buchung);
-		ResultVector resBuchung = new ResultVector(buchungDAO.listBuchungs(connect, buchung, null, null));
+		QueryResult resBuchung = buchungDAO.listBuchungs(connect, buchung, null, null);
 		buchung.readFromResult(resBuchung, 0);
 		double brutto = writeData.getBrutto().doubleValue() / 100.0d;
 		double sollMwstSatz = sollMwst.getMwstsatz().doubleValue() / 10000.0d;
@@ -140,7 +140,7 @@ public class BuchungsmaschineDAO extends
 		// Nichts tun
 	}
 
-	public Vector listBuchungsmaschines(Connection connect, BuchungsmaschineData whereData, DisplayColumns display, OrderByList orderBy) throws XmlRpcTransactionException {
+	public QueryResult listBuchungsmaschines(Connection connect, BuchungsmaschineData whereData, DisplayColumns display, OrderByList orderBy) throws XmlRpcTransactionException {
 		// Nichts tun
 		return null;
 	}
@@ -153,6 +153,10 @@ public class BuchungsmaschineDAO extends
 
 /*
  *  $Log: BuchungsmaschineDAO.java,v $
+ *  Revision 1.3  2006/11/25 12:59:38  phormanns
+ *  ResultVector in QueryResult umbenannt
+ *  Refactoring: DAOs liefern QueryResult bei Select
+ *
  *  Revision 1.2  2006/02/24 22:27:40  phormanns
  *  Copyright
  *  diverse Verbesserungen

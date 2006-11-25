@@ -1,4 +1,4 @@
-// $Id: InitDB.java,v 1.7 2006/11/24 21:10:03 phormanns Exp $
+// $Id: InitDB.java,v 1.8 2006/11/25 12:59:38 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.Vector;
 import net.hostsharing.admin.runtime.InitDatabase;
 import net.hostsharing.admin.runtime.PostgresAccess;
-import net.hostsharing.admin.runtime.ResultVector;
+import net.hostsharing.admin.runtime.QueryResult;
 import net.hostsharing.admin.runtime.XmlRpcTransactionException;
 import net.hostsharing.admin.runtime.standardModules.impl.FunctionsDAO;
 import net.hostsharing.admin.runtime.standardModules.impl.ModulesDAO;
@@ -232,7 +232,7 @@ public class InitDB {
 		KontoData queryOberKto = new KontoData();
 		queryOberKto.setKontonr(oberKtoNr);
 		KontoData oberKto = new KontoData();
-		ResultVector resultVector = new ResultVector(kontoDAO.listKontos(connection, queryOberKto, null, null));
+		QueryResult resultVector = kontoDAO.listKontos(connection, queryOberKto, null, null);
 		oberKto.readFromResult(resultVector, 0);
 		return oberKto.getKontoid();
 	}
@@ -250,6 +250,10 @@ public class InitDB {
 
 /*
  * $Log: InitDB.java,v $
+ * Revision 1.8  2006/11/25 12:59:38  phormanns
+ * ResultVector in QueryResult umbenannt
+ * Refactoring: DAOs liefern QueryResult bei Select
+ *
  * Revision 1.7  2006/11/24 21:10:03  phormanns
  * Datenmodellerweiterung bei Konto und Buchungsliste
  *

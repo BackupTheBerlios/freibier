@@ -94,7 +94,7 @@ abstract public class BuchungszeileDAO implements Createable {
 		delete.execute(connect);
 	}
 
-	public Vector listBuchungszeiles
+	public QueryResult listBuchungszeiles
 	(  Connection connect
 		, BuchungszeileData whereData 
 		, DisplayColumns display
@@ -109,7 +109,7 @@ abstract public class BuchungszeileDAO implements Createable {
 		select.addWhereColumn("betrag", whereData.getBetrag());
 		select.addWhereColumn("soll", whereData.getSoll());
 		select.addWhereColumn("haben", whereData.getHaben());
-		return select.select(connect);
+		return select.executeQuery(connect);
 	}
 
 	public DatabaseTable getTable() {

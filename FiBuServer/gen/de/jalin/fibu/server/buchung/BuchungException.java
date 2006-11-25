@@ -7,7 +7,7 @@ import net.hostsharing.admin.runtime.*;
 
 public class BuchungException extends XmlRpcTransactionException {
 
-	private static final long serialVersionUID = 1164399838968L;
+	private static final long serialVersionUID = 1164458223981L;
 
 	public static final int ERR_MISSING_RIGHTS = 10000;
 	public static final String MSG_10000 = "Fehlende Rechte für diese Funktion.";

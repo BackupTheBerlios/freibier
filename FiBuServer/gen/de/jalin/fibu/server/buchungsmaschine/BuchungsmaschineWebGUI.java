@@ -11,7 +11,7 @@ import net.hostsharing.admin.runtime.*;
 
 public class BuchungsmaschineWebGUI extends AbstractWebGUI {
 
-	private static final long serialVersionUID = 1164399841901L;
+	private static final long serialVersionUID = 1164458226962L;
 
 	private PostgresAccess pgAccess;
 	private BuchungsmaschineBackend backend;

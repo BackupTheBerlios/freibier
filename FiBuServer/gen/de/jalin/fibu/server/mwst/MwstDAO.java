@@ -93,7 +93,7 @@ abstract public class MwstDAO implements Createable {
 		delete.execute(connect);
 	}
 
-	public Vector listMwsts
+	public QueryResult listMwsts
 	(  Connection connect
 		, MwstData whereData 
 		, DisplayColumns display
@@ -108,7 +108,7 @@ abstract public class MwstDAO implements Createable {
 		select.addWhereColumn("mwstkontosoll", whereData.getMwstkontosoll());
 		select.addWhereColumn("mwstkontohaben", whereData.getMwstkontohaben());
 		select.addWhereColumn("mwstsatzaktiv", whereData.getMwstsatzaktiv());
-		return select.select(connect);
+		return select.executeQuery(connect);
 	}
 
 	public DatabaseTable getTable() {

@@ -131,7 +131,7 @@ abstract public class KontoDAO implements Createable {
 		delete.execute(connect);
 	}
 
-	public Vector listKontos
+	public QueryResult listKontos
 	(  Connection connect
 		, KontoData whereData 
 		, DisplayColumns display
@@ -151,7 +151,7 @@ abstract public class KontoDAO implements Createable {
 		select.addWhereColumn("istpassiv", whereData.getIstpassiv());
 		select.addWhereColumn("istaufwand", whereData.getIstaufwand());
 		select.addWhereColumn("istertrag", whereData.getIstertrag());
-		return select.select(connect);
+		return select.executeQuery(connect);
 	}
 
 	public DatabaseTable getTable() {

@@ -11,7 +11,7 @@ import net.hostsharing.admin.runtime.*;
 
 public class CustomerWebGUI extends AbstractWebGUI {
 
-	private static final long serialVersionUID = 1164399833741L;
+	private static final long serialVersionUID = 1164458218674L;
 
 	private PostgresAccess pgAccess;
 	private CustomerBackend backend;

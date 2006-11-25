@@ -1,4 +1,4 @@
-// $Id: MwstBackendImpl.java,v 1.3 2006/02/24 22:27:40 phormanns Exp $
+// $Id: MwstBackendImpl.java,v 1.4 2006/11/25 12:59:38 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -46,7 +46,7 @@ public class MwstBackendImpl implements MwstBackend {
 			XmlRpcSession session, MwstData whereData, DisplayColumns display,
 			OrderByList orderBy) throws MwstException {
 		try {
-			return mwstDAO.listMwsts(dbConnection, whereData, display, orderBy);
+			return mwstDAO.listMwsts(dbConnection, whereData, display, orderBy).getResult();
 		} catch (XmlRpcTransactionException e) {
 			throw new MwstException(10201, e);
 		}
@@ -71,6 +71,10 @@ public class MwstBackendImpl implements MwstBackend {
 
 /*
  *  $Log: MwstBackendImpl.java,v $
+ *  Revision 1.4  2006/11/25 12:59:38  phormanns
+ *  ResultVector in QueryResult umbenannt
+ *  Refactoring: DAOs liefern QueryResult bei Select
+ *
  *  Revision 1.3  2006/02/24 22:27:40  phormanns
  *  Copyright
  *  diverse Verbesserungen

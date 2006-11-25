@@ -1,4 +1,4 @@
-// $Id: BuchungslisteDAO.java,v 1.3 2006/11/24 21:10:03 phormanns Exp $
+// $Id: BuchungslisteDAO.java,v 1.4 2006/11/25 12:59:38 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -21,9 +21,10 @@
 package de.jalin.fibu.server.buchungsliste.impl;
 
 import java.sql.Connection;
-import java.util.Vector;
+
 import net.hostsharing.admin.runtime.DisplayColumns;
 import net.hostsharing.admin.runtime.OrderByList;
+import net.hostsharing.admin.runtime.QueryResult;
 import net.hostsharing.admin.runtime.XmlRpcTransactionException;
 import net.hostsharing.admin.runtime.sql.CreateViewStatement;
 import de.jalin.fibu.server.buchung.impl.BuchungDAO;
@@ -35,6 +36,11 @@ import de.jalin.fibu.server.konto.impl.KontoDAO;
 public class BuchungslisteDAO extends
 		de.jalin.fibu.server.buchungsliste.BuchungslisteDAO {
 	
+	public void addBuchungsliste(Connection connect, BuchungslisteData writeData) throws XmlRpcTransactionException {
+		// TODO Auto-generated method stub
+		super.addBuchungsliste(connect, writeData);
+	}
+
 	private KontoDAO kontoDAO;
 	private BuchungDAO buchungDAO;
 	private BuchungszeileDAO buchungszeileDAO;
@@ -88,11 +94,10 @@ public class BuchungslisteDAO extends
 	}
 	
 	public void dropDatabaseObject(Connection connect) throws XmlRpcTransactionException {
-		CreateViewStatement createStmt = new CreateViewStatement(super.getTable());
-		createStmt.dropDatabaseObject(connect);
+		// nichts tun!
 	}
 
-	public Vector listBuchungslistes(Connection connect, BuchungslisteData whereData, DisplayColumns display, OrderByList orderBy) throws XmlRpcTransactionException {
+	public QueryResult listBuchungslistes(Connection connect, BuchungslisteData whereData, DisplayColumns display, OrderByList orderBy) throws XmlRpcTransactionException {
 		return super.listBuchungslistes(connect, whereData, display, orderBy);
 	}
 
@@ -108,6 +113,10 @@ public class BuchungslisteDAO extends
 
 /*
  *  $Log: BuchungslisteDAO.java,v $
+ *  Revision 1.4  2006/11/25 12:59:38  phormanns
+ *  ResultVector in QueryResult umbenannt
+ *  Refactoring: DAOs liefern QueryResult bei Select
+ *
  *  Revision 1.3  2006/11/24 21:10:03  phormanns
  *  Datenmodellerweiterung bei Konto und Buchungsliste
  *

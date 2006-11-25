@@ -1,4 +1,4 @@
-// $Id: CustomerBackendImpl.java,v 1.2 2006/02/24 22:27:40 phormanns Exp $
+// $Id: CustomerBackendImpl.java,v 1.3 2006/11/25 12:59:38 phormanns Exp $
 /* 
  * HSAdmin - hostsharing.net Paketadministration
  * Copyright (C) 2005, 2006 Peter Hormanns                               
@@ -47,7 +47,7 @@ public class CustomerBackendImpl implements CustomerBackend {
 			DisplayColumns display, OrderByList orderBy)
 			throws CustomerException {
 		try {
-			return custDAO.listCustomers(dbConnection, whereData, display, orderBy);
+			return custDAO.listCustomers(dbConnection, whereData, display, orderBy).getResult();
 		} catch (XmlRpcTransactionException e) {
 			throw new CustomerException(10101, e);
 		}
@@ -66,6 +66,10 @@ public class CustomerBackendImpl implements CustomerBackend {
 
 /*
  *  $Log: CustomerBackendImpl.java,v $
+ *  Revision 1.3  2006/11/25 12:59:38  phormanns
+ *  ResultVector in QueryResult umbenannt
+ *  Refactoring: DAOs liefern QueryResult bei Select
+ *
  *  Revision 1.2  2006/02/24 22:27:40  phormanns
  *  Copyright
  *  diverse Verbesserungen

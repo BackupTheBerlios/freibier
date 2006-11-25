@@ -33,7 +33,7 @@ import de.jalin.fibu.server.buchungsmaschine.impl.*;
 
 public class WebGUI extends AbstractWebGUIServlet {
 
-	private static final long serialVersionUID = 1164399842915L;
+	private static final long serialVersionUID = 1164458227991L;
 
 	public void init() throws ServletException {
 		super.init();

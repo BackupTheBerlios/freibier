@@ -95,7 +95,7 @@ abstract public class BuchungsmaschineDAO implements Createable {
 		delete.execute(connect);
 	}
 
-	public Vector listBuchungsmaschines
+	public QueryResult listBuchungsmaschines
 	(  Connection connect
 		, BuchungsmaschineData whereData 
 		, DisplayColumns display
@@ -104,7 +104,7 @@ abstract public class BuchungsmaschineDAO implements Createable {
 	{
 	    if (display == null) display = this.display;
 		SelectStatement select = new SelectStatement(table, display, orderBy);
-		return select.select(connect);
+		return select.executeQuery(connect);
 	}
 
 	public DatabaseTable getTable() {

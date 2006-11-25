@@ -95,7 +95,7 @@ abstract public class BuchungDAO implements Createable {
 		delete.execute(connect);
 	}
 
-	public Vector listBuchungs
+	public QueryResult listBuchungs
 	(  Connection connect
 		, BuchungData whereData 
 		, DisplayColumns display
@@ -110,7 +110,7 @@ abstract public class BuchungDAO implements Createable {
 		select.addWhereColumn("jourid", whereData.getJourid());
 		select.addWhereColumn("valuta", whereData.getValuta());
 		select.addWhereColumn("erfassung", whereData.getErfassung());
-		return select.select(connect);
+		return select.executeQuery(connect);
 	}
 
 	public DatabaseTable getTable() {

@@ -11,7 +11,7 @@ import net.hostsharing.admin.runtime.*;
 
 public class JournalWebGUI extends AbstractWebGUI {
 
-	private static final long serialVersionUID = 1164399837841L;
+	private static final long serialVersionUID = 1164458222696L;
 
 	private PostgresAccess pgAccess;
 	private JournalBackend backend;

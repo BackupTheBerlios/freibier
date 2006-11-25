@@ -11,7 +11,7 @@ import net.hostsharing.admin.runtime.*;
 
 public class KontoWebGUI extends AbstractWebGUI {
 
-	private static final long serialVersionUID = 1164399836658L;
+	private static final long serialVersionUID = 1164458221490L;
 
 	private PostgresAccess pgAccess;
 	private KontoBackend backend;
