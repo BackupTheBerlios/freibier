@@ -1,11 +1,12 @@
 /* Erzeugt am 16.01.2006 von tbayen
- * $Id: ActionShow.java,v 1.3 2006/01/24 21:59:28 tbayen Exp $
+ * $Id: ActionShow.java,v 1.4 2006/12/26 14:27:52 tbayen Exp $
  */
 package de.bayen.depotmanager.actions;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -33,8 +34,6 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 		String recordid = (String) uri.get("id");
 		// für die Ausgabe eines Portfolios gibt es eine Extrawurst:
 		if (name.equals("Portfolios")) {
-			BigDecimal gesamtgewinn = new BigDecimal(0);
-			BigDecimal gesamtsumme = new BigDecimal(0);
 			Map papiere = new HashMap();
 			root.put("bewegungen", papiere);
 			Table bew = db.getTable("Bewegungen");
@@ -117,7 +116,6 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 				papier.put("SummeAktuell", summeAktuell);
 				papier.put("SummeAktuellNice", StringHelper.BigDecimal2String(
 						summeAktuell, 2));
-				gesamtsumme = gesamtsumme.add(summeAktuell);
 				BigDecimal gewinn = summeAktuell.subtract((BigDecimal) papier
 						.get("Summe"));
 				papier.put("Gewinn", gewinn);
@@ -125,7 +123,14 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 						2));
 				papier.put("GV", gewinn.compareTo(new BigDecimal(0)) < 0 ? "V"
 						: "G");
-				gesamtgewinn = gesamtgewinn.add(gewinn);
+			}
+			// Jetzt die Summen berechnen:
+			BigDecimal gesamtsumme = new BigDecimal(0);
+			BigDecimal gesamtgewinn = new BigDecimal(0);
+			for (Iterator iter = papiere.keySet().iterator(); iter.hasNext();) {
+				Map papier = (Map) papiere.get(iter.next());
+				gesamtsumme = gesamtsumme.add((BigDecimal)papier.get("SummeAktuell"));
+				gesamtgewinn = gesamtgewinn.add((BigDecimal)papier.get("Gewinn"));
 			}
 			root.put("Gewinn", gesamtgewinn);
 			root.put("GewinnNice", StringHelper.BigDecimal2String(gesamtgewinn,
@@ -140,6 +145,9 @@ public class ActionShow extends de.bayen.webframework.actions.ActionShow {
 }
 /*
  * $Log: ActionShow.java,v $
+ * Revision 1.4  2006/12/26 14:27:52  tbayen
+ * Depotmanager hat sich in der Summe verrechnet (wie peinlich...)
+ *
  * Revision 1.3  2006/01/24 21:59:28  tbayen
  * Prozentangabe bei Gewinn/Verlust
  *
