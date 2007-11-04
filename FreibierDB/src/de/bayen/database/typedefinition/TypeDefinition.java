@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: TypeDefinition.java,v 1.6 2006/01/17 21:06:01 tbayen Exp $
+ * $Id: TypeDefinition.java,v 1.7 2007/11/04 15:52:05 tbayen Exp $
  */
 package de.bayen.database.typedefinition;
 
@@ -56,10 +56,13 @@ abstract public class TypeDefinition {
 		typesMap
 				.put(new Integer(Types.TIMESTAMP), TypeDefinitionDateTime.class);
 		// Types.DATETIME gibts nicht, weil das gleich Types.TIMESTAMP ist
+		// FÃ¼r TINYINT(1) ergibt MySQL 3.x Types.TINYINT und 5.x ergibt Types.BIT
 		typesMap.put(new Integer(Types.TINYINT), TypeDefinitionBool.class);
+		typesMap.put(new Integer(Types.BIT), TypeDefinitionBool.class);
 		typesMap.put(new Integer(Types.VARCHAR), TypeDefinitionString.class);
 		// mediumblob wird in JDBC nach VARBINARY gemappt
 		typesMap.put(new Integer(Types.VARBINARY), TypeDefinitionBLOB.class);
+		typesMap.put(new Integer(Types.LONGVARBINARY), TypeDefinitionBLOB.class);
 	}
 
 	/**
@@ -293,6 +296,9 @@ abstract public class TypeDefinition {
 }
 /*
  * $Log: TypeDefinition.java,v $
+ * Revision 1.7  2007/11/04 15:52:05  tbayen
+ * Anpassung an moderneres System (MySQL 5.1, Tomcat 5.5, System mit UTF-8)
+ *
  * Revision 1.6  2006/01/17 21:06:01  tbayen
  * Anpassung für date-Objekte
  *

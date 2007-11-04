@@ -17,6 +17,12 @@ wünschenswert:
 
 
 erledigt:
+- Anpassung an MySQL 5.1
+- Anpassung an Tomcat 5.5
+- Probleme, wenn System-Encoding nicht ISO-8859-15 ist, behoben
+- Test mit zweitem Kartenleser (Klasse-2-Gerät)
+- Umstellung auf neuen Server
+
 Version 1.6
 - Testlauf mit Smartcard
 - INSTALL.txt geschrieben

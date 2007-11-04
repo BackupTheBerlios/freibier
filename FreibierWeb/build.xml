@@ -79,7 +79,8 @@
 	    <javadoc sourcepath="${src.home}"
 	                destdir="${dist.home}/docs/api"
 					overview="${src.home}/overview.html"
-	           packagenames="*">
+	           packagenames="*"
+	    	encoding="iso-8859-1">
 	      <classpath refid="compile.classpath"/>
 	    </javadoc>
 	</target>
@@ -157,7 +158,8 @@
 	          destdir="${class.home}"
 	            debug="${compile.debug}"
 	      deprecation="${compile.deprecation}"
-	         optimize="${compile.optimize}">
+	         optimize="${compile.optimize}"
+             encoding="iso-8859-1">
 	        <classpath refid="compile.classpath"/>
 	    </javac>
 

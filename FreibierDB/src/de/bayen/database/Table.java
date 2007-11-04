@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.23 2006/01/24 22:13:41 tbayen Exp $
+ * $Id: Table.java,v 1.24 2007/11/04 15:52:05 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -332,7 +332,14 @@ public class Table {
 		} catch (RecordNotExistsDBException e) {
 			throw new DBRuntimeException.ImpossibleDBException(e, log);
 		}
-		return ((Integer) hash.get("COUNT")).intValue();
+		Object erg = hash.get("COUNT");
+		if (Integer.class.isAssignableFrom(erg.getClass())) {
+			// Bei MySQL 3.x ergibt sich hier ein Integer
+			return ((Integer) hash.get("COUNT")).intValue();
+		} else {
+			// Bei MySQL 5.x ergibt sich hier ein Long
+			return ((Long) hash.get("COUNT")).intValue();
+		}
 	}
 
 	/**
@@ -402,17 +409,17 @@ public class Table {
 		String selectRumpf = def.getSelectStatement(name);
 		Map hash;
 		try {
-		hash= db.executeSelectSingleRow(selectRumpf + " AND "
-				+ makeWhereExpression(primdef, pkValue) + " GROUP BY " + name
-				+ "." + def.getPrimaryKey());
-		}catch(RecordNotExistsDBException e) {
+			hash = db.executeSelectSingleRow(selectRumpf + " AND "
+					+ makeWhereExpression(primdef, pkValue) + " GROUP BY "
+					+ name + "." + def.getPrimaryKey());
+		} catch (RecordNotExistsDBException e) {
 			// Falls eine Tablle, auf die mit Foreign Keys verwiesen wird,
 			// leer ist, funktioniert das vorstehende Statement nicht, dann
 			// probiere ich etwas anderes:
 			selectRumpf = def.getSelectStatementWithoutFrom(name);
-			hash= db.executeSelectSingleRow(selectRumpf + " AND "
-					+ makeWhereExpression(primdef, pkValue) + " GROUP BY " + name
-					+ "." + def.getPrimaryKey());
+			hash = db.executeSelectSingleRow(selectRumpf + " AND "
+					+ makeWhereExpression(primdef, pkValue) + " GROUP BY "
+					+ name + "." + def.getPrimaryKey());
 		}
 		return new Record(def, hash);
 	}
@@ -576,6 +583,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.24  2007/11/04 15:52:05  tbayen
+ * Anpassung an moderneres System (MySQL 5.1, Tomcat 5.5, System mit UTF-8)
+ *
  * Revision 1.23  2006/01/24 22:13:41  tbayen
  * LIKE in Queries ging nicht
  *

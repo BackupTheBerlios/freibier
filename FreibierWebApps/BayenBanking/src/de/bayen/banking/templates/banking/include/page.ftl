@@ -1,8 +1,8 @@
 <#-- Erzeugt am 21.02.2005 von tbayen
-     $Id: page.ftl,v 1.1 2006/01/24 00:26:01 tbayen Exp $ -->
+     $Id: page.ftl,v 1.2 2007/11/04 15:54:06 tbayen Exp $ -->
 <#macro page>
 <html>
-  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-15">  <#-- voll egal! -->
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <head>
     <title>${title}</title>
     <#-- Diese Variante lädt eine externe Datei als stylesheet:
@@ -47,6 +47,9 @@
 </#macro>
 <#--
 * $Log: page.ftl,v $
+* Revision 1.2  2007/11/04 15:54:06  tbayen
+* Anpassung an moderneres System (MySQL 5.1, Tomcat 5.5, System mit UTF-8)
+*
 * Revision 1.1  2006/01/24 00:26:01  tbayen
 * Erste eigenständige Version (1.6beta)
 * sollte funktional gleich sein mit banking-Modul aus WebDatabase/FreibierWeb 1.5

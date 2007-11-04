@@ -130,9 +130,9 @@
 		<path id="compile.classpath">
 			<!-- classpath für normale Applikationen -->
 	  		<fileset dir="${lib.home}">
-	  			<include name="*.jar"/>
+	  			<include name="**/*.jar"/>
     		</fileset>
-	    	<!-- Include all elements that Tomcat exposes to applications -->
+	    	<!-- Include all elements that Tomcat exposes to applications
 	    	<pathelement location="${catalina.home}/common/classes"/>
 	    	<fileset dir="${catalina.home}/common/endorsed">
 	    		<include name="*.jar"/>
@@ -144,6 +144,7 @@
 	    	<fileset dir="${catalina.home}/shared/lib">
 	    		<include name="*.jar"/>
 	    	</fileset>
+	    	-->
 		</path>
 	</target>
 
@@ -157,7 +158,8 @@
 	          destdir="${class.home}"
 	            debug="${compile.debug}"
 	      deprecation="${compile.deprecation}"
-	         optimize="${compile.optimize}">
+	         optimize="${compile.optimize}"
+             encoding="iso-8859-1">
 	        <classpath refid="compile.classpath"/>
 	    </javac>
 

@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.13 2006/01/29 00:41:52 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.14 2007/11/04 15:51:39 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -7,8 +7,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,6 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -91,8 +91,7 @@ public abstract class ServletDatabase extends HttpServlet {
 				// durchsucht (TO DO: aber keine mehrfach abgeleiteten).
 				new FreemarkerClassTemplateLoader(this.getClass(), "templates"),
 				new FreemarkerClassTemplateLoader(ServletDatabase.class,
-						"templates")
-		};
+						"templates") };
 		cfg.setTemplateLoader(new MultiTemplateLoader(loaders));
 		// normalerweise gibts keine Euro-Zeichen, das stelle ich hier aber ein:
 		cfg.setEncoding(new Locale("de", "DE"), "ISO-8859-15");
@@ -309,7 +308,7 @@ public abstract class ServletDatabase extends HttpServlet {
 		root.put("order", order);
 		String orderdir = req.getParameter("orderdir");
 		if (orderdir == null)
-			orderdir = (String) "ASC";
+			orderdir = "ASC";
 		root.put("orderdir", orderdir);
 		return root;
 	}
@@ -346,7 +345,7 @@ public abstract class ServletDatabase extends HttpServlet {
 		// Also führe ich das Template hier auf die etwas umständliche Art aus:
 		try {
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			PrintWriter out = new PrintWriter(os);
+			Writer out = new OutputStreamWriter(os, "ISO-8859-15");
 			Environment env = t.createProcessingEnvironment(root, out);
 			env.setOutputEncoding("ISO-8859-15");
 			env.process();
@@ -394,11 +393,12 @@ public abstract class ServletDatabase extends HttpServlet {
 				Context initCtx = new InitialContext();
 				DataSource ds = (DataSource) initCtx
 						.lookup("java:comp/env/jdbc/" + datasource);
-				database=new Database(ds,getProperty("database.name"));
-			} catch (NamingException e) {
+				database = new Database(ds, getProperty("database.name"));
+			} catch (Exception e) {
 				// Wenns keine DataSource gibt, nehme ich den herkömmlichen Weg
 				database = new Database(getProperty("database.name"),
-						getProperty("database.host"), getProperty("database.user"),
+						getProperty("database.host"),
+						getProperty("database.user"),
 						getProperty("database.password"));
 			}
 			database.setPropertyPath(getClass().getPackage().getName());
@@ -422,6 +422,9 @@ public abstract class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.14  2007/11/04 15:51:39  tbayen
+ * Anpassung an moderneres System (MySQL 5.1, Tomcat 5.5, System mit UTF-8)
+ *
  * Revision 1.13  2006/01/29 00:41:52  tbayen
  * Datenbankverbindung per DataSource möglich
  *
