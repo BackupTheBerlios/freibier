@@ -1,5 +1,5 @@
 /* Erzeugt am 21.02.2005 von tbayen
- * $Id: ServletDatabase.java,v 1.14 2007/11/04 15:51:39 tbayen Exp $
+ * $Id: ServletDatabase.java,v 1.15 2007/11/05 13:47:31 tbayen Exp $
  */
 package de.bayen.webframework;
 
@@ -334,6 +334,7 @@ public abstract class ServletDatabase extends HttpServlet {
 		if (tabname != null) {
 			pfad += "/" + tabname;
 		}
+		cfg.setDefaultEncoding("ISO-8859-15");  // Encoding der Template-Quelltextdateien
 		Template t = cfg.getTemplate(pfad + "/*/" + view + ".ftl");
 		// Man kann mittels folgender Befehle das Problem auch sehr schnell
 		// lösen. Allerdings kann man dann aus dem Template heraus nicht den
@@ -345,9 +346,9 @@ public abstract class ServletDatabase extends HttpServlet {
 		// Also führe ich das Template hier auf die etwas umständliche Art aus:
 		try {
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			Writer out = new OutputStreamWriter(os, "ISO-8859-15");
+			Writer out = new OutputStreamWriter(os, "ISO-8859-15");  // Encoding der Ausgabe
 			Environment env = t.createProcessingEnvironment(root, out);
-			env.setOutputEncoding("ISO-8859-15");
+			env.setOutputEncoding("ISO-8859-15");  // Encoding der Ausgabe
 			env.process();
 			String contenttype = null;
 			TemplateModel tm = env.getVariable("contenttype");
@@ -422,6 +423,9 @@ public abstract class ServletDatabase extends HttpServlet {
 }
 /*
  * $Log: ServletDatabase.java,v $
+ * Revision 1.15  2007/11/05 13:47:31  tbayen
+ * Encoding der Templates fest angeben
+ *
  * Revision 1.14  2007/11/04 15:51:39  tbayen
  * Anpassung an moderneres System (MySQL 5.1, Tomcat 5.5, System mit UTF-8)
  *
