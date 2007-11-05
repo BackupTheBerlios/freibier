@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.16 2006/01/29 00:41:16 tbayen Exp $
+ * $Id: Database.java,v 1.17 2007/11/05 18:24:41 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -358,7 +358,7 @@ public class Database {
 					}
 				}
 				zeile = buffer.readLine();
-			};
+			}
 			st.executeBatch();
 		} catch (SQLException e) {
 			throw new SysDBEx.SQL_DBException("SQL-Exception", e, log);
@@ -420,7 +420,7 @@ public class Database {
 				hash = new HashMap();
 				for (int i = 0; i < metadata.getColumnCount(); i++) {
 					hash
-							.put(metadata.getColumnName(i + 1), rs
+							.put(metadata.getColumnLabel(i + 1), rs
 									.getObject(i + 1));
 				}
 				resultList.add(hash);
@@ -443,7 +443,6 @@ public class Database {
 	 * @param sql
 	 * @throws SQL_DBException 
 	 * @throws RecordNotExistsDBException 
-	 * @throws SysDBEx
 	 */
 	public void executeUpdate(String sql) throws SQL_DBException,
 			RecordNotExistsDBException {
@@ -482,6 +481,9 @@ public class Database {
 
 /*
  * $Log: Database.java,v $
+ * Revision 1.17  2007/11/05 18:24:41  tbayen
+ * Zugriff auf Spaltennamen hat sich mit mysqlconnector 5.x geändert
+ *
  * Revision 1.16  2006/01/29 00:41:16  tbayen
  * Konstruktor per DataSource sowie garantierte Freigabe aller JDBC-Ressourcen
  *
