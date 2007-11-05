@@ -1,5 +1,5 @@
 /* Erzeugt am 01.10.2004 von tbayen
- * $Id: Database.java,v 1.17 2007/11/05 18:24:41 tbayen Exp $
+ * $Id: Database.java,v 1.18 2007/11/05 18:30:26 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -387,7 +387,7 @@ public class Database {
 			if (rs.next()) {
 				for (int i = 0; i < metadata.getColumnCount(); i++) {
 					hash
-							.put(metadata.getColumnName(i + 1), rs
+							.put(metadata.getColumnLabel(i + 1), rs
 									.getObject(i + 1));
 				}
 			} else {
@@ -481,6 +481,9 @@ public class Database {
 
 /*
  * $Log: Database.java,v $
+ * Revision 1.18  2007/11/05 18:30:26  tbayen
+ * Zugriff auf Spaltennamen hat sich mit mysqlconnector 5.x geändert
+ *
  * Revision 1.17  2007/11/05 18:24:41  tbayen
  * Zugriff auf Spaltennamen hat sich mit mysqlconnector 5.x geändert
  *
