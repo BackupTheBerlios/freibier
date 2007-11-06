@@ -1,9 +1,8 @@
 /* Erzeugt am 11.10.2004 von tbayen
- * $Id: Editable.java,v 1.2 2005/08/21 17:06:59 tbayen Exp $
+ * $Id: Editable.java,v 1.3 2007/11/06 08:14:58 tbayen Exp $
  */
 package de.bayen.database;
 
-import de.bayen.database.exception.DatabaseException;
 
 /**
  * Ein "Editable" OBjekt ist grundsätzlich editierbar und besitzt bestimmte
@@ -60,6 +59,9 @@ public interface Editable extends Printable {
 }
 /*
  * $Log: Editable.java,v $
+ * Revision 1.3  2007/11/06 08:14:58  tbayen
+ * Anpassung an MySQLConnector 5.x in ActionNew
+ *
  * Revision 1.2  2005/08/21 17:06:59  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *

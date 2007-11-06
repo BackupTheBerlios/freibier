@@ -1,5 +1,5 @@
 /* Erzeugt am 07.10.2004 von tbayen
- * $Id: Table.java,v 1.24 2007/11/04 15:52:05 tbayen Exp $
+ * $Id: Table.java,v 1.25 2007/11/06 08:14:58 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -11,7 +11,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import de.bayen.database.exception.DBRuntimeException;
-import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.exception.SysDBEx;
 import de.bayen.database.exception.SysDBEx.IllegalQueryConditionDBException;
 import de.bayen.database.exception.SysDBEx.ParseErrorDBException;
@@ -511,7 +510,8 @@ public class Table {
 		Object ergo;
 		if (id == null || ((Long) id.getValue()).intValue() == 0) {
 			Map erg = db.executeSelectSingleRow("SELECT LAST_INSERT_ID()");
-			ergo = def.parse(erg.get("last_insert_id()").toString());
+			// beim mysql 3.x-Treiber war der Schlüssel "last_insert_id()", also kleingeschrieben
+			ergo = def.parse(erg.get("LAST_INSERT_ID()").toString());
 		} else {
 			ergo = new DataObject(def.parse(id.format()), def);
 		}
@@ -583,6 +583,9 @@ public class Table {
 }
 /*
  * $Log: Table.java,v $
+ * Revision 1.25  2007/11/06 08:14:58  tbayen
+ * Anpassung an MySQLConnector 5.x in ActionNew
+ *
  * Revision 1.24  2007/11/04 15:52:05  tbayen
  * Anpassung an moderneres System (MySQL 5.1, Tomcat 5.5, System mit UTF-8)
  *

@@ -1,5 +1,5 @@
 /* Erzeugt am 16.10.2004 von tbayen
- * $Id: NicePrinter.java,v 1.4 2005/08/21 17:06:59 tbayen Exp $
+ * $Id: NicePrinter.java,v 1.5 2007/11/06 08:14:58 tbayen Exp $
  */
 package de.bayen.database;
 
@@ -8,7 +8,6 @@ import java.text.DecimalFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import de.bayen.database.exception.SysDBEx;
-import de.bayen.database.exception.SysDBEx.IllegalDefaultValueDBException;
 import de.bayen.database.exception.SysDBEx.SQL_getTableDBException;
 import de.bayen.database.exception.SysDBEx.TypeNotSupportedDBException;
 import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
@@ -98,6 +97,9 @@ public class NicePrinter {
 }
 /*
  * $Log: NicePrinter.java,v $
+ * Revision 1.5  2007/11/06 08:14:58  tbayen
+ * Anpassung an MySQLConnector 5.x in ActionNew
+ *
  * Revision 1.4  2005/08/21 17:06:59  tbayen
  * Exception-Klassenhierarchie komplett neu geschrieben und überall eingeführt
  *

@@ -1,9 +1,8 @@
 /* Erzeugt am 11.10.2004 von tbayen
- * $Id: Printable.java,v 1.3 2005/11/24 11:47:45 tbayen Exp $
+ * $Id: Printable.java,v 1.4 2007/11/06 08:14:58 tbayen Exp $
  */
 package de.bayen.database;
 
-import de.bayen.database.exception.DatabaseException;
 import de.bayen.database.exception.SysDBEx.WrongTypeDBException;
 
 /**
@@ -50,6 +49,9 @@ public interface Printable {
 }
 /*
  * $Log: Printable.java,v $
+ * Revision 1.4  2007/11/06 08:14:58  tbayen
+ * Anpassung an MySQLConnector 5.x in ActionNew
+ *
  * Revision 1.3  2005/11/24 11:47:45  tbayen
  * getSelectStatement(), das auch bei null-Fremdschlüssel funktioniert
  * sowie einige Verbesserungen in der JavaDoc
