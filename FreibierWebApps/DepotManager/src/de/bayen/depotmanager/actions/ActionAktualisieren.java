@@ -1,8 +1,12 @@
 /* Erzeugt am 15.01.2006 von tbayen
- * $Id: ActionAktualisieren.java,v 1.2 2006/01/22 20:07:35 tbayen Exp $
+ * $Id: ActionAktualisieren.java,v 1.3 2007/11/12 14:56:02 tbayen Exp $
  */
 package de.bayen.depotmanager.actions;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -53,8 +57,9 @@ public class ActionAktualisieren implements Action {
 		for (int p = 0; p < allepapiere.getNumberOfRecords(); p++) {
 			Record papier = allepapiere.getRecordByNumber(p);
 			String isin = papier.getField("ISIN").format();
-			YahooRetriever retriever = new YahooRetriever();
-			Candle candle = retriever.getCurrentQuote(isin+".DE");  // "DE" für Xetra-Kurse
+			CCAPI.DataRetrieval.YahooRetriever retriever = new CCAPI.DataRetrieval.YahooRetriever();
+			// frï¿½her ging isin+"DE" fï¿½r Xetra-Kurse
+			Candle candle = retriever.getCurrentQuote(isin2TickerSymbol(isin));
 			gelesen++;
 			if (saveCandle(papier.getPrimaryKey(), db, candle))
 				geschrieben++;
@@ -65,7 +70,7 @@ public class ActionAktualisieren implements Action {
 
 	/**
 	 * Diese Funktion holt die History einer Aktie von der Cortal Consors Seite.
-	 * Diese enthält für mehrere vergangene Jahre den Schlusskurs jedes Börsentages.
+	 * Diese enthï¿½lt fï¿½r mehrere vergangene Jahre den Schlusskurs jedes Bï¿½rsentages.
 	 * 
 	 * @param root
 	 * @param db
@@ -92,13 +97,41 @@ public class ActionAktualisieren implements Action {
 	}
 
 	/**
+	 * @param isin
+	 * @return Tickersymbol
+	 * @throws RuntimeException
+	 */
+	private static String isin2TickerSymbol(String isin)
+			throws RuntimeException {
+		if(!isin.startsWith("DE")) // TODO Das kann eigentlich weg
+			return isin;
+		String webseite;
+		try {
+			URL url = new URL("http://de.finance.yahoo.com/q?s=" + isin);
+			Reader reader = new InputStreamReader(url.openStream());
+			char[] buffer = new char[100000];
+			int offset = 0;
+			while ((offset += reader.read(buffer, offset, 100000 - offset)) >0) {/**/}
+			webseite = new String(buffer);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		final String suchBegriff = "quotes.csv?s=";
+		int suchindex = webseite.indexOf(suchBegriff);
+		int endindex = webseite.indexOf('&', suchindex);
+		String tickerSymbol = webseite.substring(suchindex
+				+ suchBegriff.length(), endindex);
+		return tickerSymbol;
+	}
+
+	/**
 	 * Diese Funktion speichert eine durch die CCAPI-Bibliothek gelesene "Candle",
 	 * d.h. einen einzelnen Kurswert eines Wertpapiers, in meiner Datenbank ab.
 	 * 
 	 * @param papierid
 	 * @param db
 	 * @param candle
-	 * @return false, wenn schon ein Wert für diesen Tag vorlag
+	 * @return false, wenn schon ein Wert fï¿½r diesen Tag vorlag
 	 * @throws SysDBEx
 	 */
 	private boolean saveCandle(DataObject papierid, Database db,
@@ -108,7 +141,7 @@ public class ActionAktualisieren implements Action {
 			return false;
 		Table table = db.getTable("Kursdaten");
 		// die Daten von Consors haben immer das richtige Datum, aber die Zeit 
-		// von "Jetzt", also einen ungültigen Wert. Deshalb setze ich die Uhrzeit 
+		// von "Jetzt", also einen ungï¿½ltigen Wert. Deshalb setze ich die Uhrzeit 
 		//hier auf 00:00:00.0000.
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(candle.date);
@@ -135,22 +168,27 @@ public class ActionAktualisieren implements Action {
 
 	/**
 	 * Diese Methode ist hier nur zu Testzwecken, um mit den Retrievern 
-	 * herumspielen zu können.
+	 * herumspielen zu kï¿½nnen.
 	 * 
 	 * @param args
 	 */
 	public static void main(String args[]) {
-		YahooRetriever retriever = new YahooRetriever();
+		CCAPI.DataRetrieval.YahooRetriever retriever = new CCAPI.DataRetrieval.YahooRetriever();//YahooRetriever();
 		Candle candle = retriever.getCurrentQuote("DE0005752000");
 		//Candle candle = retriever.getCurrentQuote("BAY.DE");
+		System.out.println(candle.toString());
+		candle = retriever.getCurrentQuote(isin2TickerSymbol("DE0005752000"));
 		System.out.println(candle.toString());
 	}
 }
 /*
  * $Log: ActionAktualisieren.java,v $
+ * Revision 1.3  2007/11/12 14:56:02  tbayen
+ * Version 1.2 auf neuem Server und Tomcat 5.5
+ *
  * Revision 1.2  2006/01/22 20:07:35  tbayen
  * Datenbank-Zugriff korrigiert: Man konnte nicht in mehreren Fenstern arbeiten.
- * Klasse WebDBDatabase unnötig, wurde gelöscht
+ * Klasse WebDBDatabase unnï¿½tig, wurde gelï¿½scht
  *
  * Revision 1.1  2006/01/21 23:20:50  tbayen
  * Erste Version 1.0 des DepotManagers

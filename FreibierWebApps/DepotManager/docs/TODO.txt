@@ -4,6 +4,10 @@ TODO:
 nötig:
 
 erledigt:
+Version 1.2 (November 2007)
+- Umstellung auf neuen Server (Tomcat 5.5)
+- einige Verbesserungen und Anpassungen
+Version 1.1
 - Prozentausgabe Gewinn zum Einsatz
 - ActionShow erkannte immer nur eine Transaktion pro Wertpapier
 Version 1.0
